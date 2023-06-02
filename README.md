@@ -18,11 +18,11 @@ WebAppKit API is a Laravel 9 RESTFul starter kit for SPA and mobile clients. Thi
 
 ## Set up your local development environment
 - Minimum of PHP 8.1 installed with a database engine that supports JSON types and possibly with full text search (e.g. MySQL8, MariaDB 10.5)
-- Create a **.env** file from the **.env.example** that came with this project
-- In the **.env** file, update the **APP_NAME**, **APP_URL**, the **DB_** variables, and the MAIL variables if you decide to use a different test mailing service or account. You may also change the **FRONT_END_RESET_PASSWORD_URL** if you're spinning a different URL for your SPA.
-- Locate your **php.ini** file and change the value **upload_max_filesize** to **8M**. See this [guide](https://devanswers.co/ubuntu-php-php-ini-configuration-file/) if you're having trouble finding the directory of your php.ini file
+- Create a **.env** and a **.env.testing** files from the **.env.example** that came with this project. For security purposes, please request the contents of these files from the SCRUM master / Tech Lead
+- Locate your **php.ini** file and change the value **upload_max_filesize** to **10M**. See this [guide](https://devanswers.co/ubuntu-php-php-ini-configuration-file/) if you're having trouble finding the directory of your php.ini file
+- Make sure you have MySQL and Redis running locally (or depending on what's stated in the **.env** file)
 - Run the command `composer install`  to install all the project and dev dependencies
-- Run the command `php artisan app:init` to initialize the project. This will run:
+- Run the command `php artisan app:init` to initialize the project. The command will run:
   - App key generation
   - DB migrations
   - DB Seeders
