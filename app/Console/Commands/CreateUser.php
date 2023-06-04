@@ -64,7 +64,7 @@ class CreateUser extends Command
         }
 
         $user = $this->userService->create($data);
-        $this->info("User created: #$user->id | $user->username | $user->email | {$user->userProfile->full_name}");
+        $this->info("User created: #$user->id | $user->email | {$user->userProfile->full_name}");
 
         return Command::SUCCESS;
     }
