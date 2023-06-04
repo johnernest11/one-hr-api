@@ -77,14 +77,12 @@ class ProfileRequest extends FormRequest
             ],
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
-            'address_line_1' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'address_line_2' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'address_line_3' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'district' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'city' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'province' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'home_address' => ['string', 'nullable'],
+            'barangay' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'city_id' => ['nullable', 'exists:cities,id'],
+            'province_id' => ['nullable', 'exists:provinces,id'],
+            'region_id' => ['nullable', 'exists:regions,id'],
             'postal_code' => ['nullable', new DbVarcharMaxLength()],
-            'country_id' => ['nullable', 'exists:countries,id'],
             'profile_picture_path' => ['string', 'nullable', new DbVarcharMaxLength()],
         ];
     }
@@ -106,7 +104,7 @@ class ProfileRequest extends FormRequest
     private function getUploadProfilePictureRules(): array
     {
         return [
-            'photo' => ['max:2048', 'required', 'image'], // 2Mb max
+            'photo' => ['max:5120', 'required', 'image'], // 5Mb max
         ];
     }
 
@@ -116,7 +114,6 @@ class ProfileRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'country_id.exists' => 'The :attribute does not exists',
             'photo.max' => 'The :attribute must not exceed 2MB',
 
             /** @see https://github.com/Propaganistas/Laravel-Phone#validation */

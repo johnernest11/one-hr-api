@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Models\Address\Address;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Database\Eloquent\Collection;
@@ -55,7 +56,7 @@ abstract class TestCase extends BaseTestCase
     {
         $factory = User::factory()
             ->has(
-                UserProfile::factory()
+                UserProfile::factory()->has(Address::factory())
             )->count($quantity);
 
         if ($unVerified) {

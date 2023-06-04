@@ -14,5 +14,5 @@ Route::prefix('/v1/profile')->group(base_path('routes/api/profile.routes.php'));
 /** V1 Availability Routes */
 Route::prefix('/v1/availability')->group(base_path('routes/api/availability.routes.php'));
 
-/** V1 Countries */
-Route::prefix('v1/countries')->group(base_path('routes/api/countries.routes.php'));
+/** V1 Address */
+Route::prefix('v1/address')->group(base_path('routes/api/address.routes.php'));

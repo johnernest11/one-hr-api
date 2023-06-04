@@ -8,7 +8,6 @@ use App\QueryFilters\Generic\Active;
 use App\QueryFilters\Generic\Sort;
 use App\QueryFilters\User\Email;
 use App\QueryFilters\User\Role;
-use App\QueryFilters\User\Username;
 use App\QueryFilters\User\Verified;
 use DateTimeHelper;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
@@ -115,7 +114,6 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
             ->through([
                 Active::class,
                 Sort::class,
-                Username::class,
                 Email::class,
                 Verified::class,
                 Role::class,

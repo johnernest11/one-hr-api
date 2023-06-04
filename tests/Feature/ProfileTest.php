@@ -2,10 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Enums\Role;
+use App\Enums\Role as RoleEnum;
 use App\Enums\SexualCategory;
-use App\Models\User;
-use App\Models\UserProfile;
+use App\Models\Address\City;
+use App\Models\Address\Province;
+use App\Models\Address\Region;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
@@ -26,23 +27,18 @@ class ProfileTest extends TestCase
         parent::setUp();
         $this->artisan('db:seed');
 
-        $this->user = User::factory()->has(UserProfile::factory())->create();
-        $this->user->syncRoles(Role::STANDARD_USER->value);
+        $this->user = $this->produceUsers();
+        $this->user->syncRoles(RoleEnum::STANDARD_USER->value);
         Sanctum::actingAs($this->user);
     }
 
-    /**
-     * A basic feature test example.
-     */
     public function test_user_can_view_profile(): void
     {
         $response = $this->get($this->baseUri);
         $response->assertStatus(200);
     }
 
-    /**
-     * @throws Throwable
-     */
+    /** @throws Throwable */
     public function test_user_can_update_profile(): void
     {
         $edits = [
@@ -54,12 +50,11 @@ class ProfileTest extends TestCase
             'telephone_number' => '+63279434211',
             'mobile_number' => '+639064647210',
             'birthday' => '1997-01-04',
-            'address_line_1' => 'Address Line 1',
-            'address_line_2' => 'Address Line 2',
-            'address_line_3' => 'Address Line 3',
-            'district' => 'District 1',
-            'city' => 'City 1',
-            'province' => 'Province 1',
+            'home_address' => 'Address Line 1',
+            'barangay' => 'Barangay 1',
+            'city_id' => City::latest()->first()->id,
+            'province_id' => Province::latest()->first()->id,
+            'region_id' => Region::latest()->first()->id,
             'postal_code' => '221',
         ];
 
@@ -69,15 +64,26 @@ class ProfileTest extends TestCase
 
         foreach ($edits as $key => $value) {
             // check for credentials correctness
-            if ($key == 'email') {
+            if ($key === 'email') {
                 $this->assertEquals($value, $result['data'][$key]);
 
                 continue;
             }
 
-            // country info is wrapped in `user_profile.country` field
-            if ($key === 'country_id') {
-                $result = $response['data']['user_profile']['country']['id'];
+            // home_address, barangay, postal_code are wrapped in `user_profile.address` field
+            if (in_array($key, ['home_address', 'barangay', 'postal_code'])) {
+                $result = $response['data']['user_profile']['address'][$key];
+                $this->assertEquals($value, $result);
+
+                continue;
+            }
+
+            // city_id, province_id, region_id are wrapped in `user_profile.address.[city|region|province]`
+            if (in_array($key, ['city_id', 'province_id', 'region_id'])) {
+                // from city_id => city
+                $relationName = explode('_id', $key)[0];
+
+                $result = $response['data']['user_profile']['address'][$relationName]['id'];
                 $this->assertEquals($value, $result);
 
                 continue;
