@@ -4,10 +4,12 @@ namespace App\Models;
 
 use App\Enums\SexualCategory;
 use App\Interfaces\CloudFileServices\CloudFileServiceInterface;
+use App\Models\Address\Address;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserProfile extends Model
@@ -28,14 +30,12 @@ class UserProfile extends Model
         'telephone_number',
         'sex',
         'birthday',
-        'address_line_1', // Building number, Building name
-        'address_line_2', // Street, Road name
-        'address_line_3', // // Additional address info
-        'district', // Barangay, Village
-        'city', // Or Municipality
-        'province',
+        'home_address',
+        'barangay',
+        'city_id',
+        'province_id',
+        'region_id',
         'postal_code',
-        'country_id',
         'profile_picture_path',
     ];
 
@@ -45,7 +45,7 @@ class UserProfile extends Model
      * @var array<int, string>
      */
     protected $with = [
-        'country',
+        'address',
     ];
 
     /**
@@ -66,7 +66,6 @@ class UserProfile extends Model
     protected $hidden = [
         'id',
         'user_id',
-        'country_id',
         'profile_picture_path',
     ];
 
@@ -91,13 +90,13 @@ class UserProfile extends Model
     }
 
     /**
-     * A profile belongs to exactly one country
+     * A user has one address
      *
-     * @returns BelongsTo
+     * @returns HasOne
      */
-    public function country(): BelongsTo
+    public function address(): HasOne
     {
-        return $this->belongsTo(Country::class);
+        return $this->hasOne(Address::class);
     }
 
     /**

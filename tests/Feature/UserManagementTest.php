@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\Country;
+use App\Enums\Role as RoleEnum;
+use App\Models\Address\City;
+use App\Models\Address\Province;
+use App\Models\Address\Region;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Notifications\WelcomeNotification;
@@ -26,8 +29,6 @@ class UserManagementTest extends TestCase
 
     private string $baseUri = self::BASE_API_URI.'/users';
 
-    private User $user;
-
     public function setUp(): void
     {
         parent::setUp();
@@ -35,10 +36,10 @@ class UserManagementTest extends TestCase
         Notification::fake();
 
         /** @var User $user */
-        $this->user = User::factory()->has(UserProfile::factory())->create();
-        $roles = [\App\Enums\Role::ADMIN->value, \App\Enums\Role::SUPER_USER->value];
-        $this->user->syncRoles(fake()->randomElement($roles));
-        Sanctum::actingAs($this->user);
+        $user = $this->produceUsers();
+        $roles = [RoleEnum::ADMIN->value, RoleEnum::SUPER_USER->value];
+        $user->syncRoles(fake()->randomElement($roles));
+        Sanctum::actingAs($user);
     }
 
     /**
@@ -50,7 +51,9 @@ class UserManagementTest extends TestCase
      */
     public function test_it_can_create_a_user($input, $statusCode)
     {
-        $input['country_id'] = Country::first()->id;
+        $input['city_id'] = City::first()->id;
+        $input['province_id'] = Province::first()->id;
+        $input['region_id'] = Region::first()->id;
         $input['profile_picture_path'] = fake()->filePath;
 
         $response = $this->postJson($this->baseUri, $input);
@@ -80,12 +83,8 @@ class UserManagementTest extends TestCase
             'telephone_number' => '+63279434285',
             'sex' => 'male',
             'birthday' => '1997-01-04',
-            'address_line_1' => 'Address Line 1',
-            'address_line_2' => 'Address Line 2',
-            'address_line_3' => 'Address Line 3',
-            'district' => 'District 1',
-            'city' => 'City 1',
-            'province' => 'Province 1',
+            'home_address' => 'Home Address',
+            'barangay' => 'Barangay 64',
             'postal_code' => '211',
         ]);
 
@@ -104,7 +103,7 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_should_validate_unique_fields_when_creating_a_user()
     {
-        $user = User::factory()->has(UserProfile::factory())->create();
+        $user = $this->produceUsers();
         $input = $this->getRequiredUserInputSample();
         $input['email'] = $user->email;
 
@@ -120,9 +119,7 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_update_a_user()
     {
-        $user = User::factory()
-            ->has(UserProfile::factory())
-            ->create();
+        $user = $this->produceUsers();
 
         $edits = [
             'email' => fake()->unique()->safeEmail,
@@ -131,20 +128,17 @@ class UserManagementTest extends TestCase
             'password' => 'Sample123_123',
             'password_confirmation' => 'Sample123_123',
             'active' => fake()->boolean,
-            'email_verified' => fake()->boolean,
             'middle_name' => fake()->lastName,
             'mobile_number' => '+639064647291',
             'telephone_number' => '+63279434285',
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => '1997-01-05',
-            'address_line_1' => fake()->buildingNumber,
-            'address_line_2' => fake()->streetName,
-            'address_line_3' => fake()->streetAddress,
-            'district' => 'District 1',
-            'city' => fake()->city,
-            'province' => 'Province 1',
+            'home_address' => fake()->buildingNumber,
+            'barangay' => fake()->streetName,
+            'city_id' => City::first()->id,
+            'province_id' => Province::first()->id,
+            'region_id' => Region::first()->id,
             'postal_code' => fake()->postcode,
-            'country_id' => Country::first()->id,
             'profile_picture_path' => fake()->filePath,
         ];
 
@@ -160,17 +154,20 @@ class UserManagementTest extends TestCase
                 continue;
             }
 
-            // when email_verified is set to `true`, response will have
-            // an email_verified_at key with a timestamp value -- and it will be set to null if it's `false`
-            if ($key === 'email_verified') {
-                $this->assertEquals($value, (bool) strtotime($response['data']['email_verified_at']));
+            // home_address, barangay, postal_code are wrapped in `user_profile.address` field
+            if (in_array($key, ['home_address', 'barangay', 'postal_code'])) {
+                $result = $response['data']['user_profile']['address'][$key];
+                $this->assertEquals($value, $result);
 
                 continue;
             }
 
-            // country info is wrapped in `user_profile.country` field
-            if ($key === 'country_id') {
-                $result = $response['data']['user_profile']['country']['id'];
+            // city_id, province_id, region_id are wrapped in `user_profile.address.[city|region|province]`
+            if (in_array($key, ['city_id', 'province_id', 'region_id'])) {
+                // from city_id => city
+                $relationName = explode('_id', $key)[0];
+
+                $result = $response['data']['user_profile']['address'][$relationName]['id'];
                 $this->assertEquals($value, $result);
 
                 continue;
@@ -198,14 +195,18 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_should_validate_unique_email_when_updating_a_user()
+    public function test_it_should_validate_unique_mobile_number_and_email_when_updating_a_user()
     {
-        $users = User::factory()->count(2)->has(UserProfile::factory())->create();
+        $users = $this->produceUsers(2);
+        $users[1]->userProfile->mobile_number = '+639164647295';
+        $users[1]->save();
+
         $user2Info = [
             'email' => $users[1]->email,
+            'mobile_number' => $users[1]->userProfile->mobile_number,
         ];
 
-        // try to update the first user's email with user 2's
+        // try to update the first user's username and email with user 2's
         $response = $this->patchJson("$this->baseUri/{$users[0]->id}", $user2Info);
         $response->assertStatus(422);
     }
@@ -213,9 +214,13 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_should_ignore_unique_validation_when_updating_the_same_user_with_the_same_field_values()
     {
-        $user = User::factory()->has(UserProfile::factory())->create();
+        $user = $this->produceUsers();
+        $user->userProfile->mobile_number = '+639164647295';
+        $user->save();
+
         $input = [
             'email' => $user->email,
+            'mobile_number' => $user->userProfile->mobile_number,
         ];
 
         $response = $this->patchJson("$this->baseUri/$user->id", $input);
@@ -233,6 +238,7 @@ class UserManagementTest extends TestCase
     {
         $requiredFields = [
             'email' => 'sample_email@email.com',
+            'username' => 'username1',
             'password' => 'Sample_Password_1',
             'password_confirmation' => 'Sample_Password_1',
             'first_name' => 'Jeg',
@@ -258,6 +264,7 @@ class UserManagementTest extends TestCase
     {
         $requiredFields = [
             'email' => 'sample_email@email.com',
+            'username' => 'username1',
             'password' => 'Sample_Password_1',
             'password_confirmation' => 'Sample_Password_1',
             'first_name' => 'Jeg',
@@ -274,20 +281,18 @@ class UserManagementTest extends TestCase
 
     public function test_it_can_read_a_user()
     {
-        /** @var User $user */
-        $user = User::factory()->has(UserProfile::factory())->create();
+        $user = $this->produceUsers();
 
-        $response = $this->get("$this->baseUri/{$user->id}");
+        $response = $this->get("$this->baseUri/$user->id");
         $response->assertStatus(200);
     }
 
     /** @throws Throwable */
     public function test_it_can_delete_a_user()
     {
-        /** @var User $user */
-        $user = User::factory()->has(UserProfile::factory())->create();
+        $user = $this->produceUsers();
 
-        $response = $this->delete("$this->baseUri/{$user->id}");
+        $response = $this->delete("$this->baseUri/$user->id");
         $response->assertStatus(204);
         $this->assertDatabaseHas('users', ['id' => $user->id]);
     }
@@ -295,7 +300,7 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_fetch_users()
     {
-        User::factory()->count(5)->has(UserProfile::factory())->create();
+        $this->produceUsers(5);
         $totalUserCount = User::count('id');
 
         $response = $this->get($this->baseUri);
@@ -308,7 +313,7 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_return_length_aware_paginated_results()
     {
-        User::factory()->count(15)->has(UserProfile::factory())->create();
+        $this->produceUsers(15);
         $totalUserCount = User::count('id');
 
         $limit = 5;
@@ -366,7 +371,7 @@ class UserManagementTest extends TestCase
 
     public function test_it_can_upload_profile_picture()
     {
-        $user = User::factory()->has(UserProfile::factory())->create();
+        $user = $this->produceUsers();
         $file = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
         $response = $this->post("$this->baseUri/$user->id/profile-picture", ['photo' => $file]);
         $response->assertStatus(200);
@@ -382,21 +387,21 @@ class UserManagementTest extends TestCase
         $response = $response->decodeResponseJson();
 
         $this->assertCount(1, $response['data']['roles']);
-        $this->assertEquals(\App\Enums\Role::STANDARD_USER->value, $response['data']['roles'][0]['name']);
+        $this->assertEquals(RoleEnum::STANDARD_USER->value, $response['data']['roles'][0]['name']);
     }
 
     /** @throws Throwable */
     public function test_it_can_attach_roles_to_a_user()
     {
-        $firstRole = Role::query()->where('name', \App\Enums\Role::STANDARD_USER->value)->first()->id;
-        $secondRole = Role::query()->where('name', \App\Enums\Role::ADMIN->value)->first()->id;
+        $firstRole = Role::query()->where('name', RoleEnum::STANDARD_USER->value)->first()->id;
+        $secondRole = Role::query()->where('name', RoleEnum::ADMIN->value)->first()->id;
         $expectedRoles = ['roles' => [$firstRole, $secondRole]];
 
         $response = $this->post($this->baseUri, array_merge($this->getRequiredUserInputSample(), $expectedRoles));
         $response->assertStatus(201);
 
         $response = $response->decodeResponseJson();
-        $this->assertEquals(2, count($response['data']['roles']));
+        $this->assertCount(2, $response['data']['roles']);
         $this->assertTrue(in_array($response['data']['roles'][0]['id'], $expectedRoles['roles']));
         $this->assertTrue(in_array($response['data']['roles'][1]['id'], $expectedRoles['roles']));
     }
@@ -404,8 +409,8 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_filter_by_email_while_ignoring_the_case()
     {
-        $email = uuid_create().'@email.com';
-        User::factory()->has(UserProfile::factory())->create(['email' => $email]);
+        $email = fake()->unique()->safeEmail;
+        $this->produceUsers(1, ['email' => $email]);
 
         $email = strtoupper($email);
         $response = $this->get("$this->baseUri?email=$email");
@@ -421,16 +426,16 @@ class UserManagementTest extends TestCase
         User::query()->delete();
 
         // Create 3 unverified accounts, and 2 verified ones
-        User::factory()->has(UserProfile::factory())->count(3)->unVerified()->create();
-        User::factory()->has(UserProfile::factory())->count(2)->create();
+        $this->produceUsers(3, [], true);
+        $this->produceUsers(2);
 
         $response = $this->get("$this->baseUri?verified=1");
         $response->decodeResponseJson();
-        $this->assertEquals(2, count($response['data']));
+        $this->assertCount(2, $response['data']);
 
         $response = $this->get("$this->baseUri?verified=0");
         $response->decodeResponseJson();
-        $this->assertEquals(3, count($response['data']));
+        $this->assertCount(3, $response['data']);
     }
 
     /** @throws Throwable */
@@ -439,10 +444,10 @@ class UserManagementTest extends TestCase
         User::query()->delete();
 
         // Create 5 standard users
-        User::factory()->has(UserProfile::factory())->count(5)->unVerified()->create();
+        $this->produceUsers();
 
         $superUser = User::first();
-        $role = Role::query()->where('name', '=', \App\Enums\Role::SUPER_USER->value)->first();
+        $role = Role::query()->where('name', '=', RoleEnum::SUPER_USER->value)->first();
         $superUser->syncRoles($role->id);
 
         $response = $this->get("$this->baseUri?role=$role->id");
@@ -454,7 +459,7 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_fetch_can_be_sorted_via_last_name()
     {
-        User::factory()->has(UserProfile::factory())->count(3)->create();
+        $this->produceUsers(3);
 
         // test `asc` sort
         $sortedLastNames = UserProfile::orderBy('last_name')->pluck('last_name')->toArray();
@@ -474,7 +479,7 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_fetch_can_be_sorted_via_first_name()
     {
-        User::factory()->has(UserProfile::factory())->count(3)->create();
+        $this->produceUsers(3);
 
         // test `asc` sort
         $sortedLastNames = UserProfile::orderBy('first_name')->pluck('first_name')->toArray();
@@ -491,9 +496,7 @@ class UserManagementTest extends TestCase
         $this->assertEquals($sortedLastNames, $mappedLastNames);
     }
 
-    /**
-     * @throws Throwable
-     */
+    /** @throws Throwable */
     public function test_it_can_search_via_last_name()
     {
         User::query()->delete();
@@ -505,9 +508,7 @@ class UserManagementTest extends TestCase
         $this->assertCount(1, $response['data']);
     }
 
-    /**
-     * @throws Throwable
-     */
+    /** @throws Throwable */
     public function test_it_can_search_via_first_name()
     {
         User::query()->delete();
@@ -519,12 +520,9 @@ class UserManagementTest extends TestCase
         $this->assertCount(1, $response['data']);
     }
 
-    /**
-     * @throws Throwable
-     */
+    /** @throws Throwable */
     public function test_it_can_search_via_middle_name()
     {
-
         User::query()->delete();
         $middle_name = $this->produceUsers()->userProfile->middle_name;
 
@@ -534,9 +532,7 @@ class UserManagementTest extends TestCase
         $this->assertCount(1, $response['data']);
     }
 
-    /**
-     * @throws Throwable
-     */
+    /** @throws Throwable */
     public function test_it_can_prefix_search_via_email()
     {
         User::query()->delete();
