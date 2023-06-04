@@ -4,8 +4,10 @@ namespace Tests\Unit;
 
 use App\Enums\PaginationType;
 use App\Interfaces\HttpResources\UserServiceInterface;
+use App\Models\Address\City;
+use App\Models\Address\Province;
+use App\Models\Address\Region;
 use App\Models\User;
-use App\Models\UserProfile;
 use App\Services\HttpResources\UserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -37,7 +39,7 @@ class UserServiceTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_update_a_user()
     {
-        $user = User::factory()->has(UserProfile::factory())->create();
+        $user = $this->produceUsers();
         $edited = ['first_name' => fake()->firstName, 'last_name' => fake()->lastName];
         $editedUser = $this->userService->update($user->id, $edited);
 
@@ -48,16 +50,16 @@ class UserServiceTest extends TestCase
     public function test_it_can_fetch_all_users()
     {
         $count = 10;
-        User::factory()->has(UserProfile::factory())->count($count)->create();
+        $this->produceUsers($count);
 
         $users = $this->userService->all();
-        $this->assertCount($count, $users);
+        $this->assertEquals($count, count($users));
     }
 
     public function test_it_can_fetch_all_users_with_pagination()
     {
         $count = 10;
-        User::factory()->has(UserProfile::factory())->count($count)->create();
+        $this->produceUsers($count);
 
         $request = new Request();
         $limit = 5;
@@ -79,23 +81,21 @@ class UserServiceTest extends TestCase
             'email' => fake()->unique()->safeEmail,
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
+            'middle_name' => $this->faker->lastName,
             'password' => 'Sample123_123',
             'password_confirmation' => 'Sample123_123',
             'active' => fake()->boolean,
             'email_verified' => fake()->boolean,
-            'middle_name' => $this->faker->lastName,
             'mobile_number' => '+63906'.fake()->unique()->randomNumber(7),
             'telephone_number' => '+6327'.fake()->randomNumber(7),
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => '1997-01-05',
-            'address_line_1' => $this->faker->buildingNumber,
-            'address_line_2' => $this->faker->streetName,
-            'address_line_3' => $this->faker->streetAddress,
-            'district' => 'District 1',
-            'city' => $this->faker->city,
-            'province' => 'Province 1',
+            'home_address' => $this->faker->streetName,
+            'barangay' => $this->faker->buildingNumber(),
+            'city_id' => City::first()->id,
+            'province_id' => Province::first()->id,
+            'region_id' => Region::first()->id,
             'postal_code' => $this->faker->postcode,
-            'country' => $this->faker->country,
             'profile_picture_path' => $this->faker->filePath,
         ];
     }

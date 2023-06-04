@@ -63,8 +63,26 @@ class UserService implements UserServiceInterface
             $user->syncRoles($userRoles);
             $user = $user->fresh();
 
-            $exemptedAttributes = ['email', 'password', 'active', 'email_verified_at'];
+            // Set the user profile fields
+            $exemptedAttributes = [
+                'email',
+                'password',
+                'active',
+                'email_verified_at',
+                'home_address',
+                'barangay',
+                'city_id',
+                'province_id',
+                'region_id',
+                'postal_code',
+            ];
             $user->userProfile()->create(Arr::except($userInfo, $exemptedAttributes));
+
+            // Set the Address fields
+            $user->userProfile->address()->create(Arr::only(
+                $userInfo,
+                ['home_address', 'barangay', 'city_id', 'province_id', 'region_id', 'postal_code']
+            ));
 
             return $user->load('userProfile');
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
@@ -90,8 +108,16 @@ class UserService implements UserServiceInterface
 
             $user->update(Arr::only($newUserInfo, ['email', 'password', 'active', 'email_verified_at']));
             $user->userProfile()->update(
-                Arr::except($newUserInfo, ['email', 'password', 'active', 'email_verified_at', 'roles'])
+                Arr::except($newUserInfo, ['email', 'password', 'active', 'email_verified_at', 'roles', 'home_address',
+                    'barangay', 'city_id', 'province_id', 'region_id', 'postal_code',
+                ])
             );
+
+            // Update the address fields
+            $user->userProfile->address()->update(Arr::only(
+                $newUserInfo,
+                ['home_address', 'barangay', 'city_id', 'province_id', 'region_id', 'postal_code']
+            ));
 
             if (isset($newUserInfo['roles'])) {
                 $user->syncRoles($newUserInfo['roles']);

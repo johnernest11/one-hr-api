@@ -34,7 +34,7 @@ class AuthController extends ApiController
         } elseif ($mobileNumber) {
             /**
              * Since we save the mobile (and phone) numbers in international format,
-             * we will mutate it if clients sends in national format
+             * we will mutate it if clients send in national format
              *
              * ex: 09064647295 -> +639064647295
              */
