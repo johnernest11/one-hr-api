@@ -25,7 +25,7 @@ class AvailabilityRequest extends FormRequest
 
         return match ($routeName) {
             'availability.email' => $this->getEmailAvailabilityRules(),
-            'availability.username' => $this->getUsernameAvailabilityRues(),
+            'availability.mobile_number' => $this->getMobileNumberAvailabilityRules(),
             default => []
         };
     }
@@ -37,16 +37,20 @@ class AvailabilityRequest extends FormRequest
     {
         return [
             'value' => ['required', 'email'],
+            'exclude_id' => ['nullable'],
         ];
     }
 
     /**
-     * Get username availability
+     * Get mobile availability rules
+     *
+     * @return array[]
      */
-    private function getUsernameAvailabilityRues(): array
+    private function getMobileNumberAvailabilityRules(): array
     {
         return [
             'value' => ['required'],
+            'exclude_id' => ['nullable'],
         ];
     }
 }

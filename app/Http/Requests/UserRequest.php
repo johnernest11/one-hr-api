@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\SexualCategory;
-use App\Rules\AlphaDashDot;
 use App\Rules\DbVarcharMaxLength;
 use App\Rules\InternationalPhoneNumberFormat;
 use Illuminate\Foundation\Http\FormRequest;
@@ -63,7 +62,6 @@ class UserRequest extends FormRequest
     {
         return [
             'email' => ['required', 'email', 'unique:users,email'],
-            'username' => ['required', 'unique:users,username', new AlphaDashDot(), 'max:30'],
             'password' => ['string', 'required', 'confirmed', 'max:100', Password::min(8)->mixedCase()->numbers()],
             'first_name' => ['string', 'required', new DbVarcharMaxLength()],
             'last_name' => ['string', 'required', new DbVarcharMaxLength()],
@@ -103,7 +101,6 @@ class UserRequest extends FormRequest
     {
         return [
             'email' => ['email', 'unique:users,email,'.request('id')],
-            'username' => [new AlphaDashDot(), 'max:30', 'unique:users,username,'.request('id')],
             'password' => ['string', 'confirmed', 'max:100', Password::min(8)->mixedCase()->numbers()],
             'first_name' => ['string', new DbVarcharMaxLength()],
             'last_name' => ['string', new DbVarcharMaxLength()],
@@ -150,7 +147,6 @@ class UserRequest extends FormRequest
             'limit' => ['nullable', 'int'],
             'page' => ['nullable', 'int'],
             'email' => ['nullable', 'email'],
-            'username' => ['nullable', 'string'],
         ];
     }
 
@@ -175,16 +171,12 @@ class UserRequest extends FormRequest
     }
 
     /**
-     * Set the email and username to lowercase
+     * Set the email to lowercase
      */
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
         if ($this->has('email')) {
             $this->merge(['email' => strtolower($this->get('email'))]);
-        }
-
-        if ($this->has('username')) {
-            $this->merge(['username' => strtolower($this->get('username'))]);
         }
     }
 

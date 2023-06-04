@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\Role;
+use App\Enums\SexualCategory;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Notifications\Auth\QueuedResetPasswordNotification;
@@ -25,6 +26,8 @@ class AuthenticationTest extends TestCase
 
     private array $userCreds;
 
+    private array $userProfile;
+
     private User $user;
 
     public function setUp(): void
@@ -39,11 +42,17 @@ class AuthenticationTest extends TestCase
             'password' => 'Jeg123123!',
         ];
 
-        $this->user = User::factory($this->userCreds)->has(UserProfile::factory())->create();
+        $this->userProfile = ['mobile_number' => '+639064647295'];
+
+        $this->user = User::factory($this->userCreds)
+            ->has(UserProfile::factory())
+            ->create();
     }
 
+    /** Start */
+
     /** @throws Throwable */
-    public function test_user_can_request_an_access_token()
+    public function test_user_can_request_an_access_token_via_email(): void
     {
         $response = $this->post("$this->baseUri/tokens", [
             'email' => $this->userCreds['email'],
@@ -55,24 +64,45 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /** @throws Throwable */
+    public function test_user_can_request_an_access_token_via_mobile_number(): void
+    {
+        $user = User::where('email', $this->userCreds['email'])->first();
+        $user->userProfile()->update($this->userProfile);
+
+        $response = $this->post("$this->baseUri/tokens", [
+            'mobile_number' => $this->userProfile['mobile_number'],
+            'password' => $this->userCreds['password'],
+        ]);
+
+        $result = $response->decodeResponseJson();
+
+        $this->assertArrayHasKey('token', $result['data']);
+        $response->assertStatus(200);
+    }
+
     /**
      * @throws Throwable
      */
-    public function test_it_can_register_a_user()
+    public function test_users_receive_email_notifications_when_they_register(): void
     {
         $input = [
             'email' => fake()->unique()->email,
-            'username' => fake()->unique()->userName,
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
             'password' => 'SamplePass123',
             'password_confirmation' => 'SamplePass123',
+            'mobile_number' => '+639064648112',
+            'sex' => fake()->randomElement(array_column(SexualCategory::cases(), 'value')),
+            'birthday' => fake()->date,
         ];
 
         $response = $this->postJson("$this->baseUri/register", $input);
         $response->assertStatus(201);
 
         $createdUser = User::find($response->decodeResponseJson()['data']['user']['id']);
+
+        // Email notifications
         Notification::assertSentTo($createdUser, WelcomeNotification::class);
         Notification::assertSentTo($createdUser, QueuedVerifyEmailNotification::class);
     }
@@ -82,16 +112,18 @@ class AuthenticationTest extends TestCase
     {
         $input = [
             'email' => fake()->unique()->email,
-            'username' => fake()->unique()->userName,
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
             'password' => 'SamplePass123',
             'password_confirmation' => 'SamplePass123',
+            'mobile_number' => '+639064648112',
+            'sex' => fake()->randomElement(array_column(SexualCategory::cases(), 'value')),
+            'birthday' => fake()->date,
         ];
 
         $response = $this->postJson("$this->baseUri/register", $input);
         $roles = $response->decodeResponseJson()['data']['user']['roles'];
-        $this->assertEquals(1, count($roles));
+        $this->assertCount(1, $roles);
         $this->assertEquals(Role::STANDARD_USER->value, $roles[0]['name']);
     }
 
@@ -180,13 +212,9 @@ class AuthenticationTest extends TestCase
         $this->assertEquals(0, $user->tokens()->count());
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function test_users_can_request_a_password_reset_email()
     {
-        Notification::fake();
-
         $response = $this->post("$this->baseUri/forgot-password", ['email' => $this->user->email]);
         $response->assertStatus(200);
 
@@ -212,4 +240,5 @@ class AuthenticationTest extends TestCase
         $response = $this->post("$this->baseUri/tokens", $creds);
         $response->assertStatus(200);
     }
+/** End */
 }

@@ -66,7 +66,6 @@ class UserManagementTest extends TestCase
     {
         $requiredFieldsOnly = [
             'email' => 'sample@email.com',
-            'username' => 'username1',
             'password' => 'Sample_Password_1',
             'password_confirmation' => 'Sample_Password_1',
             'first_name' => 'Jeg',
@@ -92,7 +91,7 @@ class UserManagementTest extends TestCase
 
         $missingRequiredFields = Arr::except(
             $allFields,
-            ['username', 'email', 'password', 'password_confirmation', 'first_name', 'last_name']
+            ['email', 'password', 'password_confirmation', 'first_name', 'last_name']
         );
 
         return [
@@ -108,14 +107,13 @@ class UserManagementTest extends TestCase
         $user = User::factory()->has(UserProfile::factory())->create();
         $input = $this->getRequiredUserInputSample();
         $input['email'] = $user->email;
-        $input['username'] = $user->username;
 
         $response = $this->postJson($this->baseUri, $input);
         $response->assertStatus(422);
 
         $response = $response->decodeResponseJson();
         foreach ($response['errors'] as $error) {
-            $this->assertTrue(in_array($error['field'], ['username', 'email']));
+            $this->assertTrue($error['field'] === 'email');
         }
     }
 
@@ -128,7 +126,6 @@ class UserManagementTest extends TestCase
 
         $edits = [
             'email' => fake()->unique()->safeEmail,
-            'username' => fake()->unique()->userName,
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
             'password' => 'Sample123_123',
@@ -188,7 +185,7 @@ class UserManagementTest extends TestCase
             }
 
             // profile details are wrapped with a `user_profile` field
-            if (! in_array($key, ['username', 'email', 'active'])) {
+            if (! in_array($key, ['email', 'active'])) {
                 $result = $response['data']['user_profile'][$key];
                 $this->assertEquals($value, $result);
 
@@ -201,15 +198,14 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_should_validate_unique_username_and_email_when_updating_a_user()
+    public function test_it_should_validate_unique_email_when_updating_a_user()
     {
         $users = User::factory()->count(2)->has(UserProfile::factory())->create();
         $user2Info = [
             'email' => $users[1]->email,
-            'username' => $users[1]->username,
         ];
 
-        // try to update the first user's username and email with user 2's
+        // try to update the first user's email with user 2's
         $response = $this->patchJson("$this->baseUri/{$users[0]->id}", $user2Info);
         $response->assertStatus(422);
     }
@@ -220,42 +216,10 @@ class UserManagementTest extends TestCase
         $user = User::factory()->has(UserProfile::factory())->create();
         $input = [
             'email' => $user->email,
-            'username' => $user->username,
         ];
 
-        $response = $this->patchJson("$this->baseUri/{$user->id}", $input);
+        $response = $this->patchJson("$this->baseUri/$user->id", $input);
         $response->assertStatus(200);
-    }
-
-    /** @dataProvider differentUsernames */
-    public function test_it_should_only_accept_alphanumeric_and_dot_for_username($input, $expected)
-    {
-        $response = $this->postJson($this->baseUri, $input);
-        $response->assertStatus($expected);
-    }
-
-    public function differentUsernames(): array
-    {
-        $requiredFields = [
-            'email' => 'sample_email@email.com',
-            'password' => 'Sample_Password_1',
-            'password_confirmation' => 'Sample_Password_1',
-            'first_name' => 'Jeg',
-            'last_name' => 'Ramos',
-        ];
-
-        return [
-            [array_merge($requiredFields, ['username' => 'jegramos']), 201],
-            [array_merge($requiredFields, ['username' => 'jeg.ramos']), 201],
-            [array_merge($requiredFields, ['username' => 'jeg-ramos.04']), 201],
-            [array_merge($requiredFields, ['username' => 'jegramos-ramos-04']), 201],
-            [array_merge($requiredFields, ['username' => 'jegramos_ramos-04']), 201],
-            [array_merge($requiredFields, ['username' => 'jegramos-ramos.04']), 201],
-            [array_merge($requiredFields, ['username' => 'jeg ramos']), 422],
-            [array_merge($requiredFields, ['username' => 'jegramos!']), 422],
-            [array_merge($requiredFields, ['username' => 'jegramos :)']), 422],
-            [array_merge($requiredFields, ['username' => 'jeg+ramos']), 422],
-        ];
     }
 
     /** @dataProvider differentMobileNumbers */
@@ -269,7 +233,6 @@ class UserManagementTest extends TestCase
     {
         $requiredFields = [
             'email' => 'sample_email@email.com',
-            'username' => 'username1',
             'password' => 'Sample_Password_1',
             'password_confirmation' => 'Sample_Password_1',
             'first_name' => 'Jeg',
@@ -295,7 +258,6 @@ class UserManagementTest extends TestCase
     {
         $requiredFields = [
             'email' => 'sample_email@email.com',
-            'username' => 'username1',
             'password' => 'Sample_Password_1',
             'password_confirmation' => 'Sample_Password_1',
             'first_name' => 'Jeg',
@@ -340,7 +302,7 @@ class UserManagementTest extends TestCase
         $response = $response->decodeResponseJson();
 
         $this->assertIsArray($response['data']);
-        $this->assertEquals($totalUserCount, count($response['data']));
+        $this->assertCount($totalUserCount, $response['data']);
     }
 
     /** @throws Throwable */
@@ -355,7 +317,7 @@ class UserManagementTest extends TestCase
 
         $this->assertArrayHasKey('pagination', $response);
         $this->assertEquals($totalUserCount, $response['pagination']['total']);
-        $this->assertEquals($limit, count($response['data']));
+        $this->assertCount($limit, $response['data']);
     }
 
     /** @throws Throwable */
@@ -419,7 +381,7 @@ class UserManagementTest extends TestCase
         $response = $this->post($this->baseUri, $this->getRequiredUserInputSample());
         $response = $response->decodeResponseJson();
 
-        $this->assertEquals(1, count($response['data']['roles']));
+        $this->assertCount(1, $response['data']['roles']);
         $this->assertEquals(\App\Enums\Role::STANDARD_USER->value, $response['data']['roles'][0]['name']);
     }
 
@@ -447,20 +409,6 @@ class UserManagementTest extends TestCase
 
         $email = strtoupper($email);
         $response = $this->get("$this->baseUri?email=$email");
-        $response->assertStatus(200);
-
-        $response = $response->decodeResponseJson();
-        $this->assertCount(1, $response['data']);
-    }
-
-    /** @throws Throwable */
-    public function test_it_can_filter_by_username_while_ignoring_the_case()
-    {
-        $username = uuid_create();
-        User::factory()->has(UserProfile::factory())->create(['username' => $username]);
-
-        $username = strtoupper($username);
-        $response = $this->get("$this->baseUri?username=$username");
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson();
@@ -500,7 +448,7 @@ class UserManagementTest extends TestCase
         $response = $this->get("$this->baseUri?role=$role->id");
         $response = $response->decodeResponseJson();
 
-        $this->assertEquals(1, count($response['data']));
+        $this->assertCount(1, $response['data']);
     }
 
     /** @throws Throwable */
@@ -549,12 +497,12 @@ class UserManagementTest extends TestCase
     public function test_it_can_search_via_last_name()
     {
         User::query()->delete();
-        $last_name = User::factory()->has(UserProfile::factory())->create()->userProfile->last_name;
+        $last_name = $this->produceUsers()->userProfile->last_name;
 
         $last_name = Str::substr($last_name, 2);
         $response = $this->get("$this->baseUri/search?query=$last_name");
         $response = $response->decodeResponseJson();
-        $this->assertEquals(1, count($response['data']));
+        $this->assertCount(1, $response['data']);
     }
 
     /**
@@ -563,12 +511,12 @@ class UserManagementTest extends TestCase
     public function test_it_can_search_via_first_name()
     {
         User::query()->delete();
-        $first_name = User::factory()->has(UserProfile::factory())->create()->userProfile->first_name;
+        $first_name = $this->produceUsers()->userProfile->first_name;
 
         $first_name = Str::substr($first_name, 2);
         $response = $this->get("$this->baseUri/search?query=$first_name");
         $response = $response->decodeResponseJson();
-        $this->assertEquals(1, count($response['data']));
+        $this->assertCount(1, $response['data']);
     }
 
     /**
@@ -576,13 +524,14 @@ class UserManagementTest extends TestCase
      */
     public function test_it_can_search_via_middle_name()
     {
+
         User::query()->delete();
-        $middle_name = User::factory()->has(UserProfile::factory())->create()->userProfile->middle_name;
+        $middle_name = $this->produceUsers()->userProfile->middle_name;
 
         $middle_name = Str::substr($middle_name, 2);
         $response = $this->get("$this->baseUri/search?query=$middle_name");
         $response = $response->decodeResponseJson();
-        $this->assertEquals(1, count($response['data']));
+        $this->assertCount(1, $response['data']);
     }
 
     /**
@@ -591,25 +540,11 @@ class UserManagementTest extends TestCase
     public function test_it_can_prefix_search_via_email()
     {
         User::query()->delete();
-        $email = User::factory()->has(UserProfile::factory())->create()->email;
+        $email = $this->produceUsers()->email;
 
         $email = Str::substr($email, 0, -2);
         $response = $this->get("$this->baseUri/search?query=$email");
         $response = $response->decodeResponseJson();
-        $this->assertEquals(1, count($response['data']));
-    }
-
-    /**
-     * @throws Throwable
-     */
-    public function test_it_can_prefix_search_via_username()
-    {
-        User::query()->delete();
-        $username = User::factory()->has(UserProfile::factory())->create()->username;
-
-        $username = Str::substr($username, 0, -2);
-        $response = $this->get("$this->baseUri/search?query=$username");
-        $response = $response->decodeResponseJson();
-        $this->assertEquals(1, count($response['data']));
+        $this->assertCount(1, $response['data']);
     }
 }

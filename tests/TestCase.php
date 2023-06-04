@@ -2,6 +2,10 @@
 
 namespace Tests;
 
+use App\Models\User;
+use App\Models\UserProfile;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 
@@ -40,5 +44,30 @@ abstract class TestCase extends BaseTestCase
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
         ];
+    }
+
+    /**
+     * Create a certain number of users with UserProfile and Address factories
+     *
+     * @return Collection|Model
+     */
+    protected function produceUsers(int $quantity = 1, array $userAttr = [], bool $unVerified = false): Collection|User
+    {
+        $factory = User::factory()
+            ->has(
+                UserProfile::factory()
+            )->count($quantity);
+
+        if ($unVerified) {
+            $factory = $factory->unVerified();
+        }
+
+        $users = $factory->create($userAttr);
+
+        if ($quantity === 1) {
+            return $users->first();
+        }
+
+        return $users;
     }
 }

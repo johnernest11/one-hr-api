@@ -12,6 +12,7 @@ use Hash;
 use Illuminate\Http\JsonResponse;
 use Laravel\Sanctum\PersonalAccessToken;
 use Password;
+use Propaganistas\LaravelPhone\PhoneNumber;
 use Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,11 +23,32 @@ class AuthController extends ApiController
      */
     public function store(AuthRequest $request): JsonResponse
     {
-        $user = User::with('userProfile')->where('email', $request->email)->first();
+        $query = User::query();
+        $email = $request->get('email');
+        $mobileNumber = $request->get('mobile_number');
+        $user = null;
+
+        // Users should be able to log in via email or mobile_number
+        if ($email) {
+            $user = $query->where('email', $email)->with('userProfile')->first();
+        } elseif ($mobileNumber) {
+            /**
+             * Since we save the mobile (and phone) numbers in international format,
+             * we will mutate it if clients sends in national format
+             *
+             * ex: 09064647295 -> +639064647295
+             */
+            $mobileNumber = (new PhoneNumber($mobileNumber))->ofCountry('PH')->formatE164();
+            $user = $query
+                ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
+                ->where('mobile_number', $mobileNumber)
+                ->with('userProfile')
+                ->first();
+        }
 
         if (! $user || ! Hash::check($request->get('password'), $user->password)) {
             return $this->error(
-                'Invalid username or password',
+                'The credentials provided were incorrect',
                 Response::HTTP_UNAUTHORIZED,
                 ApiErrorCode::INVALID_CREDENTIALS
             );

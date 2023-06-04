@@ -60,7 +60,6 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
      */
     protected $fillable = [
         'email',
-        'username',
         'password',
         'active',
         'email_verified_at',
@@ -101,7 +100,6 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 
         static::deleting(function (User $user) {
             $user->email = DateTimeHelper::appendTimestamp($user->email, '::deleted_');
-            $user->username = DateTimeHelper::appendTimestamp($user->username, '::deleted_');
             $user->saveQuietly();
         });
     }
@@ -140,14 +138,6 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     public function password(): Attribute
     {
         return Attribute::set(fn ($value) => Hash::make($value));
-    }
-
-    /**
-     * Set username to lowercase
-     */
-    public function username(): Attribute
-    {
-        return Attribute::set(fn ($value) => strtolower($value));
     }
 
     /**

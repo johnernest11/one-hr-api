@@ -15,19 +15,31 @@ class AvailabilityController extends ApiController
     public function getEmailAvailability(AvailabilityRequest $request): JsonResponse
     {
         $email = strtolower($request->get('value'));
-        $isAvailable = ! User::whereEmail($email)->first();
+        $excludedId = $request->get('excluded_id');
+        $query = User::whereEmail($email);
+
+        if ($excludedId) {
+            $query->whereNot('id', $excludedId);
+        }
+
+        $isAvailable = ! $query->first();
         $data = ['is_available' => $isAvailable];
 
         return $this->success(['data' => $data], Response::HTTP_OK);
     }
 
-    /**
-     * Get username availability
-     */
-    public function getUsernameAvailability(AvailabilityRequest $request): JsonResponse
+    public function getMobileNumberAvailability(AvailabilityRequest $request): JsonResponse
     {
-        $username = strtolower($request->get('value'));
-        $isAvailable = ! User::whereUsername($username)->first();
+        $mobileNumber = $request->get('value');
+        $excludedId = $request->get('excluded_id');
+        $query = User::join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
+            ->where('user_profiles.mobile_number', '=', $mobileNumber);
+
+        if ($excludedId) {
+            $query->whereNot('users.id', $excludedId);
+        }
+
+        $isAvailable = ! $query->first();
         $data = ['is_available' => $isAvailable];
 
         return $this->success(['data' => $data], Response::HTTP_OK);

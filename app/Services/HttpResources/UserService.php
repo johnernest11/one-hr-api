@@ -46,7 +46,6 @@ class UserService implements UserServiceInterface
         return DB::transaction(function () use ($userInfo) {
             $userCredentials = [
                 'email' => $userInfo['email'],
-                'username' => $userInfo['username'],
                 'password' => $userInfo['password'],
             ];
 
@@ -64,7 +63,7 @@ class UserService implements UserServiceInterface
             $user->syncRoles($userRoles);
             $user = $user->fresh();
 
-            $exemptedAttributes = ['email', 'username', 'password', 'active', 'email_verified_at'];
+            $exemptedAttributes = ['email', 'password', 'active', 'email_verified_at'];
             $user->userProfile()->create(Arr::except($userInfo, $exemptedAttributes));
 
             return $user->load('userProfile');
@@ -89,18 +88,16 @@ class UserService implements UserServiceInterface
                 unset($newUserInfo['email_verified']);
             }
 
-            $user->update(Arr::only($newUserInfo, ['email', 'username', 'password', 'active', 'email_verified_at']));
+            $user->update(Arr::only($newUserInfo, ['email', 'password', 'active', 'email_verified_at']));
             $user->userProfile()->update(
-                Arr::except($newUserInfo, ['email', 'username', 'password', 'active', 'email_verified_at', 'roles'])
+                Arr::except($newUserInfo, ['email', 'password', 'active', 'email_verified_at', 'roles'])
             );
 
             if (isset($newUserInfo['roles'])) {
                 $user->syncRoles($newUserInfo['roles']);
             }
 
-            $user->refresh();
-
-            return $user;
+            return $user->fresh('userProfile');
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
     }
 
@@ -115,16 +112,15 @@ class UserService implements UserServiceInterface
             /** @var User $user */
             $user = $this->model::with('userProfile')->findOrFail($id);
 
-            $user->update(Arr::only($newUserInfo, ['email', 'username']));
-            $user->userProfile()->update(Arr::except($newUserInfo, ['email', 'username']));
-            $user->refresh();
+            $user->update(Arr::only($newUserInfo, ['email']));
+            $user->userProfile()->update(Arr::except($newUserInfo, ['email']));
 
-            return $user;
+            return $user->fresh('userProfile');
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
     }
 
     /**
-     * Search user via email, username, last_name, first_name, and middle_name
+     * Search user via email, last_name, first_name, and middle_name
      */
     public function search(
         string $term,
@@ -134,9 +130,8 @@ class UserService implements UserServiceInterface
             ->with('userProfile')
             ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
 
-            // Do a prefix match for username and email to preserve indexing performance
+            // Do a prefix match for email to preserve indexing performance
             ->where('users.email', 'like', "$term%")
-            ->orWhere('users.username', 'like', "$term%")
 
             // Do a full match search for the names as they have a fullText index in our migrations
             ->orWhere('user_profiles.first_name', 'like', "%$term%")

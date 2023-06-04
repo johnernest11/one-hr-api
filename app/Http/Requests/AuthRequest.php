@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\AlphaDashDot;
 use App\Rules\DbVarcharMaxLength;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class AuthRequest extends FormRequest
@@ -42,7 +42,8 @@ class AuthRequest extends FormRequest
     private function getLoginRules(): array
     {
         return [
-            'email' => ['required', 'email'],
+            'email' => ['email'],
+            'mobile_number' => ['required_without:email', Rule::phone()->detect()->country('PH')->mobile()],
             'password' => ['required', 'string'],
             'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'with_user' => ['nullable', 'bool'], // send the token back with user information
@@ -90,7 +91,6 @@ class AuthRequest extends FormRequest
     {
         return [
             'email' => ['required', 'email', 'unique:users,email'],
-            'username' => ['required', 'unique:users,username', new AlphaDashDot(), 'max:30'],
             'password' => ['string', 'required', 'confirmed', 'max:100', Password::min(8)->mixedCase()->numbers()],
             'first_name' => ['string', 'required', new DbVarcharMaxLength()],
             'last_name' => ['string', 'required', new DbVarcharMaxLength()],
@@ -105,6 +105,7 @@ class AuthRequest extends FormRequest
     {
         return [
             'email.exists' => 'The :attribute is not registered',
+            'mobile_number.phone' => 'The :attribute field format must be a valid PH mobile number',
         ];
     }
 }
