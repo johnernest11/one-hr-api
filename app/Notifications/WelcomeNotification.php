@@ -37,11 +37,12 @@ class WelcomeNotification extends Notification implements ShouldQueue
      */
     public function toMail(mixed $notifiable): MailMessage
     {
+        $appName = config('app.name');
         $emailVerified = ! $notifiable->email_verified_at;
 
         return (new MailMessage())
             ->subject(Lang::get('Welcome aboard!'))
-            ->greeting('Welcome to Sunrise, '.$notifiable->userProfile->first_name)
+            ->greeting("Welcome to $appName, ".$notifiable->userProfile->first_name)
             ->line(Lang::get('Your account has been successfully created!'))
             ->lineIf(
                 $emailVerified,

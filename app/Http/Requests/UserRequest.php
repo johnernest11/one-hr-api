@@ -68,6 +68,7 @@ class UserRequest extends FormRequest
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
+                'unique:user_profiles,mobile_number',
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],
@@ -107,6 +108,7 @@ class UserRequest extends FormRequest
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
+                'unique:user_profiles,mobile_number',
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],
