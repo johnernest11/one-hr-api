@@ -41,7 +41,6 @@ class CreateUser extends Command
         $firstName = $this->ask('First Name');
         $lastName = $this->ask('Last Name');
         $email = $this->ask('Email');
-        $username = $this->ask('Username');
         $password = $this->secret('Password');
         $passwordConfirmation = $this->secret('Confirm Password');
         $role = $this->choice('Role', $this->getAllRoles());
@@ -49,7 +48,6 @@ class CreateUser extends Command
             'first_name' => $firstName,
             'last_name' => $lastName,
             'email' => $email,
-            'username' => $username,
             'password' => $password,
             'password_confirmation' => $passwordConfirmation,
             'roles' => [Role::findByName($role, 'sanctum')->id],

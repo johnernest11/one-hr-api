@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\SexualCategory;
 use App\Models\Country;
 use App\Models\User;
 use App\Models\UserProfile;
@@ -26,8 +27,8 @@ class UserProfileFactory extends Factory
             'middle_name' => fake()->lastName,
             'mobile_number' => '+63906'.fake()->randomNumber(7),
             'telephone_number' => '+6327'.fake()->randomNumber(7),
-            'sex' => fake()->randomElement(['male', 'female']),
-            'birthday' => fake()->date('Y-m-d'),
+            'sex' => fake()->randomElement([SexualCategory::MALE, SexualCategory::FEMALE]),
+            'birthday' => fake()->date(),
             'address_line_1' => fake()->streetName,
             'address_line_2' => fake()->streetAddress,
             'address_line_3' => fake()->streetAddress,

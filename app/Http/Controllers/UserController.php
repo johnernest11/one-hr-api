@@ -103,13 +103,14 @@ class UserController extends ApiController
     }
 
     /**
-     * Search for a user via name, email, or username
+     * Search for a user via name or email
      */
     public function search(UserRequest $request): JsonResponse
     {
-        $users = $this->userService->search($request->get('query'));
+        $users = $this->userService->search($request->get('query'), PaginationType::LENGTH_AWARE);
+        $formatted = PaginationHelper::formatPagination($users);
 
-        return $this->success(['data' => $users], Response::HTTP_OK);
+        return $this->success($formatted, Response::HTTP_OK);
     }
 
     /**

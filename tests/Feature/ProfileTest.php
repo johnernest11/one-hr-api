@@ -46,7 +46,6 @@ class ProfileTest extends TestCase
     public function test_user_can_update_profile(): void
     {
         $edits = [
-            'username' => fake()->unique()->userName,
             'email' => fake()->unique()->email,
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
@@ -70,7 +69,7 @@ class ProfileTest extends TestCase
 
         foreach ($edits as $key => $value) {
             // check for credentials correctness
-            if (in_array($key, ['username', 'email'])) {
+            if ($key == 'email') {
                 $this->assertEquals($value, $result['data'][$key]);
 
                 continue;

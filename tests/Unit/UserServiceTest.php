@@ -38,29 +38,29 @@ class UserServiceTest extends TestCase
     public function test_it_can_update_a_user()
     {
         $user = User::factory()->has(UserProfile::factory())->create();
-        $edited = ['first_name' => fake()->firstName, 'username' => fake()->unique()->userName];
+        $edited = ['first_name' => fake()->firstName, 'last_name' => fake()->lastName];
         $editedUser = $this->userService->update($user->id, $edited);
 
         $this->assertEquals($edited['first_name'], $editedUser->userProfile->first_name);
-        $this->assertEquals($edited['username'], $editedUser->username);
+        $this->assertEquals($edited['last_name'], $editedUser->userProfile->last_name);
     }
 
     public function test_it_can_fetch_all_users()
     {
-        $count = 25;
+        $count = 10;
         User::factory()->has(UserProfile::factory())->count($count)->create();
 
         $users = $this->userService->all();
-        $this->assertEquals($count, count($users));
+        $this->assertCount($count, $users);
     }
 
     public function test_it_can_fetch_all_users_with_pagination()
     {
-        $count = 30;
+        $count = 10;
         User::factory()->has(UserProfile::factory())->count($count)->create();
 
         $request = new Request();
-        $limit = 10;
+        $limit = 5;
         $request->replace(['limit' => $limit]);
         app()->instance('request', $request);
 
@@ -77,7 +77,6 @@ class UserServiceTest extends TestCase
     {
         return [
             'email' => fake()->unique()->safeEmail,
-            'username' => fake()->unique()->userName,
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
             'password' => 'Sample123_123',
@@ -85,8 +84,8 @@ class UserServiceTest extends TestCase
             'active' => fake()->boolean,
             'email_verified' => fake()->boolean,
             'middle_name' => $this->faker->lastName,
-            'mobile_number' => '+639064647291',
-            'telephone_number' => '+63279434285',
+            'mobile_number' => '+63906'.fake()->unique()->randomNumber(7),
+            'telephone_number' => '+6327'.fake()->randomNumber(7),
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => '1997-01-05',
             'address_line_1' => $this->faker->buildingNumber,
