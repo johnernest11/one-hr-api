@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Permission as PermissionEnum;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -18,23 +19,24 @@ class RolesAndPermissionsSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Standard user permissions
-        Permission::create(['name' => 'view_profile', 'guard_name' => 'sanctum']);
-        Permission::create(['name' => 'update_profile', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => PermissionEnum::VIEW_PROFILE, 'guard_name' => 'sanctum']);
+        Permission::create(['name' => PermissionEnum::UPDATE_PROFILE, 'guard_name' => 'sanctum']);
         /** @var Role $standardRole */
         $standardRole = Role::create(['name' => \App\Enums\Role::STANDARD_USER, 'guard_name' => 'sanctum']);
         $standardRole->givePermissionTo(Permission::all());
 
         // Admin Permissions
-        Permission::create(['name' => 'create_users', 'guard_name' => 'sanctum']);
-        Permission::create(['name' => 'update_users', 'guard_name' => 'sanctum']);
-        Permission::create(['name' => 'delete_users', 'guard_name' => 'sanctum']);
-        Permission::create(['name' => 'view_users', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => PermissionEnum::CREATE_USERS, 'guard_name' => 'sanctum']);
+        Permission::create(['name' => PermissionEnum::UPDATE_USERS, 'guard_name' => 'sanctum']);
+        Permission::create(['name' => PermissionEnum::DELETE_USERS, 'guard_name' => 'sanctum']);
+        Permission::create(['name' => PermissionEnum::VIEW_USERS, 'guard_name' => 'sanctum']);
+        Permission::create(['name' => PermissionEnum::VIEW_USER_ROLES, 'guard_name' => 'sanctum']);
         /** @var Role $adminRole */
         $adminRole = Role::create(['name' => \App\Enums\Role::ADMIN, 'guard_name' => 'sanctum']);
         $adminRole->givePermissionTo(Permission::all());
 
         // System Support Permissions
-        $notification_per = Permission::create(['name' => 'receive_system_alerts', 'guard_name' => 'sanctum']);
+        $notification_per = Permission::create(['name' => PermissionEnum::RECEIVE_SYSTEM_ALERTS, 'guard_name' => 'sanctum']);
         /** @var Role $systemSupport */
         $systemSupport = Role::create(['name' => \App\Enums\Role::SYSTEM_SUPPORT, 'guard_name' => 'sanctum']);
         $systemSupport->givePermissionTo($notification_per);
