@@ -1,0 +1,3931 @@
+{
+	"info": {
+		"_postman_id": "13adf83a-212d-4afb-991b-215063c11916",
+		"name": "DSWD WebAppKit",
+		"description": "DSWD WebAppKit",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5841607"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Create Access Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jegramos.pa@gmail.com\",\n    \"password\": \"Jeg123123\",\n    \"client_name\": \"Jeg's Macbook\",\n    \"with_user\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/auth/tokens",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"tokens"
+							]
+						},
+						"description": "##### **Description**\n\nRequest an access token / Login\n\n##### Payload\n\n| **Key** | **Validation** |\n| --- | --- |\n| email | string, email, optional |\n| mobile_number | string, required if email is not passed |\n| client_name | optional, string |\n| with_user | optional, boolean |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"jegramos.pa@gmail.com\",\n    \"password\": \"Jeg123123\",\n    \"client_name\": \"Jeg's Macbook\",\n    \"with_user\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8000/api/v1/auth/tokens",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"tokens"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:46:44 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:46:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685922403-8242-965953824"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=1134.0098381042; desc=\"Application\", db; dur=106.98; desc=\"Database\", timeline-event-0; dur=776.28493309021; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"token\": \"123123XXX\",\n        \"token_name\": \"Jeg's Macbook\",\n        \"expires_at\": \"2023-06-05T11:46:44.439058Z\",\n        \"user\": {\n            \"id\": 1,\n            \"email\": \"jegramos.pa@gmail.com\",\n            \"active\": true,\n            \"email_verified_at\": \"2023-06-04T14:17:57.000000Z\",\n            \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n            \"updated_at\": \"2023-06-04T14:17:57.000000Z\",\n            \"deleted_at\": null,\n            \"roles\": [\n                {\n                    \"id\": 2,\n                    \"name\": \"admin\",\n                    \"pivot\": {\n                        \"model_id\": 1,\n                        \"role_id\": 2,\n                        \"model_type\": \"App\\\\Models\\\\User\"\n                    }\n                }\n            ],\n            \"user_profile\": {\n                \"first_name\": \"Jego Carlo\",\n                \"last_name\": \"Ramos\",\n                \"middle_name\": null,\n                \"mobile_number\": null,\n                \"telephone_number\": null,\n                \"sex\": null,\n                \"birthday\": null,\n                \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n                \"updated_at\": \"2023-06-04T14:19:21.000000Z\",\n                \"deleted_at\": null,\n                \"full_name\": \"Jego Carlo Ramos\",\n                \"profile_picture_url\": \"https://sunrise-develop.s3.ap-southeast-1.amazonaws.com/images/1/profile-pictures/00a61b8fd7d1c3b14cc5843dc583f2a3009c39893021.png\",\n                \"address\": {\n                    \"home_address\": null,\n                    \"barangay\": null,\n                    \"city_id\": null,\n                    \"province_id\": null,\n                    \"region_id\": null,\n                    \"postal_code\": null,\n                    \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n                    \"updated_at\": \"2023-06-04T14:19:21.000000Z\",\n                    \"city\": null,\n                    \"province\": null,\n                    \"region\": null\n                }\n            }\n        }\n    }\n}"
+						},
+						{
+							"name": "Invalid Credentials",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"jegramos.pa@gmai.com\",\n    \"password\": \"Jeg123123\",\n    \"client_name\": \"Jeg's Macbook\",\n    \"with_user\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/auth/tokens",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"tokens"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:48:18 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:48:18 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685922498-3749-557130601"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=66.0080909729; desc=\"Application\", db; dur=2.78; desc=\"Database\", timeline-event-0; dur=26.336908340454; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"error_code\": \"INVALID_CREDENTIALS_ERROR\",\n    \"error_message\": \"The credentials provided were incorrect\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Current Access Token",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/v1/auth/tokens",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"tokens"
+							],
+							"query": [
+								{
+									"key": "all",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						},
+						"description": "##### **Description**\n\nDelete current access token / Logout"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8000/api/v1/auth/tokens",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"tokens"
+									],
+									"query": [
+										{
+											"key": "all",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:56:33 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:56:33 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685922993-3662-1809207521"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=106.46104812622; desc=\"Application\", db; dur=12; desc=\"Database\", timeline-event-0; dur=54.178953170776; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Get Access Tokens",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/v1/auth/tokens",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"tokens"
+							]
+						},
+						"description": "##### **Description**\n\nGet a list of active access tokens / logged in devices"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8000/api/v1/auth/tokens",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8000",
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"tokens"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:57:59 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:57:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685923079-8814-1023535344"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=81.18200302124; desc=\"Application\", db; dur=6.47; desc=\"Database\", timeline-event-0; dur=42.778015136719; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 2,\n            \"name\": \"Jeg's Macbook\",\n            \"expires_at\": \"2023-06-05T11:46:44.000000Z\",\n            \"last_used_at\": null,\n            \"created_at\": \"2023-06-04T23:46:44.000000Z\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Jeg's iPhone\",\n            \"expires_at\": \"2023-06-05T11:57:43.000000Z\",\n            \"last_used_at\": \"2023-06-04T23:57:59.000000Z\",\n            \"created_at\": \"2023-06-04T23:57:43.000000Z\"\n        },\n        {\n            \"id\": 4,\n            \"name\": \"Jeg's Smart TV\",\n            \"expires_at\": \"2023-06-05T11:57:55.000000Z\",\n            \"last_used_at\": null,\n            \"created_at\": \"2023-06-04T23:57:55.000000Z\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Revoke Access Tokens",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token_ids\": [2]\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/auth/tokens/revoke",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"tokens",
+								"revoke"
+							]
+						},
+						"description": "##### **Description**\n\nRevoke a list of specified access tokens\n\n##### **Payload**\n\n| **key** | **validation** | **description** |\n| --- | --- | --- |\n| token_ids | array | array of token ids or \"\\*\" to purge everything  <br>  <br>eg.  <br>`[1, 2, 3, 4]` or `[\"\\*\"]` |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"token_ids\": [\"*\"]\n}"
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/auth/tokens/revoke",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"tokens",
+										"revoke"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 00:14:37 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 00:14:37 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685924077-8238-580398932"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=63.462972640991; desc=\"Application\", db; dur=7.42; desc=\"Database\", timeline-event-0; dur=35.032987594604; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Resend Email Verification",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/auth/email/send-verification",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"email",
+								"send-verification"
+							]
+						},
+						"description": "##### Description\n\nRe-send the email verification. This process is queued."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/auth/email/send-verification",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"email",
+										"send-verification"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:58:39 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:58:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685923118-9388-1812583032"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=158.68496894836; desc=\"Application\", db; dur=8.99; desc=\"Database\", timeline-event-0; dur=109.80105400085; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Email verification sent\",\n    \"email\": \"jegramos.pa@gmail.com\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Request Forgot Password Link",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jegramos.pa@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/auth/forgot-password",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"forgot-password"
+							]
+						},
+						"description": "##### Description\n\nRequest a forgot password email. This process is queued."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"jegramos.pa@gmail.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/auth/forgot-password",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"forgot-password"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:58:48 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:58:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685923127-9602-1807104337"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=191.08581542969; desc=\"Application\", db; dur=16.31; desc=\"Database\", timeline-event-0; dur=155.76791763306; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Password reset request sent\",\n    \"email\": \"jegramos.pa@gmail.com\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Reset password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"dummy_token\",\n    \"email\": \"jegramos.pa@gmail.com\",\n    \"password\": \"Jeg123123!\",\n    \"password_confirmation\": \"Jeg123123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/auth/reset-password",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"reset-password"
+							]
+						},
+						"description": "##### Description\n\nReset the current authenticated user's password\n\n##### **Payload**\n\n| **key** | **validation** |\n| --- | --- |\n| token | string, required |\n| email | string, required, email |\n| password | string, required |\n| password_confirmation | string, required |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"token\": \"8d16e23b3558d3070d4beaadd4b86990ae6a438708b41bb5af2759b52dce63e4\",\n    \"email\": \"jegramos.pa@gmail.com\",\n    \"password\": \"Jeg123123!\",\n    \"password_confirmation\": \"Jeg123123!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/auth/reset-password",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"reset-password"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 00:13:57 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 00:13:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685924037-7451-373788299"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=232.40494728088; desc=\"Application\", db; dur=14.04; desc=\"Database\", timeline-event-0; dur=186.08999252319; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Password reset was successful\"\n}"
+						},
+						{
+							"name": "Invalid Token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"token\": \"\",\n    \"email\": \"jegramos.pa@gmail.com\",\n    \"password\": \"Jeg123123\",\n    \"password_confirmation\": \"Jeg123123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/auth/reset-password",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"reset-password"
+									]
+								}
+							},
+							"status": "Unprocessable Content",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:59:03 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 23:59:03 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685923143-7332-1580879122"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=72.346925735474; desc=\"Application\", db; dur=2.18; desc=\"Database\", timeline-event-0; dur=37.449836730957; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"A validation error has occurred\",\n    \"error_code\": \"VALIDATION_ERROR\",\n    \"errors\": [\n        {\n            \"field\": \"token\",\n            \"messages\": [\n                \"The token field is required.\"\n            ]\n        }\n    ]\n}"
+						},
+						{
+							"name": "Invalid Token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"token\": \"889fc357f1f4d78a648cce5f92e6419d37b4639adfb7809ed7f8ff6896b1e13e\",\n    \"email\": \"jegramos.pa@gmail.com\",\n    \"password\": \"Jeg123123!\",\n    \"password_confirmation\": \"Jeg123123!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/auth/reset-password",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"reset-password"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 00:13:17 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 00:13:17 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685923997-1295-651191283"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=130.31506538391; desc=\"Application\", db; dur=5.14; desc=\"Database\", timeline-event-0; dur=99.171876907349; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"error_code\": \"BAD_REQUEST_ERROR\",\n    \"error_message\": \"Unable to reset password\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"jed23.pa@gmail.com\",\n    \"password\": \"Jegramos1234\",\n    \"password_confirmation\": \"Jegramos1234\",\n    \"first_name\": \"Jego Carlo\",\n    \"last_name\": \"CApple\",\n    \"client_name\": \"Mac Web\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/auth/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						},
+						"description": "##### Description\n\nReguster as a new user\n\n##### **Payload**\n\n| **key** | **validation** |\n| --- | --- |\n| email | string, required, unique |\n| password | string, required |\n| password_confirmation | string, required |\n| first_name | string, required |\n| last_name | string, required |\n| middle_name | string, optional |\n| client_name | string, optional |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"jed23.pa@gmail.com\",\n    \"username\": \"anssddy.storm\",\n    \"password\": \"Jegramos1234\",\n    \"password_confirmation\": \"Jegramos1234\",\n    \"first_name\": \"Jego Carlo\",\n    \"last_name\": \"CApple\",\n    \"client_name\": \"Mac Web\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/auth/register",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 00:14:22 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 00:14:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685924062-3061-749606915"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=208.42790603638; desc=\"Application\", db; dur=16.28; desc=\"Database\", timeline-event-0; dur=170.79019546509; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"token\": \"5|ou0CY2v2knHfnz5vCE9TWSFzAEwzvHl6jX3y7F87\",\n        \"token_name\": \"Mac Web\",\n        \"expires_at\": \"2023-06-05T12:14:22.470692Z\",\n        \"user\": {\n            \"id\": 2,\n            \"email\": \"jed23.pa@gmail.com\",\n            \"active\": true,\n            \"email_verified_at\": null,\n            \"created_at\": \"2023-06-05T00:14:22.000000Z\",\n            \"updated_at\": \"2023-06-05T00:14:22.000000Z\",\n            \"deleted_at\": null,\n            \"roles\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"standard_user\",\n                    \"pivot\": {\n                        \"model_id\": 2,\n                        \"role_id\": 1,\n                        \"model_type\": \"App\\\\Models\\\\User\"\n                    }\n                }\n            ],\n            \"user_profile\": {\n                \"first_name\": \"Jego Carlo\",\n                \"last_name\": \"CApple\",\n                \"middle_name\": null,\n                \"mobile_number\": null,\n                \"telephone_number\": null,\n                \"sex\": null,\n                \"birthday\": null,\n                \"created_at\": \"2023-06-05T00:14:22.000000Z\",\n                \"updated_at\": \"2023-06-05T00:14:22.000000Z\",\n                \"deleted_at\": null,\n                \"full_name\": \"Jego Carlo CApple\",\n                \"profile_picture_url\": null,\n                \"address\": {\n                    \"home_address\": null,\n                    \"barangay\": null,\n                    \"city_id\": null,\n                    \"province_id\": null,\n                    \"region_id\": null,\n                    \"postal_code\": null,\n                    \"created_at\": \"2023-06-05T00:14:22.000000Z\",\n                    \"updated_at\": \"2023-06-05T00:14:22.000000Z\",\n                    \"city\": null,\n                    \"province\": null,\n                    \"region\": null\n                }\n            }\n        }\n    }\n}"
+						}
+					]
+				}
+			],
+			"description": "##### Description\n\nToken-based authentication mechanism",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "View Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/v1/profile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile"
+							]
+						},
+						"description": "##### **Description**\n\nGet the profile information of the currently authenticated user"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/v1/profile",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:13:43 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:13:42 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685934822-6472-1931957444"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=394.41585540771; desc=\"Application\", db; dur=38.32; desc=\"Database\", timeline-event-0; dur=356.6300868988; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"email\": \"jegramos.pa@gmail.com\",\n        \"active\": true,\n        \"email_verified_at\": \"2023-06-04T14:17:57.000000Z\",\n        \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n        \"updated_at\": \"2023-06-05T00:13:57.000000Z\",\n        \"deleted_at\": null,\n        \"roles\": [\n            {\n                \"id\": 2,\n                \"name\": \"admin\",\n                \"pivot\": {\n                    \"model_id\": 1,\n                    \"role_id\": 2,\n                    \"model_type\": \"App\\\\Models\\\\User\"\n                }\n            }\n        ],\n        \"user_profile\": {\n            \"first_name\": \"Jego Carlo\",\n            \"last_name\": \"Ramos\",\n            \"middle_name\": null,\n            \"mobile_number\": null,\n            \"telephone_number\": null,\n            \"sex\": null,\n            \"birthday\": null,\n            \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n            \"updated_at\": \"2023-06-04T14:19:21.000000Z\",\n            \"deleted_at\": null,\n            \"full_name\": \"Jego Carlo Ramos\",\n            \"profile_picture_url\": \"https://bucketedb7af13c1c77c5bdca40bd84bdb5360a85f485d5.png\",\n            \"address\": {\n                \"home_address\": null,\n                \"barangay\": null,\n                \"city_id\": null,\n                \"province_id\": null,\n                \"region_id\": null,\n                \"postal_code\": null,\n                \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n                \"updated_at\": \"2023-06-04T14:19:21.000000Z\",\n                \"city\": null,\n                \"province\": null,\n                \"region\": null\n            }\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Jego Carlo\",\n    \"middle_name\": \"Bucu\",\n    \"last_name\": \"Ramos\",\n    \"sex\": \"male\",\n    \"birthday\": \"1997-12-29\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/profile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile"
+							]
+						},
+						"description": "##### **Description**\n\nUpdate the profile information of the currently authenticated user\n\n**Payload**\n\n| **key** | **validation** |\n| --- | --- |\n| email | optional, email, unique |\n| first_name | optional, string |\n| last_name | optional, string |\n| middle_name | optional, string |\n| mobile_number | optional, mobile, internaltional format  <br>  <br>ex.  <br>+639064647223 |\n| telephone_number | optional, fixedLine, international format  <br>  <br>ex.  <br>+63272839123 |\n| sex | optional, \"male\" | \"female\" |\n| birthday | optional, Y-m-d, date must be before or equal today  <br>  <br>ex.  <br>1997-01-04 |\n| home_address | optional, string |\n| barangay | optional, string |\n| city_id | optional, `City ID` |\n| province_id | optional, `Province ID` |\n| region_id | optional, `Region ID` |\n| postal_code | optional, string |\n| profile_picture_path | optional, string |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Jego Carlo\",\n    \"middle_name\": \"Bucu\",\n    \"last_name\": \"Ramos\",\n    \"sex\": \"male\",\n    \"birthday\": \"1997-12-29\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/profile",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:16:32 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:16:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685934992-8889-1756402093"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=117.10500717163; desc=\"Application\", db; dur=13.86; desc=\"Database\", timeline-event-0; dur=83.343029022217; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"email\": \"jegramos.pa@gmail.com\",\n        \"active\": true,\n        \"email_verified_at\": \"2023-06-04T14:17:57.000000Z\",\n        \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n        \"updated_at\": \"2023-06-05T00:13:57.000000Z\",\n        \"deleted_at\": null,\n        \"roles\": [\n            {\n                \"id\": 2,\n                \"name\": \"admin\",\n                \"pivot\": {\n                    \"model_id\": 1,\n                    \"role_id\": 2,\n                    \"model_type\": \"App\\\\Models\\\\User\"\n                }\n            }\n        ],\n        \"user_profile\": {\n            \"first_name\": \"Jego Carlo\",\n            \"last_name\": \"Ramos\",\n            \"middle_name\": \"Bucu\",\n            \"mobile_number\": null,\n            \"telephone_number\": null,\n            \"sex\": \"male\",\n            \"birthday\": \"1997-12-29\",\n            \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n            \"updated_at\": \"2023-06-05T03:16:32.000000Z\",\n            \"deleted_at\": null,\n            \"full_name\": \"Jego Carlo Bucu Ramos\",\n            \"profile_picture_url\": \"https://webkit.s3.ap-southeast-2.amazonaws.com/images/1/profile-pictures/Wtcx881XuNYMZWGIo0CbmTvwhtCkF99x05zRxPgW.png\",\n            \"address\": {\n                \"home_address\": null,\n                \"barangay\": null,\n                \"city_id\": null,\n                \"province_id\": null,\n                \"region_id\": null,\n                \"postal_code\": null,\n                \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n                \"updated_at\": \"2023-06-05T03:16:32.000000Z\",\n                \"city\": null,\n                \"province\": null,\n                \"region\": null\n            }\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"old_password\": \"Jeg123123!\",\n    \"password\": \"Jeg123123\",\n    \"password_confirmation\": \"Jeg123123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/profile/password",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"password"
+							]
+						},
+						"description": "**Description**\n\nChange the currently authenticated user's password\n\n**Payload**\n\n| **key** | **validation** |\n| --- | --- |\n| old_password | required, string |\n| password | required, string, mixed case + numbers  <br>  <br>eg.  <br>Password123 |\n| password_confirmation | required, same as `password` |"
+					},
+					"response": [
+						{
+							"name": "Incorrect Old Password",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"old_password\": \"Jeg123123\",\n    \"password\": \"Jeg333333\",\n    \"password_confirmation\": \"Jeg333333\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/profile/password",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"profile",
+										"password"
+									]
+								}
+							},
+							"status": "Unprocessable Content",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:17:48 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:17:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685935068-6911-576800541"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=158.59198570251; desc=\"Application\", db; dur=6.63; desc=\"Database\", timeline-event-0; dur=126.93810462952; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"error_code\": \"INCORRECT_OLD_PASSWORD_ERROR\",\n    \"error_message\": \"Old password is incorrect\"\n}"
+						},
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"old_password\": \"Jeg123123!\",\n    \"password\": \"Jeg123123\",\n    \"password_confirmation\": \"Jeg123123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/profile/password",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"profile",
+										"password"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:18:20 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:18:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "57"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685935100-7491-1184242160"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=228.13200950623; desc=\"Application\", db; dur=7.09; desc=\"Database\", timeline-event-0; dur=192.54589080811; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Password changed successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Upload Profile Picture",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photo",
+									"type": "file",
+									"src": "/Users/jegramos/Downloads/dswd.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/profile/profile-picture",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"profile-picture"
+							]
+						},
+						"description": "**Description**\n\nReplace the profile picture of the currently authenticated user\n\n**Payload**\n\n| **key** | **validation** |\n| --- | --- |\n| photo | Maxed size of 5MB, required, image |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "/Users/jegramos/Downloads/dswd.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/profile/profile-picture",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"profile",
+										"profile-picture"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:20:11 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:20:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685935211-5688-32309819"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=423.504114151; desc=\"Application\", db; dur=17.53; desc=\"Database\", timeline-event-0; dur=394.52409744263; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"owner_id\": 1,\n        \"path\": \"images/1/profile-pictures/OXx53Kkwc6bgLPtgyBdWMb7wHDcpa1PFUscvzc9D.png\",\n        \"url\": \"https://webkit-develop.s3.ap-southeast-1.amazonaws.com/images/1/profile-pictures/OXx53Kkwc6bgLPtgyBdWMb7wHDcpa1PFUscvzc9D.png\"\n    }\n}"
+						}
+					]
+				}
+			],
+			"description": "##### **Description**\n\nUser Profile Management",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Show User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/v1/users/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/v1/users/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:36:27 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:36:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936187-0406-1797445648"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=109.84802246094; desc=\"Application\", db; dur=10.41; desc=\"Database\", timeline-event-0; dur=71.756839752197; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"email\": \"jegramos.pa@gmail.com\",\n        \"active\": true,\n        \"email_verified_at\": \"2023-06-04T14:17:57.000000Z\",\n        \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n        \"updated_at\": \"2023-06-05T03:18:20.000000Z\",\n        \"deleted_at\": null,\n        \"roles\": [\n            {\n                \"id\": 2,\n                \"name\": \"admin\",\n                \"pivot\": {\n                    \"model_id\": 1,\n                    \"role_id\": 2,\n                    \"model_type\": \"App\\\\Models\\\\User\"\n                }\n            }\n        ],\n        \"user_profile\": {\n            \"first_name\": \"Jego Carlo\",\n            \"last_name\": \"Ramos\",\n            \"middle_name\": \"Bucu\",\n            \"mobile_number\": null,\n            \"telephone_number\": null,\n            \"sex\": \"male\",\n            \"birthday\": \"1997-12-29\",\n            \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n            \"updated_at\": \"2023-06-05T03:20:11.000000Z\",\n            \"deleted_at\": null,\n            \"full_name\": \"Jego Carlo Bucu Ramos\",\n            \"profile_picture_url\": \"https://sunrise-develop-X-Amz-CredentiaX-Amz-Signature=15b291cf84755c554b588f60a1c91c3fff1a9f9d940f02d1e29fffd7db9923a3.png\",\n            \"address\": {\n                \"home_address\": null,\n                \"barangay\": null,\n                \"city_id\": null,\n                \"province_id\": null,\n                \"region_id\": null,\n                \"postal_code\": null,\n                \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n                \"updated_at\": \"2023-06-05T03:20:11.000000Z\",\n                \"city\": null,\n                \"province\": null,\n                \"region\": null\n            }\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Edited first name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/users/3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"3"
+							]
+						},
+						"description": "##### **Description**\n\nUpdate user information\n\n**Parameters**\n\n| **key** | **value** |\n| --- | --- |\n| api/v1/users/:id | ID of the user to be updated |\n\nPayload\n\n| **key** | **validations** |\n| --- | --- |\n| first_name | optional, string |\n| last_name | optional, string |\n| middle_name | optional, string |\n| email | optional,, email |\n| mobile_number | optional, mobile, international format  <br>  <br>ex.  <br>++639064748223 |\n| telephone_number | optional, fixedLine, international format  <br>  <br>ex.  <br>+63272839123 |\n| sex | optional, \\`male\\` |\n| birthday | optional, Y-m-d, not greater than today  <br>  <br>ex.  <br>1997-12-20 |\n| home_address | optional, string |\n| barangay | optional, string |\n| city_id | optional, `City ID` |\n| province_id | optional, `Province ID` |\n| region_id | optional, `Region ID` |\n| profile_picture_path | optional, string |\n| active | optional, boolean |\n| email_verified | optional, boolean |\n| roles | optional, array of `Role IDs`ex.  <br>`[1, 2, 3]` |\n| password | optional, mixed case + numbers, min of 8, max 100, string |\n| password_confirmation | same as `password` |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Edited first name\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/users/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:37:44 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:37:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936264-6770-1690456136"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=131.41298294067; desc=\"Application\", db; dur=16.4; desc=\"Database\", timeline-event-0; dur=101.89199447632; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"email\": \"jegramos.pa@gmail.com\",\n        \"active\": true,\n        \"email_verified_at\": \"2023-06-04T14:17:57.000000Z\",\n        \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n        \"updated_at\": \"2023-06-05T03:18:20.000000Z\",\n        \"deleted_at\": null,\n        \"roles\": [\n            {\n                \"id\": 2,\n                \"name\": \"admin\",\n                \"pivot\": {\n                    \"model_id\": 1,\n                    \"role_id\": 2,\n                    \"model_type\": \"App\\\\Models\\\\User\"\n                }\n            }\n        ],\n        \"user_profile\": {\n            \"first_name\": \"Edited first name\",\n            \"last_name\": \"Ramos\",\n            \"middle_name\": \"Bucu\",\n            \"mobile_number\": null,\n            \"telephone_number\": null,\n            \"sex\": \"male\",\n            \"birthday\": \"1997-12-29\",\n            \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n            \"updated_at\": \"2023-06-05T03:37:44.000000Z\",\n            \"deleted_at\": null,\n            \"full_name\": \"Edited first name Bucu Ramos\",\n            \"profile_picture_url\": \"https://image.png\",\n            \"address\": {\n                \"home_address\": null,\n                \"barangay\": null,\n                \"city_id\": null,\n                \"province_id\": null,\n                \"region_id\": null,\n                \"postal_code\": null,\n                \"created_at\": \"2023-06-04T14:17:57.000000Z\",\n                \"updated_at\": \"2023-06-05T03:37:44.000000Z\",\n                \"city\": null,\n                \"province\": null,\n                \"region\": null\n            }\n        }\n    }\n}"
+						},
+						{
+							"name": "Updating a Super User",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Edited first name\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/users/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"3"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:39:37 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:39:37 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936377-2948-1624173971"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=85.971117019653; desc=\"Application\", db; dur=8.44; desc=\"Database\", timeline-event-0; dur=52.699089050293; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"A super user cannot be updated.\",\n    \"error_code\": \"UNAUTHORIZED_ERROR\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"sdss.pa@gmail.com\",\n    \"password\": \"Jeg123123\",\n    \"active\": true,\n    \"password_confirmation\": \"Jeg123123\",\n    \"first_name\": \"eg\",\n    \"last_name\": \"CApple\",\n    \"sex\": \"male\",\n    \"birthday\": \"1900-01-04\",\n    \"mobile_number\": \"+639164647195\",\n    \"telephone_number\": \"+63279434285\",\n    \"country_id\": 2,\n    \"email_verified\": false,\n    \"address_line_1\": \"Line 1\",\n    \"address_line_2\": \"Line 2\",\n    \"roles\": [1]\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						},
+						"description": "##### **Description**\n\nCreate a user\n\n**Payload**\n\n| **key** | **validations** |\n| --- | --- |\n| first_name | required, string |\n| last_name | required, string |\n| middle_name | optional, string |\n| email | required, string, email |\n| mobile_number | optional, mobile, international format  <br>  <br>ex.  <br>++639064748223 |\n| telephone_number | optional, fixedLine, international format  <br>  <br>ex.  <br>+63272839123 |\n| sex | optional, \\`male\\` |\n| birthday | optional, Y-m-d, not greater than today  <br>  <br>ex.  <br>1997-12-20 |\n| home_address | optional, string |\n| barangay | optional, string |\n| city_id | optional, `City ID` |\n| province_id | optional, `Province ID` |\n| region_id | optional, `Region ID` |\n| profile_picture_path | optional, string |\n| active | optional, boolean |\n| email_verified | optional, boolean |\n| roles | required, array of `Role IDs`ex.  <br>`[1, 2, 3]` |\n| password | required, mixed case + numbers, min of 8, max 100, string |\n| password_confirmation | required, same as `password` |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"sdss.pa@gmail.com\",\n    \"password\": \"Jeg123123\",\n    \"active\": true,\n    \"password_confirmation\": \"Jeg123123\",\n    \"first_name\": \"eg\",\n    \"last_name\": \"CApple\",\n    \"sex\": \"male\",\n    \"birthday\": \"1900-01-04\",\n    \"mobile_number\": \"+639164647195\",\n    \"telephone_number\": \"+63279434285\",\n    \"country_id\": 2,\n    \"email_verified\": false,\n    \"address_line_1\": \"Line 1\",\n    \"address_line_2\": \"Line 2\",\n    \"roles\": [1]\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/users",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:39:59 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:39:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936399-1261-1522866920"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=284.35087203979; desc=\"Application\", db; dur=15.8; desc=\"Database\", timeline-event-0; dur=256.35695457458; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 4,\n        \"email\": \"sdss.pa@gmail.com\",\n        \"active\": true,\n        \"email_verified_at\": null,\n        \"created_at\": \"2023-06-05T03:39:59.000000Z\",\n        \"updated_at\": \"2023-06-05T03:39:59.000000Z\",\n        \"deleted_at\": null,\n        \"roles\": [\n            {\n                \"id\": 1,\n                \"name\": \"standard_user\",\n                \"pivot\": {\n                    \"model_id\": 4,\n                    \"role_id\": 1,\n                    \"model_type\": \"App\\\\Models\\\\User\"\n                }\n            }\n        ],\n        \"user_profile\": {\n            \"first_name\": \"eg\",\n            \"last_name\": \"CApple\",\n            \"middle_name\": null,\n            \"mobile_number\": \"+639164647195\",\n            \"telephone_number\": \"+63279434285\",\n            \"sex\": \"male\",\n            \"birthday\": \"1900-01-04\",\n            \"created_at\": \"2023-06-05T03:39:59.000000Z\",\n            \"updated_at\": \"2023-06-05T03:39:59.000000Z\",\n            \"deleted_at\": null,\n            \"full_name\": \"eg CApple\",\n            \"profile_picture_url\": null,\n            \"address\": {\n                \"home_address\": null,\n                \"barangay\": null,\n                \"city_id\": null,\n                \"province_id\": null,\n                \"region_id\": null,\n                \"postal_code\": null,\n                \"created_at\": \"2023-06-05T03:39:59.000000Z\",\n                \"updated_at\": \"2023-06-05T03:39:59.000000Z\",\n                \"city\": null,\n                \"province\": null,\n                \"region\": null\n            }\n        }\n    }\n}"
+						},
+						{
+							"name": "Email and Mobile Number Unique Validation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"sdss.pa@gmail.com\",\n    \"password\": \"Jeg123123\",\n    \"active\": true,\n    \"password_confirmation\": \"Jeg123123\",\n    \"first_name\": \"eg\",\n    \"last_name\": \"CApple\",\n    \"sex\": \"male\",\n    \"birthday\": \"1900-01-04\",\n    \"mobile_number\": \"+639164647195\",\n    \"telephone_number\": \"+63279434285\",\n    \"country_id\": 2,\n    \"email_verified\": false,\n    \"address_line_1\": \"Line 1\",\n    \"address_line_2\": \"Line 2\",\n    \"roles\": [1]\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/users",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users"
+									]
+								}
+							},
+							"status": "Unprocessable Content",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:40:12 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:40:12 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "57"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936412-6256-1029489506"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=81.802845001221; desc=\"Application\", db; dur=8.34; desc=\"Database\", timeline-event-0; dur=53.323984146118; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"A validation error has occurred\",\n    \"error_code\": \"VALIDATION_ERROR\",\n    \"errors\": [\n        {\n            \"field\": \"email\",\n            \"messages\": [\n                \"The email has already been taken.\"\n            ]\n        },\n        {\n            \"field\": \"mobile_number\",\n            \"messages\": [\n                \"The mobile number has already been taken.\"\n            ]\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users/5",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"5"
+							]
+						},
+						"description": "##### **Description**\n\nSoft delete a user"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/v1/users/5",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"5"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:42:35 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:42:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936554-9713-2085903258"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=98.232984542847; desc=\"Application\", db; dur=15.25; desc=\"Database\", timeline-event-0; dur=68.875074386597; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Deleting a Super User",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/v1/users/3",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"3"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:42:15 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:42:15 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936535-6423-79216643"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=75.559139251709; desc=\"Application\", db; dur=8.08; desc=\"Database\", timeline-event-0; dur=45.612096786499; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"A super user cannot be deleted.\",\n    \"error_code\": \"UNAUTHORIZED_ERROR\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Fetch Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/users?sort_by=user_profile.last_name&sort=asc&limit=23&page=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							],
+							"query": [
+								{
+									"key": "sort_by",
+									"value": "user_profile.last_name"
+								},
+								{
+									"key": "sort",
+									"value": "asc"
+								},
+								{
+									"key": "limit",
+									"value": "23"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						},
+						"description": "**Description**\n\nFetch users with length-aware pagination\n\n##### **Query Parameters**\n\n| **key** | **description** |\n| --- | --- |\n| sort_by | The field that the user list should be sorted by  <br>  <br>ex  <br>`sort_by=email`  <br>`sort_by=user_profile.last_name` |\n| sort | asc | desc |\n| limit | The maximum amount of users that should be displayed per page |\n| page | The current offset of the pagination |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/v1/users?sort_by=user_profile.last_name&sort=asc&limit=23&page=1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users"
+									],
+									"query": [
+										{
+											"key": "sort_by",
+											"value": "user_profile.last_name"
+										},
+										{
+											"key": "sort",
+											"value": "asc"
+										},
+										{
+											"key": "limit",
+											"value": "23"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:44:10 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:44:10 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936650-8110-488339802"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=111.99188232422; desc=\"Application\", db; dur=10.02; desc=\"Database\", timeline-event-0; dur=83.392143249512; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 2,\n            \"email\": \"jed23.pa@gmail.com\",\n            \"active\": true,\n            \"email_verified_at\": null,\n            \"created_at\": \"2023-06-05T00:14:22.000000Z\",\n            \"updated_at\": \"2023-06-05T00:14:22.000000Z\",\n            \"deleted_at\": null,\n            \"user_id\": 2,\n            \"first_name\": \"Jego Carlo\",\n            \"last_name\": \"CApple\",\n            \"middle_name\": null,\n            \"mobile_number\": null,\n            \"telephone_number\": null,\n            \"sex\": null,\n            \"birthday\": null,\n            \"profile_picture_path\": null,\n            \"roles\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"standard_user\",\n                    \"pivot\": {\n                        \"model_id\": 2,\n                        \"role_id\": 1,\n                        \"model_type\": \"App\\\\Models\\\\User\"\n                    }\n                }\n            ],\n            \"user_profile\": {\n                \"first_name\": \"Jego Carlo\",\n                \"last_name\": \"CApple\",\n                \"middle_name\": null,\n                \"mobile_number\": null,\n                \"telephone_number\": null,\n                \"sex\": null,\n                \"birthday\": null,\n                \"created_at\": \"2023-06-05T00:14:22.000000Z\",\n                \"updated_at\": \"2023-06-05T00:14:22.000000Z\",\n                \"deleted_at\": null,\n                \"full_name\": \"Jego Carlo CApple\",\n                \"profile_picture_url\": null,\n                \"address\": {\n                    \"home_address\": null,\n                    \"barangay\": null,\n                    \"city_id\": null,\n                    \"province_id\": null,\n                    \"region_id\": null,\n                    \"postal_code\": null,\n                    \"created_at\": \"2023-06-05T00:14:22.000000Z\",\n                    \"updated_at\": \"2023-06-05T00:14:22.000000Z\",\n                    \"city\": null,\n                    \"province\": null,\n                    \"region\": null\n                }\n            }\n        },\n        {\n            \"id\": 4,\n            \"email\": \"sdss.pa@gmail.com\",\n            \"active\": true,\n            \"email_verified_at\": null,\n            \"created_at\": \"2023-06-05T03:39:59.000000Z\",\n            \"updated_at\": \"2023-06-05T03:39:59.000000Z\",\n            \"deleted_at\": null,\n            \"user_id\": 4,\n            \"first_name\": \"eg\",\n            \"last_name\": \"CApple\",\n            \"middle_name\": null,\n            \"mobile_number\": \"+639164647195\",\n            \"telephone_number\": \"+63279434285\",\n            \"sex\": \"male\",\n            \"birthday\": \"1900-01-04\",\n            \"profile_picture_path\": null,\n            \"roles\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"standard_user\",\n                    \"pivot\": {\n                        \"model_id\": 4,\n                        \"role_id\": 1,\n                        \"model_type\": \"App\\\\Models\\\\User\"\n                    }\n                }\n            ],\n            \"user_profile\": {\n                \"first_name\": \"eg\",\n                \"last_name\": \"CApple\",\n                \"middle_name\": null,\n                \"mobile_number\": \"+639164647195\",\n                \"telephone_number\": \"+63279434285\",\n                \"sex\": \"male\",\n                \"birthday\": \"1900-01-04\",\n                \"created_at\": \"2023-06-05T03:39:59.000000Z\",\n                \"updated_at\": \"2023-06-05T03:39:59.000000Z\",\n                \"deleted_at\": null,\n                \"full_name\": \"eg CApple\",\n                \"profile_picture_url\": null,\n                \"address\": {\n                    \"home_address\": null,\n                    \"barangay\": null,\n                    \"city_id\": null,\n                    \"province_id\": null,\n                    \"region_id\": null,\n                    \"postal_code\": null,\n                    \"created_at\": \"2023-06-05T03:39:59.000000Z\",\n                    \"updated_at\": \"2023-06-05T03:39:59.000000Z\",\n                    \"city\": null,\n                    \"province\": null,\n                    \"region\": null\n                }\n            }\n        },\n        {\n            \"id\": 7,\n            \"email\": \"jegramos.pa@gmail.com\",\n            \"active\": true,\n            \"email_verified_at\": \"2023-06-05T03:43:21.000000Z\",\n            \"created_at\": \"2023-06-05T03:43:21.000000Z\",\n            \"updated_at\": \"2023-06-05T03:43:21.000000Z\",\n            \"deleted_at\": null,\n            \"user_id\": 7,\n            \"first_name\": \"Jeg\",\n            \"last_name\": \"Ramos\",\n            \"middle_name\": null,\n            \"mobile_number\": null,\n            \"telephone_number\": null,\n            \"sex\": null,\n            \"birthday\": null,\n            \"profile_picture_path\": null,\n            \"roles\": [\n                {\n                    \"id\": 2,\n                    \"name\": \"admin\",\n                    \"pivot\": {\n                        \"model_id\": 7,\n                        \"role_id\": 2,\n                        \"model_type\": \"App\\\\Models\\\\User\"\n                    }\n                }\n            ],\n            \"user_profile\": {\n                \"first_name\": \"Jeg\",\n                \"last_name\": \"Ramos\",\n                \"middle_name\": null,\n                \"mobile_number\": null,\n                \"telephone_number\": null,\n                \"sex\": null,\n                \"birthday\": null,\n                \"created_at\": \"2023-06-05T03:43:21.000000Z\",\n                \"updated_at\": \"2023-06-05T03:43:21.000000Z\",\n                \"deleted_at\": null,\n                \"full_name\": \"Jeg Ramos\",\n                \"profile_picture_url\": null,\n                \"address\": {\n                    \"home_address\": null,\n                    \"barangay\": null,\n                    \"city_id\": null,\n                    \"province_id\": null,\n                    \"region_id\": null,\n                    \"postal_code\": null,\n                    \"created_at\": \"2023-06-05T03:43:21.000000Z\",\n                    \"updated_at\": \"2023-06-05T03:43:21.000000Z\",\n                    \"city\": null,\n                    \"province\": null,\n                    \"region\": null\n                }\n            }\n        },\n        {\n            \"id\": 6,\n            \"email\": \"jegramos.test@gmail.com\",\n            \"active\": true,\n            \"email_verified_at\": \"2023-06-05T03:41:43.000000Z\",\n            \"created_at\": \"2023-06-05T03:41:43.000000Z\",\n            \"updated_at\": \"2023-06-05T03:41:43.000000Z\",\n            \"deleted_at\": null,\n            \"user_id\": 6,\n            \"first_name\": \"Test\",\n            \"last_name\": \"Test\",\n            \"middle_name\": null,\n            \"mobile_number\": null,\n            \"telephone_number\": null,\n            \"sex\": null,\n            \"birthday\": null,\n            \"profile_picture_path\": null,\n            \"roles\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"standard_user\",\n                    \"pivot\": {\n                        \"model_id\": 6,\n                        \"role_id\": 1,\n                        \"model_type\": \"App\\\\Models\\\\User\"\n                    }\n                }\n            ],\n            \"user_profile\": {\n                \"first_name\": \"Test\",\n                \"last_name\": \"Test\",\n                \"middle_name\": null,\n                \"mobile_number\": null,\n                \"telephone_number\": null,\n                \"sex\": null,\n                \"birthday\": null,\n                \"created_at\": \"2023-06-05T03:41:43.000000Z\",\n                \"updated_at\": \"2023-06-05T03:41:43.000000Z\",\n                \"deleted_at\": null,\n                \"full_name\": \"Test Test\",\n                \"profile_picture_url\": null,\n                \"address\": {\n                    \"home_address\": null,\n                    \"barangay\": null,\n                    \"city_id\": null,\n                    \"province_id\": null,\n                    \"region_id\": null,\n                    \"postal_code\": null,\n                    \"created_at\": \"2023-06-05T03:41:43.000000Z\",\n                    \"updated_at\": \"2023-06-05T03:41:43.000000Z\",\n                    \"city\": null,\n                    \"province\": null,\n                    \"region\": null\n                }\n            }\n        },\n        {\n            \"id\": 3,\n            \"email\": \"jegramos.su@gmail.com\",\n            \"active\": true,\n            \"email_verified_at\": \"2023-06-05T03:39:28.000000Z\",\n            \"created_at\": \"2023-06-05T03:39:28.000000Z\",\n            \"updated_at\": \"2023-06-05T03:39:28.000000Z\",\n            \"deleted_at\": null,\n            \"user_id\": 3,\n            \"first_name\": \"Super\",\n            \"last_name\": \"User\",\n            \"middle_name\": null,\n            \"mobile_number\": null,\n            \"telephone_number\": null,\n            \"sex\": null,\n            \"birthday\": null,\n            \"profile_picture_path\": null,\n            \"roles\": [\n                {\n                    \"id\": 4,\n                    \"name\": \"super_user\",\n                    \"pivot\": {\n                        \"model_id\": 3,\n                        \"role_id\": 4,\n                        \"model_type\": \"App\\\\Models\\\\User\"\n                    }\n                }\n            ],\n            \"user_profile\": {\n                \"first_name\": \"Super\",\n                \"last_name\": \"User\",\n                \"middle_name\": null,\n                \"mobile_number\": null,\n                \"telephone_number\": null,\n                \"sex\": null,\n                \"birthday\": null,\n                \"created_at\": \"2023-06-05T03:39:28.000000Z\",\n                \"updated_at\": \"2023-06-05T03:39:28.000000Z\",\n                \"deleted_at\": null,\n                \"full_name\": \"Super User\",\n                \"profile_picture_url\": null,\n                \"address\": {\n                    \"home_address\": null,\n                    \"barangay\": null,\n                    \"city_id\": null,\n                    \"province_id\": null,\n                    \"region_id\": null,\n                    \"postal_code\": null,\n                    \"created_at\": \"2023-06-05T03:39:28.000000Z\",\n                    \"updated_at\": \"2023-06-05T03:39:28.000000Z\",\n                    \"city\": null,\n                    \"province\": null,\n                    \"region\": null\n                }\n            }\n        }\n    ],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"first_page_url\": \"http://localhost:8000/api/v1/users?page=1&sort_by=user_profile.last_name&sort=asc&limit=23\",\n        \"next_page_url\": null,\n        \"prev_page_url\": null,\n        \"last_page_url\": \"http://localhost:8000/api/v1/users?page=1&sort_by=user_profile.last_name&sort=asc&limit=23\",\n        \"from\": 1,\n        \"to\": 5,\n        \"per_page\": 23,\n        \"total\": 5,\n        \"path\": \"http://localhost:8000/api/v1/users\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Upload Profile Picture",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photo",
+									"type": "file",
+									"src": "/Users/jegramos/Downloads/dswd.png"
+								},
+								{
+									"key": "photo",
+									"value": "sdafsdf",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/users/7/profile-picture",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"7",
+								"profile-picture"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "/Users/jegramos/Downloads/dswd.png"
+										},
+										{
+											"key": "photo",
+											"value": "sdafsdf",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/users/7/profile-picture",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"7",
+										"profile-picture"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:44:50 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:44:50 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "56"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936689-4307-109195052"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=714.41102027893; desc=\"Application\", db; dur=14.74; desc=\"Database\", timeline-event-0; dur=686.5439414978; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"owner_id\": \"7\",\n        \"path\": \"images/7/profile-pictures/RR03LEIv02YqrilEL3qneID3ayH0gmZLtYbZXKWH.png\",\n        \"url\": \"https://webkit.s3.ap-southeast-2.amazonaws.com/images/7/profile-pictures/RR03LEIv02YqrilEL3qneID3ayH0gmZLtYbZXKWH.png\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Search Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/v1/users/search?query=Ramos",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "Ramos"
+								}
+							]
+						},
+						"description": "##### **Description**\n\nSearch users via name or email\n\n**Query Parameters**\n\n| **key** | **description** |\n| --- | --- |\n| query | A string value that can be part of the user's name or email  <br>  <br>ex.  <br>`query=Ramos   query=jegramos.pa` |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/v1/users/search?query=Ramos",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"search"
+									],
+									"query": [
+										{
+											"key": "query",
+											"value": "Ramos"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:45:27 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:45:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936727-3035-29330590"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=124.33314323425; desc=\"Application\", db; dur=14.9; desc=\"Database\", timeline-event-0; dur=79.697847366333; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 7,\n            \"email\": \"jegramos.pa@gmail.com\",\n            \"active\": true,\n            \"email_verified_at\": \"2023-06-05T03:43:21.000000Z\",\n            \"created_at\": \"2023-06-05T03:43:21.000000Z\",\n            \"updated_at\": \"2023-06-05T03:44:50.000000Z\",\n            \"deleted_at\": null,\n            \"user_id\": 7,\n            \"first_name\": \"Jeg\",\n            \"last_name\": \"Ramos\",\n            \"middle_name\": null,\n            \"mobile_number\": null,\n            \"telephone_number\": null,\n            \"sex\": null,\n            \"birthday\": null,\n            \"profile_picture_path\": \"images/7/profile-pictures/RR03LEIv02YqrilEL3qneID3ayH0gmZLtYbZXKWH.png\",\n            \"roles\": [\n                {\n                    \"id\": 2,\n                    \"name\": \"admin\",\n                    \"pivot\": {\n                        \"model_id\": 7,\n                        \"role_id\": 2,\n                        \"model_type\": \"App\\\\Models\\\\User\"\n                    }\n                }\n            ],\n            \"user_profile\": {\n                \"first_name\": \"Jeg\",\n                \"last_name\": \"Ramos\",\n                \"middle_name\": null,\n                \"mobile_number\": null,\n                \"telephone_number\": null,\n                \"sex\": null,\n                \"birthday\": null,\n                \"created_at\": \"2023-06-05T03:43:21.000000Z\",\n                \"updated_at\": \"2023-06-05T03:44:50.000000Z\",\n                \"deleted_at\": null,\n                \"full_name\": \"Jeg Ramos\",\n                \"profile_picture_url\": \"https://image_url/image.png\",\n                \"address\": {\n                    \"home_address\": null,\n                    \"barangay\": null,\n                    \"city_id\": null,\n                    \"province_id\": null,\n                    \"region_id\": null,\n                    \"postal_code\": null,\n                    \"created_at\": \"2023-06-05T03:43:21.000000Z\",\n                    \"updated_at\": \"2023-06-05T03:44:50.000000Z\",\n                    \"city\": null,\n                    \"province\": null,\n                    \"region\": null\n                }\n            }\n        }\n    ],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"first_page_url\": \"http://localhost:8000/api/v1/users/search?page=1&query=Ramos\",\n        \"next_page_url\": null,\n        \"prev_page_url\": null,\n        \"last_page_url\": \"http://localhost:8000/api/v1/users/search?page=1&query=Ramos\",\n        \"from\": 1,\n        \"to\": 1,\n        \"per_page\": 25,\n        \"total\": 1,\n        \"path\": \"http://localhost:8000/api/v1/users/search\"\n    }\n}"
+						}
+					]
+				}
+			],
+			"description": "**Description**\n\nUser Management CRUD\n\n**Access Level Required**  \nAdmin, SuperUser"
+		},
+		{
+			"name": "Availabilities",
+			"item": [
+				{
+					"name": "Get email availability",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/v1/availability/email?value=JegRAMOs.pa@gmail.com",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"availability",
+								"email"
+							],
+							"query": [
+								{
+									"key": "value",
+									"value": "JegRAMOs.pa@gmail.com"
+								}
+							]
+						},
+						"description": "##### **Description**\n\nCheck wether if the email is available for user\n\n**Query Parameters**\n\n| **value** | **description** |\n| --- | --- |\n| value | URL-safe email string |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/v1/availability/email?value=JegRAMOs.pa@gmail.com",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"availability",
+										"email"
+									],
+									"query": [
+										{
+											"key": "value",
+											"value": "JegRAMOs.pa@gmail.com"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:46:18 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:46:18 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936778-7840-1123640767"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=60.337066650391; desc=\"Application\", db; dur=3.36; desc=\"Database\", timeline-event-0; dur=26.269912719727; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"is_available\": false\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get mobile number availability",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/v1/availability/mobile_number?value=%2B639064647295",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"availability",
+								"mobile_number"
+							],
+							"query": [
+								{
+									"key": "value",
+									"value": "%2B639064647295"
+								}
+							]
+						},
+						"description": "##### **Description**\n\nCheck wether if the mobile number is available for user\n\n**Query Parameters**\n\n| **value** | **description** |\n| --- | --- |\n| value | URL-safe mobile number string |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/v1/availability/mobile_number?value=%2B639064647295",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"availability",
+										"mobile_number"
+									],
+									"query": [
+										{
+											"key": "value",
+											"value": "%2B639064647295"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:47:13 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:47:13 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936833-4678-202661063"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=50.597190856934; desc=\"Application\", db; dur=1.49; desc=\"Database\", timeline-event-0; dur=17.480850219727; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"is_available\": true\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Address",
+			"item": [
+				{
+					"name": "Fetch Regions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/address/regions",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"address",
+								"regions"
+							]
+						},
+						"description": "**Description**\n\nFetch all regions in the Philippines"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/v1/address/regions",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"address",
+										"regions"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:47:26 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:47:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936846-4149-1980963453"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=65.582990646362; desc=\"Application\", db; dur=3.61; desc=\"Database\", timeline-event-0; dur=36.278009414673; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 17,\n            \"code\": \"150000000\",\n            \"name\": \"Autonomous Region In Muslim Mindanao\",\n            \"alt_name\": \"ARMM\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 8,\n            \"code\": \"050000000\",\n            \"name\": \"Bicol Region\",\n            \"alt_name\": \"Region V\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 4,\n            \"code\": \"020000000\",\n            \"name\": \"Cagayan Valley\",\n            \"alt_name\": \"Region II\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 6,\n            \"code\": \"040000000\",\n            \"name\": \"CALABARZON\",\n            \"alt_name\": \"Region IV-A\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 16,\n            \"code\": \"160000000\",\n            \"name\": \"CARAGA\",\n            \"alt_name\": \"Region XIII\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 5,\n            \"code\": \"030000000\",\n            \"name\": \"Central Luzon\",\n            \"alt_name\": \"Region III\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 10,\n            \"code\": \"070000000\",\n            \"name\": \"Central Visayas\",\n            \"alt_name\": \"Region VII\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 2,\n            \"code\": \"140000000\",\n            \"name\": \"Cordillera Administrative Region\",\n            \"alt_name\": \"CAR\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 14,\n            \"code\": \"110000000\",\n            \"name\": \"Davao Region\",\n            \"alt_name\": \"Region XI\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 11,\n            \"code\": \"080000000\",\n            \"name\": \"Eastern Visayas\",\n            \"alt_name\": \"Region VIII\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 3,\n            \"code\": \"010000000\",\n            \"name\": \"Ilocos Region\",\n            \"alt_name\": \"Region I\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 7,\n            \"code\": \"170000000\",\n            \"name\": \"Mimaropa Region\",\n            \"alt_name\": \"MIMAROPA\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 1,\n            \"code\": \"130000000\",\n            \"name\": \"National Capital Region\",\n            \"alt_name\": \"NCR\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 13,\n            \"code\": \"100000000\",\n            \"name\": \"Northern Mindanao\",\n            \"alt_name\": \"Region X\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 15,\n            \"code\": \"120000000\",\n            \"name\": \"SOCCSKSARGEN\",\n            \"alt_name\": \"Region XII\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 9,\n            \"code\": \"060000000\",\n            \"name\": \"Western Visayas\",\n            \"alt_name\": \"Region VI\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 12,\n            \"code\": \"090000000\",\n            \"name\": \"Zamboanga Peninsula\",\n            \"alt_name\": \"Region IX\",\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Fetch Provinces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/address/provinces?region=12",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"address",
+								"provinces"
+							],
+							"query": [
+								{
+									"key": "region",
+									"value": "12"
+								}
+							]
+						},
+						"description": "##### **Description**\n\nFetch all provinces in the philippines\n\n**Query Parameters**\n\n| **value** | **description** |\n| --- | --- |\n| region | `Region ID   `Add this query param if you need to filter by region  <br>  <br>ex:  <br>`?region=12` |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/v1/address/provinces?region=12",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"address",
+										"provinces"
+									],
+									"query": [
+										{
+											"key": "region",
+											"value": "12"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:47:38 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:47:38 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936858-8289-1026729641"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=56.205034255981; desc=\"Application\", db; dur=4.92; desc=\"Database\", timeline-event-0; dur=25.296926498413; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 56,\n            \"region_id\": 12,\n            \"code\": \"097200000\",\n            \"name\": \"Zamboanga Del Norte\",\n            \"alt_name\": null,\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 57,\n            \"region_id\": 12,\n            \"code\": \"097300000\",\n            \"name\": \"Zamboanga Del Sur\",\n            \"alt_name\": null,\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        },\n        {\n            \"id\": 58,\n            \"region_id\": 12,\n            \"code\": \"098300000\",\n            \"name\": \"Zamboanga Sibugay\",\n            \"alt_name\": null,\n            \"created_at\": \"2023-06-04T13:14:15.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:15.000000Z\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Fetch Cities",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/address/cities?province=28",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"address",
+								"cities"
+							],
+							"query": [
+								{
+									"key": "province",
+									"value": "28"
+								}
+							]
+						},
+						"description": "##### **Description**\n\nFetch all cities in the philippines\n\n**Query Parameters**\n\n| **value** | **description** |\n| --- | --- |\n| region | `Province ID   `Add this query param if you need to filter by province  <br>  <br>ex:  <br>`?province=28` |"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/v1/address/cities?province=28",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"address",
+										"cities"
+									],
+									"query": [
+										{
+											"key": "province",
+											"value": "28"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:47:48 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 03:47:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "57"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685936868-2422-413981387"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=63.223123550415; desc=\"Application\", db; dur=6.24; desc=\"Database\", timeline-event-0; dur=32.361030578613; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 572,\n            \"province_id\": 28,\n            \"code\": \"045801000\",\n            \"name\": \"Angono\",\n            \"full_name\": \"Angono\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 571,\n            \"province_id\": 28,\n            \"code\": \"045802000\",\n            \"name\": \"Antipolo City\",\n            \"full_name\": \"City Of Antipolo\",\n            \"alt_name\": null,\n            \"classification\": \"city\",\n            \"is_capital\": true,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 573,\n            \"province_id\": 28,\n            \"code\": \"045803000\",\n            \"name\": \"Baras\",\n            \"full_name\": \"Baras\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 574,\n            \"province_id\": 28,\n            \"code\": \"045804000\",\n            \"name\": \"Binangonan\",\n            \"full_name\": \"Binangonan\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 575,\n            \"province_id\": 28,\n            \"code\": \"045805000\",\n            \"name\": \"Cainta\",\n            \"full_name\": \"Cainta\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 576,\n            \"province_id\": 28,\n            \"code\": \"045806000\",\n            \"name\": \"Cardona\",\n            \"full_name\": \"Cardona\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 577,\n            \"province_id\": 28,\n            \"code\": \"045807000\",\n            \"name\": \"Jala Jala\",\n            \"full_name\": \"Jala Jala\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 579,\n            \"province_id\": 28,\n            \"code\": \"045809000\",\n            \"name\": \"Morong\",\n            \"full_name\": \"Morong\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 580,\n            \"province_id\": 28,\n            \"code\": \"045810000\",\n            \"name\": \"Pililla\",\n            \"full_name\": \"Pililla\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 578,\n            \"province_id\": 28,\n            \"code\": \"045808000\",\n            \"name\": \"Rodriguez\",\n            \"full_name\": \"Rodriguez Montalban\",\n            \"alt_name\": \"Montalban\",\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 581,\n            \"province_id\": 28,\n            \"code\": \"045811000\",\n            \"name\": \"San Mateo\",\n            \"full_name\": \"San Mateo\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 582,\n            \"province_id\": 28,\n            \"code\": \"045812000\",\n            \"name\": \"Tanay\",\n            \"full_name\": \"Tanay\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 583,\n            \"province_id\": 28,\n            \"code\": \"045813000\",\n            \"name\": \"Taytay\",\n            \"full_name\": \"Taytay\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        },\n        {\n            \"id\": 584,\n            \"province_id\": 28,\n            \"code\": \"045814000\",\n            \"name\": \"Teresa\",\n            \"full_name\": \"Teresa\",\n            \"alt_name\": null,\n            \"classification\": \"municipality\",\n            \"is_capital\": false,\n            \"created_at\": \"2023-06-04T13:14:16.000000Z\",\n            \"updated_at\": \"2023-06-04T13:14:16.000000Z\"\n        }\n    ]\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "Fetch All Roles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/roles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"roles"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/v1/roles",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"roles"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 09:42:46 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 09:42:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1685958166-8650-1824503938"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=94.348192214966; desc=\"Application\", db; dur=7.61; desc=\"Database\", timeline-event-0; dur=51.192045211792; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"standard_user\",\n            \"guard_name\": \"sanctum\",\n            \"created_at\": \"2023-06-05T09:30:22.000000Z\",\n            \"updated_at\": \"2023-06-05T09:30:22.000000Z\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"admin\",\n            \"guard_name\": \"sanctum\",\n            \"created_at\": \"2023-06-05T09:30:22.000000Z\",\n            \"updated_at\": \"2023-06-05T09:30:22.000000Z\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"system_support\",\n            \"guard_name\": \"sanctum\",\n            \"created_at\": \"2023-06-05T09:30:22.000000Z\",\n            \"updated_at\": \"2023-06-05T09:30:22.000000Z\"\n        },\n        {\n            \"id\": 4,\n            \"name\": \"super_user\",\n            \"guard_name\": \"sanctum\",\n            \"created_at\": \"2023-06-05T09:30:22.000000Z\",\n            \"updated_at\": \"2023-06-05T09:30:22.000000Z\"\n        }\n    ]\n}"
+						}
+					]
+				}
+			],
+			"description": "**Description**\n\nFetch all roles available\n\n**Access Level**\n\nAdmin, SuperUser"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "1|0snM4chND4u7u7OnYPJqe2qDt4Pd6Vlht972Hu31",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "sanctum_token",
+			"value": "25|RZ3awtAlpnMIEAurnKfGlHFQYVTbaG5d5GGMmqZ9"
+		}
+	]
+}

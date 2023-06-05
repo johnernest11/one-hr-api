@@ -16,3 +16,6 @@ Route::prefix('/v1/availability')->group(base_path('routes/api/availability.rout
 
 /** V1 Address */
 Route::prefix('v1/address')->group(base_path('routes/api/address.routes.php'));
+
+/** V1 Roles */
+Route::prefix('/v1/roles')->group(base_path('routes/api/roles.routes.php'));

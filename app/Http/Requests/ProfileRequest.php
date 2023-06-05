@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\SexualCategory;
-use App\Rules\AlphaDashDot;
 use App\Rules\DbVarcharMaxLength;
 use App\Rules\InternationalPhoneNumberFormat;
 use Illuminate\Foundation\Http\FormRequest;
@@ -61,7 +60,6 @@ class ProfileRequest extends FormRequest
     {
         return [
             'email' => ['nullable', 'email', 'unique:users,email,'.auth()->id()],
-            'username' => ['nullable', new AlphaDashDot(), 'max:30', 'unique:users,username,'.auth()->id()],
             'first_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'last_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
