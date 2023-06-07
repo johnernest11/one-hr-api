@@ -13,7 +13,7 @@ WebAppKit API is a Laravel 9 RESTFul starter kit for SPA and mobile clients. Thi
 - AWS SQS integration for user notifications (emails, slack alerts). Comes with Redis queueing pre-configured
 - Composer and Git hook automation with GrumpPhp
 - [Clockwork](https://github.com/itsgoingd/clockwork) installed for performance monitoring while in development. Remember to install the browser extension
-- Github PR document template in `docs/pull_request_template.md`
+- Gitlab MR template in `.gitlab/merge_request_templates`
 - Feature and Unit tests coverage
 
 ## Set up your local development environment
@@ -28,7 +28,7 @@ WebAppKit API is a Laravel 9 RESTFul starter kit for SPA and mobile clients. Thi
   - DB Seeders
 
 ## Tools ready for you
-Runs a [code styler](https://github.com/stechstudio/Laravel-PHP-CS-Fixer) for consistency and generate [IDE helper PHP Docs](https://github.com/barryvdh/laravel-ide-helper). See the command at `app/Console/Commands/StyleFixer.php`
+Runs a [code styler](https://laravel.com/docs/9.x/pint) for consistency and generate [IDE helper PHP Docs](https://github.com/barryvdh/laravel-ide-helper). See the command at `app/Console/Commands/StyleFixer.php`
 ```
 php artisan app:styler -i
 ```
