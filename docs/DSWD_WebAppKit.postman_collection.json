@@ -76,12 +76,10 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8000/api/v1/auth/tokens",
-									"protocol": "http",
+									"raw": "{{url}}/api/v1/auth/tokens",
 									"host": [
-										"localhost"
+										"{{url}}"
 									],
-									"port": "8000",
 									"path": [
 										"api",
 										"v1",
@@ -305,12 +303,10 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8000/api/v1/auth/tokens",
-									"protocol": "http",
+									"raw": "{{url}}/api/v1/auth/tokens",
 									"host": [
-										"localhost"
+										"{{url}}"
 									],
-									"port": "8000",
 									"path": [
 										"api",
 										"v1",
@@ -432,12 +428,10 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8000/api/v1/auth/tokens",
-									"protocol": "http",
+									"raw": "{{url}}/api/v1/auth/tokens",
 									"host": [
-										"localhost"
+										"{{url}}"
 									],
-									"port": "8000",
 									"path": [
 										"api",
 										"v1",
@@ -3890,6 +3884,315 @@
 				}
 			],
 			"description": "**Description**\n\nFetch all roles available\n\n**Access Level**\n\nAdmin, SuperUser"
+		},
+		{
+			"name": "App Settings",
+			"item": [
+				{
+					"name": "Save App Settings",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"theme\": \"does-not-exists\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/app-settings",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"app-settings"
+							]
+						},
+						"description": "**Description**\n\nSave application settings\n\n**Payload**\n\n| **key** | **validation** |\n| --- | --- |\n| theme | required, `\"light\" | \"dark\" | \"space\" | \"old-school\"` |"
+					},
+					"response": [
+						{
+							"name": "Sucess",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"theme\": \"space\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/app-settings",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"app-settings"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jun 2023 02:48:20 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jun 2023 02:48:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1686192500-5742-1554190359"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=135.74409484863; desc=\"Application\", db; dur=10.68; desc=\"Database\", timeline-event-0; dur=95.82781791687; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"theme\",\n            \"value\": \"space\",\n            \"created_at\": \"2023-06-08T02:48:20.000000Z\",\n            \"updated_at\": \"2023-06-08T02:48:20.000000Z\"\n        }\n    ]\n}"
+						},
+						{
+							"name": "Invalid theme name",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"theme\": \"does-not-exists\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/v1/app-settings",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"app-settings"
+									]
+								}
+							},
+							"status": "Unprocessable Content",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jun 2023 02:52:20 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jun 2023 02:52:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1686192740-8503-1028474694"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=113.64507675171; desc=\"Application\", db; dur=6.64; desc=\"Database\", timeline-event-0; dur=60.152053833008; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"message\": \"A validation error has occurred\",\n    \"error_code\": \"VALIDATION_ERROR\",\n    \"errors\": [\n        {\n            \"field\": \"theme\",\n            \"messages\": [\n                \"The selected theme is invalid.\"\n            ]\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Fetch App Settings",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/app-settings",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"app-settings"
+							]
+						},
+						"description": "**Description**\n\nFetch application settings"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/v1/app-settings",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"app-settings"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jun 2023 02:48:35 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jun 2023 02:48:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.1.15"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Clockwork-Id",
+									"value": "1686192515-1708-1824267363"
+								},
+								{
+									"key": "X-Clockwork-Version",
+									"value": "5.1.12"
+								},
+								{
+									"key": "Server-Timing",
+									"value": "app; dur=64.465045928955; desc=\"Application\", db; dur=2.06; desc=\"Database\", timeline-event-0; dur=20.736932754517; desc=\"Controller\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"theme\",\n            \"value\": \"space\",\n            \"created_at\": \"2023-06-08T02:48:20.000000Z\",\n            \"updated_at\": \"2023-06-08T02:48:20.000000Z\"\n        }\n    ]\n}"
+						}
+					]
+				}
+			],
+			"description": "##### Description\n\nDetails regarding the application context settings. Right now, the only settings implemented is the `theme`"
 		}
 	],
 	"auth": {
@@ -3897,7 +4200,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "1|0snM4chND4u7u7OnYPJqe2qDt4Pd6Vlht972Hu31",
+				"value": "1|Q4D4QtuWSzDJzoZc1uacR9uTlFEwgvCeePSWEAiq",
 				"type": "string"
 			}
 		]
