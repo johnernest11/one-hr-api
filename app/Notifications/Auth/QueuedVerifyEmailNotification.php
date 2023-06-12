@@ -3,13 +3,13 @@
 namespace App\Notifications\Auth;
 
 use App\Enums\Queue;
+use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 
 /**
@@ -20,12 +20,16 @@ class QueuedVerifyEmailNotification extends VerifyEmail implements ShouldQueue
 {
     use Queueable;
 
-    private string $notifiableName;
+    protected string $notifiableName;
+
+    private int $expirationTimeMinutes;
 
     public function __construct(mixed $notifiable)
     {
+        /** @var User $notifiable */
         $this->notifiableName = $notifiable->userProfile->first_name;
         $this->onQueue(Queue::EMAILS->value);
+        $this->expirationTimeMinutes = Config::get('auth.verification.expiration.email', 60);
     }
 
     /**
@@ -49,12 +53,18 @@ class QueuedVerifyEmailNotification extends VerifyEmail implements ShouldQueue
      */
     protected function buildMailMessage($url): MailMessage
     {
+        $appName = config('app.name');
+
         return (new MailMessage())
-            ->subject(Lang::get('Verify Your Email Address'))
-            ->greeting('Hey, '.$this->notifiableName)
-            ->line(Lang::get('Please click the button below to verify your email address.'))
-            ->action(Lang::get('Verify Email Address'), $url)
-            ->line(Lang::get('If you did not create an account, please ignore this email.'));
+            ->subject('Verify Your Email Address')
+            ->greeting('Hey, '.$this->notifiableName.'!')
+            ->line("Thank you for registering to $appName.")
+            ->line(
+                "Please click the button below to verify your email address. 
+               Please note that this link will expire in $this->expirationTimeMinutes minutes."
+            )
+            ->action('Verify Email Address', $url)
+            ->line('If you did not create an account, please ignore this email.');
     }
 
     /**
@@ -72,7 +82,7 @@ class QueuedVerifyEmailNotification extends VerifyEmail implements ShouldQueue
         // this returns https://<api.domain.com>/api/v1/auth/email/verify/<id>/<hash>?expires=<value>&signature=<value>
         $apiRoute = URL::temporarySignedRoute(
             'verification.verify',
-            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+            $this->getExpirationTime(),
             [
                 'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
@@ -87,8 +97,24 @@ class QueuedVerifyEmailNotification extends VerifyEmail implements ShouldQueue
         $apiBase = explode('1/1', $apiBase)[0];
 
         // transform to: https://spa.domain.com/auth/verify-email/<id>/<hash>?expires=<value>&signature=<value>
-        $frontEndUrl = config('clients.web.url.verify-email');
+        $frontEndUrl = $this->getFrontEndUrl();
 
         return $frontEndUrl.'/'.explode($apiBase, $apiRoute)[1];
+    }
+
+    /**
+     * Create the front-end URL
+     */
+    protected function getFrontEndUrl(): string
+    {
+        return config('clients.web.url.verify-email');
+    }
+
+    /**
+     * Set the expiration time of URL
+     */
+    protected function getExpirationTime(): Carbon
+    {
+        return Carbon::now()->addMinutes($this->expirationTimeMinutes);
     }
 }

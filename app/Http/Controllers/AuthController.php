@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ApiErrorCode;
-use App\Events\UserCreated;
+use App\Events\UserRegistered;
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\NoAuthEmailVerificationRequest;
 use App\Interfaces\HttpResources\UserServiceInterface;
@@ -80,7 +80,7 @@ class AuthController extends ApiController
         $data = $this->bindAuthToken($user, $tokenName);
         $data['user'] = $user;
 
-        UserCreated::dispatch($user);
+        UserRegistered::dispatch($user);
 
         return $this->success(['data' => $data], Response::HTTP_CREATED);
     }

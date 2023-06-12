@@ -49,7 +49,8 @@ class UserController extends ApiController
         }
 
         $user = $this->userService->create($request->validated());
-        UserCreated::dispatch($user);
+        $temporaryPassword = $request->get('password');
+        UserCreated::dispatch($user, $temporaryPassword);
 
         return $this->success(['data' => $user], Response::HTTP_CREATED);
     }

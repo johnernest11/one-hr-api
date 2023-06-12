@@ -14,7 +14,6 @@ class SendWelcomeEmailNotification
     public function handle(UserRegistered|UserCreated $event): void
     {
         $notification = new WelcomeNotification();
-        $notification->afterCommit();
         $event->user->notify($notification);
     }
 }
