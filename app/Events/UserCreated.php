@@ -15,13 +15,16 @@ class UserCreated
 
     public User $user;
 
+    public string $temporaryPassword;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(User $user, string $temporaryPassword)
     {
         $this->user = $user;
+        $this->temporaryPassword = $temporaryPassword;
     }
 }
