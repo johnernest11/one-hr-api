@@ -33,7 +33,7 @@ class CodeFormatter extends Command
     public function handle(): int
     {
         $pintTestArg = $this->option('test') ? '--test' : '';
-        $pintCommand = 'vendor/bin/pint '.$pintTestArg;
+        $pintCommand = './vendor/bin/pint '.$pintTestArg;
 
         $this->info("\u{1F9F9} Cleaning up your dirty code...");
         $exitCode = Command::SUCCESS;
