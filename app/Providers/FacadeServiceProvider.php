@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Helpers\ConversionHelper;
 use App\Helpers\DateTimeHelper;
 use App\Helpers\PaginationHelper;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +22,9 @@ class FacadeServiceProvider extends ServiceProvider
         });
         $this->app->bind('DateTimeHelper', function ($app) {
             return new DateTimeHelper();
+        });
+        $this->app->bind('ConversionHelper', function ($app) {
+            return new ConversionHelper();
         });
     }
 

@@ -23,8 +23,8 @@ class Classification extends Filter
     protected function applyFilter(Builder $builder): Builder
     {
         $filterName = $this->getFilterName();
-        $province = strtolower(request($filterName));
+        $type = strtolower(request($filterName));
 
-        return $builder->where('classification', $province);
+        return $builder->where('classification', $type);
     }
 }

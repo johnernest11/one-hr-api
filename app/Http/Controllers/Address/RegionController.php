@@ -13,7 +13,7 @@ class RegionController extends ApiController
     /**
      * Retrieve all regions
      */
-    public function fetch(RegionRequest $region): JsonResponse
+    public function fetch(RegionRequest $request): JsonResponse
     {
         $regions = Region::filtered()->orderBy('name')->get();
 

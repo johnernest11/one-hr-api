@@ -5,8 +5,7 @@ namespace App\Models\Address;
 use App\Enums\MunicipalClassification;
 use App\QueryFilters\Address\Classification;
 use App\QueryFilters\Address\Code;
-use App\QueryFilters\Address\IsCapital;
-use App\QueryFilters\Address\Province as ProvinceFilter;
+use App\QueryFilters\Address\Province;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,13 +23,15 @@ class City extends Model
      * @var string[]
      */
     protected $fillable = [
+        'id',
         'code',
-        'province_id',
+        'province_code',
         'name',
-        'full_name',
-        'alt_name',
+        'code_correspondence',
         'classification',
-        'is_capital',
+        'income_classification',
+        'old_name',
+        'city_class',
     ];
 
     /**
@@ -39,7 +40,6 @@ class City extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'is_capital' => 'boolean',
         'classification' => MunicipalClassification::class,
     ];
 
@@ -53,9 +53,8 @@ class City extends Model
             ->send($builder)
             ->through([
                 Code::class,
-                ProvinceFilter::class,
-                IsCapital::class,
                 Classification::class,
+                Province::class,
             ])
             ->thenReturn();
     }

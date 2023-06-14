@@ -35,7 +35,7 @@ class ProvinceRequest extends FormRequest
     private function getFetchProvincesRules(): array
     {
         return [
-            'region' => ['string', 'exists:regions,id'],
+            'region' => ['string'],
             'code' => ['string'],
         ];
     }

@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('provinces', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('region_id')->constrained('regions')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('code')->unique();
-            $table->string('name')->index();
-            $table->string('alt_name')->nullable();
+            $table->string('code_correspondence')->unique();
+            $table->foreignId('region_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('code');
+            $table->string('name');
+            $table->string('geo_level')->index();
+            $table->string('old_name')->nullable();
+            $table->string('income_classification')->nullable();
             $table->timestamps();
         });
     }

@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('regions', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
-            $table->string('name')->index();
+            $table->string('code_correspondence')->unique();
+            $table->string('code');
+            $table->string('name');
             $table->string('alt_name');
+            $table->string('geo_level')->index();
             $table->timestamps();
         });
     }

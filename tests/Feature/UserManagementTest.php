@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\Role as RoleEnum;
+use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
@@ -84,7 +85,6 @@ class UserManagementTest extends TestCase
             'sex' => 'male',
             'birthday' => '1997-01-04',
             'home_address' => 'Home Address',
-            'barangay' => 'Barangay 64',
             'postal_code' => '211',
         ]);
 
@@ -134,7 +134,7 @@ class UserManagementTest extends TestCase
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => '1997-01-05',
             'home_address' => fake()->buildingNumber,
-            'barangay' => fake()->streetName,
+            'barangay_id' => Barangay::first()->id,
             'city_id' => City::first()->id,
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
@@ -155,7 +155,7 @@ class UserManagementTest extends TestCase
             }
 
             // home_address, barangay, postal_code are wrapped in `user_profile.address` field
-            if (in_array($key, ['home_address', 'barangay', 'postal_code'])) {
+            if (in_array($key, ['home_address', 'postal_code'])) {
                 $result = $response['data']['user_profile']['address'][$key];
                 $this->assertEquals($value, $result);
 
@@ -163,7 +163,7 @@ class UserManagementTest extends TestCase
             }
 
             // city_id, province_id, region_id are wrapped in `user_profile.address.[city|region|province]`
-            if (in_array($key, ['city_id', 'province_id', 'region_id'])) {
+            if (in_array($key, ['city_id', 'province_id', 'region_id', 'barangay_id'])) {
                 // from city_id => city
                 $relationName = explode('_id', $key)[0];
 

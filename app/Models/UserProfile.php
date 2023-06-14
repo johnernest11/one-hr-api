@@ -30,12 +30,6 @@ class UserProfile extends Model
         'telephone_number',
         'sex',
         'birthday',
-        'home_address',
-        'barangay',
-        'city_id',
-        'province_id',
-        'region_id',
-        'postal_code',
         'profile_picture_path',
     ];
 

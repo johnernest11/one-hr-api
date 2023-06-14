@@ -19,7 +19,7 @@ class Address extends Model
     protected $fillable = [
         'user_id',
         'home_address',
-        'barangay',
+        'barangay_id',
         'city_id',
         'province_id',
         'region_id',
@@ -36,7 +36,7 @@ class Address extends Model
     /**
      * The relationships to eager-load
      */
-    protected $with = ['city', 'province', 'region'];
+    protected $with = ['city', 'province', 'region', 'barangay'];
 
     /**
      * An address belongs to a user
@@ -47,7 +47,15 @@ class Address extends Model
     }
 
     /**
-     * An is part of a city/municipality
+     * An address is part of a barangay
+     */
+    public function barangay(): BelongsTo
+    {
+        return $this->belongsTo(Barangay::class);
+    }
+
+    /**
+     * An address is part of a city/municipality
      */
     public function city(): BelongsTo
     {
