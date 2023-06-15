@@ -47,6 +47,7 @@ class ProfileTest extends TestCase
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
             'middle_name' => fake()->lastName,
+            'ext_name' => fake()->randomElement(['Jr.'.'Sr.', 'III']),
             'sex' => fake()->randomElement([SexualCategory::MALE->value, SexualCategory::FEMALE->value]),
             'telephone_number' => '+63279434211',
             'mobile_number' => '+639064647210',

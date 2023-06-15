@@ -80,6 +80,7 @@ class UserManagementTest extends TestCase
             'active' => true,
             'email_verified' => false,
             'middle_name' => 'Bucu',
+            'ext_name' => 'Jr.',
             'mobile_number' => '+639064647295',
             'telephone_number' => '+63279434285',
             'sex' => 'male',
@@ -129,6 +130,7 @@ class UserManagementTest extends TestCase
             'password_confirmation' => 'Sample123_123',
             'active' => fake()->boolean,
             'middle_name' => fake()->lastName,
+            'ext_name' => fake()->randomElement(['Jr.', 'Sr.', 'III']),
             'mobile_number' => '+639064647291',
             'telephone_number' => '+63279434285',
             'sex' => fake()->randomElement(['male', 'female']),
@@ -528,6 +530,19 @@ class UserManagementTest extends TestCase
 
         $middle_name = Str::substr($middle_name, 2);
         $response = $this->get("$this->baseUri/search?query=$middle_name");
+        $response = $response->decodeResponseJson();
+        $this->assertCount(1, $response['data']);
+    }
+
+    /** @throws Throwable */
+    public function test_it_can_search_via_ext_name()
+    {
+        User::query()->delete();
+        $ext_name = $this->produceUsers()->userProfile->ext_name;
+
+        $ext_name = Str::substr($ext_name, 2);
+        $ext_name = urlencode($ext_name);
+        $response = $this->get("$this->baseUri/search?query=$ext_name");
         $response = $response->decodeResponseJson();
         $this->assertCount(1, $response['data']);
     }

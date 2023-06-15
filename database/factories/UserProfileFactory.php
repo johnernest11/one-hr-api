@@ -23,6 +23,7 @@ class UserProfileFactory extends Factory
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
             'middle_name' => fake()->lastName,
+            'ext_name' => fake()->randomElement(['Jr.', 'Sr.', 'III', 'IV']),
             'mobile_number' => '+63906'.fake()->unique()->randomNumber(7),
             'telephone_number' => '+6327'.fake()->randomNumber(7),
             'sex' => fake()->randomElement(['male', 'female']),

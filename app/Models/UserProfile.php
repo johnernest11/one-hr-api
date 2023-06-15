@@ -26,6 +26,7 @@ class UserProfile extends Model
         'first_name',
         'last_name',
         'middle_name',
+        'ext_name',
         'mobile_number',
         'telephone_number',
         'sex',
@@ -102,13 +103,18 @@ class UserProfile extends Model
         return Attribute::get(function () {
             $firstName = $this->first_name;
             $lastName = $this->last_name;
-            $middle_name = $this->middle_name;
+            $middleName = $this->middle_name;
+            $extName = $this->ext_name;
 
-            if ($middle_name) {
-                return "$firstName $middle_name $lastName";
+            if ($middleName) {
+                $fullName = "$firstName $middleName $lastName $extName";
+
+                return trim($fullName);
             }
 
-            return "$firstName $lastName";
+            $fullName = "$firstName $lastName $extName";
+
+            return trim($fullName);
         });
     }
 

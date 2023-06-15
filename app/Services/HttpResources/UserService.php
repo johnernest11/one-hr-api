@@ -162,7 +162,8 @@ class UserService implements UserServiceInterface
             // Do a full match search for the names as they have a fullText index in our migrations
             ->orWhere('user_profiles.first_name', 'like', "%$term%")
             ->orWhere('user_profiles.last_name', 'like', "%$term%")
-            ->orWhere('user_profiles.middle_name', 'like', "%$term%");
+            ->orWhere('user_profiles.middle_name', 'like', "%$term%")
+            ->orWhere('user_profiles.ext_name', 'like', "%$term%");
 
         return $this->buildPagination($pagination, $users);
     }

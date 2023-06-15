@@ -63,6 +63,7 @@ class ProfileRequest extends FormRequest
             'first_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'last_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
                 new InternationalPhoneNumberFormat(),

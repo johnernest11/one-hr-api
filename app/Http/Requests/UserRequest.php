@@ -6,7 +6,6 @@ use App\Enums\SexualCategory;
 use App\Rules\DbVarcharMaxLength;
 use App\Rules\InternationalPhoneNumberFormat;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\Password;
 use Propaganistas\LaravelPhone\Rules\Phone as PhoneRule;
@@ -66,6 +65,7 @@ class UserRequest extends FormRequest
             'first_name' => ['string', 'required', new DbVarcharMaxLength()],
             'last_name' => ['string', 'required', new DbVarcharMaxLength()],
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
                 'unique:user_profiles,mobile_number',
@@ -104,6 +104,7 @@ class UserRequest extends FormRequest
             'first_name' => ['string', new DbVarcharMaxLength()],
             'last_name' => ['string', new DbVarcharMaxLength()],
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
                 'unique:user_profiles,mobile_number',
