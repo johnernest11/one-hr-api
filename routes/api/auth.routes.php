@@ -9,7 +9,7 @@ use App\Http\Controllers\AuthController;
  */
 Route::controller(AuthController::class)->group(function () {
     /** @uses AuthController::store */
-    Route::post('tokens', 'store')->name('auth.store');
+    Route::middleware(['throttle:10,1'])->post('tokens', 'store')->name('auth.store');
 
     /** @uses AuthController::destroy */
     Route::middleware(['auth:sanctum', 'verified.api'])->delete('tokens', 'destroy')->name('auth.destroy');
@@ -21,7 +21,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::middleware(['auth:sanctum', 'verified.api'])->post('tokens/revoke', 'revoke')->name('auth.revoke');
 
     /** @uses AuthController::register */
-    Route::post('register', 'register')->name('auth.register');
+    Route::middleware(['throttle:10,1'])->post('register', 'register')->name('auth.register');
 
     /** @uses AuthController::forgotPassword */
     Route::post('forgot-password', 'forgotPassword')->name('auth.password.forgot');
