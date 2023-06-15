@@ -192,6 +192,7 @@ class UserRequest extends FormRequest
             'photo.max' => 'The :attribute must not exceed 2MB',
             'roles.array' => 'The :attribute field must be an array of role names',
             'roles.*.exists' => 'The role ID does not exists',
+            'birthday.before_or_equal' => 'The :attribute field must not be greater than today',
 
             /** @see https://github.com/Propaganistas/Laravel-Phone#validation */
             'mobile_number.phone' => 'The :attribute field format must be a valid mobile number',
