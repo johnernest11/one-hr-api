@@ -63,8 +63,10 @@ class ProfileRequest extends FormRequest
             'first_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'last_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
+                'unique:user_profiles,mobile_number,'.auth()->id(),
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],
@@ -76,7 +78,7 @@ class ProfileRequest extends FormRequest
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
             'home_address' => ['string', 'nullable'],
-            'barangay' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'barangay_id' => ['nullable', 'exists:barangays,id'],
             'city_id' => ['nullable', 'exists:cities,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'region_id' => ['nullable', 'exists:regions,id'],
@@ -113,6 +115,7 @@ class ProfileRequest extends FormRequest
     {
         return [
             'photo.max' => 'The :attribute must not exceed 2MB',
+            'birthday.before_or_equal' => 'The :attribute field must not be greater than today',
 
             /** @see https://github.com/Propaganistas/Laravel-Phone#validation */
             'mobile_number.phone' => 'The :attribute field format must be a valid mobile number',

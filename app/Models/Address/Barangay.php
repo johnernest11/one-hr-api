@@ -2,8 +2,10 @@
 
 namespace App\Models\Address;
 
+use App\Enums\BarangayClassification;
+use App\QueryFilters\Address\City as CityFilter;
+use App\QueryFilters\Address\Classification;
 use App\QueryFilters\Address\Code;
-use App\QueryFilters\Address\Region as RegionFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Pipeline\Pipeline;
 
-class Province extends Model
+class Barangay extends Model
 {
     use HasFactory;
 
@@ -23,17 +25,38 @@ class Province extends Model
     protected $fillable = [
         'id',
         'code',
+        'city_code',
         'name',
-        'region_id',
         'code_correspondence',
         'geo_level',
         'old_name',
-        'income_classification',
+        'classification',
+    ];
+
+    /**
+     * The fields that should be hidden
+     *
+     * @Note There are over 40K barangays, we hide some un-needed fields
+     * to lessen the memory size the clients need to download
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'old_name', 'geo_level', 'created_at', 'updated_at', 'code', 'classification',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'classification' => BarangayClassification::class,
     ];
 
     /**
      * @Scope
-     * Pipeline for HTTP query filter
+     * Pipeline for HTTP query filters
      */
     public function scopeFiltered(Builder $builder): Builder
     {
@@ -41,13 +64,14 @@ class Province extends Model
             ->send($builder)
             ->through([
                 Code::class,
-                RegionFilter::class,
+                Classification::class,
+                CityFilter::class,
             ])
             ->thenReturn();
     }
 
     /**
-     * A province comprises an address
+     * A City comprises an address
      *
      * @returns HasMany
      */
@@ -57,12 +81,12 @@ class Province extends Model
     }
 
     /**
-     * A province belongs to region
+     * A City belongs to province
      *
      * @returns BelongsTo
      */
-    protected function region(): BelongsTo
+    protected function city(): BelongsTo
     {
-        return $this->belongsTo(Region::class);
+        return $this->belongsTo(Province::class);
     }
 }

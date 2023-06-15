@@ -70,7 +70,7 @@ class UserService implements UserServiceInterface
                 'active',
                 'email_verified_at',
                 'home_address',
-                'barangay',
+                'barangay_id',
                 'city_id',
                 'province_id',
                 'region_id',
@@ -81,7 +81,7 @@ class UserService implements UserServiceInterface
             // Set the Address fields
             $user->userProfile->address()->create(Arr::only(
                 $userInfo,
-                ['home_address', 'barangay', 'city_id', 'province_id', 'region_id', 'postal_code']
+                ['home_address', 'barangay_id', 'city_id', 'province_id', 'region_id', 'postal_code']
             ));
 
             return $user->load('userProfile');
@@ -109,37 +109,19 @@ class UserService implements UserServiceInterface
             $user->update(Arr::only($newUserInfo, ['email', 'password', 'active', 'email_verified_at']));
             $user->userProfile()->update(
                 Arr::except($newUserInfo, ['email', 'password', 'active', 'email_verified_at', 'roles', 'home_address',
-                    'barangay', 'city_id', 'province_id', 'region_id', 'postal_code',
+                    'barangay_id', 'city_id', 'province_id', 'region_id', 'postal_code',
                 ])
             );
 
             // Update the address fields
             $user->userProfile->address()->update(Arr::only(
                 $newUserInfo,
-                ['home_address', 'barangay', 'city_id', 'province_id', 'region_id', 'postal_code']
+                ['home_address', 'barangay_id', 'city_id', 'province_id', 'region_id', 'postal_code']
             ));
 
             if (isset($newUserInfo['roles'])) {
                 $user->syncRoles($newUserInfo['roles']);
             }
-
-            return $user->fresh('userProfile');
-        }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws Throwable
-     */
-    public function updateProfile($id, array $newUserInfo): User
-    {
-        return DB::transaction(function () use ($id, $newUserInfo) {
-            /** @var User $user */
-            $user = $this->model::with('userProfile')->findOrFail($id);
-
-            $user->update(Arr::only($newUserInfo, ['email']));
-            $user->userProfile()->update(Arr::except($newUserInfo, ['email']));
 
             return $user->fresh('userProfile');
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
@@ -162,7 +144,8 @@ class UserService implements UserServiceInterface
             // Do a full match search for the names as they have a fullText index in our migrations
             ->orWhere('user_profiles.first_name', 'like', "%$term%")
             ->orWhere('user_profiles.last_name', 'like', "%$term%")
-            ->orWhere('user_profiles.middle_name', 'like', "%$term%");
+            ->orWhere('user_profiles.middle_name', 'like', "%$term%")
+            ->orWhere('user_profiles.ext_name', 'like', "%$term%");
 
         return $this->buildPagination($pagination, $users);
     }

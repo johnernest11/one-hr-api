@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Address;
 
-use App\Enums\MunicipalClassification;
+use App\Enums\BarangayClassification;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class CityRequest extends FormRequest
+class BarangayRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class CityRequest extends FormRequest
         $routeName = $this->route()->getName();
 
         return match ($routeName) {
-            'cities.index' => $this->getFetchCitiesRules(),
+            'barangays.index' => $this->getFetchBarangayRules(),
             default => [],
         };
     }
@@ -34,12 +34,12 @@ class CityRequest extends FormRequest
     /**
      * Fetch rules
      */
-    private function getFetchCitiesRules(): array
+    private function getFetchBarangayRules(): array
     {
         return [
-            'province' => ['string'],
+            'city' => ['string'],
             'code' => ['string'],
-            'classification' => [new Enum(MunicipalClassification::class)],
+            'classification' => [new Enum(BarangayClassification::class)],
         ];
     }
 
@@ -49,10 +49,8 @@ class CityRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'exists.region' => 'The :attribute ID does not exists',
-
             // As of writing, we need to add the namespace for the enum rule
-            'classification.Illuminate\Validation\Rules\Enum' => 'Valid values for the :attribute field are `city` and `municipality`.',
+            'classification.Illuminate\Validation\Rules\Enum' => 'Valid values for the :attribute field are `rural` and `urban`.',
         ];
     }
 }

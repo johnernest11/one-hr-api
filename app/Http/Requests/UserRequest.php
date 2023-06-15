@@ -6,7 +6,6 @@ use App\Enums\SexualCategory;
 use App\Rules\DbVarcharMaxLength;
 use App\Rules\InternationalPhoneNumberFormat;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\Password;
 use Propaganistas\LaravelPhone\Rules\Phone as PhoneRule;
@@ -66,6 +65,7 @@ class UserRequest extends FormRequest
             'first_name' => ['string', 'required', new DbVarcharMaxLength()],
             'last_name' => ['string', 'required', new DbVarcharMaxLength()],
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
                 'unique:user_profiles,mobile_number',
@@ -80,7 +80,7 @@ class UserRequest extends FormRequest
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
             'home_address' => ['string', 'nullable'],
-            'barangay' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'barangay_id' => ['nullable', 'exists:barangays,id'],
             'city_id' => ['nullable', 'exists:cities,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'region_id' => ['nullable', 'exists:regions,id'],
@@ -104,9 +104,10 @@ class UserRequest extends FormRequest
             'first_name' => ['string', new DbVarcharMaxLength()],
             'last_name' => ['string', new DbVarcharMaxLength()],
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
-                'unique:user_profiles,mobile_number',
+                'unique:user_profiles,mobile_number,'.request('id'),
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],
@@ -118,7 +119,7 @@ class UserRequest extends FormRequest
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
             'home_address' => ['string', 'nullable'],
-            'barangay' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'barangay_id' => ['nullable', 'exists:barangays,id'],
             'city_id' => ['nullable', 'exists:cities,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'region_id' => ['nullable', 'exists:regions,id'],
@@ -191,6 +192,7 @@ class UserRequest extends FormRequest
             'photo.max' => 'The :attribute must not exceed 2MB',
             'roles.array' => 'The :attribute field must be an array of role names',
             'roles.*.exists' => 'The role ID does not exists',
+            'birthday.before_or_equal' => 'The :attribute field must not be greater than today',
 
             /** @see https://github.com/Propaganistas/Laravel-Phone#validation */
             'mobile_number.phone' => 'The :attribute field format must be a valid mobile number',

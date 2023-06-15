@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\MunicipalClassification;
+use App\Enums\BarangayClassification;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,19 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cities', function (Blueprint $table) {
-
+        Schema::create('barangays', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('province_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('code_correspondence')->unique();
-            $table->string('code');
+            $table->foreignId('city_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('code')->nullable();
             $table->string('name');
             $table->string('old_name')->nullable();
+            $table->string('geo_level');
             $table->enum('classification',
-                ConversionHelper::convertEnumToArray(MunicipalClassification::class)
+                ConversionHelper::convertEnumToArray(BarangayClassification::class)
             )->index();
-            $table->string('city_class')->nullable();
-            $table->string('income_classification')->nullable();
             $table->timestamps();
         });
     }

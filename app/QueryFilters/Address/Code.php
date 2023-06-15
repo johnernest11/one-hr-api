@@ -25,6 +25,6 @@ class Code extends Filter
         $filterName = $this->getFilterName();
         $code = strtolower(request($filterName));
 
-        return $builder->where('code', $code);
+        return $builder->where('code_correspondence', $code);
     }
 }
