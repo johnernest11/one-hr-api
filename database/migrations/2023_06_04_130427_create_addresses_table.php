@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_profile_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->text('home_address')->nullable();
-            $table->string('barangay')->nullable();
-            $table->foreignId('city_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('province_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('region_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnDelete();
+            $table->foreignId('barangay_id')->nullable()->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('city_id')->nullable()->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('province_id')->nullable()->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('region_id')->nullable()->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('postal_code')->nullable();
             $table->timestamps();
         });

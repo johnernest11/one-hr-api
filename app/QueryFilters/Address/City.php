@@ -5,9 +5,9 @@ namespace App\QueryFilters\Address;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class IsCapital extends Filter
+class City extends Filter
 {
-    private const FILTER_NAME = 'is_capital';
+    private const FILTER_NAME = 'city';
 
     /**
      * {@inheritDoc}
@@ -25,6 +25,6 @@ class IsCapital extends Filter
         $filterName = $this->getFilterName();
         $province = strtolower(request($filterName));
 
-        return $builder->where('is_capital', $province);
+        return $builder->where('city_id', $province);
     }
 }

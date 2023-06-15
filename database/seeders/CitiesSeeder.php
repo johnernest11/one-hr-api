@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\MunicipalClassification;
 use App\Models\Address\City;
-use App\Models\Address\Province;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
@@ -14,19 +14,22 @@ class CitiesSeeder extends Seeder
      */
     public function run(): void
     {
-        $rawData = file_get_contents(base_path('database/seeders/dumps/cities_municipalities.json'));
+        $rawData = file_get_contents(base_path('database/seeders/dumps/psgc_cities_1q23.json'));
         $citiesJson = json_decode($rawData, true);
 
         $cities = [];
         foreach ($citiesJson as $city) {
             $cities[] = [
+                'id' => $city['city_id'],
                 'code' => $city['code'],
                 'name' => $city['name'],
-                'full_name' => $city['fullName'],
-                'alt_name' => $city['altName'],
-                'province_id' => Province::where('code', $city['province'])->pluck('id')->first(),
-                'classification' => strtoupper($city['classification']),
-                'is_capital' => $city['isCapital'],
+                'code_correspondence' => $city['code_correspondence'],
+                'classification' => $city['classification'] === 'MUNICIPALITY'
+                    ? MunicipalClassification::MUNICIPALITY : MunicipalClassification::CITY,
+                'old_name' => $city['old_name'],
+                'city_class' => $city['city_class'],
+                'income_classification' => $city['income_classification'],
+                'province_id' => $city['prov_id'],
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];

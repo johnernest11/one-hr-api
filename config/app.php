@@ -214,6 +214,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         'PaginationHelper' => \App\Facades\PaginationHelperFacade::class,
         'DateTimeHelper' => \App\Facades\DateTimeHelperFacade::class,
+        'ConversionHelper' => \App\Facades\ConversionHelperFacade::class,
     ])->toArray(),
 
 ];

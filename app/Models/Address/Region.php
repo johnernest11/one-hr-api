@@ -19,9 +19,12 @@ class Region extends Model
      * @var string[]
      */
     protected $fillable = [
+        'id',
         'code',
         'name',
         'alt_name',
+        'geo_level',
+        'code_correspondence',
     ];
 
     /**

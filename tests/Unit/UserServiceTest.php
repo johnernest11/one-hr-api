@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Enums\PaginationType;
 use App\Interfaces\HttpResources\UserServiceInterface;
+use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
@@ -53,7 +54,7 @@ class UserServiceTest extends TestCase
         $this->produceUsers($count);
 
         $users = $this->userService->all();
-        $this->assertEquals($count, count($users));
+        $this->assertCount($count, $users);
     }
 
     public function test_it_can_fetch_all_users_with_pagination()
@@ -81,7 +82,8 @@ class UserServiceTest extends TestCase
             'email' => fake()->unique()->safeEmail,
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
-            'middle_name' => $this->faker->lastName,
+            'middle_name' => fake()->lastName,
+            'ext_name' => fake()->randomElement(['Jr.', 'Sr.', 'III']),
             'password' => 'Sample123_123',
             'password_confirmation' => 'Sample123_123',
             'active' => fake()->boolean,
@@ -91,7 +93,7 @@ class UserServiceTest extends TestCase
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => '1997-01-05',
             'home_address' => $this->faker->streetName,
-            'barangay' => $this->faker->buildingNumber(),
+            'barangay_id' => Barangay::first()->id,
             'city_id' => City::first()->id,
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,

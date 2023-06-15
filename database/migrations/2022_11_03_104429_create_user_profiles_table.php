@@ -17,6 +17,7 @@ return new class() extends Migration
             $table->string('first_name')->fulltext();
             $table->string('last_name')->fulltext();
             $table->string('middle_name')->nullable()->fulltext();
+            $table->string('ext_name')->nullable();
             $table->string('mobile_number')->unique()->nullable();
             $table->string('telephone_number')->nullable();
             $table->enum('sex', ['male', 'female'])->nullable();

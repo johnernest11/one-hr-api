@@ -3,6 +3,7 @@
 namespace Database\Factories\Address;
 
 use App\Models\Address\Address;
+use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
@@ -21,14 +22,15 @@ class AddressFactory extends Factory
      */
     public function definition(): array
     {
-        $regionId = Region::all()->random()->id;
+        $regionId = Region::first()->id;
         $provinceId = Province::where('region_id', $regionId)->inRandomOrder()->first()->id;
         $cityId = City::where('province_id', $provinceId)->inRandomOrder()->first()->id;
+        $barangayId = Barangay::first()->id; // don't run full search since there's too many
 
         return [
             'user_profile_id' => UserProfile::factory(),
             'home_address' => fake()->streetAddress,
-            'barangay' => 'Barangay #'.fake()->randomNumber(3),
+            'barangay_id' => $barangayId,
             'city_id' => $cityId,
             'province_id' => $provinceId,
             'region_id' => $regionId,

@@ -2,10 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\SexualCategory;
 use App\Rules\DbVarcharMaxLength;
+use App\Rules\InternationalPhoneNumberFormat;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\Password;
+use Propaganistas\LaravelPhone\Rules\Phone as PhoneRule;
 
 class AuthRequest extends FormRequest
 {
@@ -95,6 +99,20 @@ class AuthRequest extends FormRequest
             'first_name' => ['string', 'required', new DbVarcharMaxLength()],
             'last_name' => ['string', 'required', new DbVarcharMaxLength()],
             'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'mobile_number' => [
+                'nullable',
+                'unique:user_profiles,mobile_number',
+                new InternationalPhoneNumberFormat(),
+                (new PhoneRule())->country('PH')->mobile(),
+            ],
+            'sex' => ['nullable', new Enum(SexualCategory::class)],
+            'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'home_address' => ['string', 'nullable'],
+            'barangay_id' => ['nullable', 'exists:barangays,id'],
+            'city_id' => ['nullable', 'exists:cities,id'],
+            'province_id' => ['nullable', 'exists:provinces,id'],
+            'region_id' => ['nullable', 'exists:regions,id'],
+            'postal_code' => ['nullable', new DbVarcharMaxLength()],
         ];
     }
 

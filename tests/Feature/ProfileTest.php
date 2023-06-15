@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\Role as RoleEnum;
 use App\Enums\SexualCategory;
+use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
@@ -46,12 +47,13 @@ class ProfileTest extends TestCase
             'first_name' => fake()->firstName,
             'last_name' => fake()->lastName,
             'middle_name' => fake()->lastName,
+            'ext_name' => fake()->randomElement(['Jr.'.'Sr.', 'III']),
             'sex' => fake()->randomElement([SexualCategory::MALE->value, SexualCategory::FEMALE->value]),
             'telephone_number' => '+63279434211',
             'mobile_number' => '+639064647210',
             'birthday' => '1997-01-04',
             'home_address' => 'Address Line 1',
-            'barangay' => 'Barangay 1',
+            'barangay_id' => Barangay::latest()->first()->id,
             'city_id' => City::latest()->first()->id,
             'province_id' => Province::latest()->first()->id,
             'region_id' => Region::latest()->first()->id,
@@ -71,7 +73,7 @@ class ProfileTest extends TestCase
             }
 
             // home_address, barangay, postal_code are wrapped in `user_profile.address` field
-            if (in_array($key, ['home_address', 'barangay', 'postal_code'])) {
+            if (in_array($key, ['home_address', 'postal_code'])) {
                 $result = $response['data']['user_profile']['address'][$key];
                 $this->assertEquals($value, $result);
 
@@ -79,7 +81,7 @@ class ProfileTest extends TestCase
             }
 
             // city_id, province_id, region_id are wrapped in `user_profile.address.[city|region|province]`
-            if (in_array($key, ['city_id', 'province_id', 'region_id'])) {
+            if (in_array($key, ['city_id', 'province_id', 'region_id', 'barangay_id'])) {
                 // from city_id => city
                 $relationName = explode('_id', $key)[0];
 
