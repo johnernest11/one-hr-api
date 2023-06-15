@@ -115,6 +115,7 @@ class ProfileRequest extends FormRequest
     {
         return [
             'photo.max' => 'The :attribute must not exceed 2MB',
+            'birthday.before_or_equal' => 'The :attribute field must not be greater than today',
 
             /** @see https://github.com/Propaganistas/Laravel-Phone#validation */
             'mobile_number.phone' => 'The :attribute field format must be a valid mobile number',

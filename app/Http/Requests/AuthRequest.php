@@ -125,6 +125,7 @@ class AuthRequest extends FormRequest
         return [
             'email.exists' => 'The :attribute is not registered',
             'mobile_number.phone' => 'The :attribute field format must be a valid PH mobile number',
+            'birthday.before_or_equal' => 'The :attribute field must not be greater than today',
         ];
     }
 }
