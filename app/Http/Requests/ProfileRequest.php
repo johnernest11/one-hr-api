@@ -66,6 +66,7 @@ class ProfileRequest extends FormRequest
             'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
+                'unique:user_profiles,mobile_number,'.auth()->id(),
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],

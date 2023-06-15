@@ -782,7 +782,7 @@
   {
     "prov_id": 198,
     "code_correspondence": "1303900000",
-    "name": "NCR, City of Manila, First District (Not a Province)",
+    "name": "NCR, City of Manila, First District",
     "code": "133900000",
     "geo_level": "Dist",
     "old_name": null,
@@ -794,7 +794,7 @@
   {
     "prov_id": 201,
     "code_correspondence": "1307400000",
-    "name": "NCR, Second District (Not a Province)",
+    "name": "NCR, Second District",
     "code": "137400000",
     "geo_level": "Dist",
     "old_name": null,
@@ -806,7 +806,7 @@
   {
     "prov_id": 204,
     "code_correspondence": "1307500000",
-    "name": "NCR, Third District (Not a Province)",
+    "name": "NCR, Third District",
     "code": "137500000",
     "geo_level": "Dist",
     "old_name": null,
@@ -818,7 +818,7 @@
   {
     "prov_id": 207,
     "code_correspondence": "1307600000",
-    "name": "NCR, Fourth District (Not a Province)",
+    "name": "NCR, Fourth District",
     "code": "137600000",
     "geo_level": "Dist",
     "old_name": null,
@@ -1034,7 +1034,7 @@
   {
     "prov_id": 261,
     "code_correspondence": "0990100000",
-    "name": "City of Isabela (Not a Province)",
+    "name": "City of Isabela",
     "code": "099700000",
     "geo_level": "Prov",
     "old_name": null,

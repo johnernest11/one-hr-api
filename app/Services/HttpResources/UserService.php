@@ -81,7 +81,7 @@ class UserService implements UserServiceInterface
             // Set the Address fields
             $user->userProfile->address()->create(Arr::only(
                 $userInfo,
-                ['home_address', 'barangay', 'city_id', 'province_id', 'region_id', 'postal_code']
+                ['home_address', 'barangay_id', 'city_id', 'province_id', 'region_id', 'postal_code']
             ));
 
             return $user->load('userProfile');
@@ -122,24 +122,6 @@ class UserService implements UserServiceInterface
             if (isset($newUserInfo['roles'])) {
                 $user->syncRoles($newUserInfo['roles']);
             }
-
-            return $user->fresh('userProfile');
-        }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws Throwable
-     */
-    public function updateProfile($id, array $newUserInfo): User
-    {
-        return DB::transaction(function () use ($id, $newUserInfo) {
-            /** @var User $user */
-            $user = $this->model::with('userProfile')->findOrFail($id);
-
-            $user->update(Arr::only($newUserInfo, ['email']));
-            $user->userProfile()->update(Arr::except($newUserInfo, ['email']));
 
             return $user->fresh('userProfile');
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);

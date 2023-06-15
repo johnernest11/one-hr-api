@@ -27,11 +27,6 @@ interface UserServiceInterface
     public function update($id, array $newUserInfo): User;
 
     /**
-     * Update the profile information of a user
-     */
-    public function updateProfile($id, array $newUserInfo): User;
-
-    /**
      * Search for a user
      */
     public function search(
