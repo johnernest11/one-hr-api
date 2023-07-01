@@ -5,12 +5,11 @@ namespace App\Notifications;
 use App\Enums\Queue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackAttachment;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
-class SystemAlertNotification extends Notification implements ShouldQueue
+class SlackSystemAlertNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -35,24 +34,7 @@ class SystemAlertNotification extends Notification implements ShouldQueue
      */
     public function via(mixed $notifiable): array
     {
-        return ['mail', 'slack'];
-    }
-
-    /**
-     * @Channel
-     * Get the mail representation of the notification.
-     */
-    public function toMail(mixed $notifiable): MailMessage
-    {
-        return (new MailMessage())
-            ->greeting("System Notification: $this->level")
-            ->level($this->level)
-            ->line('Issue: ')
-            ->line($this->message)
-            ->line(
-                "You received this notification because you've been registered 
-                        with a System Support role"
-            );
+        return ['slack'];
     }
 
     /**
@@ -68,15 +50,5 @@ class SystemAlertNotification extends Notification implements ShouldQueue
             ->attachment(function (SlackAttachment $attachment) use ($title, $message) {
                 $attachment->title($title)->content($message);
             });
-    }
-
-    /**
-     * Get the array representation of the notification.
-     */
-    public function toArray(mixed $notifiable): array
-    {
-        return [
-            //
-        ];
     }
 }
