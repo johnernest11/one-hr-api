@@ -2,8 +2,10 @@
 
 namespace App\Listeners;
 
+use App\Enums\AppEnvironment;
 use App\Models\User;
-use App\Notifications\SystemAlertNotification;
+use App\Notifications\EmailSystemAlertNotification;
+use App\Notifications\SlackSystemAlertNotification;
 use Illuminate\Log\Events\MessageLogged;
 
 class LogEventListener
@@ -25,7 +27,13 @@ class LogEventListener
     public function handle(MessageLogged $event): void
     {
         // Only send email notifications when in prod, uat, or development
-        if (! in_array(app()->environment(), ['production', 'uat', 'development'])) {
+        if (! in_array(app()->environment(),
+            [
+                AppEnvironment::PRODUCTION->value,
+                AppEnvironment::UAT->value,
+                AppEnvironment::DEVELOPMENT->value,
+            ]
+        )) {
             return;
         }
 
@@ -36,9 +44,17 @@ class LogEventListener
 
         // send a notification to all users with the system alert permission
         $users = User::permission(['receive_system_alerts'])->cursor();
+        $slackAlertSent = false;
         /** @var User $user */
         foreach ($users as $user) {
-            $user->notify(new SystemAlertNotification($event->level, $event->message));
+            // We only send the slack alert once
+            if (! $slackAlertSent) {
+                $user->notify(new SlackSystemAlertNotification($event->level, $event->message));
+                $slackAlertSent = true;
+            }
+
+            // We send email alerts to every System Support Role
+            $user->notify(new EmailSystemAlertNotification($event->level, $event->message));
         }
     }
 }
