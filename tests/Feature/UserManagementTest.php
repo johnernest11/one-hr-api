@@ -540,7 +540,6 @@ class UserManagementTest extends TestCase
         User::query()->delete();
         $ext_name = $this->produceUsers()->userProfile->ext_name;
 
-        $ext_name = Str::substr($ext_name, 2);
         $ext_name = urlencode($ext_name);
         $response = $this->get("$this->baseUri/search?query=$ext_name");
         $response = $response->decodeResponseJson();

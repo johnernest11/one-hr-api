@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\SexualCategory;
 use App\Interfaces\CloudFileServices\CloudFileServiceInterface;
 use App\Models\Address\Address;
+use DateTimeHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -73,6 +74,21 @@ class UserProfile extends Model
         'birthday' => 'date:Y-m-d',
         'sex' => SexualCategory::class, // Laravel 9 enum casting. @see https://laravel.com/docs/9.x/releases
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::deleting(function (UserProfile $userProfile) {
+            if ($userProfile->mobile_number) {
+                $userProfile->mobile_number = DateTimeHelper::appendTimestamp(
+                    $userProfile->mobile_number,
+                    '::deleted_'
+                );
+                $userProfile->saveQuietly();
+            }
+        });
+    }
 
     /**
      * A profile belongs to exactly one user

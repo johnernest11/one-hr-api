@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Enums\AppEnvironment;
 use App\Models\User;
 use App\Notifications\SystemAlertNotification;
 use Illuminate\Log\Events\MessageLogged;
@@ -25,7 +26,13 @@ class LogEventListener
     public function handle(MessageLogged $event): void
     {
         // Only send email notifications when in prod, uat, or development
-        if (! in_array(app()->environment(), ['production', 'uat', 'development'])) {
+        if (! in_array(app()->environment(),
+            [
+                AppEnvironment::PRODUCTION->value,
+                AppEnvironment::UAT->value,
+                AppEnvironment::DEVELOPMENT->value,
+            ]
+        )) {
             return;
         }
 
