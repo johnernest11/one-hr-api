@@ -138,14 +138,14 @@ class UserRequest extends FormRequest
     private function getFetchUsersRules(): array
     {
         return [
-            'active' => ['nullable', 'boolean'],
-            'verified' => ['nullable', 'boolean'],
-            'role' => ['nullable', 'integer', 'min:1'],
-            'sort' => ['nullable', 'in:asc,desc'],
-            'sort_by' => ['nullable', 'string'],
-            'limit' => ['nullable', 'int'],
-            'page' => ['nullable', 'int'],
-            'email' => ['nullable', 'email'],
+            'active' => ['boolean'],
+            'verified' => ['boolean'],
+            'role' => ['integer', 'min:1'],
+            'sort' => ['in:asc,desc'],
+            'sort_by' => ['string'],
+            'limit' => ['int'],
+            'page' => ['int'],
+            'email' => ['email'],
         ];
     }
 
