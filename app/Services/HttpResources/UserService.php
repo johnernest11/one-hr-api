@@ -38,6 +38,7 @@ class UserService implements UserServiceInterface
 
     /**
      * {@inheritDoc}
+     * test
      *
      * @throws Throwable
      */

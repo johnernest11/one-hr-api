@@ -4,10 +4,6 @@ namespace App\Providers;
 
 use App\Enums\AppEnvironment;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
-use Illuminate\Database\Connection;
-use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,17 +22,6 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->isLocal()) {
             $this->app->register(IdeHelperServiceProvider::class);
         }
-
-        /**
-         * Notify developers if query load times reach the threshold
-         */
-        $threshold = 15 * 1000; // in milliseconds
-        DB::whenQueryingForLongerThan($threshold, function (Connection $connection, QueryExecuted $event) {
-            Log::warning('DB query took too long', [
-                'connection_name' => $connection->getName(),
-                'event' => $event,
-            ]);
-        });
     }
 
     /**
