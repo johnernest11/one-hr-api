@@ -107,7 +107,7 @@ class UserService extends HttpService implements UserServiceInterface
     public function update($modelOrId, array $newUserInfo): User
     {
         return DB::transaction(function () use ($modelOrId, $newUserInfo) {
-            $user = $this->getFreshModelInstance($this->model, $modelOrId, ['userProfile']);
+            $user = $this->getInstanceFromModelOrId($this->model, $modelOrId);
 
             unset($newUserInfo['password_confirmation']);
 
@@ -164,7 +164,7 @@ class UserService extends HttpService implements UserServiceInterface
     public function destroy(User|int|string $modelOrId): User
     {
         /** @var User $user */
-        $user = $this->getFreshModelInstance($this->model, $modelOrId, ['userProfile']);
+        $user = $this->getInstanceFromModelOrId($this->model, $modelOrId);
         $user->delete();
 
         return $user;
@@ -173,7 +173,7 @@ class UserService extends HttpService implements UserServiceInterface
     public function updatePassword(User|int|string $modelOrId, string $newPassword, string $oldPassword): User|null
     {
         /** @var User $user */
-        $user = $this->getFreshModelInstance($this->model, $modelOrId, ['userProfile']);
+        $user = $this->getInstanceFromModelOrId($this->model, $modelOrId);
 
         if (! Hash::check($oldPassword, $user->password)) {
             return null;

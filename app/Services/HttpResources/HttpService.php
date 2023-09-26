@@ -39,10 +39,24 @@ class HttpService
     /**
      * Retrieve a fresh instance of an Eloquent model
      */
-    protected function getFreshModelInstance(Model $model, mixed $modelOrId, array $relations = []): Model
+    protected function getInstanceFromModelOrId(Model $model, mixed $modelOrId, bool $freshInstance = false, array $relations = []): Model
     {
+        // To minimize repeating DB queries, we only rehydrate the model when needed
         if ($modelOrId instanceof $model) {
-            return $modelOrId->fresh();
+            // We retrieve data from the DB if they need a fresh instance
+            if ($freshInstance) {
+                return $modelOrId->fresh($relations);
+            }
+
+            // Just load the relations if they don't want a new instance but have relations to load
+            if (count($relations) > 0) {
+                return $modelOrId->load($relations);
+            }
+
+            // Return the same instance if a fresh instance nor relationships are not needed
+            else {
+                return $modelOrId;
+            }
         }
 
         return $model::with($relations)->findOrFail($modelOrId);
