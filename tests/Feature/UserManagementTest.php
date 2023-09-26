@@ -50,7 +50,7 @@ class UserManagementTest extends TestCase
      *
      * @throws Throwable
      */
-    public function test_it_can_create_a_user($input, $statusCode)
+    public function test_it_can_create_a_user($input, $statusCode): void
     {
         $input['city_id'] = City::first()->id;
         $input['province_id'] = Province::first()->id;
@@ -102,7 +102,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_should_validate_unique_fields_when_creating_a_user()
+    public function test_it_should_validate_unique_fields_when_creating_a_user(): void
     {
         $user = $this->produceUsers();
         $input = $this->getRequiredUserInputSample();
@@ -118,7 +118,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_update_a_user()
+    public function test_it_can_update_a_user(): void
     {
         $user = $this->produceUsers();
 
@@ -197,7 +197,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_should_validate_unique_mobile_number_and_email_when_updating_a_user()
+    public function test_it_should_validate_unique_mobile_number_and_email_when_updating_a_user(): void
     {
         $users = $this->produceUsers(2);
         $users[1]->userProfile->mobile_number = '+639164647295';
@@ -214,7 +214,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_should_ignore_unique_validation_when_updating_the_same_user_with_the_same_field_values()
+    public function test_it_should_ignore_unique_validation_when_updating_the_same_user_with_the_same_field_values(): void
     {
         $user = $this->produceUsers();
         $user->userProfile->mobile_number = '+639164647295';
@@ -230,7 +230,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @dataProvider differentMobileNumbers */
-    public function test_it_should_validate_mobile_number_formats($input, $statusCode)
+    public function test_it_should_validate_mobile_number_formats($input, $statusCode): void
     {
         $result = $this->postJson($this->baseUri, $input);
         $result->assertStatus($statusCode);
@@ -256,7 +256,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @dataProvider differentTelephoneNumbers */
-    public function test_it_should_validate_telephone_number_formats($input, $statusCode)
+    public function test_it_should_validate_telephone_number_formats($input, $statusCode): void
     {
         $result = $this->postJson('api/v1/users', $input);
         $result->assertStatus($statusCode);
@@ -281,7 +281,7 @@ class UserManagementTest extends TestCase
         ];
     }
 
-    public function test_it_can_read_a_user()
+    public function test_it_can_read_a_user(): void
     {
         $user = $this->produceUsers();
 
@@ -290,7 +290,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_delete_a_user()
+    public function test_it_can_delete_a_user(): void
     {
         $user = $this->produceUsers();
 
@@ -300,7 +300,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_fetch_users()
+    public function test_it_can_fetch_users(): void
     {
         $this->produceUsers(5);
         $totalUserCount = User::count('id');
@@ -313,7 +313,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_return_length_aware_paginated_results()
+    public function test_it_can_return_length_aware_paginated_results(): void
     {
         $this->produceUsers(15);
         $totalUserCount = User::count('id');
@@ -328,7 +328,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_sets_up_the_active_and_email_verified_at_fields_when_not_provided()
+    public function test_it_sets_up_the_active_and_email_verified_at_fields_when_not_provided(): void
     {
         $onlyRequiredInputs = $this->getRequiredUserInputSample();
         $response = $this->postJson($this->baseUri, $onlyRequiredInputs);
@@ -340,7 +340,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_if_email_verified_is_not_in_payload_then_email_verified_at_should_be_null()
+    public function test_if_email_verified_is_not_in_payload_then_email_verified_at_should_be_null(): void
     {
         $input = $this->getRequiredUserInputSample();
         $response = $this->postJson($this->baseUri, $input);
@@ -350,7 +350,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_if_email_verified_field_is_false_then_email_verified_at_field_should_be_null()
+    public function test_if_email_verified_field_is_false_then_email_verified_at_field_should_be_null(): void
     {
         $input = $this->getRequiredUserInputSample();
         $input['email_verified'] = false;
@@ -361,7 +361,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_if_email_verified_field_is_true_then_email_verified_at_field_should_be_a_valid_date()
+    public function test_if_email_verified_field_is_true_then_email_verified_at_field_should_be_a_valid_date(): void
     {
         $input = $this->getRequiredUserInputSample();
         $input['email_verified'] = true;
@@ -371,7 +371,7 @@ class UserManagementTest extends TestCase
         $this->assertTrue((bool) strtotime($user->email_verified_at->toDateString()));
     }
 
-    public function test_it_can_upload_profile_picture()
+    public function test_it_can_upload_profile_picture(): void
     {
         $user = $this->produceUsers();
         $file = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
@@ -383,7 +383,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_set_a_default_role_as_standard_user()
+    public function test_it_can_set_a_default_role_as_standard_user(): void
     {
         $response = $this->post($this->baseUri, $this->getRequiredUserInputSample());
         $response = $response->decodeResponseJson();
@@ -393,7 +393,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_attach_roles_to_a_user()
+    public function test_it_can_attach_roles_to_a_user(): void
     {
         $firstRole = Role::query()->where('name', RoleEnum::STANDARD_USER->value)->first()->id;
         $secondRole = Role::query()->where('name', RoleEnum::ADMIN->value)->first()->id;
@@ -409,7 +409,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_filter_by_email_while_ignoring_the_case()
+    public function test_it_can_filter_by_email_while_ignoring_the_case(): void
     {
         $email = fake()->unique()->safeEmail();
         $this->produceUsers(1, ['email' => $email]);
@@ -423,7 +423,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_filter_via_email_verified_status()
+    public function test_it_can_filter_via_email_verified_status(): void
     {
         User::query()->delete();
 
@@ -441,7 +441,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_filter_via_role_id()
+    public function test_it_can_filter_via_role_id(): void
     {
         User::query()->delete();
 
@@ -459,7 +459,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_fetch_can_be_sorted_via_last_name()
+    public function test_fetch_can_be_sorted_via_last_name(): void
     {
         $this->produceUsers(3);
 
@@ -479,7 +479,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_fetch_can_be_sorted_via_first_name()
+    public function test_fetch_can_be_sorted_via_first_name(): void
     {
         $this->produceUsers(3);
 
@@ -499,7 +499,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_search_via_last_name()
+    public function test_it_can_search_via_last_name(): void
     {
         User::query()->delete();
         $last_name = $this->produceUsers()->userProfile->last_name;
@@ -511,7 +511,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_search_via_first_name()
+    public function test_it_can_search_via_first_name(): void
     {
         User::query()->delete();
         $first_name = $this->produceUsers()->userProfile->first_name;
@@ -523,7 +523,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_search_via_middle_name()
+    public function test_it_can_search_via_middle_name(): void
     {
         User::query()->delete();
         $middle_name = $this->produceUsers()->userProfile->middle_name;
@@ -535,7 +535,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_search_via_ext_name()
+    public function test_it_can_search_via_ext_name(): void
     {
         User::query()->delete();
         $ext_name = $this->produceUsers()->userProfile->ext_name;
@@ -547,7 +547,7 @@ class UserManagementTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_prefix_search_via_email()
+    public function test_it_can_prefix_search_via_email(): void
     {
         User::query()->delete();
         $email = $this->produceUsers()->email;

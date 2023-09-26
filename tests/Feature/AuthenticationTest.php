@@ -108,7 +108,7 @@ class AuthenticationTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_a_user_created_via_registration_is_always_a_standard_user()
+    public function test_a_user_created_via_registration_is_always_a_standard_user(): void
     {
         $input = [
             'email' => fake()->unique()->email(),
@@ -128,7 +128,7 @@ class AuthenticationTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_user_can_request_access_token_with_user_info()
+    public function test_user_can_request_access_token_with_user_info(): void
     {
         $response = $this->post("$this->baseUri/tokens", [
             'email' => $this->userCreds['email'],
@@ -142,7 +142,7 @@ class AuthenticationTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_user_can_request_access_token_with_client_name()
+    public function test_user_can_request_access_token_with_client_name(): void
     {
         $clientName = "Jeg's Chrome Browser";
         $response = $this->post("$this->baseUri/tokens", [
@@ -157,7 +157,7 @@ class AuthenticationTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_user_can_fetch_all_access_tokens_owned()
+    public function test_user_can_fetch_all_access_tokens_owned(): void
     {
         // create token with browser
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
@@ -173,13 +173,13 @@ class AuthenticationTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_user_must_be_logged_in_to_fetch_tokens()
+    public function test_user_must_be_logged_in_to_fetch_tokens(): void
     {
         $response = $this->get("$this->baseUri/tokens", $this->userCreds);
         $response->assertStatus(401);
     }
 
-    public function test_user_can_revoke_current_access_token()
+    public function test_user_can_revoke_current_access_token(): void
     {
         $user = Sanctum::actingAs($this->user);
         $response = $this->delete("$this->baseUri/tokens");
@@ -188,7 +188,7 @@ class AuthenticationTest extends TestCase
         $this->assertEquals(0, $user->tokens()->count());
     }
 
-    public function test_user_can_revoke_specific_access_tokens()
+    public function test_user_can_revoke_specific_access_tokens(): void
     {
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
 
@@ -200,7 +200,7 @@ class AuthenticationTest extends TestCase
         $this->assertEquals(0, $user->tokens()->count());
     }
 
-    public function test_user_can_revoke_all_access_tokens()
+    public function test_user_can_revoke_all_access_tokens(): void
     {
         // create multiple tokens
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
@@ -213,7 +213,7 @@ class AuthenticationTest extends TestCase
     }
 
     /** @throws Exception */
-    public function test_users_can_request_a_password_reset_email()
+    public function test_users_can_request_a_password_reset_email(): void
     {
         $response = $this->post("$this->baseUri/forgot-password", ['email' => $this->user->email]);
         $response->assertStatus(200);
@@ -221,7 +221,7 @@ class AuthenticationTest extends TestCase
         Notification::assertSentTo($this->user, QueuedResetPasswordNotification::class);
     }
 
-    public function test_users_can_reset_their_passwords()
+    public function test_users_can_reset_their_passwords(): void
     {
         $token = app('auth.password.broker')->createToken($this->user);
         $newPassword = 'Sample123123';

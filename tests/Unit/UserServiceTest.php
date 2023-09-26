@@ -31,14 +31,14 @@ class UserServiceTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_create_a_user()
+    public function test_it_can_create_a_user(): void
     {
         $this->userService->create($this->getUserDetails());
         $this->assertDatabaseCount('users', 1);
     }
 
     /** @throws Throwable */
-    public function test_it_can_update_a_user()
+    public function test_it_can_update_a_user(): void
     {
         $user = $this->produceUsers();
         $edited = ['first_name' => fake()->firstName, 'last_name' => fake()->lastName];
@@ -48,7 +48,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals($edited['last_name'], $editedUser->userProfile->last_name);
     }
 
-    public function test_it_can_fetch_all_users()
+    public function test_it_can_fetch_all_users(): void
     {
         $count = 10;
         $this->produceUsers($count);
@@ -57,7 +57,7 @@ class UserServiceTest extends TestCase
         $this->assertCount($count, $users);
     }
 
-    public function test_it_can_fetch_all_users_with_pagination()
+    public function test_it_can_fetch_all_users_with_pagination(): void
     {
         $count = 10;
         $this->produceUsers($count);
