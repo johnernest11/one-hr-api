@@ -3,9 +3,9 @@
 namespace App\Models\Address;
 
 use App\Enums\MunicipalClassification;
-use App\QueryFilters\Address\Classification;
-use App\QueryFilters\Address\Code;
-use App\QueryFilters\Address\Province;
+use App\QueryFilters\Address\ClassificationFilter;
+use App\QueryFilters\Address\CodeFilter;
+use App\QueryFilters\Address\ProvinceFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -52,9 +52,9 @@ class City extends Model
         return app(Pipeline::class)
             ->send($builder)
             ->through([
-                Code::class,
-                Classification::class,
-                Province::class,
+                CodeFilter::class,
+                ClassificationFilter::class,
+                ProvinceFilter::class,
             ])
             ->thenReturn();
     }
@@ -76,6 +76,6 @@ class City extends Model
      */
     protected function province(): BelongsTo
     {
-        return $this->belongsTo(Province::class);
+        return $this->belongsTo(ProvinceFilter::class);
     }
 }

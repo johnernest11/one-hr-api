@@ -1,25 +1,24 @@
 <?php
 
-namespace App\QueryFilters\Generic;
+namespace App\QueryFilters\Address;
 
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class User extends Filter
+class RegionFilter extends Filter
 {
-    private const FILTER_NAME = 'user';
+    private const FILTER_NAME = 'region';
 
-    /** {@inheritDoc} */
     protected function getFilterName(): string
     {
         return static::FILTER_NAME;
     }
 
-    /** {@inheritDoc} */
     protected function applyFilter(Builder $builder): Builder
     {
         $filterName = $this->getFilterName();
+        $region = strtolower(request($filterName));
 
-        return $builder->where('user_id', request($filterName));
+        return $builder->where('region_id', $region);
     }
 }

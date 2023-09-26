@@ -5,7 +5,7 @@ namespace App\QueryFilters\User;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class Email extends Filter
+class EmailFilter extends Filter
 {
     private const FILTER_NAME = 'email';
 

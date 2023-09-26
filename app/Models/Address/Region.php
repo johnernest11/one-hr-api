@@ -2,7 +2,7 @@
 
 namespace App\Models\Address;
 
-use App\QueryFilters\Address\Code;
+use App\QueryFilters\Address\CodeFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,7 +36,7 @@ class Region extends Model
         return app(Pipeline::class)
             ->send($builder)
             ->through([
-                Code::class,
+                CodeFilter::class,
             ])
             ->thenReturn();
     }
