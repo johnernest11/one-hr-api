@@ -37,7 +37,8 @@ class HttpService
     }
 
     /**
-     * Retrieve a fresh instance of an Eloquent model
+     * Retrieve an eloquent instance from a model or id value.
+     * You can retrieve a fresh instance or load relationships
      */
     protected function getInstanceFromModelOrId(Model $model, mixed $modelOrId, bool $freshInstance = false, array $relations = []): Model
     {
@@ -53,7 +54,7 @@ class HttpService
                 return $modelOrId->load($relations);
             }
 
-            // Return the same instance if a fresh instance nor relationships are not needed
+            // Return the same instance if a fresh instance or reloading the relationships are not needed
             else {
                 return $modelOrId;
             }
