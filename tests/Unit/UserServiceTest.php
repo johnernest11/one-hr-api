@@ -10,6 +10,7 @@ use App\Models\Address\Province;
 use App\Models\Address\Region;
 use App\Models\User;
 use App\Services\HttpResources\UserService;
+use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;
@@ -117,5 +118,20 @@ class UserServiceTest extends TestCase
 
         $foundUsers = User::all();
         $this->assertCount(2, $foundUsers);
+    }
+
+    public function test_it_can_update_password(): void
+    {
+        $user = $this->produceUsers();
+        $oldPassword = 'test_old_123';
+        $user->password = $oldPassword;
+        $user->save();
+
+        $newPassword = 'test_new_123';
+        $updatedUser = $this->userService->updatePassword($user, $newPassword, $oldPassword);
+        $this->assertNotNull($updatedUser);
+
+        $isCorrect = Hash::check($newPassword, $updatedUser->password);
+        $this->assertTrue($isCorrect);
     }
 }

@@ -7,6 +7,7 @@ use App\Enums\Role;
 use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\User;
 use Carbon\Carbon;
+use Hash;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -165,6 +166,20 @@ class UserService extends HttpService implements UserServiceInterface
         /** @var User $user */
         $user = $this->getFreshModelInstance($this->model, $modelOrId, ['userProfile']);
         $user->delete();
+
+        return $user;
+    }
+
+    public function updatePassword(User|int|string $modelOrId, string $newPassword, string $oldPassword): User|null
+    {
+        /** @var User $user */
+        $user = $this->getFreshModelInstance($this->model, $modelOrId, ['userProfile']);
+
+        if (! Hash::check($oldPassword, $user->password)) {
+            return null;
+        }
+        $user->password = $newPassword;
+        $user->save();
 
         return $user;
     }

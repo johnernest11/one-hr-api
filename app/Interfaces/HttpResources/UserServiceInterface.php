@@ -43,4 +43,6 @@ interface UserServiceInterface
         string $term,
         ?PaginationType $pagination = null
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
+
+    public function updatePassword(User|int|string $modelOrId, string $newPassword, string $oldPassword): User|null;
 }
