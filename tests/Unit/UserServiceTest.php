@@ -101,4 +101,21 @@ class UserServiceTest extends TestCase
             'profile_picture_path' => $this->faker->filePath,
         ];
     }
+
+    public function test_it_can_read_a_single_user(): void
+    {
+        $createdUser = $this->produceUsers();
+        $foundUser = $this->userService->read($createdUser->id);
+
+        $this->assertEquals($createdUser->id, $foundUser->id);
+    }
+
+    public function test_it_can_soft_delete_a_user(): void
+    {
+        $this->produceUsers(3);
+        $this->userService->destroy(User::first());
+
+        $foundUsers = User::all();
+        $this->assertCount(2, $foundUsers);
+    }
 }

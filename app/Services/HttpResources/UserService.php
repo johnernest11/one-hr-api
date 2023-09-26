@@ -16,7 +16,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class UserService implements UserServiceInterface
+class UserService extends HttpService implements UserServiceInterface
 {
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
@@ -89,16 +89,24 @@ class UserService implements UserServiceInterface
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
     }
 
+    /** {@inheritDoc} */
+    public function read($id): User
+    {
+        /** @var User $user */
+        $user = $this->model::with('userProfile')->findOrFail($id);
+
+        return $user;
+    }
+
     /**
      * {@inheritDoc}
      *
      * @throws Throwable
      */
-    public function update($id, array $newUserInfo): User
+    public function update($modelOrId, array $newUserInfo): User
     {
-        return DB::transaction(function () use ($id, $newUserInfo) {
-            /** @var User $user */
-            $user = $this->model::with('userProfile')->findOrFail($id);
+        return DB::transaction(function () use ($modelOrId, $newUserInfo) {
+            $user = $this->getFreshModelInstance($this->model, $modelOrId, ['userProfile']);
 
             unset($newUserInfo['password_confirmation']);
 
@@ -151,20 +159,13 @@ class UserService implements UserServiceInterface
         return $this->buildPagination($pagination, $users);
     }
 
-    /**
-     * Build pagination
-     */
-    private function buildPagination(
-        ?PaginationType $pagination,
-        Builder $builder
-    ): Paginator|Collection|LengthAwarePaginator|CursorPaginator {
-        $limit = request('limit') ?? 25;
+    /** {@inheritDoc} */
+    public function destroy(User|int|string $modelOrId): User
+    {
+        /** @var User $user */
+        $user = $this->getFreshModelInstance($this->model, $modelOrId, ['userProfile']);
+        $user->delete();
 
-        return match ($pagination) {
-            PaginationType::LENGTH_AWARE => $builder->paginate($limit),
-            PaginationType::SIMPLE => $builder->simplePaginate($limit),
-            PaginationType::CURSOR => $builder->cursorPaginate($limit),
-            default => $builder->get(),
-        };
+        return $user;
     }
 }
