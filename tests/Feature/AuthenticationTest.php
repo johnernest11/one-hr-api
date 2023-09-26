@@ -87,14 +87,14 @@ class AuthenticationTest extends TestCase
     public function test_users_receive_email_notifications_when_they_register(): void
     {
         $input = [
-            'email' => fake()->unique()->email,
-            'first_name' => fake()->firstName,
-            'last_name' => fake()->lastName,
+            'email' => fake()->unique()->email(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
             'password' => 'SamplePass123',
             'password_confirmation' => 'SamplePass123',
             'mobile_number' => '+639064648112',
             'sex' => fake()->randomElement(array_column(SexualCategory::cases(), 'value')),
-            'birthday' => fake()->date,
+            'birthday' => fake()->date(),
         ];
 
         $response = $this->postJson("$this->baseUri/register", $input);
@@ -111,14 +111,14 @@ class AuthenticationTest extends TestCase
     public function test_a_user_created_via_registration_is_always_a_standard_user()
     {
         $input = [
-            'email' => fake()->unique()->email,
-            'first_name' => fake()->firstName,
-            'last_name' => fake()->lastName,
+            'email' => fake()->unique()->email(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
             'password' => 'SamplePass123',
             'password_confirmation' => 'SamplePass123',
             'mobile_number' => '+639064648112',
             'sex' => fake()->randomElement(array_column(SexualCategory::cases(), 'value')),
-            'birthday' => fake()->date,
+            'birthday' => fake()->date(),
         ];
 
         $response = $this->postJson("$this->baseUri/register", $input);

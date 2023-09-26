@@ -43,10 +43,10 @@ class ProfileTest extends TestCase
     public function test_user_can_update_profile(): void
     {
         $edits = [
-            'email' => fake()->unique()->email,
-            'first_name' => fake()->firstName,
-            'last_name' => fake()->lastName,
-            'middle_name' => fake()->lastName,
+            'email' => fake()->unique()->email(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'middle_name' => fake()->lastName(),
             'ext_name' => fake()->randomElement(['Jr.'.'Sr.', 'III']),
             'sex' => fake()->randomElement([SexualCategory::MALE->value, SexualCategory::FEMALE->value]),
             'telephone_number' => '+63279434211',

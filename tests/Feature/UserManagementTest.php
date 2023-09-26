@@ -55,7 +55,7 @@ class UserManagementTest extends TestCase
         $input['city_id'] = City::first()->id;
         $input['province_id'] = Province::first()->id;
         $input['region_id'] = Region::first()->id;
-        $input['profile_picture_path'] = fake()->filePath;
+        $input['profile_picture_path'] = fake()->filePath();
 
         $response = $this->postJson($this->baseUri, $input);
         $response->assertStatus($statusCode);
@@ -123,25 +123,25 @@ class UserManagementTest extends TestCase
         $user = $this->produceUsers();
 
         $edits = [
-            'email' => fake()->unique()->safeEmail,
-            'first_name' => fake()->firstName,
-            'last_name' => fake()->lastName,
+            'email' => fake()->unique()->safeEmail(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
             'password' => 'Sample123_123',
             'password_confirmation' => 'Sample123_123',
-            'active' => fake()->boolean,
-            'middle_name' => fake()->lastName,
+            'active' => fake()->boolean(),
+            'middle_name' => fake()->lastName(),
             'ext_name' => fake()->randomElement(['Jr.', 'Sr.', 'III']),
             'mobile_number' => '+639064647291',
             'telephone_number' => '+63279434285',
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => '1997-01-05',
-            'home_address' => fake()->buildingNumber,
+            'home_address' => fake()->buildingNumber(),
             'barangay_id' => Barangay::first()->id,
             'city_id' => City::first()->id,
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
-            'postal_code' => fake()->postcode,
-            'profile_picture_path' => fake()->filePath,
+            'postal_code' => fake()->postcode(),
+            'profile_picture_path' => fake()->filePath(),
         ];
 
         $response = $this->patchJson("$this->baseUri/$user->id", $edits);
@@ -411,7 +411,7 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_filter_by_email_while_ignoring_the_case()
     {
-        $email = fake()->unique()->safeEmail;
+        $email = fake()->unique()->safeEmail();
         $this->produceUsers(1, ['email' => $email]);
 
         $email = strtoupper($email);

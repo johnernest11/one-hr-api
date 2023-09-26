@@ -23,7 +23,7 @@ class PublicRoutesTest extends TestCase
     /** @throws Throwable */
     public function test_user_can_check_for_unavailable_email()
     {
-        $email = strtoupper(fake()->safeEmail);
+        $email = strtoupper(fake()->safeEmail());
         $this->produceUsers(1, ['email' => $email]);
 
         $response = $this->get(self::BASE_API_URI.'/availability/email?value='.$email);
@@ -37,7 +37,7 @@ class PublicRoutesTest extends TestCase
     public function test_user_can_check_for_available_email()
     {
         $this->produceUsers(3);
-        $email = strtoupper(fake()->unique()->safeEmail);
+        $email = strtoupper(fake()->unique()->safeEmail());
 
         $response = $this->get(self::BASE_API_URI.'/availability/email?value='.$email);
         $response->assertStatus(200);
@@ -49,7 +49,7 @@ class PublicRoutesTest extends TestCase
     /** @throws Throwable */
     public function test_user_can_check_for_available_email_except_for_id()
     {
-        $email = strtoupper(fake()->safeEmail);
+        $email = strtoupper(fake()->safeEmail());
         $user = $this->produceUsers(1, ['email' => $email]);
 
         $response = $this->get(

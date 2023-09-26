@@ -29,12 +29,12 @@ class AddressFactory extends Factory
 
         return [
             'user_profile_id' => UserProfile::factory(),
-            'home_address' => fake()->streetAddress,
+            'home_address' => fake()->streetAddress(),
             'barangay_id' => $barangayId,
             'city_id' => $cityId,
             'province_id' => $provinceId,
             'region_id' => $regionId,
-            'postal_code' => fake()->postcode,
+            'postal_code' => fake()->postcode(),
         ];
     }
 }
