@@ -57,7 +57,7 @@ Running `composer install`, `composer update`, `git commit` will trigger automat
 - Stick with Eloquent as much as possible, create services to abstract or remove duplicating code
 
 ## Note
-- All dates and timestamps are stored and compared in UTC timezone. Clients must convert their local dates to UTC before submitting to the API
+- The default timezone set for dates and timestamps is `Asia/Manila`. You can change this in `config/app.php`
 
 ## Authors
 - Jego Carlo Ramos (JegRamos)
