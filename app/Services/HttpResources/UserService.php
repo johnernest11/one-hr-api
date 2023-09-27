@@ -7,6 +7,7 @@ use App\Enums\Role;
 use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\User;
 use Carbon\Carbon;
+use Hash;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,7 +17,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class UserService implements UserServiceInterface
+class UserService extends HttpService implements UserServiceInterface
 {
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
@@ -89,16 +90,27 @@ class UserService implements UserServiceInterface
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
     }
 
+    /** {@inheritDoc} */
+    public function read($id): User
+    {
+        /** @var User $user */
+        $user = $this->model::with('userProfile')->findOrFail($id);
+
+        return $user;
+    }
+
     /**
      * {@inheritDoc}
      *
      * @throws Throwable
      */
-    public function update($id, array $newUserInfo): User
+    public function update($modelOrId, array $newUserInfo): User
     {
-        return DB::transaction(function () use ($id, $newUserInfo) {
-            /** @var User $user */
-            $user = $this->model::with('userProfile')->findOrFail($id);
+        return DB::transaction(function () use ($modelOrId, $newUserInfo) {
+            $user = $modelOrId;
+            if (! ($user instanceof User)) {
+                $user = $this->model::findOrFail($modelOrId);
+            }
 
             unset($newUserInfo['password_confirmation']);
 
@@ -151,20 +163,32 @@ class UserService implements UserServiceInterface
         return $this->buildPagination($pagination, $users);
     }
 
-    /**
-     * Build pagination
-     */
-    private function buildPagination(
-        ?PaginationType $pagination,
-        Builder $builder
-    ): Paginator|Collection|LengthAwarePaginator|CursorPaginator {
-        $limit = request('limit') ?? 25;
+    /** {@inheritDoc} */
+    public function destroy(User|int|string $modelOrId): User
+    {
+        $user = $modelOrId;
+        if (! ($user instanceof User)) {
+            $user = $this->model::findOrFail($modelOrId);
+        }
 
-        return match ($pagination) {
-            PaginationType::LENGTH_AWARE => $builder->paginate($limit),
-            PaginationType::SIMPLE => $builder->simplePaginate($limit),
-            PaginationType::CURSOR => $builder->cursorPaginate($limit),
-            default => $builder->get(),
-        };
+        $user->delete();
+
+        return $user;
+    }
+
+    public function updatePassword(User|int|string $modelOrId, string $newPassword, string $oldPassword): User|null
+    {
+        $user = $modelOrId;
+        if (! ($user instanceof User)) {
+            $user = $this->model::findOrFail($modelOrId);
+        }
+
+        if (! Hash::check($oldPassword, $user->password)) {
+            return null;
+        }
+        $user->password = $newPassword;
+        $user->save();
+
+        return $user;
     }
 }

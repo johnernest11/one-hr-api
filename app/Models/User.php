@@ -5,11 +5,11 @@ namespace App\Models;
 use App\Notifications\Auth\QueuedResetPasswordNotification;
 use App\Notifications\Auth\QueuedVerifyEmailNotification;
 use App\Notifications\Auth\VerifyAccountNotification;
-use App\QueryFilters\Generic\Active;
-use App\QueryFilters\Generic\Sort;
-use App\QueryFilters\User\Email;
-use App\QueryFilters\User\Role;
-use App\QueryFilters\User\Verified;
+use App\QueryFilters\Generic\ActiveFilter;
+use App\QueryFilters\Generic\SortFilter;
+use App\QueryFilters\User\EmailFilter;
+use App\QueryFilters\User\RoleFilter;
+use App\QueryFilters\User\VerifiedFilter;
 use DateTimeHelper;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Contracts\Auth\CanResetPassword;
@@ -113,11 +113,11 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         return app(Pipeline::class)
             ->send($builder->with('userProfile'))
             ->through([
-                Active::class,
-                Sort::class,
-                Email::class,
-                Verified::class,
-                Role::class,
+                ActiveFilter::class,
+                SortFilter::class,
+                EmailFilter::class,
+                VerifiedFilter::class,
+                RoleFilter::class,
             ])
             ->thenReturn();
     }

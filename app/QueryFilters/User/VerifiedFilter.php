@@ -5,7 +5,7 @@ namespace App\QueryFilters\User;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class Verified extends Filter
+class VerifiedFilter extends Filter
 {
     public const FILTER_NAME = 'verified';
 

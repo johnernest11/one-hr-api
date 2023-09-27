@@ -5,9 +5,9 @@ namespace App\QueryFilters\Address;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class City extends Filter
+class ClassificationFilter extends Filter
 {
-    private const FILTER_NAME = 'city';
+    private const FILTER_NAME = 'classification';
 
     /**
      * {@inheritDoc}
@@ -23,8 +23,8 @@ class City extends Filter
     protected function applyFilter(Builder $builder): Builder
     {
         $filterName = $this->getFilterName();
-        $province = strtolower(request($filterName));
+        $type = strtolower(request($filterName));
 
-        return $builder->where('city_id', $province);
+        return $builder->where('classification', $type);
     }
 }

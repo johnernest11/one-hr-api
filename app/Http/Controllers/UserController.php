@@ -60,7 +60,7 @@ class UserController extends ApiController
      */
     public function read($id): JsonResponse
     {
-        $user = User::with('userProfile')->findOrFail($id);
+        $user = $this->userService->read($id);
 
         return $this->success(['data' => $user], Response::HTTP_OK);
     }
@@ -72,10 +72,11 @@ class UserController extends ApiController
      */
     public function update($id, UserRequest $request): JsonResponse
     {
-        $this->authorize('update', User::findOrFail($id));
-        $user = $this->userService->update($id, $request->validated());
+        $user = $this->userService->read($id);
+        $this->authorize('update', $user);
+        $updatedUser = $this->userService->update($user, $request->validated());
 
-        return $this->success(['data' => $user], Response::HTTP_OK);
+        return $this->success(['data' => $updatedUser], Response::HTTP_OK);
     }
 
     /**
@@ -85,8 +86,9 @@ class UserController extends ApiController
      */
     public function destroy($id): JsonResponse
     {
-        $this->authorize('delete', User::findOrFail($id));
-        User::findOrFail($id)->delete();
+        $user = $this->userService->read($id);
+        $this->authorize('delete', $user);
+        $this->userService->destroy($user);
 
         return $this->success(null, Response::HTTP_NO_CONTENT);
     }

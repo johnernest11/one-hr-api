@@ -6,47 +6,42 @@ use App\Enums\ApiErrorCode;
 use App\Events\UserRegistered;
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\NoAuthEmailVerificationRequest;
+use App\Interfaces\Authentication\TokenAuthServiceInterface;
 use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\User;
-use Hash;
+use App\Services\Authentication\TokenAuthService;
 use Illuminate\Http\JsonResponse;
-use Laravel\Sanctum\PersonalAccessToken;
 use Password;
-use Propaganistas\LaravelPhone\PhoneNumber;
 use Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends ApiController
 {
+    private TokenAuthService $authService;
+
+    public function __construct(TokenAuthServiceInterface $authService)
+    {
+        $this->authService = $authService;
+    }
+
     /**
      * Grant the user an access token
      */
     public function store(AuthRequest $request): JsonResponse
     {
-        $query = User::query();
         $email = $request->get('email');
+        $password = $request->get('password');
         $mobileNumber = $request->get('mobile_number');
         $user = null;
 
         // Users should be able to log in via email or mobile_number
         if ($email) {
-            $user = $query->where('email', $email)->with('userProfile')->first();
+            $user = $this->authService->getUserViaEmailAndPassword($email, $password);
         } elseif ($mobileNumber) {
-            /**
-             * Since we save the mobile (and phone) numbers in international format,
-             * we will mutate it if clients send in national format
-             *
-             * ex: 09064647295 -> +639064647295
-             */
-            $mobileNumber = (new PhoneNumber($mobileNumber))->ofCountry('PH')->formatE164();
-            $user = $query
-                ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
-                ->where('mobile_number', $mobileNumber)
-                ->with('userProfile')
-                ->first();
+            $user = $this->authService->getUserViaMobileNumberAndPassword($mobileNumber, $password);
         }
 
-        if (! $user || ! Hash::check($request->get('password'), $user->password)) {
+        if (! $user) {
             return $this->error(
                 'The credentials provided were incorrect',
                 Response::HTTP_UNAUTHORIZED,
@@ -57,12 +52,8 @@ class AuthController extends ApiController
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $tokenName = $request->get('client_name') ?? 'api_token';
 
-        /** @var User $user */
-        $data = $this->bindAuthToken($user, $tokenName);
-
-        if ($request->get('with_user')) {
-            $data['user'] = $user;
-        }
+        $withUserDetails = $request->get('with_user', false);
+        $data = $this->authService->bindAuthToken($user, $tokenName, 12, $withUserDetails);
 
         return $this->success(['data' => $data], Response::HTTP_OK);
     }
@@ -77,9 +68,7 @@ class AuthController extends ApiController
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $tokenName = $request->get('client_name') ?? 'api_token';
 
-        $data = $this->bindAuthToken($user, $tokenName);
-        $data['user'] = $user;
-
+        $data = $this->authService->bindAuthToken($user, $tokenName);
         UserRegistered::dispatch($user);
 
         return $this->success(['data' => $data], Response::HTTP_CREATED);
@@ -92,7 +81,7 @@ class AuthController extends ApiController
     {
         /** @var User $user */
         $user = auth()->user();
-        $user->currentAccessToken()->delete();
+        $this->authService->destroyCurrentAuthToken($user);
 
         return $this->success(null, Response::HTTP_NO_CONTENT);
     }
@@ -104,22 +93,9 @@ class AuthController extends ApiController
     {
         /** @var User $user */
         $user = auth()->user();
+        $tokens = $this->authService->getUserAuthTokens($user);
 
-        $tokens = $user->tokens
-            ->map(function (PersonalAccessToken $token) {
-                return [
-                    'id' => $token->id,
-                    'name' => $token->name,
-                    'expires_at' => $token->expires_at,
-                    'last_used_at' => $token->last_used_at,
-                    'created_at' => $token->created_at,
-                ];
-            })
-            // only get un-expired tokens
-            ->reject(fn (array $token) => now() >= $token['expires_at'])
-            ->values();
-
-        return $this->success(['data' => $tokens->toArray()], Response::HTTP_OK);
+        return $this->success(['data' => $tokens], Response::HTTP_OK);
     }
 
     /**
@@ -127,18 +103,10 @@ class AuthController extends ApiController
      */
     public function revoke(AuthRequest $request): JsonResponse
     {
+        /** @var User $user */
+        $user = auth()->user();
         $tokensToRevoke = $request->get('token_ids');
-
-        // delete everything if they pass a star (*)
-        if ($tokensToRevoke === ['*']) {
-            auth()->user()->tokens()->delete();
-
-            return $this->success(null, Response::HTTP_NO_CONTENT);
-        }
-
-        foreach ($tokensToRevoke as $tokenId) {
-            auth()->user()->tokens()->where('id', $tokenId)->delete();
-        }
+        $this->authService->destroyAccessTokens($user, $tokensToRevoke);
 
         return $this->success(null, Response::HTTP_NO_CONTENT);
     }
@@ -215,21 +183,5 @@ class AuthController extends ApiController
         $data = ['message' => 'Password reset was successful'];
 
         return $this->success($data, Response::HTTP_OK);
-    }
-
-    /**
-     * Create a token for the user with expiration
-     */
-    private function bindAuthToken(User $user, string $tokenName, int $expiresAtHours = 12): array
-    {
-        /**
-         * We'll set the abilities to allow everything [*]. Authorization will be handled by Spatie
-         *
-         * @see https://spatie.be/docs/laravel-permission/v5/introduction
-         */
-        $expiresAt = now()->addHours($expiresAtHours);
-        $token = $user->createToken($tokenName, ['*'], $expiresAt)->plainTextToken;
-
-        return ['token' => $token, 'token_name' => $tokenName, 'expires_at' => $expiresAt];
     }
 }

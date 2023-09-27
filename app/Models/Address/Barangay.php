@@ -3,9 +3,9 @@
 namespace App\Models\Address;
 
 use App\Enums\BarangayClassification;
-use App\QueryFilters\Address\City as CityFilter;
-use App\QueryFilters\Address\Classification;
-use App\QueryFilters\Address\Code;
+use App\QueryFilters\Address\CityFilter as CityFilter;
+use App\QueryFilters\Address\ClassificationFilter;
+use App\QueryFilters\Address\CodeFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -63,8 +63,8 @@ class Barangay extends Model
         return app(Pipeline::class)
             ->send($builder)
             ->through([
-                Code::class,
-                Classification::class,
+                CodeFilter::class,
+                ClassificationFilter::class,
                 CityFilter::class,
             ])
             ->thenReturn();
