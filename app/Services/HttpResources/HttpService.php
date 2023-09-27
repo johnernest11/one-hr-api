@@ -7,7 +7,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\CursorPaginator;
 
 class HttpService
@@ -34,32 +33,5 @@ class HttpService
             PaginationType::CURSOR => $builder->cursorPaginate($limit),
             default => $builder->get(),
         };
-    }
-
-    /**
-     * Retrieve an eloquent instance from a model or id value.
-     * You can retrieve a fresh instance or load relationships
-     */
-    protected function getInstanceFromModelOrId(Model $model, mixed $modelOrId, bool $freshInstance = false, array $relations = []): Model
-    {
-        // To minimize repeating DB queries, we only rehydrate the model when needed
-        if ($modelOrId instanceof $model) {
-            // We retrieve data from the DB if they need a fresh instance
-            if ($freshInstance) {
-                return $modelOrId->fresh($relations);
-            }
-
-            // Just load the relations if they don't want a new instance but have relations to load
-            if (count($relations) > 0) {
-                return $modelOrId->load($relations);
-            }
-
-            // Return the same instance if a fresh instance or reloading the relationships are not needed
-            else {
-                return $modelOrId;
-            }
-        }
-
-        return $model::with($relations)->findOrFail($modelOrId);
     }
 }
