@@ -2,8 +2,8 @@
 
 namespace App\Models\Address;
 
-use App\QueryFilters\Address\Code;
-use App\QueryFilters\Address\Region as RegionFilter;
+use App\QueryFilters\Address\CodeFilter;
+use App\QueryFilters\Address\RegionFilter as RegionFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,7 +40,7 @@ class Province extends Model
         return app(Pipeline::class)
             ->send($builder)
             ->through([
-                Code::class,
+                CodeFilter::class,
                 RegionFilter::class,
             ])
             ->thenReturn();

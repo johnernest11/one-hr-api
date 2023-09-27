@@ -19,10 +19,10 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'email' => fake()->unique()->safeEmail,
+            'email' => fake()->unique()->safeEmail(),
             'password' => 'Sample_Password_1',
             'active' => true,
-            'email_verified_at' => fake()->date,
+            'email_verified_at' => fake()->date(),
         ];
     }
 

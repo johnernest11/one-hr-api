@@ -5,7 +5,7 @@ namespace App\QueryFilters\User;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class Role extends Filter
+class RoleFilter extends Filter
 {
     public const FILTER_NAME = 'role';
 

@@ -5,20 +5,26 @@ namespace App\QueryFilters\Address;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class Region extends Filter
+class ProvinceFilter extends Filter
 {
-    private const FILTER_NAME = 'region';
+    private const FILTER_NAME = 'province';
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getFilterName(): string
     {
         return static::FILTER_NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function applyFilter(Builder $builder): Builder
     {
         $filterName = $this->getFilterName();
-        $region = strtolower(request($filterName));
+        $province = strtolower(request($filterName));
 
-        return $builder->where('region_id', $region);
+        return $builder->where('province_id', $province);
     }
 }

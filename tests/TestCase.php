@@ -38,12 +38,11 @@ abstract class TestCase extends BaseTestCase
     protected function getRequiredUserInputSample(): array
     {
         return [
-            'email' => fake()->unique()->safeEmail,
-            'username' => fake()->unique()->userName,
+            'email' => fake()->unique()->safeEmail(),
             'password' => 'Sample_Password_1',
             'password_confirmation' => 'Sample_Password_1',
-            'first_name' => fake()->firstName,
-            'last_name' => fake()->lastName,
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
         ];
     }
 

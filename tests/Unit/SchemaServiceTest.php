@@ -31,7 +31,7 @@ class SchemaServiceTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_can_get_all_table_columns()
+    public function test_it_can_get_all_table_columns(): void
     {
         $expectedColumns = ['id', 'col_2', 'col_3', 'col_4'];
         $result = $this->service->getAllColumns('stubs');
@@ -39,7 +39,7 @@ class SchemaServiceTest extends TestCase
         $this->assertTrue($this->arraysHaveSameValue($expectedColumns, $result));
     }
 
-    public function test_it_can_check_if_column_exists()
+    public function test_it_can_check_if_column_exists(): void
     {
         $result = $this->service->checkIfColumnExists('stubs', 'col_2');
         $this->assertTrue($result);

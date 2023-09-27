@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class S3FileServiceTest extends TestCase
 {
-    public function test_it_can_upload_file()
+    public function test_it_can_upload_file(): void
     {
         $ownerId = 1;
 

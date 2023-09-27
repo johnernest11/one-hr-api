@@ -5,7 +5,7 @@ namespace App\QueryFilters\Generic;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class Active extends Filter
+class ActiveFilter extends Filter
 {
     private const FILTER_NAME = 'active';
 

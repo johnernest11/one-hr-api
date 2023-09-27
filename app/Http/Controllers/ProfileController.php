@@ -7,7 +7,6 @@ use App\Http\Requests\ProfileRequest;
 use App\Interfaces\CloudFileServices\CloudFileServiceInterface;
 use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\User;
-use Hash;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -25,7 +24,7 @@ class ProfileController extends ApiController
      */
     public function view(): JsonResponse
     {
-        $user = User::findOrFail(auth()->user()->id)->load('userProfile');
+        $user = $this->userService->read(auth()->user()->id);
 
         return $this->success(['data' => $user], Response::HTTP_OK);
     }
@@ -62,16 +61,17 @@ class ProfileController extends ApiController
         /** @var User $user */
         $user = auth()->user();
 
-        if (! Hash::check($request->get('old_password'), $user->password)) {
+        $oldPassword = $request->get('old_password');
+        $newPassword = $request->get('password');
+        $updatedUser = $this->userService->updatePassword($user, $newPassword, $oldPassword);
+
+        if (! $updatedUser) {
             return $this->error(
                 'Old password is incorrect',
                 Response::HTTP_UNPROCESSABLE_ENTITY,
                 ApiErrorCode::INCORRECT_OLD_PASSWORD
             );
         }
-
-        $user->password = $request->password;
-        $user->save();
 
         return $this->success(['message' => 'Password changed successfully'], Response::HTTP_OK);
     }

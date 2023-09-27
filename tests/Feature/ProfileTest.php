@@ -43,10 +43,10 @@ class ProfileTest extends TestCase
     public function test_user_can_update_profile(): void
     {
         $edits = [
-            'email' => fake()->unique()->email,
-            'first_name' => fake()->firstName,
-            'last_name' => fake()->lastName,
-            'middle_name' => fake()->lastName,
+            'email' => fake()->unique()->email(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'middle_name' => fake()->lastName(),
             'ext_name' => fake()->randomElement(['Jr.'.'Sr.', 'III']),
             'sex' => fake()->randomElement([SexualCategory::MALE->value, SexualCategory::FEMALE->value]),
             'telephone_number' => '+63279434211',
@@ -97,7 +97,7 @@ class ProfileTest extends TestCase
         }
     }
 
-    public function test_it_can_upload_profile_picture()
+    public function test_it_can_upload_profile_picture(): void
     {
         $file = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
         $response = $this->post("$this->baseUri/profile-picture", ['photo' => $file]);
@@ -107,7 +107,7 @@ class ProfileTest extends TestCase
         Storage::disk('s3')->deleteDirectory('images/');
     }
 
-    public function test_user_can_change_password()
+    public function test_user_can_change_password(): void
     {
         $oldPassword = 'OldPassword123';
         $this->user->password = $oldPassword;

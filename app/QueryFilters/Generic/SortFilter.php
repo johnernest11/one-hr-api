@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Log;
 use Str;
 
-class Sort extends Filter
+class SortFilter extends Filter
 {
     protected function applyFilter(Builder $builder): Builder
     {

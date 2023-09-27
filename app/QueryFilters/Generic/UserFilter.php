@@ -1,30 +1,25 @@
 <?php
 
-namespace App\QueryFilters\Address;
+namespace App\QueryFilters\Generic;
 
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class Code extends Filter
+class UserFilter extends Filter
 {
-    private const FILTER_NAME = 'code';
+    private const FILTER_NAME = 'user';
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     protected function getFilterName(): string
     {
         return static::FILTER_NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     protected function applyFilter(Builder $builder): Builder
     {
         $filterName = $this->getFilterName();
-        $code = strtolower(request($filterName));
 
-        return $builder->where('code_correspondence', $code);
+        return $builder->where('user_id', request($filterName));
     }
 }

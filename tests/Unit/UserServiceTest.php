@@ -10,6 +10,7 @@ use App\Models\Address\Province;
 use App\Models\Address\Region;
 use App\Models\User;
 use App\Services\HttpResources\UserService;
+use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;
@@ -31,14 +32,14 @@ class UserServiceTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_it_can_create_a_user()
+    public function test_it_can_create_a_user(): void
     {
         $this->userService->create($this->getUserDetails());
         $this->assertDatabaseCount('users', 1);
     }
 
     /** @throws Throwable */
-    public function test_it_can_update_a_user()
+    public function test_it_can_update_a_user(): void
     {
         $user = $this->produceUsers();
         $edited = ['first_name' => fake()->firstName, 'last_name' => fake()->lastName];
@@ -48,7 +49,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals($edited['last_name'], $editedUser->userProfile->last_name);
     }
 
-    public function test_it_can_fetch_all_users()
+    public function test_it_can_fetch_all_users(): void
     {
         $count = 10;
         $this->produceUsers($count);
@@ -57,7 +58,7 @@ class UserServiceTest extends TestCase
         $this->assertCount($count, $users);
     }
 
-    public function test_it_can_fetch_all_users_with_pagination()
+    public function test_it_can_fetch_all_users_with_pagination(): void
     {
         $count = 10;
         $this->produceUsers($count);
@@ -100,5 +101,37 @@ class UserServiceTest extends TestCase
             'postal_code' => $this->faker->postcode,
             'profile_picture_path' => $this->faker->filePath,
         ];
+    }
+
+    public function test_it_can_read_a_single_user(): void
+    {
+        $createdUser = $this->produceUsers();
+        $foundUser = $this->userService->read($createdUser->id);
+
+        $this->assertEquals($createdUser->id, $foundUser->id);
+    }
+
+    public function test_it_can_soft_delete_a_user(): void
+    {
+        $this->produceUsers(3);
+        $this->userService->destroy(User::first());
+
+        $foundUsers = User::all();
+        $this->assertCount(2, $foundUsers);
+    }
+
+    public function test_it_can_update_password(): void
+    {
+        $user = $this->produceUsers();
+        $oldPassword = 'test_old_123';
+        $user->password = $oldPassword;
+        $user->save();
+
+        $newPassword = 'test_new_123';
+        $updatedUser = $this->userService->updatePassword($user, $newPassword, $oldPassword);
+        $this->assertNotNull($updatedUser);
+
+        $isCorrect = Hash::check($newPassword, $updatedUser->password);
+        $this->assertTrue($isCorrect);
     }
 }
