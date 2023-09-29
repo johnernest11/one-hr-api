@@ -104,7 +104,7 @@ class UserService extends HttpService implements UserServiceInterface
      *
      * @throws Throwable
      */
-    public function update($modelOrId, array $newUserInfo): User
+    public function update(User|int|string $modelOrId, array $newUserInfo): User
     {
         return DB::transaction(function () use ($modelOrId, $newUserInfo) {
             $user = $modelOrId;
