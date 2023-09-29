@@ -24,7 +24,7 @@ interface UserServiceInterface
     /**
      * Update an existing user
      */
-    public function update($modelOrId, array $newUserInfo): User;
+    public function update(User|int|string $modelOrId, array $newUserInfo): User;
 
     /**
      * Fetch a single User
