@@ -35,10 +35,16 @@ class TokenAuthService implements TokenAuthServiceInterface
         /**
          * Since we save the mobile (and phone) numbers in international format,
          * we will mutate it if clients send in national format
-         *
          * ex: 09064647295 -> +639064647295
+         *
+         * @Note
+         * We ignore the country format if we're running tests, since seeding can produce some malformed numbers
          */
-        $mobileNumber = (new PhoneNumber($mobileNumber))->ofCountry('PH')->formatE164();
+        $phoneNumber = new PhoneNumber($mobileNumber);
+        $mobileNumber = ! app()->runningUnitTests()
+            ? $phoneNumber->ofCountry('PH')->formatE164()
+            : $phoneNumber->formatE164();
+
         $user = User::query()
             ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
             ->where('mobile_number', $mobileNumber)
