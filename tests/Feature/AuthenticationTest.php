@@ -240,5 +240,5 @@ class AuthenticationTest extends TestCase
         $response = $this->post("$this->baseUri/tokens", $creds);
         $response->assertStatus(200);
     }
-/** End */
+    /** End */
 }

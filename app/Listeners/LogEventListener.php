@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Enums\AppEnvironment;
+use App\Enums\Permission;
 use App\Models\User;
 use App\Notifications\EmailSystemAlertNotification;
 use App\Notifications\SlackSystemAlertNotification;
@@ -43,7 +44,7 @@ class LogEventListener
         }
 
         // send a notification to all users with the system alert permission
-        $users = User::permission(['receive_system_alerts'])->cursor();
+        $users = User::permission([Permission::RECEIVE_SYSTEM_ALERTS->value])->cursor();
         $slackAlertSent = false;
         /** @var User $user */
         foreach ($users as $user) {

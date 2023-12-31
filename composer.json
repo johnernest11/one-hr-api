@@ -7,16 +7,15 @@
     "require": {
         "php": "^8.1",
         "aws/aws-sdk-php": "^3.0",
-        "dyrynda/laravel-cascade-soft-deletes": "^4.2",
         "guzzlehttp/guzzle": "^7.2",
-        "laravel/framework": "^9.19",
-        "laravel/sanctum": "^3.0",
+        "laravel/framework": "^10.0",
+        "laravel/sanctum": "^3.2",
         "laravel/slack-notification-channel": "^2.4",
         "laravel/tinker": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.0",
         "predis/predis": "^2.0",
-        "propaganistas/laravel-phone": "^4.4",
-        "spatie/laravel-permission": "^5.7"
+        "propaganistas/laravel-phone": "^5.0.3",
+        "spatie/laravel-permission": "^6.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
@@ -27,10 +26,10 @@
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
         "neronmoon/scriptsdev": "^0.1.9",
-        "nunomaduro/collision": "^6.1",
+        "nunomaduro/collision": "^7.0",
         "phpro/grumphp": "^1.13",
-        "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "phpunit/phpunit": "^10.0",
+        "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -82,6 +81,6 @@
             "phpro/grumphp": true
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }

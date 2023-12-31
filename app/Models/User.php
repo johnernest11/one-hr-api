@@ -11,7 +11,6 @@ use App\QueryFilters\User\EmailFilter;
 use App\QueryFilters\User\RoleFilter;
 use App\QueryFilters\User\VerifiedFilter;
 use DateTimeHelper;
-use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,14 +26,13 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
+class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
 {
     use HasApiTokens;
-    use HasRoles;
     use HasFactory;
+    use HasRoles;
     use Notifiable;
     use SoftDeletes;
-    use CascadeSoftDeletes;
 
     /**
      * @Library
@@ -43,15 +41,6 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
      * @see https://spatie.be/docs/laravel-permission/v5/basic-usage/multiple-guards
      */
     public string $guard_name = 'sanctum';
-
-    /**
-     * @Library
-     *
-     * @see https://github.com/shiftonelabs/laravel-cascade-deletes
-     */
-    protected array $cascadeDeletes = ['userProfile'];
-
-    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
@@ -92,6 +81,7 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     protected $casts = [
         'email_verified_at' => 'datetime',
         'active' => 'boolean',
+        'deleted_at' => 'date',
     ];
 
     protected static function boot(): void
@@ -99,8 +89,15 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         parent::boot();
 
         static::deleting(function (User $user) {
+            /**
+             * Modify the unique email before deleting so that it can be reused
+             * Ex: test_email@gmail.com -> test_email@gmail.com::deleted_<timestamp>
+             */
             $user->email = DateTimeHelper::appendTimestamp($user->email, '::deleted_');
             $user->saveQuietly();
+
+            // Delete the UserProfile associated with this user
+            $user->userProfile()->delete();
         });
     }
 
