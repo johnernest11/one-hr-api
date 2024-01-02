@@ -8,4 +8,5 @@ enum AppEnvironment: string
     case UAT = 'uat';
     case DEVELOPMENT = 'development';
     case LOCAL = 'local';
+    case TESTING = 'testing';
 }

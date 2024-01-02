@@ -176,7 +176,7 @@ class UserService extends HttpService implements UserServiceInterface
         return $user;
     }
 
-    public function updatePassword(User|int|string $modelOrId, string $newPassword, string $oldPassword): User|null
+    public function updatePassword(User|int|string $modelOrId, string $newPassword, string $oldPassword): ?User
     {
         $user = $modelOrId;
         if (! ($user instanceof User)) {

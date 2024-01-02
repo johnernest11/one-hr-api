@@ -34,9 +34,9 @@
 - [ ] Be consistent. If you do something a certain way, do all similar things in the same way.
 - [ ] Use explanatory variables and choose descriptive and unambiguous names.
 - [ ] Keep configurable data at high levels. Avoid magic numbers.
-- [ ] Use dependency injection and service providers.
+- [ ] Use dependency injection and build around service providers.
 - [ ] Always try to explain yourself in code before thinking of leaving a comment. Don't be redundant.
-- [ ] Use comments as explanation of intent or clarification of code, or as warning of consequences.
+- [ ] Use comments as an explanation of intent or clarification of code, or as a warning of consequences.
 - [ ] Separate concepts vertically. Declare variables close to their usage. Related code should show vertically dense.
 - [ ] Objects should be small, do one thing, and hide internal data structure.
 - [ ] Unit/feature tests should exist! They should be repeatable, independent, and readable.

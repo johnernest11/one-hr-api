@@ -47,7 +47,7 @@ class AuthRequest extends FormRequest
     {
         return [
             'email' => ['email'],
-            'mobile_number' => ['required_without:email', Rule::phone()->detect()->country('PH')->mobile()],
+            'mobile_number' => ['required_without:email', Rule::phone()->country('PH')->mobile()],
             'password' => ['required', 'string'],
             'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'with_user' => ['nullable', 'bool'], // send the token back with user information

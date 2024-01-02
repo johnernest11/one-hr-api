@@ -43,6 +43,10 @@ Running `composer install`, `composer update`, `git commit` will trigger automat
    - Package security checks
    - Unit and feature tests
 
+## Serve the API locally
+   - Terminal 1: Run `php artisan serve`
+   - Terminal 2: Run `php artisan queue:work --queue=default,emails,notifications,listeners`
+
 ## Style Guide Ver. 0.1
 - Use **FormRequest** validators when available
 - Favor single quotes over double quotes

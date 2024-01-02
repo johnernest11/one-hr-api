@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,20 +21,8 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'password' => 'Sample_Password_1',
             'active' => true,
-            'email_verified_at' => fake()->date(),
+            'email_verified_at' => fake()->dateTime(),
         ];
-    }
-
-    /**
-     * Attach a standard user role after creating or making a user model
-     */
-    public function configure(): UserFactory
-    {
-        return $this->afterCreating(function (User $user) {
-            $user->assignRole(Role::STANDARD_USER->value);
-        })->afterMaking(function (User $user) {
-            $user->assignRole(Role::STANDARD_USER->value);
-        });
     }
 
     /**
