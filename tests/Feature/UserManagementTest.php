@@ -66,7 +66,7 @@ class UserManagementTest extends TestCase
         }
     }
 
-    public function validCreateUserInputs(): array
+    public static function validCreateUserInputs(): array
     {
         $requiredFieldsOnly = [
             'email' => 'sample@email.com',
@@ -236,7 +236,7 @@ class UserManagementTest extends TestCase
         $result->assertStatus($statusCode);
     }
 
-    public function differentMobileNumbers(): array
+    public static function differentMobileNumbers(): array
     {
         $requiredFields = [
             'email' => 'sample_email@email.com',
@@ -262,7 +262,7 @@ class UserManagementTest extends TestCase
         $result->assertStatus($statusCode);
     }
 
-    public function differentTelephoneNumbers(): array
+    public static function differentTelephoneNumbers(): array
     {
         $requiredFields = [
             'email' => 'sample_email@email.com',

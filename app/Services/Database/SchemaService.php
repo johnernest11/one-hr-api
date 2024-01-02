@@ -22,6 +22,7 @@ class SchemaService implements SchemaServiceInterface
     {
         return Cache::rememberForever($this->getAllTablesCacheKey(), function () {
             $tables = DB::select('SHOW TABLES');
+
             // strip off all the objects and keys.
             return array_map(fn ($table) => array_values(get_mangled_object_vars($table))[0], $tables);
         });

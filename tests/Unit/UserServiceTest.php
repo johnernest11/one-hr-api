@@ -9,6 +9,7 @@ use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Services\HttpResources\UserService;
 use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -71,7 +72,7 @@ class UserServiceTest extends TestCase
         $users = $this->userService->all(PaginationType::LENGTH_AWARE);
 
         $this->assertEquals($count, $users->total());
-        $this->assertEquals($limit, count($users->items()));
+        $this->assertCount($limit, $users->items());
     }
 
     /**
@@ -118,6 +119,21 @@ class UserServiceTest extends TestCase
 
         $foundUsers = User::all();
         $this->assertCount(2, $foundUsers);
+
+        $trashedUsers = User::onlyTrashed()->count();
+        $this->assertEquals(1, $trashedUsers);
+    }
+
+    public function test_user_and_user_profile_cascade_soft_delete(): void
+    {
+        $this->produceUsers(3);
+        $this->userService->destroy(User::first());
+
+        $trashedUsers = User::onlyTrashed()->count();
+        $this->assertEquals(1, $trashedUsers);
+
+        $trashedUserProfiles = UserProfile::onlyTrashed()->count();
+        $this->assertEquals(1, $trashedUserProfiles);
     }
 
     public function test_it_can_update_password(): void

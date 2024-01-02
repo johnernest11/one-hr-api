@@ -18,7 +18,7 @@ class TokenAuthService implements TokenAuthServiceInterface
     }
 
     /** {@inheritDoc} */
-    public function getUserViaEmailAndPassword(string $email, string $password): User|null
+    public function getUserViaEmailAndPassword(string $email, string $password): ?User
     {
         $user = $this->model::where('email', $email)->first();
         $hasCorrectCreds = $user && Hash::check($password, $user->password);
@@ -30,7 +30,7 @@ class TokenAuthService implements TokenAuthServiceInterface
     }
 
     /** {@inheritDoc} */
-    public function getUserViaMobileNumberAndPassword(string $mobileNumber, string $password): User|null
+    public function getUserViaMobileNumberAndPassword(string $mobileNumber, string $password): ?User
     {
         /**
          * Since we save the mobile (and phone) numbers in international format,

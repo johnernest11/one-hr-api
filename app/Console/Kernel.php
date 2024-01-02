@@ -9,20 +9,24 @@ class Kernel extends ConsoleKernel
 {
     /**
      * Define the application's command schedule.
-     *
-     * @return void
      */
-    protected function schedule(Schedule $schedule)
+    protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        /** Cleanup expired tokens */
+        $schedule->command('sanctum:prune-expired --hours=24')->daily();
+
+        /**
+         * Prune stale cache tags entries
+         *
+         * @see https://laravel.com/docs/10.x/upgrade
+         */
+        $schedule->command('cache:prune-stale-tags')->hourly();
     }
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
-    protected function commands()
+    protected function commands(): void
     {
         $this->load(__DIR__.'/Commands');
 

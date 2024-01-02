@@ -21,7 +21,7 @@ class DateTimeHelperTest extends TestCase
         $string = $this->dateTimeHelper->appendTimestamp($input[0], $input[1] ?? '::');
         $separator = $input[1] ?? '::';
         $result = explode($separator, $string);
-        $this->assertEquals(2, count($result));
+        $this->assertCount(2, $result);
     }
 
     public function test_appended_timestamp_can_be_converted_to_datetime()
@@ -33,7 +33,7 @@ class DateTimeHelperTest extends TestCase
         $this->assertTrue((bool) strtotime($datetime));
     }
 
-    public function stringSamples(): array
+    public static function stringSamples(): array
     {
         return [
             [['message1', null]],

@@ -25,7 +25,7 @@ abstract class ApiController extends Controller
     protected function error(
         string $message,
         int $statusCode,
-        ApiErrorCode $errorCode = null,
+        ?ApiErrorCode $errorCode = null,
         array $errors = [],
         array $headers = []
     ): JsonResponse {

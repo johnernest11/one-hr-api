@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Enums\Role;
 use App\Models\Address\Address;
 use App\Models\User;
 use App\Models\UserProfile;
@@ -51,8 +52,12 @@ abstract class TestCase extends BaseTestCase
      *
      * @return Collection|Model
      */
-    protected function produceUsers(int $quantity = 1, array $userAttr = [], bool $unVerified = false): Collection|User
-    {
+    protected function produceUsers(
+        int $quantity = 1,
+        array $userAttr = [],
+        bool $unVerified = false,
+        ?Role $role = null
+    ): Collection|User {
         $factory = User::factory()
             ->has(
                 UserProfile::factory()->has(Address::factory())
@@ -63,6 +68,13 @@ abstract class TestCase extends BaseTestCase
         }
 
         $users = $factory->create($userAttr);
+
+        /** @var User $user */
+        if ($role) {
+            foreach ($users as $user) {
+                $user->syncRoles([$role]);
+            }
+        }
 
         if ($quantity === 1) {
             return $users->first();
