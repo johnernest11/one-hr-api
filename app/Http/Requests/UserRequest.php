@@ -5,10 +5,10 @@ namespace App\Http\Requests;
 use App\Enums\SexualCategory;
 use App\Rules\DbVarcharMaxLength;
 use App\Rules\InternationalPhoneNumberFormat;
+use App\Rules\PhoneCountryFormat;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\Password;
-use Propaganistas\LaravelPhone\Rules\Phone as PhoneRule;
 
 class UserRequest extends FormRequest
 {
@@ -70,12 +70,14 @@ class UserRequest extends FormRequest
                 'nullable',
                 'unique:user_profiles,mobile_number',
                 new InternationalPhoneNumberFormat(),
-                (new PhoneRule())->country('PH')->mobile(),
+                new PhoneCountryFormat('PH'),
+                'phone:mobile',
             ],
             'telephone_number' => [
                 'nullable',
                 new InternationalPhoneNumberFormat(),
-                (new PhoneRule())->country('PH')->fixedLine(),
+                new PhoneCountryFormat('PH'),
+                'phone:fixed_line',
             ],
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
@@ -109,12 +111,14 @@ class UserRequest extends FormRequest
                 'nullable',
                 'unique:user_profiles,mobile_number,'.request('id'),
                 new InternationalPhoneNumberFormat(),
-                (new PhoneRule())->country('PH')->mobile(),
+                new PhoneCountryFormat('PH'),
+                'phone:mobile',
             ],
             'telephone_number' => [
                 'nullable',
                 new InternationalPhoneNumberFormat(),
-                (new PhoneRule())->country('PH')->fixedLine(),
+                new PhoneCountryFormat('PH'),
+                'phone:fixed_line',
             ],
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
