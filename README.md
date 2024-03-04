@@ -1,6 +1,6 @@
 ## About WebAppKit API
 
-WebAppKit API is a Laravel 9 RESTFul starter kit for SPA and mobile clients. This kit includes the following features:
+WebAppKit API is a Laravel 10 RESTFul starter kit for SPA and mobile clients. This kit includes the following features:
 - Implementation of a Token-based Authentication with [Sanctum](https://laravel.com/docs/9.x/sanctum)
 - Implementation of Role-based Access Control with [Spatie](https://spatie.be/docs/laravel-permission/v5/introduction)
 - Implementation of CRUD for user profile with profile picture upload
@@ -39,13 +39,13 @@ php artisan user:create
 ```
 \
 Running `composer install`, `composer update`, `git commit` will trigger automated tasks specified in `grumphp.yml`
-   - PSR-compliant code formatting
-   - Package security checks
-   - Unit and feature tests
+- PSR-compliant code formatting
+- Package security checks
+- Unit and feature tests
 
 ## Serve the API locally
-   - Terminal 1: Run `php artisan serve`
-   - Terminal 2: Run `php artisan queue:work --queue=default,emails,notifications,listeners`
+- Terminal 1: Run `php artisan serve`
+- Terminal 2: Run `php artisan queue:work --queue=default,emails,notifications,listeners`
 
 ## Style Guide Ver. 0.1
 - Use **FormRequest** validators when available
