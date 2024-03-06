@@ -5,15 +5,12 @@ namespace App\Http\Controllers;
 use App\Enums\ApiErrorCode;
 use App\Events\UserRegistered;
 use App\Http\Requests\AuthRequest;
-use App\Http\Requests\NoAuthEmailVerificationRequest;
 use App\Interfaces\Authentication\TokenAuthServiceInterface;
 use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\User;
 use App\Services\Authentication\TokenAuthService;
 use Illuminate\Http\JsonResponse;
-use Password;
 use Propaganistas\LaravelPhone\PhoneNumber;
-use Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends ApiController
@@ -119,79 +116,5 @@ class AuthController extends ApiController
         $this->authService->destroyAccessTokens($user, $tokensToRevoke);
 
         return $this->success(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * Verify Email
-     */
-    public function verifyEmail(NoAuthEmailVerificationRequest $request): JsonResponse
-    {
-        $request->fulfill();
-
-        return $this->success(['message' => 'Email successfully verified'], Response::HTTP_OK);
-    }
-
-    /**
-     * Resend the email verification notification
-     */
-    public function resendEmailVerification(): JsonResponse
-    {
-        /** @var User $user */
-        $user = auth()->user();
-
-        $user->sendEmailVerificationNotification();
-        $data = [
-            'message' => 'Email verification sent',
-            'email' => $user->email,
-        ];
-
-        return $this->success($data, Response::HTTP_OK);
-    }
-
-    /**
-     * Forgot password request
-     */
-    public function forgotPassword(AuthRequest $request): JsonResponse
-    {
-        $status = Password::sendResetLink($request->only('email'));
-
-        if ($status !== Password::RESET_LINK_SENT) {
-            return $this->error(
-                'Unable to send password reset email',
-                Response::HTTP_FAILED_DEPENDENCY,
-                ApiErrorCode::DEPENDENCY_ERROR
-            );
-        }
-
-        $data = ['message' => 'Password reset request sent', 'email' => $request->get('email')];
-
-        return $this->success($data, Response::HTTP_OK);
-    }
-
-    /**
-     * Forgot password request
-     */
-    public function resetPassword(AuthRequest $request): JsonResponse
-    {
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->password = $password;
-                $user->setRememberToken(Str::random(60));
-                $user->save();
-            }
-        );
-
-        if ($status !== Password::PASSWORD_RESET) {
-            return $this->error(
-                'Unable to reset password',
-                Response::HTTP_BAD_REQUEST,
-                ApiErrorCode::BAD_REQUEST
-            );
-        }
-
-        $data = ['message' => 'Password reset was successful'];
-
-        return $this->success($data, Response::HTTP_OK);
     }
 }

@@ -125,4 +125,19 @@ return [
         ],
     ],
 
+    /*
+     |--------------------------------------------------------------------------
+     | JWT Configuration keys
+     |--------------------------------------------------------------------------
+     |
+     | Defined here are the configurations for
+     | the JWT Authentication
+     |
+    */
+    'jwt' => [
+        'signing_key' => env('JWT_SIGNING_KEY'),
+        'lifetime_seconds' => env('JWT_LIFETIME_SECONDS', 600),
+        'issuer' => env('JWT_ISSUER'),
+        'audience' => env('JWT_AUDIENCE'),
+    ],
 ];

@@ -33,8 +33,6 @@ interface TokenAuthServiceInterface
 
     /**
      * Delete multiple access tokens of a user
-     *
-     * @return void
      */
     public function destroyAccessTokens(User $user, array $tokenIds): array;
 }

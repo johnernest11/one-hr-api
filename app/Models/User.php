@@ -174,6 +174,6 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
      */
     public function routeNotificationForSlack(Notification $notification): string
     {
-        return config('integrations.slack.webhooks.dev-alerts');
+        return config('integrations.slack.webhooks.dev_alerts');
     }
 }
