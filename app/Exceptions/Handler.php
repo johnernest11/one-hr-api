@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Enums\ApiErrorCode;
+use App\Enums\AppEnvironment;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -165,7 +166,7 @@ class Handler extends ExceptionHandler
                     'stack_trace' => $e->getTraceAsString(),
                 ];
 
-                if (app()->environment('production')) {
+                if (app()->environment(AppEnvironment::PRODUCTION->value)) {
                     $body['message'] = 'An unknown error has occurred';
                     unset($body['stack_trace']);
                 }

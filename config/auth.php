@@ -139,5 +139,6 @@ return [
         'lifetime_seconds' => env('JWT_LIFETIME_SECONDS', 600),
         'issuer' => env('JWT_ISSUER'),
         'audience' => env('JWT_AUDIENCE'),
+        'id' => env('JWT_ID'),
     ],
 ];

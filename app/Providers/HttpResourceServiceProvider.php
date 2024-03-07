@@ -25,7 +25,7 @@ class HttpResourceServiceProvider extends ServiceProvider
             return new UserService(new User());
         });
         $this->app->bind(TokenAuthServiceInterface::class, function () {
-            return new TokenAuthService(new User());
+            return new TokenAuthService();
         });
         $this->app->bind(AuthTokenManager::class, function (Application $app, array $params) {
             if ($params && count($params) > 1 && ! $params[0] instanceof AuthTokenType) {
@@ -33,10 +33,10 @@ class HttpResourceServiceProvider extends ServiceProvider
             }
 
             if ($params[0] === AuthTokenType::JWT) {
-                return new JWTAuthService(new User());
+                return new JWTAuthService();
             }
 
-            return new TokenAuthService(new User());
+            return new TokenAuthService();
         });
     }
 

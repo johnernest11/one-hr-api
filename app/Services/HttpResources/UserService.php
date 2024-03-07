@@ -191,4 +191,33 @@ class UserService extends HttpService implements UserServiceInterface
 
         return $user;
     }
+
+    /** {@inheritDoc} */
+    public function getUserViaEmailAndPassword(string $email, string $password): ?User
+    {
+        $user = $this->model::where('email', $email)->first();
+        $hasCorrectCreds = $user && \Illuminate\Support\Facades\Hash::check($password, $user->password);
+        if (! $hasCorrectCreds) {
+            return null;
+        }
+
+        return $user;
+    }
+
+    /** {@inheritDoc} */
+    public function getUserViaMobileNumberAndPassword(string $mobileNumber, string $password): ?User
+    {
+        $user = User::query()
+            ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
+            ->where('mobile_number', $mobileNumber)
+            ->with('userProfile')
+            ->first();
+
+        $hasCorrectCreds = $user && Hash::check($password, $user->password);
+        if (! $hasCorrectCreds) {
+            return null;
+        }
+
+        return $user;
+    }
 }

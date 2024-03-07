@@ -4,47 +4,10 @@ namespace App\Services\Authentication;
 
 use App\Interfaces\Authentication\TokenAuthServiceInterface;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class TokenAuthService implements TokenAuthServiceInterface
 {
-    private User $model;
-
-    public function __construct(User $user)
-    {
-        $this->model = $user;
-    }
-
-    /** {@inheritDoc} */
-    public function getUserViaEmailAndPassword(string $email, string $password): ?User
-    {
-        $user = $this->model::where('email', $email)->first();
-        $hasCorrectCreds = $user && Hash::check($password, $user->password);
-        if (! $hasCorrectCreds) {
-            return null;
-        }
-
-        return $user;
-    }
-
-    /** {@inheritDoc} */
-    public function getUserViaMobileNumberAndPassword(string $mobileNumber, string $password): ?User
-    {
-        $user = User::query()
-            ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
-            ->where('mobile_number', $mobileNumber)
-            ->with('userProfile')
-            ->first();
-
-        $hasCorrectCreds = $user && Hash::check($password, $user->password);
-        if (! $hasCorrectCreds) {
-            return null;
-        }
-
-        return $user;
-    }
-
     /** {@inheritDoc} */
     public function bindAuthToken(User $user, string $tokenName, int $expiresAtHours = 12, bool $withUserDetails = true): array
     {

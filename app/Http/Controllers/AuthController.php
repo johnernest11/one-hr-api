@@ -17,9 +17,12 @@ class AuthController extends ApiController
 {
     private TokenAuthService $authService;
 
-    public function __construct(TokenAuthServiceInterface $authService)
+    private UserServiceInterface $userService;
+
+    public function __construct(TokenAuthServiceInterface $authService, UserServiceInterface $userService)
     {
         $this->authService = $authService;
+        $this->userService = $userService;
     }
 
     /**
@@ -34,7 +37,7 @@ class AuthController extends ApiController
 
         // Users should be able to log in via email or mobile_number
         if ($email) {
-            $user = $this->authService->getUserViaEmailAndPassword($email, $password);
+            $user = $this->userService->getUserViaEmailAndPassword($email, $password);
         } elseif ($mobileNumber) {
             /**
              * Since we save the mobile (and phone) numbers in international format,
@@ -45,7 +48,7 @@ class AuthController extends ApiController
              * We ignore the country format if we're running tests, since seeding can produce some malformed numbers
              */
             $mobileNumber = (new PhoneNumber($mobileNumber, 'PH'))->formatE164();
-            $user = $this->authService->getUserViaMobileNumberAndPassword($mobileNumber, $password);
+            $user = $this->userService->getUserViaMobileNumberAndPassword($mobileNumber, $password);
         }
 
         if (! $user) {

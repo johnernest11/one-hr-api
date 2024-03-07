@@ -7,16 +7,6 @@ use App\Models\User;
 interface TokenAuthServiceInterface
 {
     /**
-     * Fetch a user with the email and password credentials
-     */
-    public function getUserViaEmailAndPassword(string $email, string $password): ?User;
-
-    /**
-     * Fetch the user with the mobile number and password credentials
-     */
-    public function getUserViaMobileNumberAndPassword(string $mobileNumber, string $password): ?User;
-
-    /**
      * Create access token for the user
      */
     public function bindAuthToken(User $user, string $tokenName, int $expiresAtHours = 12, bool $withUserDetails = true): array;

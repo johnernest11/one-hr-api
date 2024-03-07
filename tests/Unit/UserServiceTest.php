@@ -150,4 +150,26 @@ class UserServiceTest extends TestCase
         $isCorrect = Hash::check($newPassword, $updatedUser->password);
         $this->assertTrue($isCorrect);
     }
+
+    public function test_it_can_check_email_and_password_creds(): void
+    {
+        $user = $this->produceUsers();
+        $testEmail = 'test@example.com';
+        $testPassword = 'test123123';
+        $user->update(['email' => $testEmail, 'password' => $testPassword]);
+
+        $user = $this->userService->getUserViaEmailAndPassword($testEmail, $testPassword);
+        $this->assertNotNull($user);
+    }
+
+    public function test_it_can_check_mobile_and_password_creds(): void
+    {
+        $user = $this->produceUsers();
+        $testPassword = 'test123123';
+        $testMobileNumber = $user->userProfile->mobile_number;
+        $user->update(['password' => $testPassword]);
+
+        $user = $this->userService->getUserViaMobileNumberAndPassword($testMobileNumber, $testPassword);
+        $this->assertNotNull($user);
+    }
 }
