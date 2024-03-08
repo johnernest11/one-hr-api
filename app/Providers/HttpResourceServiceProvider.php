@@ -8,6 +8,7 @@ use App\Interfaces\Authentication\TokenAuthServiceInterface;
 use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\User;
 use App\Services\Authentication\JWTAuthService;
+use App\Services\Authentication\SanctumAuthService;
 use App\Services\Authentication\TokenAuthService;
 use App\Services\HttpResources\UserService;
 use Illuminate\Contracts\Foundation\Application;
@@ -36,7 +37,7 @@ class HttpResourceServiceProvider extends ServiceProvider
                 return new JWTAuthService();
             }
 
-            return new TokenAuthService();
+            return new SanctumAuthService();
         });
     }
 

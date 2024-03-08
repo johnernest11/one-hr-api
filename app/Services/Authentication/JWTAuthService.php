@@ -19,22 +19,22 @@ class JWTAuthService implements AuthTokenManager
 
     public function __construct()
     {
-        $this->jwtId = config('auth.jwt.id');
+        $this->jwtId = config('jwt.id');
     }
 
     /** {@inheritDoc} */
-    public function generate(User $user): string
+    public function generateToken(User $user, ?string $clientName = null): string
     {
         return JWT::get(
             $this->jwtId,
-            ['user_id' => $user->id],
-            now()->addSeconds(config('auth.jwt.lifetime_seconds')),
-            config('auth.jwt.signing_key')
+            ['user_id' => $user->id, 'client_name' => $clientName],
+            now()->addMinutes(config('jwt.lifetime_minutes')),
+            config('jwt.signing_key')
         );
     }
 
     /** {@inheritDoc} */
-    public function isValid(string $token): bool
+    public function tokenIsValid(string $token): bool
     {
         try {
             $parsedToken = JWT::parse($token);
