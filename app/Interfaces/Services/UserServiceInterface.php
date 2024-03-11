@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\HttpResources;
+namespace App\Interfaces\Services;
 
 use App\Enums\PaginationType;
 use App\Models\User;

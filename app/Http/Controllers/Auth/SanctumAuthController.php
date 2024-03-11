@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Requests\AuthRequest;
+use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
+use App\Interfaces\Services\UserServiceInterface;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+
+class SanctumAuthController extends AuthController
+{
+    private PersistentAuthTokenManager $tokenManager;
+
+    public function __construct(UserServiceInterface $userService, PersistentAuthTokenManager $tokenManager)
+    {
+        parent::__construct($userService);
+        $this->tokenManager = $tokenManager;
+    }
+
+    /**
+     * Revoke the current access token of the user
+     */
+    public function destroy(): JsonResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $this->tokenManager->invalidateCurrentToken($user);
+
+        return $this->success(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Retrieve all the access tokens of a user
+     */
+    public function fetch(): JsonResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $tokens = $this->tokenManager->getAllActiveTokens($user);
+
+        return $this->success(['data' => $tokens], Response::HTTP_OK);
+    }
+
+    /**
+     * Revoke specified access tokens owned by the user
+     */
+    public function revoke(AuthRequest $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $tokensToRevoke = $request->get('token_ids');
+        $this->tokenManager->invalidateMultipleTokens($user, $tokensToRevoke);
+
+        return $this->success(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /** {@inheritDoc} */
+    public function generateAuthToken(User $user, Carbon $expiresAt, string $clientName): string
+    {
+        return $this->tokenManager->generateToken($user, $expiresAt, $clientName);
+    }
+
+    /** {@inheritDoc} */
+    public function getTokenExpiration(): Carbon
+    {
+        return now()->addMinutes(config('sanctum.expiration'));
+    }
+}

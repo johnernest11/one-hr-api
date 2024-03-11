@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Interfaces\Authentication\TokenAuthServiceInterface;
+use App\Interfaces\Services\Authentication\TokenAuthServiceInterface;
 use App\Models\User;
 use App\Services\Authentication\TokenAuthService;
 use DB;

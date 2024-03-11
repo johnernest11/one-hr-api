@@ -2,7 +2,7 @@
 
 namespace App\Services\Authentication;
 
-use App\Interfaces\Authentication\AuthTokenManager;
+use App\Interfaces\Services\Authentication\AuthTokenManager;
 use App\Models\User;
 use Carbon\Carbon;
 use JWT;

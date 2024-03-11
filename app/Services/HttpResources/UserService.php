@@ -4,7 +4,7 @@ namespace App\Services\HttpResources;
 
 use App\Enums\PaginationType;
 use App\Enums\Role;
-use App\Interfaces\HttpResources\UserServiceInterface;
+use App\Interfaces\Services\UserServiceInterface;
 use App\Models\User;
 use App\Traits\Services\CanBuildPagination;
 use Carbon\Carbon;

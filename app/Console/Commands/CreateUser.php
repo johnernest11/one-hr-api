@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Requests\UserRequest;
-use App\Interfaces\HttpResources\UserServiceInterface;
+use App\Interfaces\Services\UserServiceInterface;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;

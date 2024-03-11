@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Interfaces\Services\Authentication\AuthTokenManager;
+use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Services\Authentication\JWTAuthService;
+use App\Services\Authentication\SanctumAuthService;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -18,6 +22,19 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         User::class => UserPolicy::class,
     ];
+
+    public function register(): void
+    {
+        parent::register();
+
+        $this->app->bind(AuthTokenManager::class, function () {
+            return new JWTAuthService();
+        });
+
+        $this->app->bind(PersistentAuthTokenManager::class, function () {
+            return new SanctumAuthService();
+        });
+    }
 
     /**
      * Register any authentication / authorization services.

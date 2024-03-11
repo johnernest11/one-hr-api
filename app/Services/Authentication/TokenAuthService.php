@@ -2,7 +2,7 @@
 
 namespace App\Services\Authentication;
 
-use App\Interfaces\Authentication\TokenAuthServiceInterface;
+use App\Interfaces\Services\Authentication\TokenAuthServiceInterface;
 use App\Models\User;
 use Laravel\Sanctum\PersonalAccessToken;
 

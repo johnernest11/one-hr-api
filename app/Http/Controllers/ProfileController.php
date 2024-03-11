@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\ApiErrorCode;
 use App\Http\Requests\ProfileRequest;
 use App\Interfaces\CloudFileServices\CloudFileServiceInterface;
-use App\Interfaces\HttpResources\UserServiceInterface;
+use App\Interfaces\Services\UserServiceInterface;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

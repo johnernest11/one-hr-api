@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\Authentication;
+namespace App\Interfaces\Services\Authentication;
 
 use App\Models\User;
 use Carbon\Carbon;

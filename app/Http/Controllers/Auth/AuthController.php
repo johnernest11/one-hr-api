@@ -1,29 +1,24 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use App\Enums\ApiErrorCode;
 use App\Events\UserRegistered;
+use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
-use App\Interfaces\Authentication\PersistentAuthTokenManager;
-use App\Interfaces\HttpResources\UserServiceInterface;
+use App\Interfaces\Services\UserServiceInterface;
 use App\Models\User;
-use App\Traits\Controllers\CanComposeUserTokenData;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Symfony\Component\HttpFoundation\Response;
 
-class AuthController extends ApiController
+abstract class AuthController extends ApiController
 {
-    use CanComposeUserTokenData;
-
-    private PersistentAuthTokenManager $sanctumAuthService;
-
     private UserServiceInterface $userService;
 
     public function __construct(UserServiceInterface $userService)
     {
-        $this->sanctumAuthService = resolve(PersistentAuthTokenManager::class);
         $this->userService = $userService;
     }
 
@@ -63,8 +58,8 @@ class AuthController extends ApiController
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $clientName = $request->get('client_name') ?? 'api_token';
-        $expiresAt = now()->addMinutes(config('sanctum.expiration'));
-        $token = $this->sanctumAuthService->generateToken($user, $expiresAt, $clientName);
+        $expiresAt = $this->getTokenExpiration();
+        $token = $this->generateAuthToken($user, $expiresAt, $clientName);
 
         $withUserDetails = $request->get('with_user', false);
         $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user, $withUserDetails);
@@ -81,8 +76,8 @@ class AuthController extends ApiController
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $clientName = $request->get('client_name') ?? 'api_token';
-        $expiresAt = now()->addMinutes(config('sanctum.expiration'));
-        $token = $this->sanctumAuthService->generateToken($user, $expiresAt, $clientName);
+        $expiresAt = $this->getTokenExpiration();
+        $token = $this->generateAuthToken($user, $expiresAt, $clientName);
         $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user);
 
         UserRegistered::dispatch($user);
@@ -90,40 +85,19 @@ class AuthController extends ApiController
         return $this->success(['data' => $dataResponse], Response::HTTP_CREATED);
     }
 
-    /**
-     * Revoke the current access token of the user
-     */
-    public function destroy(): JsonResponse
+    private function composeUserTokenData(string $token, string $clientName, Carbon $expiresAt, User $user, bool $withUserDetails = true): array
     {
-        /** @var User $user */
-        $user = auth()->user();
-        $this->sanctumAuthService->invalidateCurrentToken($user);
-
-        return $this->success(null, Response::HTTP_NO_CONTENT);
+        return [
+            'token' => $token,
+            'token_name' => $clientName,
+            'expires_at' => $expiresAt,
+            'user' => $withUserDetails ? $user->fresh('userProfile') : $user,
+        ];
     }
 
-    /**
-     * Retrieve all the access tokens of a user
-     */
-    public function fetch(): JsonResponse
-    {
-        /** @var User $user */
-        $user = auth()->user();
-        $tokens = $this->sanctumAuthService->getAllActiveTokens($user);
+    /** Create an authentication token for the user */
+    abstract protected function generateAuthToken(User $user, Carbon $expiresAt, string $clientName): string;
 
-        return $this->success(['data' => $tokens], Response::HTTP_OK);
-    }
-
-    /**
-     * Revoke specified access tokens owned by the user
-     */
-    public function revoke(AuthRequest $request): JsonResponse
-    {
-        /** @var User $user */
-        $user = auth()->user();
-        $tokensToRevoke = $request->get('token_ids');
-        $this->sanctumAuthService->invalidateMultipleTokens($user, $tokensToRevoke);
-
-        return $this->success(null, Response::HTTP_NO_CONTENT);
-    }
+    /** Get the expiration time for the token */
+    abstract protected function getTokenExpiration(): Carbon;
 }

@@ -3,7 +3,7 @@
 namespace Tests\Unit\Helpers;
 
 use App\Helpers\PaginationHelper;
-use App\Interfaces\HttpResources\UserServiceInterface;
+use App\Interfaces\Services\UserServiceInterface;
 use App\Models\User;
 use App\Services\HttpResources\UserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;

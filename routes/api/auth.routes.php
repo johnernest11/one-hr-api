@@ -1,23 +1,24 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\SanctumAuthController;
 use App\Http\Controllers\Auth\VerifyController;
-use App\Http\Controllers\AuthController;
 
-Route::controller(AuthController::class)->group(function () {
-    /** @uses AuthController::store */
+Route::controller(SanctumAuthController::class)->group(function () {
+    /** @uses SanctumAuthController::store */
     Route::middleware(['throttle:10,1'])->post('tokens', 'store')->name('auth.store');
 
-    /** @uses AuthController::destroy */
+    /** @uses SanctumAuthController::destroy */
     Route::middleware(['auth:sanctum', 'verified.api'])->delete('tokens', 'destroy')->name('auth.destroy');
 
-    /** @uses AuthController::fetch */
+    /** @uses SanctumAuthController::fetch */
     Route::middleware(['auth:sanctum', 'verified.api'])->get('tokens', 'fetch')->name('auth.fetch');
 
-    /** @uses AuthController::revoke */
+    /** @uses SanctumAuthController::revoke */
     Route::middleware(['auth:sanctum', 'verified.api'])->post('tokens/revoke', 'revoke')->name('auth.revoke');
 
-    /** @uses AuthController::register */
+    /** @uses SanctumAuthController::register */
     Route::middleware(['throttle:10,1'])->post('register', 'register')->name('auth.register');
 });
 

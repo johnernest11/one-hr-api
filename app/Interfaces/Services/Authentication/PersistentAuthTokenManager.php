@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\Authentication;
+namespace App\Interfaces\Services\Authentication;
 
 interface PersistentAuthTokenManager extends AuthTokenManager, CanInvalidateAuthTokens, CanRetrieveAuthTokens
 {

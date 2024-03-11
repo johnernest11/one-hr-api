@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Enums\PaginationType;
-use App\Interfaces\HttpResources\UserServiceInterface;
+use App\Interfaces\Services\UserServiceInterface;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
