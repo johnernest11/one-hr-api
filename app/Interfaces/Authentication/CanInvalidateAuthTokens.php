@@ -14,5 +14,5 @@ interface CanInvalidateAuthTokens
     /**
      * Invalidate multiple access tokens of a user
      */
-    public function invalidateMultipleTokens(User $user, array $tokenIds): array;
+    public function invalidateMultipleTokens(User $user, array $tokenIds): bool;
 }

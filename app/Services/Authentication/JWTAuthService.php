@@ -4,6 +4,7 @@ namespace App\Services\Authentication;
 
 use App\Interfaces\Authentication\AuthTokenManager;
 use App\Models\User;
+use Carbon\Carbon;
 use JWT;
 use Lcobucci\JWT\Encoding\CannotDecodeContent;
 use Log;
@@ -23,12 +24,12 @@ class JWTAuthService implements AuthTokenManager
     }
 
     /** {@inheritDoc} */
-    public function generateToken(User $user, ?string $clientName = null): string
+    public function generateToken(User $user, Carbon $expiresAt, string $clientName = ''): string
     {
         return JWT::get(
             $this->jwtId,
             ['user_id' => $user->id, 'client_name' => $clientName],
-            now()->addMinutes(config('jwt.lifetime_minutes')),
+            $expiresAt,
             config('jwt.signing_key')
         );
     }

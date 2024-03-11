@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum AuthTokenType: string
+enum AuthenticationType: string
 {
     /** @Note Sanctum uses an opaque token type */
     case SANCTUM = 'SANCTUM';

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\HttpResources;
+namespace App\Traits\Services;
 
 use App\Enums\PaginationType;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\CursorPaginator;
 
-class HttpService
+trait CanBuildPagination
 {
     /**
      * Build pagination

@@ -6,6 +6,7 @@ use App\Enums\PaginationType;
 use App\Enums\Role;
 use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\User;
+use App\Traits\Services\CanBuildPagination;
 use Carbon\Carbon;
 use Hash;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -17,8 +18,10 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class UserService extends HttpService implements UserServiceInterface
+class UserService implements UserServiceInterface
 {
+    use CanBuildPagination;
+
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
     private User $model;

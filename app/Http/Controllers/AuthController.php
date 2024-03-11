@@ -5,23 +5,25 @@ namespace App\Http\Controllers;
 use App\Enums\ApiErrorCode;
 use App\Events\UserRegistered;
 use App\Http\Requests\AuthRequest;
-use App\Interfaces\Authentication\TokenAuthServiceInterface;
+use App\Interfaces\Authentication\PersistentAuthTokenManager;
 use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\User;
-use App\Services\Authentication\TokenAuthService;
+use App\Traits\Controllers\CanComposeUserTokenData;
 use Illuminate\Http\JsonResponse;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends ApiController
 {
-    private TokenAuthService $authService;
+    use CanComposeUserTokenData;
+
+    private PersistentAuthTokenManager $sanctumAuthService;
 
     private UserServiceInterface $userService;
 
-    public function __construct(TokenAuthServiceInterface $authService, UserServiceInterface $userService)
+    public function __construct(UserServiceInterface $userService)
     {
-        $this->authService = $authService;
+        $this->sanctumAuthService = resolve(PersistentAuthTokenManager::class);
         $this->userService = $userService;
     }
 
@@ -60,12 +62,14 @@ class AuthController extends ApiController
         }
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
-        $tokenName = $request->get('client_name') ?? 'api_token';
+        $clientName = $request->get('client_name') ?? 'api_token';
+        $expiresAt = now()->addMinutes(config('sanctum.expiration'));
+        $token = $this->sanctumAuthService->generateToken($user, $expiresAt, $clientName);
 
         $withUserDetails = $request->get('with_user', false);
-        $data = $this->authService->bindAuthToken($user, $tokenName, 12, $withUserDetails);
+        $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user, $withUserDetails);
 
-        return $this->success(['data' => $data], Response::HTTP_OK);
+        return $this->success(['data' => $dataResponse], Response::HTTP_OK);
     }
 
     /**
@@ -76,12 +80,14 @@ class AuthController extends ApiController
         $user = $userService->create($request->validated());
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
-        $tokenName = $request->get('client_name') ?? 'api_token';
+        $clientName = $request->get('client_name') ?? 'api_token';
+        $expiresAt = now()->addMinutes(config('sanctum.expiration'));
+        $token = $this->sanctumAuthService->generateToken($user, $expiresAt, $clientName);
+        $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user);
 
-        $data = $this->authService->bindAuthToken($user, $tokenName);
         UserRegistered::dispatch($user);
 
-        return $this->success(['data' => $data], Response::HTTP_CREATED);
+        return $this->success(['data' => $dataResponse], Response::HTTP_CREATED);
     }
 
     /**
@@ -91,7 +97,7 @@ class AuthController extends ApiController
     {
         /** @var User $user */
         $user = auth()->user();
-        $this->authService->destroyCurrentAuthToken($user);
+        $this->sanctumAuthService->invalidateCurrentToken($user);
 
         return $this->success(null, Response::HTTP_NO_CONTENT);
     }
@@ -103,7 +109,7 @@ class AuthController extends ApiController
     {
         /** @var User $user */
         $user = auth()->user();
-        $tokens = $this->authService->getUserAuthTokens($user);
+        $tokens = $this->sanctumAuthService->getAllActiveTokens($user);
 
         return $this->success(['data' => $tokens], Response::HTTP_OK);
     }
@@ -116,7 +122,7 @@ class AuthController extends ApiController
         /** @var User $user */
         $user = auth()->user();
         $tokensToRevoke = $request->get('token_ids');
-        $this->authService->destroyAccessTokens($user, $tokensToRevoke);
+        $this->sanctumAuthService->invalidateMultipleTokens($user, $tokensToRevoke);
 
         return $this->success(null, Response::HTTP_NO_CONTENT);
     }
