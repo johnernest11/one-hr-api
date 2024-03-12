@@ -70,9 +70,9 @@ abstract class AuthController extends ApiController
     /**
      * Register a new user
      */
-    public function register(AuthRequest $request, UserServiceInterface $userService): JsonResponse
+    public function register(AuthRequest $request): JsonResponse
     {
-        $user = $userService->create($request->validated());
+        $user = $this->userService->create($request->validated());
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $clientName = $request->get('client_name') ?? 'api_token';

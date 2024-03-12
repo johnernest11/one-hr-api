@@ -1,27 +1,58 @@
 <?php
 
+use App\Enums\AuthenticationType;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\JwtAuthController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\SanctumAuthController;
 use App\Http\Controllers\Auth\VerifyController;
+use App\Http\Requests\AuthRequest;
+use App\Interfaces\Services\Authentication\AuthTokenManager;
+use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
+use App\Interfaces\Services\UserServiceInterface;
 
-Route::controller(SanctumAuthController::class)->group(function () {
-    /** @uses SanctumAuthController::store */
-    Route::middleware(['throttle:10,1'])->post('tokens', 'store')->name('auth.store');
+// The Controller (Sanctum or JWT) will depend on the route query parameter `?type=sanctum` or `?type=jwt`
+Route::group(['as' => 'auth.'], function () {
+    $userService = resolve(UserServiceInterface::class);
+    $sanctumAuthService = resolve(PersistentAuthTokenManager::class);
+    $jwtAuthService = resolve(AuthTokenManager::class);
 
-    /** @uses SanctumAuthController::destroy */
-    Route::middleware(['auth:sanctum', 'verified.api'])->delete('tokens', 'destroy')->name('auth.destroy');
+    // We do a conditional for POST /auth/tokens (login)
+    Route::middleware(['throttle:10,1'])->name('store')->post('tokens', function (AuthRequest $request) use ($userService, $sanctumAuthService, $jwtAuthService) {
+        if (! $request->get('type') || $request->get('type') === AuthenticationType::SANCTUM->value) {
+            /** @uses SanctumAuthController::store */
+            return (new SanctumAuthController($userService, $sanctumAuthService))->store($request);
+        }
 
-    /** @uses SanctumAuthController::fetch */
-    Route::middleware(['auth:sanctum', 'verified.api'])->get('tokens', 'fetch')->name('auth.fetch');
+        /** @uses JwtAuthController::store */
+        return (new JwtAuthController($userService, $jwtAuthService))->store($request);
+    });
 
-    /** @uses SanctumAuthController::revoke */
-    Route::middleware(['auth:sanctum', 'verified.api'])->post('tokens/revoke', 'revoke')->name('auth.revoke');
+    // We do a conditional for POST /auth/register
+    Route::middleware(['throttle:10,1'])->name('register')->post('register', function (AuthRequest $request) use ($userService, $sanctumAuthService, $jwtAuthService) {
+        if (! $request->get('type') || $request->get('type') === AuthenticationType::SANCTUM->value) {
+            /** @uses SanctumAuthController::register */
+            return (new SanctumAuthController($userService, $sanctumAuthService))->register($request);
+        }
 
-    /** @uses SanctumAuthController::register */
-    Route::middleware(['throttle:10,1'])->post('register', 'register')->name('auth.register');
+        /** @uses JwtAuthController::register */
+        return (new JwtAuthController($userService, $jwtAuthService))->register($request);
+    });
 });
 
+// Only Sanctum Auth can fetch and invalidate tokens since they are persisted in the Database
+Route::controller(SanctumAuthController::class)->name('auth.')->group(function () {
+    /** @uses SanctumAuthController::destroy */
+    Route::middleware(['auth:sanctum', 'verified.api'])->delete('tokens', 'destroy')->name('destroy');
+
+    /** @uses SanctumAuthController::fetch */
+    Route::middleware(['auth:sanctum', 'verified.api'])->get('tokens', 'fetch')->name('fetch');
+
+    /** @uses SanctumAuthController::revoke */
+    Route::middleware(['auth:sanctum', 'verified.api'])->post('tokens/revoke', 'revoke')->name('revoke');
+});
+
+// Email Verification
 Route::controller(VerifyController::class)->group(function () {
     /** @uses VerifyController::resendEmailVerification */
     Route::middleware(['auth:sanctum'])
@@ -34,10 +65,11 @@ Route::controller(VerifyController::class)->group(function () {
         ->name('verification.verify');
 });
 
-Route::controller(PasswordController::class)->group(function () {
+// Password Management
+Route::controller(PasswordController::class)->name('auth.password.')->group(function () {
     /** @uses AuthController::forgotPassword */
-    Route::post('forgot-password', 'forgotPassword')->name('auth.password.forgot');
+    Route::post('forgot-password', 'forgotPassword')->name('forgot');
 
     /** @uses AuthController::resetPassword */
-    Route::post('reset-password', 'resetPassword')->name('auth.password.reset');
+    Route::post('reset-password', 'resetPassword')->name('reset');
 });
