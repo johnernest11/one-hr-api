@@ -42,14 +42,14 @@ Route::group(['as' => 'auth.'], function () {
 
 // Only Sanctum Auth can fetch and invalidate tokens since they are persisted in the Database
 Route::controller(SanctumAuthController::class)->name('auth.')->group(function () {
-    /** @uses SanctumAuthController::destroy */
-    Route::middleware(['auth:sanctum', 'verified.api'])->delete('tokens', 'destroy')->name('destroy');
+    /** @uses SanctumAuthController::invalidateCurrent */
+    Route::middleware(['auth:sanctum', 'verified.api'])->delete('tokens', 'invalidateCurrent')->name('destroy');
 
     /** @uses SanctumAuthController::fetch */
     Route::middleware(['auth:sanctum', 'verified.api'])->get('tokens', 'fetch')->name('fetch');
 
-    /** @uses SanctumAuthController::revoke */
-    Route::middleware(['auth:sanctum', 'verified.api'])->post('tokens/revoke', 'revoke')->name('revoke');
+    /** @uses SanctumAuthController::invalidateMultiple */
+    Route::middleware(['auth:sanctum', 'verified.api'])->post('tokens/invalidate', 'invalidateMultiple')->name('revoke');
 });
 
 // Email Verification

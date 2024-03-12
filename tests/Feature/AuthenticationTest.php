@@ -179,7 +179,7 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function test_user_can_revoke_current_access_token(): void
+    public function test_user_can_invalidate_current_access_token(): void
     {
         $user = Sanctum::actingAs($this->user);
         $response = $this->delete("$this->baseUri/tokens");
@@ -188,26 +188,26 @@ class AuthenticationTest extends TestCase
         $this->assertEquals(0, $user->tokens()->count());
     }
 
-    public function test_user_can_revoke_specific_access_tokens(): void
+    public function test_user_can_invalidate_specific_access_tokens(): void
     {
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
 
         $user = Sanctum::actingAs($this->user);
         $tokenId = $user->tokens()->first()->id;
-        $response = $this->post("$this->baseUri/tokens/revoke", ['token_ids' => [$tokenId]]);
+        $response = $this->post("$this->baseUri/tokens/invalidate", ['token_ids' => [$tokenId]]);
 
         $response->assertStatus(204);
         $this->assertEquals(0, $user->tokens()->count());
     }
 
-    public function test_user_can_revoke_all_access_tokens(): void
+    public function test_user_can_invalidate_all_access_tokens(): void
     {
         // create multiple tokens
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
 
         $user = Sanctum::actingAs($this->user);
-        $response = $this->post("$this->baseUri/tokens/revoke", ['token_ids' => ['*']]);
+        $response = $this->post("$this->baseUri/tokens/invalidate", ['token_ids' => ['*']]);
         $response->assertStatus(204);
         $this->assertEquals(0, $user->tokens()->count());
     }

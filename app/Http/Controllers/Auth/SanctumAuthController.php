@@ -23,7 +23,7 @@ class SanctumAuthController extends AuthController
     /**
      * Revoke the current access token of the user
      */
-    public function destroy(): JsonResponse
+    public function invalidateCurrent(): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -47,7 +47,7 @@ class SanctumAuthController extends AuthController
     /**
      * Revoke specified access tokens owned by the user
      */
-    public function revoke(AuthRequest $request): JsonResponse
+    public function invalidateMultiple(AuthRequest $request): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
