@@ -2,7 +2,6 @@
 
 namespace App\Guards;
 
-use App\Enums\AppEnvironment;
 use App\Interfaces\Services\Authentication\AuthTokenManager;
 use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -22,7 +21,9 @@ class MultiAuthGuard implements Guard
      */
     public function check(): bool
     {
-        if ($this->user && app()->environment() === AppEnvironment::TESTING->value) {
+        // If the user is set via the setUser() method, we automatically return true if
+        // we are running unit and feature tests
+        if ($this->user && app()->runningUnitTests()) {
             return true;
         }
 
