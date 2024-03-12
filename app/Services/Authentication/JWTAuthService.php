@@ -58,4 +58,16 @@ class JWTAuthService implements AuthTokenManager
 
         return true;
     }
+
+    public function getTokenOwner(string $token): ?User
+    {
+        if (! $this->tokenIsValid($token)) {
+            return null;
+        }
+
+        $parsedToken = JWT::parse($token);
+        $userId = $parsedToken->getPayload()['user_id'];
+
+        return User::find($userId);
+    }
 }

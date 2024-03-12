@@ -166,6 +166,8 @@ class SanctumAuthenticationTest extends TestCase
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
 
         Sanctum::actingAs($this->user);
+        auth('api')->setUser($this->user);
+
         $response = $this->get("$this->baseUri/tokens", $this->userCreds);
 
         $response->assertStatus(200);
@@ -182,6 +184,8 @@ class SanctumAuthenticationTest extends TestCase
     public function test_user_can_invalidate_current_access_token(): void
     {
         $user = Sanctum::actingAs($this->user);
+        auth('api')->setUser($user);
+
         $response = $this->delete("$this->baseUri/tokens");
 
         $response->assertStatus(204);
@@ -193,6 +197,8 @@ class SanctumAuthenticationTest extends TestCase
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
 
         $user = Sanctum::actingAs($this->user);
+        auth('api')->setUser($this->user);
+
         $tokenId = $user->tokens()->first()->id;
         $response = $this->post("$this->baseUri/tokens/invalidate", ['token_ids' => [$tokenId]]);
 
@@ -207,6 +213,8 @@ class SanctumAuthenticationTest extends TestCase
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
 
         $user = Sanctum::actingAs($this->user);
+        auth('api')->setUser($this->user);
+
         $response = $this->post("$this->baseUri/tokens/invalidate", ['token_ids' => ['*']]);
         $response->assertStatus(204);
         $this->assertEquals(0, $user->tokens()->count());

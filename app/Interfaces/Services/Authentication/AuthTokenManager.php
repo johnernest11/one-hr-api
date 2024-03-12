@@ -17,4 +17,6 @@ interface AuthTokenManager
 
     /** Validate an auth token */
     public function tokenIsValid(string $token): bool;
+
+    public function getTokenOwner(string $token): ?User;
 }

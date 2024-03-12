@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'api',
         'passwords' => 'users',
     ],
 
@@ -38,6 +38,10 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'api' => [
+            'driver' => 'multi-auth',
             'provider' => 'users',
         ],
     ],
@@ -127,18 +131,15 @@ return [
 
     /*
      |--------------------------------------------------------------------------
-     | JWT Configuration keys
+     | Multi-Auth Mechanism Switch
      |--------------------------------------------------------------------------
      |
-     | Defined here are the configurations for
-     | the JWT Authentication
+     | Set if Sanctum, JWT, and Basic Auth Systems are enabled.
      |
     */
-    'jwt' => [
-        'signing_key' => env('JWT_SIGNING_KEY'),
-        'lifetime_seconds' => env('JWT_LIFETIME_SECONDS', 600),
-        'issuer' => env('JWT_ISSUER'),
-        'audience' => env('JWT_AUDIENCE'),
-        'id' => env('JWT_ID'),
+    'mechanism' => [
+        'sanctum_enabled' => env('SANCTUM_AUTH_ENABLED', true),
+        'jwt_enabled' => env('JWT_AUTH_ENABLED', false),
+        'basic_auth_enabled' => env('BASIC_AUTH_ENABLED', false),
     ],
 ];

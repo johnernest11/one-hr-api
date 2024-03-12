@@ -3,12 +3,15 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Guards\MultiAuthGuard;
 use App\Interfaces\Services\Authentication\AuthTokenManager;
 use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use App\Services\Authentication\JWTAuthService;
 use App\Services\Authentication\SanctumAuthService;
+use Auth;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -45,6 +48,11 @@ class AuthServiceProvider extends ServiceProvider
         // This works in the app by using gate-related functions like auth()->user->can() and @can()
         Gate::after(function ($user, $ability) {
             return $user->hasRole('super_user') ? true : null;
+        });
+
+        // Our custom multi auth guard
+        Auth::extend('multi-auth', function (Application $app, string $name, array $config) {
+            return new MultiAuthGuard();
         });
     }
 }

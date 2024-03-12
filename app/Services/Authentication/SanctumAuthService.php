@@ -47,6 +47,20 @@ class SanctumAuthService implements PersistentAuthTokenManager
         return true;
     }
 
+    public function getTokenOwner(string $token): ?User
+    {
+        if (! $this->tokenIsValid($token)) {
+            return null;
+        }
+
+        $sanctumToken = PersonalAccessToken::findToken($token);
+
+        /** @var User $user */
+        $user = $sanctumToken->tokenable;
+
+        return $user;
+    }
+
     /** {@inheritDoc} */
     public function invalidateCurrentToken(User $user): bool
     {
