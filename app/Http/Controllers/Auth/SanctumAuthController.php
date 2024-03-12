@@ -21,18 +21,6 @@ class SanctumAuthController extends AuthController
     }
 
     /**
-     * Revoke the current access token of the user
-     */
-    public function invalidateCurrent(): JsonResponse
-    {
-        /** @var User $user */
-        $user = auth()->user();
-        $this->tokenManager->invalidateCurrentToken($user);
-
-        return $this->success(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /**
      * Retrieve all the access tokens of a user
      */
     public function fetch(): JsonResponse
@@ -53,6 +41,18 @@ class SanctumAuthController extends AuthController
         $user = auth()->user();
         $tokensToRevoke = $request->get('token_ids');
         $this->tokenManager->invalidateMultipleTokens($user, $tokensToRevoke);
+
+        return $this->success(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Revoke the current access token of the user
+     */
+    public function invalidateCurrent(): JsonResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $this->tokenManager->invalidateCurrentToken($user);
 
         return $this->success(null, Response::HTTP_NO_CONTENT);
     }

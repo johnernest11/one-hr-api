@@ -17,7 +17,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use Throwable;
 
-class AuthenticationTest extends TestCase
+class SanctumAuthenticationTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;
@@ -240,5 +240,4 @@ class AuthenticationTest extends TestCase
         $response = $this->post("$this->baseUri/tokens", $creds);
         $response->assertStatus(200);
     }
-    /** End */
 }

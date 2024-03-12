@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AuthenticationType;
 use App\Enums\SexualCategory;
 use App\Rules\DbVarcharMaxLength;
 use App\Rules\InternationalPhoneNumberFormat;
@@ -50,6 +51,7 @@ class AuthRequest extends FormRequest
             'password' => ['required', 'string'],
             'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'with_user' => ['nullable', 'bool'], // Send the token back with user information
+            'auth_type' => ['nullable', 'in:'.AuthenticationType::SANCTUM->value.','.AuthenticationType::JWT->value],
         ];
     }
 
