@@ -21,12 +21,6 @@ class MultiAuthGuard implements Guard
      */
     public function check(): bool
     {
-        // If the user is set via the setUser() method, we automatically return true if
-        // we are running unit and feature tests
-        if ($this->user && app()->runningUnitTests()) {
-            return true;
-        }
-
         $token = request()->bearerToken();
 
         if (config('auth.mechanism.sanctum_enabled')) {
@@ -95,6 +89,10 @@ class MultiAuthGuard implements Guard
      */
     public function id(): mixed
     {
+        if (! is_null($this->user)) {
+            return $this->user->id;
+        }
+
         $token = request()->bearerToken();
 
         if (config('auth.mechanism.sanctum_enabled')) {

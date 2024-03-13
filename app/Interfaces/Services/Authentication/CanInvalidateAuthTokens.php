@@ -7,9 +7,9 @@ use App\Models\User;
 interface CanInvalidateAuthTokens
 {
     /**
-     * Invalidate the current access token of a user
+     * Invalidate a specific access token
      */
-    public function invalidateCurrentToken(User $user): bool;
+    public function invalidateToken(string $token): bool;
 
     /**
      * Invalidate multiple access tokens of a user

@@ -49,11 +49,11 @@ class SanctumAuthService implements PersistentAuthTokenManager
 
     public function getTokenOwner(string $token): ?User
     {
-        if (! $this->tokenIsValid($token)) {
+        $sanctumToken = PersonalAccessToken::findToken($token);
+
+        if (! $sanctumToken) {
             return null;
         }
-
-        $sanctumToken = PersonalAccessToken::findToken($token);
 
         /** @var User $user */
         $user = $sanctumToken->tokenable;
@@ -62,9 +62,15 @@ class SanctumAuthService implements PersistentAuthTokenManager
     }
 
     /** {@inheritDoc} */
-    public function invalidateCurrentToken(User $user): bool
+    public function invalidateToken(string $token): bool
     {
-        return (bool) $user->currentAccessToken()->delete();
+        $sanctumToken = PersonalAccessToken::findToken($token);
+
+        if (! $sanctumToken) {
+            return true;
+        }
+
+        return $sanctumToken->delete();
     }
 
     /** {@inheritDoc} */

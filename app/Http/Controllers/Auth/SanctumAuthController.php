@@ -48,11 +48,13 @@ class SanctumAuthController extends AuthController
     /**
      * Revoke the current access token of the user
      */
-    public function invalidateCurrent(): JsonResponse
+    public function invalidateCurrent(AuthRequest $request): JsonResponse
     {
-        /** @var User $user */
-        $user = auth('api')->user();
-        $this->tokenManager->invalidateCurrentToken($user);
+        $token = $request->bearerToken();
+
+        if ($token) {
+            $this->tokenManager->invalidateToken($token);
+        }
 
         return $this->success(null, Response::HTTP_NO_CONTENT);
     }

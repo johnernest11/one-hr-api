@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\Role;
 use App\Enums\SexualCategory;
+use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Notifications\Auth\QueuedResetPasswordNotification;
@@ -13,7 +14,6 @@ use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use Throwable;
 
@@ -29,6 +29,8 @@ class SanctumAuthenticationTest extends TestCase
     private array $userProfile;
 
     private User $user;
+
+    private string $authToken;
 
     public function setUp(): void
     {
@@ -47,6 +49,10 @@ class SanctumAuthenticationTest extends TestCase
         $this->user = User::factory($this->userCreds)
             ->has(UserProfile::factory())
             ->create();
+
+        $authSanctumService = resolve(PersistentAuthTokenManager::class);
+        $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
+        $this->authToken = $authSanctumService->generateToken($this->user, $authTokenExpiration);
     }
 
     /** Start */
@@ -165,13 +171,12 @@ class SanctumAuthenticationTest extends TestCase
         // create token with phone
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
 
-        Sanctum::actingAs($this->user);
-        auth('api')->setUser($this->user);
-
-        $response = $this->get("$this->baseUri/tokens", $this->userCreds);
+        $response = $this->withToken($this->authToken)->get("$this->baseUri/tokens", $this->userCreds);
 
         $response->assertStatus(200);
-        $response->assertJsonCount(2, 'data');
+
+        // We created 2 tokens + 1 more in the setup() method
+        $response->assertJsonCount(3, 'data');
     }
 
     /** @throws Throwable */
@@ -183,27 +188,19 @@ class SanctumAuthenticationTest extends TestCase
 
     public function test_user_can_invalidate_current_access_token(): void
     {
-        $user = Sanctum::actingAs($this->user);
-        auth('api')->setUser($user);
-
-        $response = $this->delete("$this->baseUri/tokens");
+        $response = $this->withToken($this->authToken)->delete("$this->baseUri/tokens");
 
         $response->assertStatus(204);
-        $this->assertEquals(0, $user->tokens()->count());
+        $this->assertEquals(0, $this->user->tokens()->count());
     }
 
     public function test_user_can_invalidate_specific_access_tokens(): void
     {
-        $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
-
-        $user = Sanctum::actingAs($this->user);
-        auth('api')->setUser($this->user);
-
-        $tokenId = $user->tokens()->first()->id;
-        $response = $this->post("$this->baseUri/tokens/invalidate", ['token_ids' => [$tokenId]]);
+        $tokenId = $this->user->tokens()->first()->id;
+        $response = $this->withToken($this->authToken)->post("$this->baseUri/tokens/invalidate", ['token_ids' => [$tokenId]]);
 
         $response->assertStatus(204);
-        $this->assertEquals(0, $user->tokens()->count());
+        $this->assertEquals(0, $this->user->tokens()->count());
     }
 
     public function test_user_can_invalidate_all_access_tokens(): void
@@ -212,12 +209,12 @@ class SanctumAuthenticationTest extends TestCase
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
         $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
 
-        $user = Sanctum::actingAs($this->user);
-        auth('api')->setUser($this->user);
+        $response = $this
+            ->withToken($this->authToken)
+            ->post("$this->baseUri/tokens/invalidate", ['token_ids' => ['*']]);
 
-        $response = $this->post("$this->baseUri/tokens/invalidate", ['token_ids' => ['*']]);
         $response->assertStatus(204);
-        $this->assertEquals(0, $user->tokens()->count());
+        $this->assertEquals(0, $this->user->tokens()->count());
     }
 
     /** @throws Exception */
