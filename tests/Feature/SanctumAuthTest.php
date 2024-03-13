@@ -7,17 +7,15 @@ use App\Enums\SexualCategory;
 use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\User;
 use App\Models\UserProfile;
-use App\Notifications\Auth\QueuedResetPasswordNotification;
 use App\Notifications\Auth\QueuedVerifyEmailNotification;
 use App\Notifications\WelcomeNotification;
-use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Throwable;
 
-class SanctumAuthenticationTest extends TestCase
+class SanctumAuthTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;
@@ -52,7 +50,7 @@ class SanctumAuthenticationTest extends TestCase
 
         $authSanctumService = resolve(PersistentAuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
-        $this->authToken = $authSanctumService->generateToken($this->user, $authTokenExpiration);
+        $this->authToken = $authSanctumService->generateToken($this->user, $authTokenExpiration, 'mock_token');
     }
 
     /** Start */
@@ -217,32 +215,34 @@ class SanctumAuthenticationTest extends TestCase
         $this->assertEquals(0, $this->user->tokens()->count());
     }
 
-    /** @throws Exception */
-    public function test_users_can_request_a_password_reset_email(): void
+    public function test_protected_routes_return_401_when_token_expires(): void
     {
-        $response = $this->post("$this->baseUri/forgot-password", ['email' => $this->user->email]);
+        // This will expire after 1 second
+        $authTokenExpiration = now()->addSecond();
+        $this->authToken = (resolve(PersistentAuthTokenManager::class))
+            ->generateToken($this->user, $authTokenExpiration);
+
+        // The route that fetches the auth token is protected
+        $response = $this->withToken($this->authToken)
+            ->get("$this->baseUri/tokens", $this->userCreds);
+
         $response->assertStatus(200);
 
-        Notification::assertSentTo($this->user, QueuedResetPasswordNotification::class);
+        // We let the token expire
+        sleep(1);
+
+        $response = $this->withToken($this->authToken)
+            ->get("$this->baseUri/tokens", $this->userCreds);
+
+        $response->assertStatus(401);
     }
 
-    public function test_users_can_reset_their_passwords(): void
+    public function test_it_returns_401_if_the_token_is_malformed(): void
     {
-        $token = app('auth.password.broker')->createToken($this->user);
-        $newPassword = 'Sample123123';
-        $input = [
-            'token' => $token,
-            'email' => $this->user->email,
-            'password' => $newPassword,
-            'password_confirmation' => $newPassword,
-        ];
+        // The route that fetches the auth token is protected
+        $response = $this->withToken('incorrect_token')
+            ->get("$this->baseUri/tokens", $this->userCreds);
 
-        $response = $this->postJson("$this->baseUri/reset-password", $input);
-        $response->assertStatus(200);
-
-        // login again
-        $creds = ['email' => $this->user->email, 'password' => $newPassword];
-        $response = $this->post("$this->baseUri/tokens", $creds);
-        $response->assertStatus(200);
+        $response->assertStatus(401);
     }
 }

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\Role as RoleEnum;
 use App\Enums\SexualCategory;
+use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
@@ -12,7 +13,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use Throwable;
 
@@ -23,6 +23,8 @@ class ProfileTest extends TestCase
 
     private string $baseUri = self::BASE_API_URI.'/profile';
 
+    private string $authToken;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -30,12 +32,15 @@ class ProfileTest extends TestCase
 
         $this->user = $this->produceUsers();
         $this->user->syncRoles(RoleEnum::STANDARD_USER->value);
-        Sanctum::actingAs($this->user);
+
+        $authSanctumService = resolve(PersistentAuthTokenManager::class);
+        $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
+        $this->authToken = $authSanctumService->generateToken($this->user, $authTokenExpiration, 'mock_token');
     }
 
     public function test_user_can_view_profile(): void
     {
-        $response = $this->get($this->baseUri);
+        $response = $this->withToken($this->authToken)->get($this->baseUri);
         $response->assertStatus(200);
     }
 
@@ -60,7 +65,7 @@ class ProfileTest extends TestCase
             'postal_code' => '221',
         ];
 
-        $response = $this->patchJson($this->baseUri, $edits);
+        $response = $this->withToken($this->authToken)->patchJson($this->baseUri, $edits);
         $response->assertStatus(200);
         $result = $response->decodeResponseJson();
 
@@ -100,7 +105,7 @@ class ProfileTest extends TestCase
     public function test_it_can_upload_profile_picture(): void
     {
         $file = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
-        $response = $this->post("$this->baseUri/profile-picture", ['photo' => $file]);
+        $response = $this->withToken($this->authToken)->post("$this->baseUri/profile-picture", ['photo' => $file]);
         $response->assertStatus(200);
 
         // clean the bucket
@@ -119,7 +124,7 @@ class ProfileTest extends TestCase
             'password' => $newPassword,
             'password_confirmation' => $newPassword,
         ];
-        $result = $this->patchJson("$this->baseUri/password", $input);
+        $result = $this->withToken($this->authToken)->patchJson("$this->baseUri/password", $input);
         $result->assertStatus(200);
 
         // login again with the new password

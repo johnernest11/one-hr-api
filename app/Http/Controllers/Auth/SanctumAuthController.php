@@ -26,7 +26,7 @@ class SanctumAuthController extends AuthController
     public function fetch(): JsonResponse
     {
         /** @var User $user */
-        $user = auth('api')->user();
+        $user = auth('multi')->user();
         $tokens = $this->tokenManager->getAllActiveTokens($user);
 
         return $this->success(['data' => $tokens], Response::HTTP_OK);
@@ -38,7 +38,7 @@ class SanctumAuthController extends AuthController
     public function invalidateMultiple(AuthRequest $request): JsonResponse
     {
         /** @var User $user */
-        $user = auth('api')->user();
+        $user = auth('multi')->user();
         $tokensToRevoke = $request->get('token_ids');
         $this->tokenManager->invalidateMultipleTokens($user, $tokensToRevoke);
 

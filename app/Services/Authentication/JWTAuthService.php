@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use JWT;
 use Lcobucci\JWT\Encoding\CannotDecodeContent;
+use Lcobucci\JWT\Token\InvalidTokenStructure;
 use Log;
 use STS\JWT\Exceptions\InvalidAudience;
 use STS\JWT\Exceptions\InvalidID;
@@ -16,11 +17,14 @@ use STS\JWT\Exceptions\ValidationException;
 
 class JWTAuthService implements AuthTokenManager
 {
-    public string $jwtId;
+    private string $jwtId;
+
+    private string $signingKey;
 
     public function __construct()
     {
         $this->jwtId = config('jwt.id');
+        $this->signingKey = config('jwt.signing_key');
     }
 
     /** {@inheritDoc} */
@@ -30,7 +34,7 @@ class JWTAuthService implements AuthTokenManager
             $this->jwtId,
             ['user_id' => $user->id, 'client_name' => $clientName],
             $expiresAt,
-            config('jwt.signing_key')
+            $this->signingKey
         );
     }
 
@@ -39,14 +43,14 @@ class JWTAuthService implements AuthTokenManager
     {
         try {
             $parsedToken = JWT::parse($token);
-        } catch (CannotDecodeContent $error) {
+        } catch (CannotDecodeContent|InvalidTokenStructure $error) {
             Log::warning('JWT token is malformed: '.$error::class);
 
             return false;
         }
 
         try {
-            $parsedToken->validate($this->jwtId);
+            $parsedToken->validate($this->jwtId, $this->signingKey);
         } catch (InvalidSignature|TokenExpired|InvalidAudience|InvalidID|ValidationException $error) {
             // We log if we get any other error besides the token expiring
             if (! ($error instanceof TokenExpired)) {

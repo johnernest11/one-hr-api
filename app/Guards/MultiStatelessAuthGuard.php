@@ -7,7 +7,7 @@ use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 
-class MultiAuthGuard implements Guard
+class MultiStatelessAuthGuard implements Guard
 {
     private ?Authenticatable $user;
 
@@ -22,26 +22,26 @@ class MultiAuthGuard implements Guard
     public function check(): bool
     {
         $token = request()->bearerToken();
+        $sanctumVerified = false;
+        $jwtVerified = false;
 
         if (config('auth.mechanism.sanctum_enabled')) {
             if ($token) {
-                $sanctumService = resolve(PersistentAuthTokenManager::class);
-
-                return $sanctumService->tokenIsValid($token);
+                $sanctumAuthService = resolve(PersistentAuthTokenManager::class);
+                $sanctumVerified = $sanctumAuthService->tokenIsValid($token);
             }
         }
 
         if (config('auth.mechanism.jwt_enabled')) {
             if ($token) {
-                $sanctumService = resolve(AuthTokenManager::class);
-
-                return $sanctumService->tokenIsValid($token);
+                $jwtAuthService = resolve(AuthTokenManager::class);
+                $jwtVerified = $jwtAuthService->tokenIsValid($token);
             }
         }
 
         /** TODO: Implement Basic Auth Check */
 
-        return false;
+        return $sanctumVerified || $jwtVerified;
     }
 
     /**
@@ -65,19 +65,27 @@ class MultiAuthGuard implements Guard
 
         if (config('auth.mechanism.sanctum_enabled')) {
             if ($token) {
-                $sanctumService = resolve(PersistentAuthTokenManager::class);
-                $this->user = $sanctumService->getTokenOwner($token);
+                $sanctumAuthService = resolve(PersistentAuthTokenManager::class);
+                $foundUser = $sanctumAuthService->getTokenOwner($token);
 
-                return $this->user;
+                if (! is_null($foundUser)) {
+                    $this->user = $foundUser;
+
+                    return $this->user;
+                }
             }
         }
 
         if (config('auth.mechanism.jwt_enabled')) {
             if ($token) {
-                $sanctumService = resolve(AuthTokenManager::class);
-                $this->user = $sanctumService->getTokenOwner($token);
+                $jwtAuthService = resolve(AuthTokenManager::class);
+                $foundUser = $jwtAuthService->getTokenOwner($token);
 
-                return $this->user;
+                if (! is_null($foundUser)) {
+                    $this->user = $foundUser;
+
+                    return $this->user;
+                }
             }
         }
 
@@ -97,17 +105,23 @@ class MultiAuthGuard implements Guard
 
         if (config('auth.mechanism.sanctum_enabled')) {
             if ($token) {
-                $sanctumService = resolve(PersistentAuthTokenManager::class);
+                $sanctumAuthService = resolve(PersistentAuthTokenManager::class);
 
-                return $sanctumService->getTokenOwner($token)?->id;
+                $foundUser = $sanctumAuthService->getTokenOwner($token);
+                if (! is_null($foundUser)) {
+                    return $foundUser->id;
+                }
             }
         }
 
         if (config('auth.mechanism.jwt_enabled')) {
             if ($token) {
-                $sanctumService = resolve(AuthTokenManager::class);
+                $jwtAuthService = resolve(AuthTokenManager::class);
 
-                return $sanctumService->getTokenOwner($token)?->id;
+                $foundUser = $jwtAuthService->getTokenOwner($token);
+                if (! is_null($foundUser)) {
+                    return $foundUser->id;
+                }
             }
         }
 

@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'api',
+        'guard' => 'multi',
         'passwords' => 'users',
     ],
 
@@ -40,8 +40,8 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'api' => [
-            'driver' => 'multi-auth',
+        'multi' => [
+            'driver' => 'multi-stateless-auth',
             'provider' => 'users',
         ],
     ],

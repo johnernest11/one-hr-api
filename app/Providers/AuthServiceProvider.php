@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
-use App\Guards\MultiAuthGuard;
+use App\Guards\MultiStatelessAuthGuard;
 use App\Interfaces\Services\Authentication\AuthTokenManager;
 use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\User;
@@ -51,8 +51,8 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // Our custom multi auth guard
-        Auth::extend('multi-auth', function (Application $app, string $name, array $config) {
-            return new MultiAuthGuard();
+        Auth::extend('multi-stateless-auth', function () {
+            return new MultiStatelessAuthGuard();
         });
     }
 }
