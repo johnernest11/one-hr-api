@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\Role as RoleEnum;
 use App\Enums\SexualCategory;
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
+use App\Interfaces\Services\Authentication\AuthTokenManager;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
@@ -33,7 +33,7 @@ class ProfileTest extends TestCase
         $this->user = $this->produceUsers();
         $this->user->syncRoles(RoleEnum::STANDARD_USER->value);
 
-        $authSanctumService = resolve(PersistentAuthTokenManager::class);
+        $authSanctumService = resolve(AuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
         $this->authToken = $authSanctumService->generateToken($this->user, $authTokenExpiration, 'mock_token');
     }

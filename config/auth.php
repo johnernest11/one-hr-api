@@ -36,12 +36,12 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
         'multi' => [
             'driver' => 'multi-stateless-auth',
+            'provider' => 'users',
+        ],
+        'web' => [
+            'driver' => 'session',
             'provider' => 'users',
         ],
     ],

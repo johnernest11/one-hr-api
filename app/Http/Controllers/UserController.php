@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ApiErrorCode;
 use App\Enums\PaginationType;
+use App\Enums\Role as RoleEnum;
 use App\Events\UserCreated;
 use App\Http\Requests\UserRequest;
 use App\Interfaces\CloudFileServices\CloudFileServiceInterface;
@@ -121,7 +122,7 @@ class UserController extends ApiController
     private function rolesHaveSuperUser(UserRequest $request): bool
     {
         $roles = $request->get('roles');
-        $superAdminRole = Role::findByName(\App\Enums\Role::SUPER_USER->value, 'sanctum');
+        $superAdminRole = Role::findByName(RoleEnum::SUPER_USER->value, 'multi');
 
         return ! empty($roles) && in_array($superAdminRole->id, $roles);
     }

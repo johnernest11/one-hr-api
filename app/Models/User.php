@@ -35,14 +35,6 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     use SoftDeletes;
 
     /**
-     * @Library
-     * Requirement by Spatie Laravel Permissions when setting multiple auth guards
-     *
-     * @see https://spatie.be/docs/laravel-permission/v5/basic-usage/multiple-guards
-     */
-    public string $guard_name = 'sanctum';
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
