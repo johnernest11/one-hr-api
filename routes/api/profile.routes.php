@@ -1,9 +1,10 @@
 <?php
 
+use App\Enums\Permission;
 use App\Http\Controllers\ProfileController;
 
 Route::middleware(['auth:multi', 'verified.api'])->controller(ProfileController::class)->name('profile.')->group(function () {
-    /** TODO: Add Spatie Roles and permissions custom middleware */
+    /** TODO: Create custom permission middleware **/
 
     /** @uses ProfileController::view */
     Route::middleware([])->get('', 'view')->name('view');
