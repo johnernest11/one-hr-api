@@ -38,7 +38,7 @@ class UserManagementTest extends TestCase
 
         /** @var User $user */
         $user = $this->produceUsers();
-        $roles = [RoleEnum::ADMIN->value, RoleEnum::SUPER_USER->value];
+        $roles = [RoleEnum::ADMIN, RoleEnum::SUPER_USER];
         $user->syncRoles(fake()->randomElement($roles));
         Sanctum::actingAs($user);
     }

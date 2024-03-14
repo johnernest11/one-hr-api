@@ -31,7 +31,7 @@ class ProfileTest extends TestCase
         $this->artisan('db:seed');
 
         $this->user = $this->produceUsers();
-        $this->user->syncRoles(RoleEnum::STANDARD_USER->value);
+        $this->user->syncRoles(RoleEnum::STANDARD_USER);
 
         $authSanctumService = resolve(AuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));

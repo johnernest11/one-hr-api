@@ -25,7 +25,7 @@ class AuthorizationUserManagementTest extends TestCase
 
         /** @var User $user */
         $this->user = $this->produceUsers();
-        $this->user->syncRoles(RoleEnum::ADMIN->value);
+        $this->user->syncRoles(RoleEnum::ADMIN);
         Sanctum::actingAs($this->user);
     }
 

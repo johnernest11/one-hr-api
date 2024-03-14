@@ -50,6 +50,7 @@ class JwtAuthTest extends TestCase
         $this->user = User::factory($this->userCreds)
             ->has(UserProfile::factory())
             ->create();
+        $this->user->syncRoles([Role::STANDARD_USER]);
 
         $jwtAuthService = resolve(AuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('jwt.lifetime_minutes'));

@@ -22,7 +22,7 @@ class RolesTest extends TestCase
         $this->artisan('db:seed');
 
         $this->user = $this->produceUsers();
-        $this->user->syncRoles(RoleEnum::ADMIN->value);
+        $this->user->syncRoles(RoleEnum::ADMIN);
         Sanctum::actingAs($this->user);
     }
 
