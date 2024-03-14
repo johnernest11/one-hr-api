@@ -122,7 +122,7 @@ class UserController extends ApiController
     private function rolesHaveSuperUser(UserRequest $request): bool
     {
         $roles = $request->get('roles');
-        $superAdminRole = Role::findByName(RoleEnum::SUPER_USER->value, 'multi');
+        $superAdminRole = Role::findByName(RoleEnum::SUPER_USER->value, 'token');
 
         return ! empty($roles) && in_array($superAdminRole->id, $roles);
     }

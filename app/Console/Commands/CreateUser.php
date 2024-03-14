@@ -50,7 +50,7 @@ class CreateUser extends Command
             'email' => $email,
             'password' => $password,
             'password_confirmation' => $passwordConfirmation,
-            'roles' => [Role::findByName($role, 'multi')->id],
+            'roles' => [Role::findByName($role, 'token')->id],
             'email_verified' => true,
         ];
         $createUserRules = (new UserRequest())->getStoreUserRules();

@@ -20,27 +20,27 @@ class RolesAndPermissionsSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Standard user permissions
-        Permission::create(['name' => PermissionEnum::VIEW_PROFILE, 'guard_name' => 'multi']);
-        Permission::create(['name' => PermissionEnum::UPDATE_PROFILE, 'guard_name' => 'multi']);
+        Permission::create(['name' => PermissionEnum::VIEW_PROFILE, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::UPDATE_PROFILE, 'guard_name' => 'token']);
         /** @var Role $standardRole */
-        $standardRole = Role::create(['name' => RoleEnum::STANDARD_USER, 'guard_name' => 'multi']);
+        $standardRole = Role::create(['name' => RoleEnum::STANDARD_USER, 'guard_name' => 'token']);
         $standardRole->givePermissionTo(Permission::all());
 
         // Admin Permissions
-        Permission::create(['name' => PermissionEnum::CREATE_USERS, 'guard_name' => 'multi']);
-        Permission::create(['name' => PermissionEnum::UPDATE_USERS, 'guard_name' => 'multi']);
-        Permission::create(['name' => PermissionEnum::DELETE_USERS, 'guard_name' => 'multi']);
-        Permission::create(['name' => PermissionEnum::VIEW_USERS, 'guard_name' => 'multi']);
-        Permission::create(['name' => PermissionEnum::VIEW_USER_ROLES, 'guard_name' => 'multi']);
-        Permission::create(['name' => PermissionEnum::UPDATE_APP_SETTINGS, 'guard_name' => 'multi']);
+        Permission::create(['name' => PermissionEnum::CREATE_USERS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::UPDATE_USERS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::DELETE_USERS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_USERS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_USER_ROLES, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::UPDATE_APP_SETTINGS, 'guard_name' => 'token']);
         /** @var Role $adminRole */
-        $adminRole = Role::create(['name' => RoleEnum::ADMIN, 'guard_name' => 'multi']);
+        $adminRole = Role::create(['name' => RoleEnum::ADMIN, 'guard_name' => 'token']);
         $adminRole->givePermissionTo(Permission::all());
 
         // System Support Permissions
-        $notification_per = Permission::create(['name' => PermissionEnum::RECEIVE_SYSTEM_ALERTS, 'guard_name' => 'multi']);
+        $notification_per = Permission::create(['name' => PermissionEnum::RECEIVE_SYSTEM_ALERTS, 'guard_name' => 'token']);
         /** @var Role $systemSupport */
-        $systemSupport = Role::create(['name' => RoleEnum::SYSTEM_SUPPORT, 'guard_name' => 'multi']);
+        $systemSupport = Role::create(['name' => RoleEnum::SYSTEM_SUPPORT, 'guard_name' => 'token']);
         $systemSupport->givePermissionTo($notification_per);
 
         /**
@@ -50,6 +50,6 @@ class RolesAndPermissionsSeeder extends Seeder
          *
          * @var Role $superUserRole
          */
-        Role::create(['name' => RoleEnum::SUPER_USER, 'guard_name' => 'multi']);
+        Role::create(['name' => RoleEnum::SUPER_USER, 'guard_name' => 'token']);
     }
 }

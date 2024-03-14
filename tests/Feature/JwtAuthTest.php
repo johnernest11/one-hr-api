@@ -60,7 +60,7 @@ class JwtAuthTest extends TestCase
     /** @throws Throwable */
     public function test_user_can_request_an_access_token_via_email(): void
     {
-        $response = $this->post("$this->baseUri/tokens?auth_type=jwt", [
+        $response = $this->postJson("$this->baseUri/tokens?auth_type=jwt", [
             'email' => $this->userCreds['email'],
             'password' => $this->userCreds['password'],
         ]);
@@ -76,7 +76,7 @@ class JwtAuthTest extends TestCase
         $user = User::where('email', $this->userCreds['email'])->first();
         $user->userProfile()->update($this->userProfile);
 
-        $response = $this->post("$this->baseUri/tokens?auth_type=jwt", [
+        $response = $this->postJson("$this->baseUri/tokens?auth_type=jwt", [
             'mobile_number' => $this->userProfile['mobile_number'],
             'password' => $this->userCreds['password'],
         ]);
@@ -119,7 +119,7 @@ class JwtAuthTest extends TestCase
         $user = User::where('email', $this->userCreds['email'])->first();
         $user->userProfile()->update($this->userProfile);
 
-        $response = $this->post("$this->baseUri/tokens?auth_type=jwt", [
+        $response = $this->postJson("$this->baseUri/tokens?auth_type=jwt", [
             'mobile_number' => $this->userProfile['mobile_number'],
             'password' => $this->userCreds['password'],
         ]);
@@ -170,7 +170,7 @@ class JwtAuthTest extends TestCase
     public function test_user_can_request_access_token_with_client_name(): void
     {
         $clientName = "Jeg's Chrome Browser";
-        $response = $this->post("$this->baseUri/tokens", [
+        $response = $this->postJson("$this->baseUri/tokens", [
             'email' => $this->userCreds['email'],
             'password' => $this->userCreds['password'],
             'client_name' => $clientName,
@@ -184,18 +184,18 @@ class JwtAuthTest extends TestCase
     public function test_it_returns_401_for_protected_routes_if_unauthenticated(): void
     {
         // We visit the profile route
-        $response = $this->get('api/v1/profile');
+        $response = $this->getJson('api/v1/profile');
         $response->assertStatus(401);
 
         // It's a 200 if the token is properly added in the Authorization Header (Bearer Token)
-        $response = $this->withToken($this->authToken)->get('api/v1/profile');
+        $response = $this->withToken($this->authToken)->getJson('api/v1/profile');
         $response->assertStatus(200);
     }
 
     public function test_it_returns_401_if_token_is_malformed(): void
     {
         // The route that fetches the auth token is protected
-        $response = $this->withToken('invalid_token')->get('api/v1/profile');
+        $response = $this->withToken('invalid_token')->getJson('api/v1/profile');
         $response->assertStatus(401);
     }
 
@@ -203,12 +203,12 @@ class JwtAuthTest extends TestCase
     {
         // We change the JWT signing key by appending 'W' in our app config to simulate a mismatch
         Config::set('jwt.signing_key', env('JWT_SIGNING_KEY').'W');
-        $response = $this->withToken($this->authToken)->get('api/v1/profile');
+        $response = $this->withToken($this->authToken)->getJson('api/v1/profile');
         $response->assertStatus(401);
 
         // If we change it back it should be 200 again
         Config::set('jwt.signing_key', env('JWT_SIGNING_KEY'));
-        $response = $this->withToken($this->authToken)->get('api/v1/profile');
+        $response = $this->withToken($this->authToken)->getJson('api/v1/profile');
         $response->assertStatus(200);
     }
 
@@ -220,12 +220,12 @@ class JwtAuthTest extends TestCase
             ->generateToken($this->user, $authTokenExpiration);
 
         // The route that fetches the auth token is protected
-        $response = $this->withToken($this->authToken)->get('api/v1/profile');
+        $response = $this->withToken($this->authToken)->getJson('api/v1/profile');
         $response->assertStatus(200);
 
         // We let the token expire
         sleep(1);
-        $response = $this->withToken($this->authToken)->get('api/v1/profile');
+        $response = $this->withToken($this->authToken)->getJson('api/v1/profile');
         $response->assertStatus(401);
     }
 }

@@ -3,7 +3,7 @@
 use App\Enums\Permission;
 use App\Http\Controllers\ProfileController;
 
-Route::middleware(['auth:multi', 'verified.api'])->controller(ProfileController::class)->name('profile.')->group(function () {
+Route::middleware(['auth:token', 'verified.api'])->controller(ProfileController::class)->name('profile.')->group(function () {
     /** @uses ProfileController::view */
     Route::middleware(['permission:'.Permission::VIEW_PROFILE->value])->get('', 'view')->name('view');
 

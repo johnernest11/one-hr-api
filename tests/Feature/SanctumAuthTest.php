@@ -58,7 +58,7 @@ class SanctumAuthTest extends TestCase
     /** @throws Throwable */
     public function test_user_can_request_an_access_token_via_email(): void
     {
-        $response = $this->post("$this->baseUri/tokens", [
+        $response = $this->postJson("$this->baseUri/tokens", [
             'email' => $this->userCreds['email'],
             'password' => $this->userCreds['password'],
         ]);
@@ -74,7 +74,7 @@ class SanctumAuthTest extends TestCase
         $user = User::where('email', $this->userCreds['email'])->first();
         $user->userProfile()->update($this->userProfile);
 
-        $response = $this->post("$this->baseUri/tokens", [
+        $response = $this->postJson("$this->baseUri/tokens", [
             'mobile_number' => $this->userProfile['mobile_number'],
             'password' => $this->userCreds['password'],
         ]);
@@ -134,7 +134,7 @@ class SanctumAuthTest extends TestCase
     /** @throws Throwable */
     public function test_user_can_request_access_token_with_user_info(): void
     {
-        $response = $this->post("$this->baseUri/tokens", [
+        $response = $this->postJson("$this->baseUri/tokens", [
             'email' => $this->userCreds['email'],
             'password' => $this->userCreds['password'],
             'with_user' => true,
@@ -149,7 +149,7 @@ class SanctumAuthTest extends TestCase
     public function test_user_can_request_access_token_with_client_name(): void
     {
         $clientName = "Jeg's Chrome Browser";
-        $response = $this->post("$this->baseUri/tokens", [
+        $response = $this->postJson("$this->baseUri/tokens", [
             'email' => $this->userCreds['email'],
             'password' => $this->userCreds['password'],
             'client_name' => $clientName,
@@ -164,12 +164,12 @@ class SanctumAuthTest extends TestCase
     public function test_user_can_fetch_all_access_tokens_owned(): void
     {
         // create token with browser
-        $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
+        $this->postJson("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
 
         // create token with phone
-        $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
+        $this->postJson("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
 
-        $response = $this->withToken($this->authToken)->get("$this->baseUri/tokens", $this->userCreds);
+        $response = $this->withToken($this->authToken)->getJson("$this->baseUri/tokens", $this->userCreds);
 
         $response->assertStatus(200);
 
@@ -180,7 +180,7 @@ class SanctumAuthTest extends TestCase
     /** @throws Throwable */
     public function test_user_must_be_logged_in_to_fetch_tokens(): void
     {
-        $response = $this->get("$this->baseUri/tokens", $this->userCreds);
+        $response = $this->getjson("$this->baseUri/tokens", $this->userCreds);
         $response->assertStatus(401);
     }
 
@@ -195,7 +195,7 @@ class SanctumAuthTest extends TestCase
     public function test_user_can_invalidate_specific_access_tokens(): void
     {
         $tokenId = $this->user->tokens()->first()->id;
-        $response = $this->withToken($this->authToken)->post("$this->baseUri/tokens/invalidate", ['token_ids' => [$tokenId]]);
+        $response = $this->withToken($this->authToken)->postJson("$this->baseUri/tokens/invalidate", ['token_ids' => [$tokenId]]);
 
         $response->assertStatus(204);
         $this->assertEquals(0, $this->user->tokens()->count());
@@ -204,12 +204,12 @@ class SanctumAuthTest extends TestCase
     public function test_user_can_invalidate_all_access_tokens(): void
     {
         // create multiple tokens
-        $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
-        $this->post("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
+        $this->postJson("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
+        $this->postJson("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
 
         $response = $this
             ->withToken($this->authToken)
-            ->post("$this->baseUri/tokens/invalidate", ['token_ids' => ['*']]);
+            ->postJson("$this->baseUri/tokens/invalidate", ['token_ids' => ['*']]);
 
         $response->assertStatus(204);
         $this->assertEquals(0, $this->user->tokens()->count());
@@ -224,7 +224,7 @@ class SanctumAuthTest extends TestCase
 
         // The route that fetches the auth token is protected
         $response = $this->withToken($this->authToken)
-            ->get("$this->baseUri/tokens", $this->userCreds);
+            ->getJson("$this->baseUri/tokens", $this->userCreds);
 
         $response->assertStatus(200);
 
@@ -232,7 +232,7 @@ class SanctumAuthTest extends TestCase
         sleep(1);
 
         $response = $this->withToken($this->authToken)
-            ->get("$this->baseUri/tokens", $this->userCreds);
+            ->getJson("$this->baseUri/tokens", $this->userCreds);
 
         $response->assertStatus(401);
     }
@@ -241,7 +241,7 @@ class SanctumAuthTest extends TestCase
     {
         // The route that fetches the auth token is protected
         $response = $this->withToken('incorrect_token')
-            ->get("$this->baseUri/tokens", $this->userCreds);
+            ->getJson("$this->baseUri/tokens", $this->userCreds);
 
         $response->assertStatus(401);
     }

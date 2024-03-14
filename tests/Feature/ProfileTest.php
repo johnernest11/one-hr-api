@@ -40,7 +40,7 @@ class ProfileTest extends TestCase
 
     public function test_user_can_view_profile(): void
     {
-        $response = $this->withToken($this->authToken)->get($this->baseUri);
+        $response = $this->withToken($this->authToken)->getJson($this->baseUri);
         $response->assertStatus(200);
     }
 
@@ -105,7 +105,7 @@ class ProfileTest extends TestCase
     public function test_it_can_upload_profile_picture(): void
     {
         $file = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
-        $response = $this->withToken($this->authToken)->post("$this->baseUri/profile-picture", ['photo' => $file]);
+        $response = $this->withToken($this->authToken)->postJson("$this->baseUri/profile-picture", ['photo' => $file]);
         $response->assertStatus(200);
 
         // clean the bucket
@@ -129,7 +129,7 @@ class ProfileTest extends TestCase
 
         // login again with the new password
         $creds = ['email' => $this->user->email, 'password' => $newPassword];
-        $response = $this->post('api/v1/auth/tokens', $creds);
+        $response = $this->postJson('api/v1/auth/tokens', $creds);
         $response->assertStatus(200);
     }
 }

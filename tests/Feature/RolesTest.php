@@ -3,9 +3,10 @@
 namespace Tests\Feature;
 
 use App\Enums\Role as RoleEnum;
+use App\Interfaces\Services\Authentication\AuthTokenManager;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use Throwable;
 
@@ -16,20 +17,25 @@ class RolesTest extends TestCase
 
     private string $baseUri = self::BASE_API_URI.'/roles';
 
+    private string $authToken;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
 
-        $this->user = $this->produceUsers();
-        $this->user->syncRoles(RoleEnum::ADMIN);
-        Sanctum::actingAs($this->user);
+        $user = $this->produceUsers();
+        $user->syncRoles(RoleEnum::ADMIN);
+
+        $authSanctumService = resolve(AuthTokenManager::class);
+        $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
+        $this->authToken = $authSanctumService->generateToken($user, $authTokenExpiration, 'mock_token');
     }
 
     /** @throws Throwable */
     public function test_it_can_fetch_all_roles(): void
     {
-        $response = $this->get($this->baseUri);
+        $response = $this->withToken($this->authToken)->getJson($this->baseUri);
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson();

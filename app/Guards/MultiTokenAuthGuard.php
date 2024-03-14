@@ -7,7 +7,7 @@ use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 
-class MultiStatelessAuthGuard implements Guard
+class MultiTokenAuthGuard implements Guard
 {
     private ?Authenticatable $user;
 

@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'multi',
+        'guard' => 'token',
         'passwords' => 'users',
     ],
 
@@ -36,8 +36,8 @@ return [
     */
 
     'guards' => [
-        'multi' => [
-            'driver' => 'multi-stateless-auth',
+        'token' => [
+            'driver' => 'multi-token',
             'provider' => 'users',
         ],
         'web' => [

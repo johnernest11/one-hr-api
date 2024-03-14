@@ -45,7 +45,7 @@ Route::group(['as' => 'auth.'], function () {
 });
 
 // Only Sanctum Auth can fetch and invalidate tokens since they are persisted in the Database
-Route::middleware(['auth:multi', 'verified.api'])->controller(SanctumAuthController::class)->name('auth.')->group(function () {
+Route::middleware(['auth:token', 'verified.api'])->controller(SanctumAuthController::class)->name('auth.')->group(function () {
     /** @uses SanctumAuthController::fetch */
     Route::get('tokens', 'fetch')->name('fetch');
 
