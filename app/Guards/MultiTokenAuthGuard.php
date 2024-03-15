@@ -4,16 +4,22 @@ namespace App\Guards;
 
 use App\Interfaces\Services\Authentication\AuthTokenManager;
 use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
+use App\Interfaces\Services\UserServiceInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 class MultiTokenAuthGuard implements Guard
 {
     private ?Authenticatable $user;
 
-    public function __construct()
+    private Request $request;
+
+    public function __construct(Request $request)
     {
         $this->user = null;
+        $this->request = $request;
     }
 
     /**
@@ -21,14 +27,15 @@ class MultiTokenAuthGuard implements Guard
      */
     public function check(): bool
     {
-        $token = request()->bearerToken();
-        $sanctumVerified = false;
-        $jwtVerified = false;
+        $token = $this->request->bearerToken();
 
         if (config('auth.mechanism.sanctum_enabled')) {
             if ($token) {
                 $sanctumAuthService = resolve(PersistentAuthTokenManager::class);
                 $sanctumVerified = $sanctumAuthService->tokenIsValid($token);
+                if ($sanctumVerified) {
+                    return true;
+                }
             }
         }
 
@@ -36,12 +43,13 @@ class MultiTokenAuthGuard implements Guard
             if ($token) {
                 $jwtAuthService = resolve(AuthTokenManager::class);
                 $jwtVerified = $jwtAuthService->tokenIsValid($token);
+                if ($jwtVerified) {
+                    return true;
+                }
             }
         }
 
-        /** TODO: Implement Basic Auth Check */
-
-        return $sanctumVerified || $jwtVerified;
+        return false;
     }
 
     /**
@@ -57,7 +65,7 @@ class MultiTokenAuthGuard implements Guard
      */
     public function user(): bool|Authenticatable|null
     {
-        $token = request()->bearerToken();
+        $token = $this->request->bearerToken();
 
         if (! is_null($this->user)) {
             return $this->user;
@@ -89,7 +97,7 @@ class MultiTokenAuthGuard implements Guard
             }
         }
 
-        return $this->user;
+        return null;
     }
 
     /**
@@ -101,7 +109,7 @@ class MultiTokenAuthGuard implements Guard
             return $this->user->id;
         }
 
-        $token = request()->bearerToken();
+        $token = $this->request->bearerToken();
 
         if (config('auth.mechanism.sanctum_enabled')) {
             if ($token) {
@@ -131,10 +139,23 @@ class MultiTokenAuthGuard implements Guard
     /**
      * {@inheritDoc}
      */
-    public function validate(array $credentials = [])
+    public function validate(array $credentials = []): bool
     {
-        /** We support a credentials validation for Basic Authentication */
-        // TODO: Implement validate() method.
+        if (! isset($credentials['password'])) {
+            throw new InvalidArgumentException('The credentials array should have a `password` key');
+        }
+
+        $userService = resolve(UserServiceInterface::class);
+
+        if (isset($credentials['email'])) {
+            return (bool) $userService->getUserViaEmailAndPassword($credentials['email'], $credentials['password']);
+        }
+
+        if (isset($credentials['mobile_number'])) {
+            return (bool) $userService->getUserViaMobileNumberAndPassword($credentials['mobile_number'], $credentials['password']);
+        }
+
+        throw new InvalidArgumentException('The credentials array should either have an `email` or `mobile_number` key');
     }
 
     /**
@@ -142,7 +163,11 @@ class MultiTokenAuthGuard implements Guard
      */
     public function hasUser(): bool
     {
-        return $this->check();
+        if ($this->user) {
+            return (bool) $this->user;
+        }
+
+        return (bool) $this->user();
     }
 
     /**

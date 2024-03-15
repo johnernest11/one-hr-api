@@ -186,7 +186,10 @@ class JwtAuthTest extends TestCase
         // We visit the profile route
         $response = $this->getJson('api/v1/profile');
         $response->assertStatus(401);
+    }
 
+    public function test_it_returns_200_for_protected_routes_if_authenticated(): void
+    {
         // It's a 200 if the token is properly added in the Authorization Header (Bearer Token)
         $response = $this->withToken($this->authToken)->getJson('api/v1/profile');
         $response->assertStatus(200);

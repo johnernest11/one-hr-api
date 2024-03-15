@@ -44,7 +44,7 @@ class JWTAuthService implements AuthTokenManager
         try {
             $parsedToken = JWT::parse($token);
         } catch (CannotDecodeContent|InvalidTokenStructure $error) {
-            Log::warning('JWT token is malformed: '.$error::class);
+            Log::debug('JWT token is malformed: '.$error::class);
 
             return false;
         }
@@ -54,7 +54,7 @@ class JWTAuthService implements AuthTokenManager
         } catch (InvalidSignature|TokenExpired|InvalidAudience|InvalidID|ValidationException $error) {
             // We log if we get any other error besides the token expiring
             if (! ($error instanceof TokenExpired)) {
-                Log::warning('A JWT Exception has occurred: '.$error::class);
+                Log::debug('A JWT Exception has occurred: '.$error::class);
             }
 
             return false;

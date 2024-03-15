@@ -34,7 +34,7 @@ class SanctumAuthService implements PersistentAuthTokenManager
         // Check if the owner of this token no longer exists. We log as warning if someone is still trying to
         // use the token.
         if (! $sanctumToken->tokenable()->exists()) {
-            Log::warning(__CLASS__, ['error' => 'Owner no longer exists']);
+            Log::debug(__CLASS__, ['error' => 'Owner no longer exists']);
 
             return false;
         }

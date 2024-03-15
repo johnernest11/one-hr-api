@@ -52,7 +52,7 @@ class AuthServiceProvider extends ServiceProvider
 
         // Our custom multi auth guard
         Auth::extend('multi-token', function () {
-            return new MultiTokenAuthGuard();
+            return new MultiTokenAuthGuard(request());
         });
     }
 }

@@ -10,7 +10,6 @@ use App\Interfaces\Services\UserServiceInterface;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Propaganistas\LaravelPhone\PhoneNumber;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class AuthController extends ApiController
@@ -36,15 +35,6 @@ abstract class AuthController extends ApiController
         if ($email) {
             $user = $this->userService->getUserViaEmailAndPassword($email, $password);
         } elseif ($mobileNumber) {
-            /**
-             * Since we save the mobile (and phone) numbers in international format,
-             * we will mutate it if clients send in national format
-             * ex: 09064647295 -> +639064647295
-             *
-             * @Note
-             * We ignore the country format if we're running tests, since seeding can produce some malformed numbers
-             */
-            $mobileNumber = (new PhoneNumber($mobileNumber, 'PH'))->formatE164();
             $user = $this->userService->getUserViaMobileNumberAndPassword($mobileNumber, $password);
         }
 

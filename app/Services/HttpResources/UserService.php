@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 
 class UserService implements UserServiceInterface
@@ -210,6 +211,13 @@ class UserService implements UserServiceInterface
     /** {@inheritDoc} */
     public function getUserViaMobileNumberAndPassword(string $mobileNumber, string $password): ?User
     {
+        /**
+         * Since we save the mobile (and phone) numbers in international format,
+         * we will mutate it if clients send in national format
+         * ex: 09064647295 -> +639064647295
+         */
+        $mobileNumber = (new PhoneNumber($mobileNumber, 'PH'))->formatE164();
+
         $user = User::query()
             ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
             ->where('mobile_number', $mobileNumber)

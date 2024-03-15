@@ -155,9 +155,8 @@ class AuthorizationUserManagementTest extends TestCase
     {
         /** @var User $user */
         $user = $this->produceUsers();
-        $user->syncRoles(RoleEnum::SUPER_USER);
-        $user->email_verified_at = null;
-        auth('token')->setUser($user);
+        $user->syncRoles(RoleEnum::ADMIN);
+        $user->update(['email_verified_at' => null]);
         $token = resolve(PersistentAuthTokenManager::class)->generateToken($user, now()->addMinute());
 
         $response = $this->withToken($token)->getJson("$this->baseUri");
