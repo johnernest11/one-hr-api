@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,5 +44,18 @@ class ApiKey extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Check if the key has not expired yet
+     */
+    public function isActive(): bool
+    {
+        // We consider it active if there is no expires_at set
+        if (! $this->expires_at) {
+            return true;
+        }
+
+        return Carbon::now()->lessThan($this->expires_at);
     }
 }

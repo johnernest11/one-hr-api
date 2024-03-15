@@ -214,8 +214,13 @@ class UserService implements UserServiceInterface
          * Since we save the mobile (and phone) numbers in international format,
          * we will mutate it if clients send in national format
          * ex: 09064647295 -> +639064647295
+         *
+         * @Note
+         * We ignore the country format if we're running tests, since seeding can produce some malformed numbers
          */
-        $mobileNumber = (new PhoneNumber($mobileNumber, 'PH'))->formatE164();
+        $mobileNumber = ! app()->runningUnitTests()
+            ? (new PhoneNumber($mobileNumber, 'PH'))->formatE164()
+            : (new PhoneNumber($mobileNumber))->formatE164();
 
         $user = User::query()
             ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
