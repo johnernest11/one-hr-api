@@ -4,11 +4,11 @@ namespace Tests\Feature;
 
 use App\Enums\Role as RoleEnum;
 use App\Enums\SexualCategory;
-use App\Interfaces\Services\Authentication\AuthTokenManager;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
+use App\Services\Authentication\Interfaces\AuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;

@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Enums\Role as RoleEnum;
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
@@ -11,6 +10,7 @@ use App\Models\Address\Region;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Notifications\WelcomeNotification;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;

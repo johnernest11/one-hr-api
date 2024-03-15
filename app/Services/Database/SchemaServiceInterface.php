@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\Database;
+namespace App\Services\Database;
 
 interface SchemaServiceInterface
 {

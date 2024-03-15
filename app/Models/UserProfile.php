@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Enums\SexualCategory;
-use App\Interfaces\CloudFileServices\CloudFileServiceInterface;
 use App\Models\Address\Address;
+use App\Services\CloudFileServices\CloudFileServiceInterface;
 use DateTimeHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

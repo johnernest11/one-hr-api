@@ -3,15 +3,14 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
-use App\Guards\MultiTokenAuthGuard;
-use App\Interfaces\Services\Authentication\AuthTokenManager;
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
+use App\Auth\MultiTokenAuthGuard;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Services\Authentication\Interfaces\AuthTokenManager;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\Authentication\JWTAuthService;
 use App\Services\Authentication\SanctumAuthService;
 use Auth;
-use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -51,7 +50,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // Our custom multi auth guard
-        Auth::extend('multi-token', function () {
+        Auth::extend('multi_token_auth', function () {
             return new MultiTokenAuthGuard(request());
         });
     }

@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
-use App\Guards\MultiTokenAuthGuard;
-use App\Interfaces\Services\Authentication\AuthTokenManager;
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
+use App\Auth\MultiTokenAuthGuard;
+use App\Services\Authentication\Interfaces\AuthTokenManager;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;

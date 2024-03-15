@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Interfaces\CloudFileServices\CloudFileServiceInterface;
+use App\Services\CloudFileServices\CloudFileServiceInterface;
 use App\Services\CloudFileServices\S3FileService;
 use Illuminate\Support\ServiceProvider;
 

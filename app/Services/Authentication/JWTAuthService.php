@@ -2,8 +2,8 @@
 
 namespace App\Services\Authentication;
 
-use App\Interfaces\Services\Authentication\AuthTokenManager;
 use App\Models\User;
+use App\Services\Authentication\Interfaces\AuthTokenManager;
 use Carbon\Carbon;
 use JWT;
 use Lcobucci\JWT\Encoding\CannotDecodeContent;

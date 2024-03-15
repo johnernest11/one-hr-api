@@ -37,8 +37,12 @@ return [
 
     'guards' => [
         'token' => [
-            'driver' => 'multi-token',
+            'driver' => 'multi_token_auth',
             'provider' => 'users',
+        ],
+        'api_key', [
+            'driver' => 'api_key_auth',
+            'provider' => 'api_keys',
         ],
         'web' => [
             'driver' => 'session',
@@ -67,6 +71,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'api_keys' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\ApiKey::class,
         ],
 
         // 'users' => [

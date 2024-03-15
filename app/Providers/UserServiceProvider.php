@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Interfaces\Services\UserServiceInterface;
 use App\Models\User;
-use App\Services\HttpResources\UserService;
+use App\Services\User\UserService;
+use App\Services\User\UserServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class UserServiceProvider extends ServiceProvider

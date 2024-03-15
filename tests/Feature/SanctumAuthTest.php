@@ -4,11 +4,11 @@ namespace Tests\Feature;
 
 use App\Enums\Role;
 use App\Enums\SexualCategory;
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Notifications\Auth\QueuedVerifyEmailNotification;
 use App\Notifications\WelcomeNotification;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;

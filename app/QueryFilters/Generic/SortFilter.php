@@ -2,8 +2,8 @@
 
 namespace App\QueryFilters\Generic;
 
-use App\Interfaces\Database\SchemaServiceInterface;
 use App\QueryFilters\Filter;
+use App\Services\Database\SchemaServiceInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Log;
 use Str;

@@ -7,9 +7,9 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\SanctumAuthController;
 use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Requests\AuthRequest;
-use App\Interfaces\Services\Authentication\AuthTokenManager;
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
-use App\Interfaces\Services\UserServiceInterface;
+use App\Services\Authentication\Interfaces\AuthTokenManager;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use App\Services\User\UserServiceInterface;
 
 // The Controller (Sanctum or JWT) will depend on the route query parameter `?type=sanctum` or `?type=jwt`
 Route::group(['as' => 'auth.'], function () {

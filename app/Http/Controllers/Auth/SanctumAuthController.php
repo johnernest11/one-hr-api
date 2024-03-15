@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\AuthRequest;
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
-use App\Interfaces\Services\UserServiceInterface;
 use App\Models\User;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use App\Services\User\UserServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

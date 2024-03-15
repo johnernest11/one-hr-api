@@ -3,8 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\Role as RoleEnum;
-use App\Interfaces\Services\Authentication\AuthTokenManager;
-use App\Models\User;
+use App\Services\Authentication\Interfaces\AuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;

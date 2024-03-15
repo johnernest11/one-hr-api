@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Interfaces\Services\Authentication\AuthTokenManager;
-use App\Interfaces\Services\UserServiceInterface;
 use App\Models\User;
+use App\Services\Authentication\Interfaces\AuthTokenManager;
+use App\Services\User\UserServiceInterface;
 use Carbon\Carbon;
 
 class JwtAuthController extends AuthController

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Guards;
+namespace App\Auth;
 
-use App\Interfaces\Services\Authentication\AuthTokenManager;
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
-use App\Interfaces\Services\UserServiceInterface;
+use App\Services\Authentication\Interfaces\AuthTokenManager;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use App\Services\User\UserServiceInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;

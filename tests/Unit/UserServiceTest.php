@@ -3,14 +3,14 @@
 namespace Tests\Unit;
 
 use App\Enums\PaginationType;
-use App\Interfaces\Services\UserServiceInterface;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
 use App\Models\User;
 use App\Models\UserProfile;
-use App\Services\HttpResources\UserService;
+use App\Services\User\UserService;
+use App\Services\User\UserServiceInterface;
 use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;

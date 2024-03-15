@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\CloudFileServices;
+namespace App\Services\CloudFileServices;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

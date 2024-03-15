@@ -2,8 +2,8 @@
 
 namespace App\Services\Authentication;
 
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\User;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Carbon\Carbon;
 use Laravel\Sanctum\PersonalAccessToken;
 use Log;

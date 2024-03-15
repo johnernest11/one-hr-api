@@ -16,6 +16,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -73,7 +74,7 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'active' => 'boolean',
-        'deleted_at' => 'date',
+        'deleted_at' => 'datetime',
     ];
 
     protected static function boot(): void
@@ -88,8 +89,9 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
             $user->email = DateTimeHelper::appendTimestamp($user->email, '::deleted_');
             $user->saveQuietly();
 
-            // Delete the UserProfile associated with this user
+            // Delete the UserProfile and Api Keys associated with this user
             $user->userProfile()->delete();
+            $user->apiKeys()->delete();
         });
     }
 
@@ -117,6 +119,11 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     public function userProfile(): HasOne
     {
         return $this->hasOne(UserProfile::class);
+    }
+
+    public function apiKeys(): HasMany
+    {
+        return $this->hasMany(ApiKey::class);
     }
 
     /**

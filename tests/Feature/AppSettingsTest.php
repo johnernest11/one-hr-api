@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use App\Enums\AppTheme;
 use App\Enums\Role as RoleEnum;
-use App\Interfaces\Services\Authentication\PersistentAuthTokenManager;
 use App\Models\User;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;

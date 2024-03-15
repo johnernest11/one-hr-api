@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Services\HttpResources;
+namespace App\Services\User;
 
 use App\Enums\PaginationType;
 use App\Enums\Role;
-use App\Interfaces\Services\UserServiceInterface;
 use App\Models\User;
 use App\Traits\Services\CanBuildPagination;
 use Carbon\Carbon;

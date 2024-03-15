@@ -2,7 +2,6 @@
 
 namespace App\Services\CloudFileServices;
 
-use App\Interfaces\CloudFileServices\CloudFileServiceInterface;
 use Storage;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;

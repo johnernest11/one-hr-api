@@ -2,7 +2,6 @@
 
 namespace App\Services\Database;
 
-use App\Interfaces\Database\SchemaServiceInterface;
 use Cache;
 use Illuminate\Support\Facades\DB;
 use Schema;
