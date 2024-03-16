@@ -9,12 +9,12 @@ use Str;
 
 class DbTextMaxLength implements ValidationRule
 {
-    private int $dbMaxTextLength;
+    private int $dbTextMaxLength;
 
     public function __construct()
     {
         /** @see https://stackoverflow.com/questions/6766781/maximum-length-for-mysql-type-text */
-        $this->dbMaxTextLength = 65535;
+        $this->dbTextMaxLength = 65535;
     }
 
     /**
@@ -24,8 +24,8 @@ class DbTextMaxLength implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (Str::length($value) > $this->dbMaxTextLength) {
-            $fail("The :attribute must not exceed $this->dbMaxTextLength characters");
+        if (Str::length($value) > $this->dbTextMaxLength) {
+            $fail("The :attribute must not exceed $this->dbTextMaxLength characters");
         }
     }
 }
