@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,10 +24,11 @@ class ApiKey extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'key',
         'name',
         'expires_at',
-        'user_id',
+        'active',
     ];
 
     /**
@@ -36,6 +38,7 @@ class ApiKey extends Model
      */
     protected $casts = [
         'expires_at' => 'datetime',
+        'active' => 'boolean',
     ];
 
     /**
@@ -47,9 +50,19 @@ class ApiKey extends Model
     }
 
     /**
+     * @Scope
+     *
+     * Scope a query to only include active api keys.
+     */
+    public function scopeActive(Builder $query): void
+    {
+        $query->where('active', true);
+    }
+
+    /**
      * Check if the key has not expired yet
      */
-    public function isActive(): bool
+    public function isExpired(): bool
     {
         // We consider it active if there is no expires_at set
         if (! $this->expires_at) {

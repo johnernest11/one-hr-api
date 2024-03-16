@@ -519,14 +519,17 @@ class UserManagementTest extends TestCase
     public function test_it_can_search_via_last_name(): void
     {
         User::query()->delete();
-        $last_name = $this->produceUsers()->userProfile->last_name;
-        $last_name = Str::substr($last_name, 2);
+
+        $createdUser = $this->produceUsers();
+        $createdUser->userProfile->update(['last_name' => Str::uuid()]);
+        $lastName = urlencode($createdUser->userProfile->last_name);
+        $lastName = Str::substr($lastName, 2);
 
         // We create a new user and token since the old one is deleted
         $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);
         $authToken = $this->tokenManager->generateToken($authUser, now()->addMinutes(5));
 
-        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$last_name");
+        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$lastName");
         $response = $response->decodeResponseJson();
         $this->assertCount(1, $response['data']);
     }
@@ -535,14 +538,17 @@ class UserManagementTest extends TestCase
     public function test_it_can_search_via_first_name(): void
     {
         User::query()->delete();
-        $first_name = $this->produceUsers()->userProfile->first_name;
-        $first_name = Str::substr($first_name, 2);
+
+        $createdUser = $this->produceUsers();
+        $createdUser->userProfile->update(['first_name' => Str::uuid()]);
+        $firstName = urlencode($createdUser->userProfile->first_name);
+        $firstName = Str::substr($firstName, 2);
 
         // We create a new user and token since the old one is deleted
         $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);
         $authToken = $this->tokenManager->generateToken($authUser, now()->addMinutes(5));
 
-        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$first_name");
+        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$firstName");
         $response = $response->decodeResponseJson();
         $this->assertCount(1, $response['data']);
     }
@@ -554,8 +560,7 @@ class UserManagementTest extends TestCase
         $createdUser = $this->produceUsers();
         $createdUser->userProfile->update(['middle_name' => Str::uuid()]);
         $middleName = urlencode($createdUser->userProfile->middle_name);
-
-        $middleName = Str::substr($middleName, 1);
+        $middleName = Str::substr($middleName, 2);
 
         // We create a new user and token since the old one is deleted
         $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);

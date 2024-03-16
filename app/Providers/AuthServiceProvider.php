@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
-use App\Auth\MultiTokenAuthGuard;
+use App\Auth\ApiKeyGuard;
+use App\Auth\ApiKeyProvider;
+use App\Auth\MultiTokenGuard;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
@@ -11,6 +13,7 @@ use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\Authentication\JWTAuthService;
 use App\Services\Authentication\SanctumAuthService;
 use Auth;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -43,15 +46,29 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Implicitly grant "super_user" role all permissions
-        // This works in the app by using gate-related functions like auth()->user->can() and @can()
+        /**
+         * Implicitly grant "super_user" role all permissions.
+         * This works in the app by using gate-related functions like auth()->user->can() and @can()
+         *
+         * @see https://spatie.be/docs/laravel-permission/v6/basic-usage/super-admin
+         */
         Gate::after(function ($user, $ability) {
             return $user->hasRole('super_user') ? true : null;
         });
 
-        // Our custom multi auth guard
-        Auth::extend('multi_token_auth', function () {
-            return new MultiTokenAuthGuard(request());
+        // This checks the request's bearer token for either Sanctum Opaque token or JWT
+        Auth::extend('multi_token_guard', function () {
+            return new MultiTokenGuard(request());
+        });
+
+        // Provides ApiKey eloquent records
+        Auth::provider('api_keys', function () {
+            return new ApiKeyProvider();
+        });
+
+        // This checks for an API Key in the `X-API-Key` request header
+        Auth::extend('api_key_guard', function (Application $app, string $name, array $config) {
+            return new ApiKeyGuard(request(), Auth::createUserProvider($config['provider']));
         });
     }
 }

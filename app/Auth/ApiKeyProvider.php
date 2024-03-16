@@ -5,6 +5,7 @@ namespace App\Auth;
 use App\Models\ApiKey;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Support\Facades\Hash;
 
 class ApiKeyProvider implements UserProvider
 {
@@ -13,9 +14,9 @@ class ApiKeyProvider implements UserProvider
      */
     public function retrieveById($identifier): ?ApiKey
     {
-        $apiKey = ApiKey::find($identifier);
+        $apiKey = ApiKey::active()->where('id', $identifier);
 
-        if ($apiKey && $apiKey->isActive()) {
+        if ($apiKey && ! $apiKey->isExpired()) {
             return $apiKey;
         }
 
@@ -25,32 +26,37 @@ class ApiKeyProvider implements UserProvider
     /**
      * {@inheritDoc}
      */
-    public function retrieveByToken($identifier, $token)
+    public function retrieveByToken($identifier, $token): ?ApiKey
     {
-        // TODO: Implement retrieveByToken() method.
+        $key = Hash::make($token);
+
+        return ApiKey::where('id', $identifier)->where('key', $key)->first();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function updateRememberToken(Authenticatable $user, $token)
+    public function updateRememberToken(Authenticatable $user, $token): ?Authenticatable
     {
-        // TODO: Implement updateRememberToken() method.
+        /** @Note API Keys don't implement this functionality */
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function retrieveByCredentials(array $credentials)
+    public function retrieveByCredentials(array $credentials): ?Authenticatable
     {
-        // TODO: Implement retrieveByCredentials() method.
+        /** @Note API Keys don't implement this functionality */
+        return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function validateCredentials(Authenticatable $user, array $credentials)
+    public function validateCredentials(Authenticatable $user, array $credentials): ?Authenticatable
     {
-        // TODO: Implement validateCredentials() method.
+        /** @Note API Keys don't implement this functionality */
+        return null;
     }
 }

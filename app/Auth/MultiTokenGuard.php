@@ -10,7 +10,7 @@ use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 
-class MultiTokenAuthGuard implements Guard
+class MultiTokenGuard implements Guard
 {
     private ?Authenticatable $user;
 

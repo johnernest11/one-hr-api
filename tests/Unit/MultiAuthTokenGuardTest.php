@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Auth\MultiTokenAuthGuard;
+use App\Auth\MultiTokenGuard;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,7 +34,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
         $isValid = $guard->check();
         $this->assertTrue($isValid);
     }
@@ -47,7 +47,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
         $isValid = $guard->check();
         $this->assertFalse($isValid);
     }
@@ -59,7 +59,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
         $isValid = $guard->check();
         $this->assertTrue($isValid);
     }
@@ -72,7 +72,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
         $isValid = $guard->check();
         $this->assertFalse($isValid);
     }
@@ -84,7 +84,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
         $authUser = $guard->user();
 
         $this->assertEquals($user->id, $authUser->id);
@@ -97,7 +97,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
 
         $authUser = $guard->user();
         $this->assertEquals($user->id, $authUser->id);
@@ -110,7 +110,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
 
         $this->assertTrue($guard->hasUser());
     }
@@ -122,7 +122,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
 
         $this->assertTrue($guard->hasUser());
     }
@@ -134,11 +134,11 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
         $this->assertFalse($guard->guest());
 
         // Without the Bearer token
-        $guard = new MultiTokenAuthGuard(new Request());
+        $guard = new MultiTokenGuard(new Request());
         $this->assertTrue($guard->guest());
     }
 
@@ -149,18 +149,18 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
         $this->assertFalse($guard->guest());
 
         // Without the Bearer token
-        $guard = new MultiTokenAuthGuard(new Request());
+        $guard = new MultiTokenGuard(new Request());
         $this->assertTrue($guard->guest());
     }
 
     public function test_it_can_set_user(): void
     {
         $request = new Request();
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
 
         $this->assertFalse($guard->hasUser());
 
@@ -178,7 +178,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
         $this->assertFalse($guard->check());
     }
 
@@ -191,7 +191,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $request = new Request();
         $request->headers->set('Authorization', "Bearer $token");
 
-        $guard = new MultiTokenAuthGuard($request);
+        $guard = new MultiTokenGuard($request);
         $this->assertFalse($guard->check());
     }
 }
