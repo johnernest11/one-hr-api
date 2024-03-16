@@ -7,7 +7,7 @@ use Str;
 
 class DbVarcharMaxLength implements Rule
 {
-    private string $db_max_varchar_length;
+    private int $dbMaxVarCharLength;
 
     /**
      * Create a new rule instance.
@@ -16,7 +16,7 @@ class DbVarcharMaxLength implements Rule
      */
     public function __construct()
     {
-        $this->db_max_varchar_length = 255;
+        $this->dbMaxVarCharLength = 255;
     }
 
     /**
@@ -27,7 +27,7 @@ class DbVarcharMaxLength implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        return Str::length($value) <= $this->db_max_varchar_length;
+        return Str::length($value) <= $this->dbMaxVarCharLength;
     }
 
     /**
@@ -35,6 +35,6 @@ class DbVarcharMaxLength implements Rule
      */
     public function message(): string
     {
-        return "The :attribute must not exceed $this->db_max_varchar_length characters";
+        return "The :attribute must not exceed $this->dbMaxVarCharLength characters";
     }
 }
