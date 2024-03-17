@@ -6,6 +6,7 @@ use App\Enums\PaginationType;
 use App\Enums\Role;
 use App\Models\User;
 use App\Traits\Services\CanBuildPagination;
+use App\Traits\Services\CanResolveModelViaId;
 use Carbon\Carbon;
 use Hash;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -21,6 +22,7 @@ use Throwable;
 class UserService implements UserServiceInterface
 {
     use CanBuildPagination;
+    use CanResolveModelViaId;
 
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
@@ -32,12 +34,12 @@ class UserService implements UserServiceInterface
     }
 
     /** {@inheritDoc} */
-    public function all(?PaginationType $pagination = null): Collection|Paginator|LengthAwarePaginator|CursorPaginator
+    public function all(): LengthAwarePaginator
     {
         /** @var Builder $users */
-        $users = $this->model->filtered();
+        $query = $this->model->filtered();
 
-        return $this->buildPagination($pagination, $users);
+        return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
     }
 
     /**
@@ -110,10 +112,8 @@ class UserService implements UserServiceInterface
     public function update(User|int|string $modelOrId, array $newUserInfo): User
     {
         return DB::transaction(function () use ($modelOrId, $newUserInfo) {
-            $user = $modelOrId;
-            if (! ($user instanceof User)) {
-                $user = $this->model::findOrFail($modelOrId);
-            }
+            /** @var User $user */
+            $user = $this->retrieveModel($modelOrId);
 
             unset($newUserInfo['password_confirmation']);
 
@@ -169,10 +169,8 @@ class UserService implements UserServiceInterface
     /** {@inheritDoc} */
     public function destroy(User|int|string $modelOrId): User
     {
-        $user = $modelOrId;
-        if (! ($user instanceof User)) {
-            $user = $this->model::findOrFail($modelOrId);
-        }
+        /** @var User $user */
+        $user = $this->retrieveModel($modelOrId);
 
         $user->delete();
 
@@ -181,14 +179,13 @@ class UserService implements UserServiceInterface
 
     public function updatePassword(User|int|string $modelOrId, string $newPassword, string $oldPassword): ?User
     {
-        $user = $modelOrId;
-        if (! ($user instanceof User)) {
-            $user = $this->model::findOrFail($modelOrId);
-        }
+        /** @var User $user */
+        $user = $this->retrieveModel($modelOrId);
 
         if (! Hash::check($oldPassword, $user->password)) {
             return null;
         }
+
         $user->password = $newPassword;
         $user->save();
 

@@ -14,7 +14,7 @@ interface UserServiceInterface
     /**
      * Fetch a list of users
      */
-    public function all(?PaginationType $pagination = null): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
+    public function all(): LengthAwarePaginator;
 
     /**
      * Create a new user

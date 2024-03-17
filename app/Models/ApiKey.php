@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\QueryFilters\Generic\ActiveFilter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -42,6 +46,29 @@ class ApiKey extends Model
     ];
 
     /**
+     * The attributes that should be eager-loaded
+     *
+     * @var array<int, string>
+     */
+    protected $with = [
+        'user',
+    ];
+
+    /**
+     * @Scope
+     * Pipeline for HTTP query filters
+     */
+    public function scopeFiltered(Builder $builder): Builder
+    {
+        return app(Pipeline::class)
+            ->send($builder)
+            ->through([
+                ActiveFilter::class,
+            ])
+            ->thenReturn();
+    }
+
+    /**
      * Every API Key belongs to a user
      */
     public function user(): BelongsTo
@@ -70,5 +97,14 @@ class ApiKey extends Model
         }
 
         return Carbon::now()->lessThan($this->expires_at);
+    }
+
+    /**
+     * @Attribute
+     * Hash the key whenever it is set
+     */
+    public function key(): Attribute
+    {
+        return Attribute::set(fn ($value) => Hash::make($value));
     }
 }

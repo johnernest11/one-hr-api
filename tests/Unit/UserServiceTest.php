@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use App\Enums\PaginationType;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
@@ -69,7 +68,7 @@ class UserServiceTest extends TestCase
         $request->replace(['limit' => $limit]);
         app()->instance('request', $request);
 
-        $users = $this->userService->all(PaginationType::LENGTH_AWARE);
+        $users = $this->userService->all();
 
         $this->assertEquals($count, $users->total());
         $this->assertCount($limit, $users->items());
@@ -112,10 +111,22 @@ class UserServiceTest extends TestCase
         $this->assertEquals($createdUser->id, $foundUser->id);
     }
 
-    public function test_it_can_soft_delete_a_user(): void
+    public function test_it_can_soft_delete_a_user_via_model(): void
     {
         $this->produceUsers(3);
         $this->userService->destroy(User::first());
+
+        $foundUsers = User::all();
+        $this->assertCount(2, $foundUsers);
+
+        $trashedUsers = User::onlyTrashed()->count();
+        $this->assertEquals(1, $trashedUsers);
+    }
+
+    public function test_it_can_soft_delete_a_user_via_id(): void
+    {
+        $this->produceUsers(3);
+        $this->userService->destroy(User::first()->id);
 
         $foundUsers = User::all();
         $this->assertCount(2, $foundUsers);
@@ -136,7 +147,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals(1, $trashedUserProfiles);
     }
 
-    public function test_it_can_update_password(): void
+    public function test_it_can_update_password_via_model(): void
     {
         $user = $this->produceUsers();
         $oldPassword = 'test_old_123';
@@ -145,6 +156,21 @@ class UserServiceTest extends TestCase
 
         $newPassword = 'test_new_123';
         $updatedUser = $this->userService->updatePassword($user, $newPassword, $oldPassword);
+        $this->assertNotNull($updatedUser);
+
+        $isCorrect = Hash::check($newPassword, $updatedUser->password);
+        $this->assertTrue($isCorrect);
+    }
+
+    public function test_it_can_update_password_via_id(): void
+    {
+        $user = $this->produceUsers();
+        $oldPassword = 'test_old_123';
+        $user->password = $oldPassword;
+        $user->save();
+
+        $newPassword = 'test_new_123';
+        $updatedUser = $this->userService->updatePassword($user->id, $newPassword, $oldPassword);
         $this->assertNotNull($updatedUser);
 
         $isCorrect = Hash::check($newPassword, $updatedUser->password);
