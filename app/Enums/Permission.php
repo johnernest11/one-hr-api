@@ -13,4 +13,6 @@ enum Permission: string
     case RECEIVE_SYSTEM_ALERTS = 'receive_system_alerts';
     case VIEW_USER_ROLES = 'view_user_roles';
     case UPDATE_APP_SETTINGS = 'update_app_settings';
+    case WEBHOOK_CREATE_TEST_RESOURCES = 'webhook_create_test_resources';
+    case WEBHOOK_VIEW_TEST_RESOURCES = 'webhook_view_test_resources';
 }

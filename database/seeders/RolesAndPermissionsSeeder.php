@@ -51,5 +51,12 @@ class RolesAndPermissionsSeeder extends Seeder
          * @var Role $superUserRole
          */
         Role::create(['name' => RoleEnum::SUPER_USER, 'guard_name' => 'token']);
+
+        /**
+         * Permissions for the API Keys.
+         * We set basic test permissions for webhooks. Add more permissions depending on the project
+         */
+        Permission::create(['name' => PermissionEnum::WEBHOOK_CREATE_TEST_RESOURCES, 'guard_name' => 'api_key']);
+        Permission::create(['name' => PermissionEnum::WEBHOOK_VIEW_TEST_RESOURCES, 'guard_name' => 'api_key']);
     }
 }
