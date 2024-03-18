@@ -132,6 +132,12 @@ class ApiKeyService implements ApiKeyServiceInterface
             return false;
         }
 
+        if (! $apiKey->active) {
+            Log::debug('API Key is longer active', ['value' => $key, 'method' => __METHOD__]);
+
+            return false;
+        }
+
         if (! Hash::check($rawKey, $apiKey->key)) {
             Log::debug('API Key value is invalid', ['value' => $key, 'method' => __METHOD__]);
 
