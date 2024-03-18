@@ -22,3 +22,10 @@ Route::prefix('/v1/roles')->group(base_path('routes/api/roles.routes.php'));
 
 /** V1 App settings */
 Route::prefix('/v1/app-settings')->group(base_path('routes/api/app-settings.routes.php'));
+
+/**
+ * V1 Webhook Tests
+ *
+ * @note Remove or Change as necessary
+ */
+Route::prefix('/v1/webhooks')->group(base_path('routes/api/webhooks.routes.php'));

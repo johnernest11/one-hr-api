@@ -12,12 +12,12 @@ Route::group(['as' => 'webhooks.test.'], function () {
      * `permissions` middleware to check the permissions of the API Key without creating a custom middleware
      */
     Route::middleware(['permissions:'.Permission::WEBHOOK_CREATE_TEST_RESOURCES->value])
-        ->post('', function () {
+        ->post('/tests', function () {
             return response()->json(['success' => true], \Symfony\Component\HttpFoundation\Response::HTTP_CREATED);
         });
 
     Route::middleware(['permissions:'.Permission::WEBHOOK_CREATE_TEST_RESOURCES->value])
-        ->get('', function () {
+        ->get('/tests', function () {
             return response()->json(
                 ['success' => true, 'data' => ['name' => 'Test 1', 'description' => 'Test Description']],
                 \Symfony\Component\HttpFoundation\Response::HTTP_OK

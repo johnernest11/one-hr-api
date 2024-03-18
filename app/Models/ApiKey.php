@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\QueryFilters\Generic\ActiveFilter;
 use Carbon\Carbon;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Traits\HasPermissions;
 
-class ApiKey extends Model
+class ApiKey extends Model implements Authenticatable
 {
     use HasFactory;
     use HasPermissions;
@@ -110,5 +111,65 @@ class ApiKey extends Model
     public function key(): Attribute
     {
         return Attribute::set(fn ($value) => Hash::make($value));
+    }
+
+    /**
+     * We've implemented this method, so we can use the ApiKey model for authentication
+     *
+     * @see Authenticatable
+     */
+    public function getAuthIdentifierName(): string|int
+    {
+        return 'id';
+    }
+
+    /**
+     * We've implemented this method, so we can use the ApiKey model for authentication
+     *
+     * @see Authenticatable
+     */
+    public function getAuthIdentifier(): string|int
+    {
+        return $this->{$this->getAuthIdentifierName()};
+    }
+
+    /**
+     * API keys don't have passwords
+     *
+     * @see Authenticatable
+     */
+    public function getAuthPassword()
+    {
+        return null;
+    }
+
+    /**
+     * API keys don't have passwords
+     *
+     * @see Authenticatable
+     */
+    public function getRememberToken()
+    {
+        return null;
+    }
+
+    /**
+     * We do nothing. API Keys don't need a remember token
+     *
+     * @see Authenticatable
+     */
+    public function setRememberToken($value)
+    {
+        // Nothing
+    }
+
+    /**
+     * API keys don't have a remember token
+     *
+     * @see Authenticatable
+     */
+    public function getRememberTokenName()
+    {
+        return null;
     }
 }

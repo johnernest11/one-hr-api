@@ -214,7 +214,6 @@ class ApiKeyServiceTest extends TestCase
         $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
 
         $value = $this->apiKeyService->getValueFromKey($apiKey->rawKeyValue);
-        echo 'Value: '.$value.PHP_EOL;
         $isMatched = Hash::check($value, $apiKey->key);
 
         $this->assertTrue($isMatched);

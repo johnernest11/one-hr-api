@@ -23,6 +23,9 @@ class MultiAuthTokenGuardTest extends TestCase
         $this->artisan('db:seed');
         $this->sanctumAuthService = resolve(PersistentAuthTokenManager::class);
         $this->jwtAuthService = resolve(AuthTokenManager::class);
+
+        // seed 2 dummy users every time
+        $this->produceUsers(2);
     }
 
     public function test_it_can_check_valid_sanctum_bearer_token(): void

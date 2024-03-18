@@ -15,7 +15,7 @@ class ApiKeyGuard implements Guard
 
     private UserProvider $apiKeyProvider;
 
-    private ?ApiKey $apiKey;
+    private ?Authenticatable $apiKey;
 
     private ApiKeyServiceInterface $apiKeyService;
 
@@ -61,7 +61,7 @@ class ApiKeyGuard implements Guard
     /**
      * {@inheritDoc}
      */
-    public function user(): ?ApiKey
+    public function user(): ?Authenticatable
     {
         if (! is_null($this->apiKey)) {
             return $this->apiKey;
@@ -125,15 +125,18 @@ class ApiKeyGuard implements Guard
      */
     public function hasUser(): bool
     {
-        return (bool) $this->apiKey;
+        if ($this->apiKey) {
+            return (bool) $this->apiKey;
+        }
+
+        return (bool) $this->user();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setUser(Authenticatable $user)
+    public function setUser(Authenticatable $user): void
     {
-        /** @Note API Keys don't implement this functionality */
-        return null;
+        $this->apiKey = $user;
     }
 }

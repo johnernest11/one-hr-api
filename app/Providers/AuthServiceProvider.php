@@ -63,12 +63,12 @@ class AuthServiceProvider extends ServiceProvider
 
         // Provides ApiKey eloquent records
         Auth::provider('api_keys', function () {
-            return new ApiKeyProvider();
+            return new ApiKeyProvider(request());
         });
 
         // This checks for an API Key in the `X-API-Key` request header
-        Auth::extend('api_key_guard', function (Application $app, string $name, array $config) {
-            return new ApiKeyGuard(request(), Auth::createUserProvider($config['provider']));
+        Auth::extend('api_key_guard', function () {
+            return new ApiKeyGuard(request(), Auth::createUserProvider('api_keys'));
         });
     }
 }
