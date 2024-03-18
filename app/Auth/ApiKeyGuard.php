@@ -2,6 +2,8 @@
 
 namespace App\Auth;
 
+use App\Models\ApiKey;
+use App\Services\ApiKey\ApiKeyServiceInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
@@ -13,42 +15,101 @@ class ApiKeyGuard implements Guard
 
     private UserProvider $apiKeyProvider;
 
+    private ?ApiKey $apiKey;
+
+    private ApiKeyServiceInterface $apiKeyService;
+
+    const HEADER_NAME = 'X-API-KEY';
+
     public function __construct(Request $request, UserProvider $provider)
     {
         $this->request = $request;
         $this->apiKeyProvider = $provider;
+        $this->apiKey = null;
+        $this->apiKeyService = resolve(ApiKeyServiceInterface::class);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function check()
+    public function check(): bool
     {
-        // TODO: Implement check() method.
+        $key = $this->request->header(static::HEADER_NAME);
+        if (! $key) {
+            return false;
+        }
+
+        $isValid = $this->apiKeyService->isValid($key);
+        if ($isValid) {
+            $id = $this->apiKeyService->getIdFromKey($key);
+            $this->apiKey = $this->apiKeyProvider->retrieveById($id);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function guest()
+    public function guest(): bool
     {
-        // TODO: Implement guest() method.
+        return ! $this->check();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function user()
+    public function user(): ?ApiKey
     {
-        // TODO: Implement user() method.
+        if (! is_null($this->apiKey)) {
+            return $this->apiKey;
+        }
+
+        $key = $this->request->header(static::HEADER_NAME);
+        if (! $key) {
+            return null;
+        }
+
+        $id = $this->apiKeyService->getIdFromKey($key);
+
+        /** @var ApiKey $foundApiKey */
+        $foundApiKey = $this->apiKeyProvider->retrieveById($id);
+        if (! $foundApiKey) {
+            return null;
+        }
+
+        $this->apiKey = $foundApiKey;
+
+        return $this->apiKey;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function id()
+    public function id(): mixed
     {
-        // TODO: Implement id() method.
+        if (! is_null($this->apiKey)) {
+            return $this->apiKey->id;
+        }
+
+        $key = $this->request->header(static::HEADER_NAME);
+        if (! $key) {
+            return null;
+        }
+
+        $id = $this->apiKeyService->getIdFromKey($key);
+
+        /** @var ApiKey $foundApiKey */
+        $foundApiKey = $this->apiKeyProvider->retrieveById($id);
+        if (! $foundApiKey) {
+            return null;
+        }
+
+        $this->apiKey = $foundApiKey;
+
+        return $this->apiKey->id;
     }
 
     /**
@@ -56,15 +117,15 @@ class ApiKeyGuard implements Guard
      */
     public function validate(array $credentials = [])
     {
-        // TODO: Implement validate() method.
+        /** @Note API Keys don't implement this functionality */
     }
 
     /**
      * {@inheritDoc}
      */
-    public function hasUser()
+    public function hasUser(): bool
     {
-        // TODO: Implement hasUser() method.
+        return (bool) $this->apiKey;
     }
 
     /**
@@ -72,6 +133,7 @@ class ApiKeyGuard implements Guard
      */
     public function setUser(Authenticatable $user)
     {
-        // TODO: Implement setUser() method.
+        /** @Note API Keys don't implement this functionality */
+        return null;
     }
 }

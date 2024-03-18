@@ -3,20 +3,33 @@
 namespace App\Auth;
 
 use App\Models\ApiKey;
+use App\Services\ApiKey\ApiKeyServiceInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 
 class ApiKeyProvider implements UserProvider
 {
+    private ApiKeyServiceInterface $apiKeyService;
+
+    public function __construct(ApiKeyServiceInterface $apiKeyService)
+    {
+        $this->apiKeyService = $apiKeyService;
+    }
+
     /**
      * {@inheritDoc}
      */
     public function retrieveById($identifier): ?ApiKey
     {
-        $apiKey = ApiKey::active()->where('id', $identifier);
+        try {
+            $apiKey = $this->apiKeyService->read($identifier);
+        } catch (ModelNotFoundException) {
+            return null;
+        }
 
-        if ($apiKey && ! $apiKey->isExpired()) {
+        if (! $apiKey->isExpired()) {
             return $apiKey;
         }
 
@@ -28,9 +41,18 @@ class ApiKeyProvider implements UserProvider
      */
     public function retrieveByToken($identifier, $token): ?ApiKey
     {
-        $key = Hash::make($token);
+        try {
+            $apiKey = $this->apiKeyService->read($identifier);
+        } catch (ModelNotFoundException) {
+            return null;
+        }
 
-        return ApiKey::where('id', $identifier)->where('key', $key)->first();
+        $isValid = Hash::check($token, $apiKey->key);
+        if (! $isValid) {
+            return null;
+        }
+
+        return $apiKey;
     }
 
     /**

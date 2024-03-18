@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\ApiKey;
 use App\Services\ApiKey\ApiKeyService;
 use Carbon\Carbon;
+use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -191,5 +192,31 @@ class ApiKeyServiceTest extends TestCase
 
         $apiKeys = $this->apiKeyService->all();
         $this->assertCount(2, $apiKeys);
+    }
+
+    public function test_it_can_parse_id_from_key(): void
+    {
+        $user = $this->produceUsers();
+        $name = fake()->domainName;
+        $description = fake()->text;
+        $expiresAt = Carbon::yesterday()->endOfDay();
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+
+        $this->assertEquals($apiKey->id, $this->apiKeyService->getIdFromKey($apiKey->rawKeyValue));
+    }
+
+    public function test_it_can_parse_raw_value_from_key(): void
+    {
+        $user = $this->produceUsers();
+        $name = fake()->domainName;
+        $description = fake()->text;
+        $expiresAt = Carbon::yesterday()->endOfDay();
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+
+        $value = $this->apiKeyService->getValueFromKey($apiKey->rawKeyValue);
+        echo 'Value: '.$value.PHP_EOL;
+        $isMatched = Hash::check($value, $apiKey->key);
+
+        $this->assertTrue($isMatched);
     }
 }

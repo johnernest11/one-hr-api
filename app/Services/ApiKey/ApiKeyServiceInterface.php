@@ -5,6 +5,7 @@ namespace App\Services\ApiKey;
 use App\Models\ApiKey;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 interface ApiKeyServiceInterface
 {
@@ -14,7 +15,11 @@ interface ApiKeyServiceInterface
     /** Create an API Key */
     public function create(string $name, string|int $userId, string $description, Carbon $expiresAt): ApiKey;
 
-    /** Retrieve a single API Key */
+    /**
+     * Retrieve a single API Key
+     *
+     * @throws ModelNotFoundException
+     */
     public function read(int|string $id): ApiKey;
 
     /** Update the records of an API Key (except the key) */
@@ -28,4 +33,10 @@ interface ApiKeyServiceInterface
 
     /** Check if the API Key is still valid */
     public function isValid(string $key): bool;
+
+    /** Parse the ID from the API Key */
+    public function getIdFromKey(string $key);
+
+    /** Parse raw value from the API Key */
+    public function getValueFromKey(string $key);
 }

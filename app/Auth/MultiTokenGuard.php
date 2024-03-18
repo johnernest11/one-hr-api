@@ -65,11 +65,11 @@ class MultiTokenGuard implements Guard
      */
     public function user(): bool|Authenticatable|null
     {
-        $token = $this->request->bearerToken();
-
         if (! is_null($this->user)) {
             return $this->user;
         }
+
+        $token = $this->request->bearerToken();
 
         if (config('auth.mechanism.sanctum_enabled')) {
             if ($token) {

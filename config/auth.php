@@ -148,6 +148,6 @@ return [
     'mechanism' => [
         'sanctum_enabled' => env('SANCTUM_AUTH_ENABLED', true),
         'jwt_enabled' => env('JWT_AUTH_ENABLED', false),
-        'basic_auth_enabled' => env('BASIC_AUTH_ENABLED', false),
+        'api_key_enabled' => env('API_KEY_ENABLED', false),
     ],
 ];

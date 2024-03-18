@@ -146,4 +146,50 @@ class ApiKeyService implements ApiKeyServiceInterface
 
         return true;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIdFromKey(string $key): string|int|null
+    {
+        $idAndKey = $this->parseApiKey($key);
+
+        if (! $idAndKey) {
+            return null;
+        }
+
+        return $idAndKey[0];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getValueFromKey(string $key): ?string
+    {
+        $idAndKey = $this->parseApiKey($key);
+
+        if (! $idAndKey) {
+            return null;
+        }
+
+        return $idAndKey[1];
+    }
+
+    /**
+     * @returns array Ex: ['api_key' => 'value', 'id' => 1] or null
+     */
+    private function parseApiKey(string $key): ?array
+    {
+        $idAndKey = explode('|', $key);
+        if (count($idAndKey) !== 2) {
+            Log::debug('Cannot separate the API Key ID and Raw value value correctly', [
+                'value' => $key,
+                'method' => __METHOD__,
+            ]);
+
+            return null;
+        }
+
+        return $idAndKey;
+    }
 }
