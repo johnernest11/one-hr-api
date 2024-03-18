@@ -7,14 +7,12 @@ use App\Models\UserProfile;
 use App\Notifications\Auth\QueuedResetPasswordNotification;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class PasswordTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private string $baseUri = self::BASE_API_URI.'/auth';
 

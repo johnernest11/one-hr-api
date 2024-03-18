@@ -5,14 +5,12 @@ namespace Tests\Feature;
 use App\Enums\Role as RoleEnum;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Throwable;
 
 class RolesTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private string $baseUri = self::BASE_API_URI.'/roles';
 

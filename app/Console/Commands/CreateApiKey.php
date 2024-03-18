@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Rules\DbTextMaxLength;
 use App\Rules\DbVarcharMaxLength;
 use App\Services\ApiKey\ApiKeyServiceInterface;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Validation\ValidationException;
 use Validator;
@@ -68,8 +69,15 @@ class CreateApiKey extends Command
         }
 
         $data['user_id'] = User::where('email', $data['user_email'])->firstOrFail()->id;
-        $apiKey = $this->apiKeyService->create($data);
+        $data['expires_at'] = Carbon::parse($data['expires_at'])->endOfDay();
+        $apiKey = $this->apiKeyService->create(
+            $data['name'],
+            $data['user_id'],
+            $data['description'],
+            $data['expires_at']
+        );
         $this->info($apiKey);
+        $this->info('Un-hashed: '.$apiKey->rawKeyValue);
 
         return Command::SUCCESS;
     }

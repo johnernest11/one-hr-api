@@ -10,7 +10,6 @@ use App\Notifications\Auth\QueuedVerifyEmailNotification;
 use App\Notifications\WelcomeNotification;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Throwable;
@@ -18,7 +17,6 @@ use Throwable;
 class SanctumAuthTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private string $baseUri = self::BASE_API_URI.'/auth';
 

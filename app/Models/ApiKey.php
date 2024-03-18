@@ -28,9 +28,10 @@ class ApiKey extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
         'key',
         'name',
+        'description',
+        'user_id',
         'expires_at',
         'active',
     ];
@@ -53,6 +54,11 @@ class ApiKey extends Model
     protected $with = [
         'user',
     ];
+
+    /**
+     * This temporary property populated when the key is just created.
+     */
+    public ?string $rawKeyValue = null;
 
     /**
      * @Scope
@@ -92,11 +98,11 @@ class ApiKey extends Model
     public function isExpired(): bool
     {
         // We consider it active if there is no expires_at set
-        if (! $this->expires_at) {
+        if (is_null($this->expires_at)) {
             return true;
         }
 
-        return Carbon::now()->lessThan($this->expires_at);
+        return Carbon::now()->greaterThanOrEqualTo($this->expires_at);
     }
 
     /**

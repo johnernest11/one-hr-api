@@ -6,7 +6,7 @@ use App\Enums\PaginationType;
 use App\Enums\Role;
 use App\Models\User;
 use App\Traits\Services\CanBuildPagination;
-use App\Traits\Services\CanResolveModelViaId;
+use App\Traits\Services\CanResolveModelFromId;
 use Carbon\Carbon;
 use Hash;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -22,7 +22,7 @@ use Throwable;
 class UserService implements UserServiceInterface
 {
     use CanBuildPagination;
-    use CanResolveModelViaId;
+    use CanResolveModelFromId;
 
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 

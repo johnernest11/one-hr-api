@@ -7,13 +7,11 @@ use App\Enums\Role as RoleEnum;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class AppSettingsTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private string $baseUri = self::BASE_API_URI.'/app-settings';
 

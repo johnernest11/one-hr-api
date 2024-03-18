@@ -12,7 +12,6 @@ use App\Models\UserProfile;
 use App\Notifications\WelcomeNotification;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
@@ -26,7 +25,6 @@ use Throwable;
 class UserManagementTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private string $baseUri = self::BASE_API_URI.'/users';
 

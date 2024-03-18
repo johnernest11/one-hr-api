@@ -11,7 +11,6 @@ use App\Notifications\WelcomeNotification;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use Config;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
 use JWT;
 use Tests\TestCase;
@@ -20,7 +19,6 @@ use Throwable;
 class JwtAuthTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private string $baseUri = self::BASE_API_URI.'/auth';
 

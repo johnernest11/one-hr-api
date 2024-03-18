@@ -5,7 +5,7 @@ namespace App\Traits\Services;
 use BadMethodCallException;
 use Illuminate\Database\Eloquent\Model;
 
-trait CanResolveModelViaId
+trait CanResolveModelFromId
 {
     /**
      * Get a new Eloquent instance from Model or ID

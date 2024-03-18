@@ -10,7 +10,6 @@ use App\Models\Address\Province;
 use App\Models\Address\Region;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -19,7 +18,6 @@ use Throwable;
 class ProfileTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private string $baseUri = self::BASE_API_URI.'/profile';
 

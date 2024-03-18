@@ -12,7 +12,6 @@ use App\Services\User\UserService;
 use App\Services\User\UserServiceInterface;
 use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 use Throwable;
@@ -20,7 +19,6 @@ use Throwable;
 class UserServiceTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private UserServiceInterface $userService;
 
@@ -93,13 +91,13 @@ class UserServiceTest extends TestCase
             'telephone_number' => '+6327'.fake()->randomNumber(7),
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => '1997-01-05',
-            'home_address' => $this->faker->streetName,
+            'home_address' => fake()->streetName,
             'barangay_id' => Barangay::first()->id,
             'city_id' => City::first()->id,
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
-            'postal_code' => $this->faker->postcode,
-            'profile_picture_path' => $this->faker->filePath,
+            'postal_code' => fake()->postcode,
+            'profile_picture_path' => fake()->filePath,
         ];
     }
 

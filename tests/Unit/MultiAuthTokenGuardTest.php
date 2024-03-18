@@ -6,14 +6,12 @@ use App\Auth\MultiTokenGuard;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class MultiAuthTokenGuardTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private PersistentAuthTokenManager $sanctumAuthService;
 
