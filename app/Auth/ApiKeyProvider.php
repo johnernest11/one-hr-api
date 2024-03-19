@@ -29,11 +29,15 @@ class ApiKeyProvider implements UserProvider
             return null;
         }
 
-        if (! $apiKey->isExpired()) {
-            return $apiKey;
+        if (! $apiKey->active) {
+            return null;
         }
 
-        return null;
+        if ($apiKey->isExpired()) {
+            return null;
+        }
+
+        return $apiKey;
     }
 
     /**
@@ -49,6 +53,14 @@ class ApiKeyProvider implements UserProvider
 
         $isValid = Hash::check($token, $apiKey->key);
         if (! $isValid) {
+            return null;
+        }
+
+        if (! $apiKey->active) {
+            return null;
+        }
+
+        if ($apiKey->isExpired()) {
             return null;
         }
 
