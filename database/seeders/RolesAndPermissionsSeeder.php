@@ -32,6 +32,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => PermissionEnum::DELETE_USERS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_USERS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_USER_ROLES, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_PERMISSIONS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::UPDATE_APP_SETTINGS, 'guard_name' => 'token']);
         /** @var Role $adminRole */
         $adminRole = Role::create(['name' => RoleEnum::ADMIN, 'guard_name' => 'token']);

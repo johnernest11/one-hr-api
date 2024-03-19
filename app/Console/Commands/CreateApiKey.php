@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\Permission;
 use App\Models\User;
 use App\Rules\DbTextMaxLength;
 use App\Rules\DbVarcharMaxLength;
@@ -18,7 +19,7 @@ class CreateApiKey extends Command
      *
      * @var string
      */
-    protected $signature = 'create:api-key';
+    protected $signature = 'api_key:create';
 
     /**
      * The console command description.
@@ -76,6 +77,7 @@ class CreateApiKey extends Command
             $data['description'],
             $data['expires_at']
         );
+        $apiKey->syncPermissions([Permission::WEBHOOK_CREATE_TEST_RESOURCES, Permission::WEBHOOK_VIEW_TEST_RESOURCES]);
         $this->info($apiKey);
         $this->info('Un-hashed: '.$apiKey->rawKeyValue);
 

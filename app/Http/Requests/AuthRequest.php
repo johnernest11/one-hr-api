@@ -128,6 +128,7 @@ class AuthRequest extends FormRequest
             'email.exists' => 'The :attribute is not registered',
             'birthday.before_or_equal' => 'The :attribute field must not be greater than today',
             'mobile_number.phone' => 'The :attribute field format must be a valid mobile number',
+            'auth_type.in' => 'The :attribute field must either `jwt` or `sanctum`',
         ];
     }
 }

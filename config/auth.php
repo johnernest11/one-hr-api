@@ -40,7 +40,7 @@ return [
             'driver' => 'multi_token_guard',
             'provider' => 'users',
         ],
-        'api_key', [
+        'api_key' => [
             'driver' => 'api_key_guard',
             'provider' => 'api_keys',
         ],

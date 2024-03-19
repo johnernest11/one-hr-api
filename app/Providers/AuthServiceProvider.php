@@ -66,7 +66,7 @@ class AuthServiceProvider extends ServiceProvider
             return new ApiKeyProvider(request());
         });
 
-        // This checks for an API Key in the `X-API-Key` request header
+        // This checks for an API Key in the `X-API-KEY` request header
         Auth::extend('api_key_guard', function () {
             return new ApiKeyGuard(request(), Auth::createUserProvider('api_keys'));
         });
