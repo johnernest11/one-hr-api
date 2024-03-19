@@ -3,11 +3,13 @@
 namespace Tests\Unit;
 
 use App\Auth\ApiKeyGuard;
+use App\Enums\WebhookPermission;
 use App\Models\ApiKey;
 use App\Models\User;
 use App\Services\ApiKey\ApiKeyServiceInterface;
 use Auth;
 use Carbon\Carbon;
+use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
@@ -28,6 +30,8 @@ class ApiKeyGuardTest extends TestCase
 
     private Carbon $apiKeyExpiration;
 
+    private array $apiKeyPermissions;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -38,12 +42,13 @@ class ApiKeyGuardTest extends TestCase
         $this->apiKeyName = fake()->domainName;
         $this->apiKeyDescription = fake()->text;
         $this->apiKeyExpiration = Carbon::now()->endOfDay();
+        $this->apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
     }
 
     public function test_it_can_check_valid_api_key_from_header(): void
     {
         $apiKey = $this->apiKeyService->create(
-            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration
+            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
         $request = new Request();
@@ -57,7 +62,7 @@ class ApiKeyGuardTest extends TestCase
     public function test_it_can_check_malformed_api_key_from_header()
     {
         $this->apiKeyService->create(
-            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration
+            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
         $request = new Request();
@@ -71,7 +76,7 @@ class ApiKeyGuardTest extends TestCase
     public function test_it_can_check_tampered_api_key_from_header(): void
     {
         $apiKey = $this->apiKeyService->create(
-            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration
+            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
         $request = new Request();
@@ -85,7 +90,7 @@ class ApiKeyGuardTest extends TestCase
     public function test_it_can_fetch_the_user(): void
     {
         $apiKey = $this->apiKeyService->create(
-            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration
+            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
         $request = new Request();
@@ -103,7 +108,7 @@ class ApiKeyGuardTest extends TestCase
     public function test_it_can_check_if_there_is_a_user(): void
     {
         $apiKey = $this->apiKeyService->create(
-            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration
+            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
         $request = new Request();
@@ -117,7 +122,7 @@ class ApiKeyGuardTest extends TestCase
     public function test_it_can_check_if_guest(): void
     {
         $apiKey = $this->apiKeyService->create(
-            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration
+            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
         $request = new Request();
@@ -138,7 +143,7 @@ class ApiKeyGuardTest extends TestCase
 
         // Create an API Key that acts as a user
         $apiKey = $this->apiKeyService->create(
-            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration
+            $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
         $guard->setUser($apiKey);

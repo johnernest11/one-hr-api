@@ -14,13 +14,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Traits\HasPermissions;
 
 class ApiKey extends Model implements Authenticatable
 {
     use HasFactory;
-    use HasRoles;
+    use HasPermissions;
     use SoftDeletes;
+
+    /**
+     * Spatie needs this if multiple auth guards are used
+     *
+     * @see https://spatie.be/docs/laravel-permission/v6/basic-usage/multiple-guards
+     */
+    protected string $guard_name = 'api_key';
 
     /**
      * The attributes that are mass assignable.

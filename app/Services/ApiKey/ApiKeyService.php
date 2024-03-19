@@ -37,7 +37,7 @@ class ApiKeyService implements ApiKeyServiceInterface
     /**
      * {@inheritDoc}
      */
-    public function create(string $name, string|int $userId, string $description, Carbon $expiresAt): ApiKey
+    public function create(string $name, string|int $userId, string $description, Carbon $expiresAt, array $permissions): ApiKey
     {
         $key = Str::upper(Str::uuid());
         $createdKey = $this->model::create([
@@ -48,6 +48,7 @@ class ApiKeyService implements ApiKeyServiceInterface
             'key' => $key,
         ]);
 
+        $createdKey->syncPermissions($permissions);
         $createdKey->rawKeyValue = $this->buildRawKey($key, $createdKey->id);
 
         return $createdKey;

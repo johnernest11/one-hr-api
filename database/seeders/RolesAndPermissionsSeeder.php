@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Enums\Permission as PermissionEnum;
 use App\Enums\Role as RoleEnum;
+use App\Enums\WebhookPermission;
+use ConversionHelper;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -16,7 +18,11 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Reset cached roles and permissions
+        /**
+         * Reset cached roles and permissions
+         *
+         * @see https://spatie.be/docs/laravel-permission/v6/advanced-usage/seeding
+         */
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Standard user permissions
@@ -55,9 +61,17 @@ class RolesAndPermissionsSeeder extends Seeder
 
         /**
          * Permissions for the API Keys.
-         * We set basic test permissions for webhooks. Add more permissions depending on the project
+         * We set basic test permissions for webhooks. Add more permissions depending on the project.
          */
-        Permission::create(['name' => PermissionEnum::WEBHOOK_CREATE_TEST_RESOURCES, 'guard_name' => 'api_key']);
-        Permission::create(['name' => PermissionEnum::WEBHOOK_VIEW_TEST_RESOURCES, 'guard_name' => 'api_key']);
+        foreach (ConversionHelper::convertEnumToArray(WebhookPermission::class) as $permissions) {
+            Permission::create(['name' => $permissions, 'guard_name' => 'api_key']);
+        }
+
+        /**
+         * Reset cached roles and permissions
+         *
+         * @see https://spatie.be/docs/laravel-permission/v6/advanced-usage/seeding
+         */
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
     }
 }

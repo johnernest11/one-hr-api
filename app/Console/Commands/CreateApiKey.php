@@ -2,12 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\Permission;
+use App\Enums\WebhookPermission;
 use App\Models\User;
 use App\Rules\DbTextMaxLength;
 use App\Rules\DbVarcharMaxLength;
 use App\Services\ApiKey\ApiKeyServiceInterface;
 use Carbon\Carbon;
+use ConversionHelper;
 use Illuminate\Console\Command;
 use Illuminate\Validation\ValidationException;
 use Validator;
@@ -75,9 +76,11 @@ class CreateApiKey extends Command
             $data['name'],
             $data['user_id'],
             $data['description'],
-            $data['expires_at']
+            $data['expires_at'],
+
+            // Change this as needed
+            ConversionHelper::convertEnumToArray(WebhookPermission::class)
         );
-        $apiKey->syncPermissions([Permission::WEBHOOK_CREATE_TEST_RESOURCES, Permission::WEBHOOK_VIEW_TEST_RESOURCES]);
         $this->info($apiKey);
         $this->info('Un-hashed: '.$apiKey->rawKeyValue);
 

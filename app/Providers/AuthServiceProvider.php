@@ -61,6 +61,7 @@ class AuthServiceProvider extends ServiceProvider
             return new MultiTokenGuard(request());
         });
 
+        /** @Note we use API keys for our webhooks */
         // Provides ApiKey eloquent records
         Auth::provider('api_keys', function () {
             return new ApiKeyProvider(request());

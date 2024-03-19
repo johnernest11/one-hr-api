@@ -13,7 +13,7 @@ interface ApiKeyServiceInterface
     public function all(): LengthAwarePaginator;
 
     /** Create an API Key */
-    public function create(string $name, string|int $userId, string $description, Carbon $expiresAt): ApiKey;
+    public function create(string $name, string|int $userId, string $description, Carbon $expiresAt, array $permissions): ApiKey;
 
     /**
      * Retrieve a single API Key

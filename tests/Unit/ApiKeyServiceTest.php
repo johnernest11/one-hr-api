@@ -2,9 +2,11 @@
 
 namespace Tests\Unit;
 
+use App\Enums\WebhookPermission;
 use App\Models\ApiKey;
 use App\Services\ApiKey\ApiKeyService;
 use Carbon\Carbon;
+use ConversionHelper;
 use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,11 +17,14 @@ class ApiKeyServiceTest extends TestCase
 
     private ApiKeyService $apiKeyService;
 
+    private array $apiKeyPermissions;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
         $this->apiKeyService = new ApiKeyService(new ApiKey());
+        $this->apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
     }
 
     public function test_it_can_create_an_api_key(): void
@@ -28,7 +33,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::now()->endOfDay();
-        $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
         $this->assertDatabaseCount('api_keys', 1);
     }
 
@@ -38,7 +43,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::now()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
         $this->assertNotNull($apiKey->rawKeyValue);
     }
 
@@ -48,7 +53,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::now()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         $isValid = $this->apiKeyService->isValid($apiKey->rawKeyValue);
         $this->assertTrue($isValid);
@@ -60,7 +65,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::yesterday()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         $isValid = $this->apiKeyService->isValid($apiKey->rawKeyValue);
         $this->assertFalse($isValid);
@@ -72,7 +77,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::yesterday()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         $isValid = $this->apiKeyService->isValid($apiKey->rawKeyValue.'_invalid');
         $this->assertFalse($isValid);
@@ -84,7 +89,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::yesterday()->endOfDay();
-        $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         $isValid = $this->apiKeyService->isValid('malformed_key');
         $this->assertFalse($isValid);
@@ -96,7 +101,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::yesterday()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
         $apiKey->update(['active' => false]);
 
         $isValid = $this->apiKeyService->isValid($apiKey->rawKeyValue);
@@ -109,7 +114,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::yesterday()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         // Set Via Model
         $isSuccessful = $this->apiKeyService->setActiveStatus($apiKey, false);
@@ -132,7 +137,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::yesterday()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         $initialCount = ApiKey::count();
         $this->assertEquals(1, $initialCount);
@@ -144,7 +149,7 @@ class ApiKeyServiceTest extends TestCase
         $this->assertEquals(1, ApiKey::withTrashed()->count());
 
         // Delete via ID
-        $newApiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $newApiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
         $this->apiKeyService->destroy($newApiKey->id);
         $countAfterSoftDelete = ApiKey::count();
         $this->assertEquals(0, $countAfterSoftDelete);
@@ -157,7 +162,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::yesterday()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         $updatedInfo = [
             'name' => $name.'_updated',
@@ -187,8 +192,8 @@ class ApiKeyServiceTest extends TestCase
         $expiresAt = Carbon::yesterday()->endOfDay();
 
         // Create 2 records
-        $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
-        $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
+        $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         $apiKeys = $this->apiKeyService->all();
         $this->assertCount(2, $apiKeys);
@@ -200,7 +205,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::yesterday()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         $this->assertEquals($apiKey->id, $this->apiKeyService->getIdFromKey($apiKey->rawKeyValue));
     }
@@ -211,7 +216,7 @@ class ApiKeyServiceTest extends TestCase
         $name = fake()->domainName;
         $description = fake()->text;
         $expiresAt = Carbon::yesterday()->endOfDay();
-        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt);
+        $apiKey = $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
 
         $value = $this->apiKeyService->getValueFromKey($apiKey->rawKeyValue);
         $isMatched = Hash::check($value, $apiKey->key);
