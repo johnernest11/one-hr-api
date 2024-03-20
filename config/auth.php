@@ -38,7 +38,7 @@ return [
     'guards' => [
         'token' => [
             'driver' => 'multi_token_driver',
-            'provider' => 'users',
+            'provider' => 'users', // Even tho we don't technically use a provider, Spatie needs for roles and permissions
         ],
         'api_key' => [
             'driver' => 'api_key_driver',
