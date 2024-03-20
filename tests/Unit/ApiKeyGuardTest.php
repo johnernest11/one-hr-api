@@ -10,6 +10,7 @@ use App\Services\ApiKey\ApiKeyServiceInterface;
 use Auth;
 use Carbon\Carbon;
 use ConversionHelper;
+use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
@@ -32,6 +33,8 @@ class ApiKeyGuardTest extends TestCase
 
     private array $apiKeyPermissions;
 
+    private UserProvider $apiKeyProvider;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -43,6 +46,7 @@ class ApiKeyGuardTest extends TestCase
         $this->apiKeyDescription = fake()->text;
         $this->apiKeyExpiration = Carbon::now()->endOfDay();
         $this->apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
+        $this->apiKeyProvider = Auth::createUserProvider(config('auth.guards.api_key.provider'));
     }
 
     public function test_it_can_check_valid_api_key_from_header(): void
@@ -54,7 +58,7 @@ class ApiKeyGuardTest extends TestCase
         $request = new Request();
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue);
 
-        $guard = new ApiKeyGuard($request, Auth::createUserProvider('api_keys'));
+        $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
         $isValid = $guard->check();
         $this->assertTrue($isValid);
     }
@@ -68,7 +72,7 @@ class ApiKeyGuardTest extends TestCase
         $request = new Request();
         $request->headers->set(static::API_KEY_HEADER, 'something_else');
 
-        $guard = new ApiKeyGuard($request, Auth::createUserProvider('api_keys'));
+        $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
         $isValid = $guard->check();
         $this->assertFalse($isValid);
     }
@@ -82,7 +86,7 @@ class ApiKeyGuardTest extends TestCase
         $request = new Request();
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue.'K1');
 
-        $guard = new ApiKeyGuard($request, Auth::createUserProvider('api_keys'));
+        $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
         $isValid = $guard->check();
         $this->assertFalse($isValid);
     }
@@ -96,7 +100,7 @@ class ApiKeyGuardTest extends TestCase
         $request = new Request();
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue);
 
-        $guard = new ApiKeyGuard($request, Auth::createUserProvider('api_keys'));
+        $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
 
         // The API Key acts as authenticatable user
         $apiKeyFromGuard = $guard->user();
@@ -114,7 +118,7 @@ class ApiKeyGuardTest extends TestCase
         $request = new Request();
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue);
 
-        $guard = new ApiKeyGuard($request, Auth::createUserProvider('api_keys'));
+        $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
 
         $this->assertTrue($guard->hasUser());
     }
@@ -127,18 +131,18 @@ class ApiKeyGuardTest extends TestCase
 
         $request = new Request();
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue);
-        $guard = new ApiKeyGuard($request, Auth::createUserProvider('api_keys'));
+        $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
         $this->assertFalse($guard->guest());
 
         // Without the request header
-        $guard = new ApiKeyGuard(request(), Auth::createUserProvider('api_keys'));
+        $guard = new ApiKeyGuard(request(), $this->apiKeyProvider);
         $this->assertTrue($guard->guest());
     }
 
     public function test_it_can_set_user(): void
     {
         $request = new Request();
-        $guard = new ApiKeyGuard($request, Auth::createUserProvider('api_keys'));
+        $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
         $this->assertFalse($guard->hasUser());
 
         // Create an API Key that acts as a user
