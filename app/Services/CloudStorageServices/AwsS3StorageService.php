@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services\CloudFileServices;
+namespace App\Services\CloudStorageServices;
 
 use Storage;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class S3FileService implements CloudFileServiceInterface
+class AwsS3StorageService implements CloudStorageManager
 {
     /** {@inheritDoc} */
     public function upload($ownerId, UploadedFile $file, ?string $parentDir = null, ?string $childDir = null): array

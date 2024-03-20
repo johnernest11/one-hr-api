@@ -2,7 +2,7 @@
 
 namespace App\Services\Database;
 
-interface SchemaServiceInterface
+interface SchemaInspector
 {
     /**
      * Get all the columns in a database table

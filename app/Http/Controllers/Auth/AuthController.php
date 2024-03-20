@@ -7,16 +7,16 @@ use App\Events\UserRegistered;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
-use App\Services\User\UserServiceInterface;
+use App\Services\User\UserManager;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class AuthController extends ApiController
 {
-    private UserServiceInterface $userService;
+    private UserManager $userService;
 
-    public function __construct(UserServiceInterface $userService)
+    public function __construct(UserManager $userService)
     {
         $this->userService = $userService;
     }

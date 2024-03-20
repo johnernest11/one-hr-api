@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 
-class UserService implements UserServiceInterface
+class UserService implements UserManager
 {
     use CanBuildPagination;
     use CanResolveModelFromId;

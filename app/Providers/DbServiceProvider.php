@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\Database\SchemaService;
-use App\Services\Database\SchemaServiceInterface;
+use App\Services\Database\SchemaInfoService;
+use App\Services\Database\SchemaInspector;
 use Illuminate\Support\ServiceProvider;
 
 class DbServiceProvider extends ServiceProvider
@@ -13,8 +13,8 @@ class DbServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(SchemaServiceInterface::class, function () {
-            return new SchemaService();
+        $this->app->bind(SchemaInspector::class, function () {
+            return new SchemaInfoService();
         });
     }
 

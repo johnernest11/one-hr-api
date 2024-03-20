@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
-use App\Services\User\UserServiceInterface;
+use App\Services\User\UserManager;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +14,7 @@ class SanctumAuthController extends AuthController
 {
     private PersistentAuthTokenManager $tokenManager;
 
-    public function __construct(UserServiceInterface $userService, PersistentAuthTokenManager $tokenManager)
+    public function __construct(UserManager $userService, PersistentAuthTokenManager $tokenManager)
     {
         parent::__construct($userService);
         $this->tokenManager = $tokenManager;

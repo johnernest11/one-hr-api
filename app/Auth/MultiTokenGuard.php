@@ -4,7 +4,7 @@ namespace App\Auth;
 
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
-use App\Services\User\UserServiceInterface;
+use App\Services\User\UserManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
@@ -145,7 +145,7 @@ class MultiTokenGuard implements Guard
             throw new InvalidArgumentException('The credentials array should have a `password` key');
         }
 
-        $userService = resolve(UserServiceInterface::class);
+        $userService = resolve(UserManager::class);
 
         if (isset($credentials['email'])) {
             return (bool) $userService->getUserViaEmailAndPassword($credentials['email'], $credentials['password']);

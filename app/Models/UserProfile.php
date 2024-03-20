@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\SexualCategory;
 use App\Models\Address\Address;
-use App\Services\CloudFileServices\CloudFileServiceInterface;
+use App\Services\CloudStorageServices\CloudStorageManager;
 use DateTimeHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -145,7 +145,7 @@ class UserProfile extends Model
                 return null;
             }
 
-            $cloudFileManager = resolve(CloudFileServiceInterface::class);
+            $cloudFileManager = resolve(CloudStorageManager::class);
 
             return $cloudFileManager->generateTmpUrl($this->profile_picture_path, 60 * 3);
         });

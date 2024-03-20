@@ -8,8 +8,8 @@ use App\Models\Address\Province;
 use App\Models\Address\Region;
 use App\Models\User;
 use App\Models\UserProfile;
+use App\Services\User\UserManager;
 use App\Services\User\UserService;
-use App\Services\User\UserServiceInterface;
 use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -20,7 +20,7 @@ class UserServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    private UserServiceInterface $userService;
+    private UserManager $userService;
 
     protected function setUp(): void
     {

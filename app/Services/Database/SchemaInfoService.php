@@ -6,7 +6,7 @@ use Cache;
 use Illuminate\Support\Facades\DB;
 use Schema;
 
-class SchemaService implements SchemaServiceInterface
+class SchemaInfoService implements SchemaInspector
 {
     /** {@inheritDoc} */
     public function getAllColumns(string $tableName): array

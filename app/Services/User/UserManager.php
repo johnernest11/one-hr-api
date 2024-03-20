@@ -9,7 +9,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\CursorPaginator;
 
-interface UserServiceInterface
+interface UserManager
 {
     /**
      * Fetch a list of users

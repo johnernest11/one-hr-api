@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\CloudFileServices\CloudFileServiceInterface;
-use App\Services\CloudFileServices\S3FileService;
+use App\Services\CloudStorageServices\AwsS3StorageService;
+use App\Services\CloudStorageServices\CloudStorageManager;
 use Illuminate\Support\ServiceProvider;
 
 class CloudFileServiceProvider extends ServiceProvider
@@ -13,8 +13,8 @@ class CloudFileServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(CloudFileServiceInterface::class, function () {
-            return new S3FileService();
+        $this->app->bind(CloudStorageManager::class, function () {
+            return new AwsS3StorageService();
         });
     }
 

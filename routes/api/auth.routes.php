@@ -9,11 +9,11 @@ use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Requests\AuthRequest;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
-use App\Services\User\UserServiceInterface;
+use App\Services\User\UserManager;
 
 // The Controller (Sanctum or JWT) will depend on the route query parameter `?type=sanctum` or `?type=jwt`
 Route::group(['as' => 'auth.'], function () {
-    $userService = resolve(UserServiceInterface::class);
+    $userService = resolve(UserManager::class);
     $sanctumAuthService = resolve(PersistentAuthTokenManager::class);
     $jwtAuthService = resolve(AuthTokenManager::class);
 

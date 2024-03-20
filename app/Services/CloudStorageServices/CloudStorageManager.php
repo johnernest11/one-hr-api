@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\CloudFileServices;
+namespace App\Services\CloudStorageServices;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-interface CloudFileServiceInterface
+interface CloudStorageManager
 {
     /**
      * Upload a file

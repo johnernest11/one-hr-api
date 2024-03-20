@@ -7,8 +7,8 @@ use App\Enums\PaginationType;
 use App\Enums\Role as RoleEnum;
 use App\Events\UserCreated;
 use App\Http\Requests\UserRequest;
-use App\Services\CloudFileServices\CloudFileServiceInterface;
-use App\Services\User\UserServiceInterface;
+use App\Services\CloudStorageServices\CloudStorageManager;
+use App\Services\User\UserManager;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
@@ -17,9 +17,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends ApiController
 {
-    private UserServiceInterface $userService;
+    private UserManager $userService;
 
-    public function __construct(UserServiceInterface $userService)
+    public function __construct(UserManager $userService)
     {
         $this->userService = $userService;
     }
@@ -96,7 +96,7 @@ class UserController extends ApiController
     /**
      * Upload profile picture
      */
-    public function uploadProfilePicture($id, UserRequest $request, CloudFileServiceInterface $uploader): JsonResponse
+    public function uploadProfilePicture($id, UserRequest $request, CloudStorageManager $uploader): JsonResponse
     {
         $file = $request->file('photo');
         $result = $uploader->upload($id, $file, 'images', 'profile-pictures');

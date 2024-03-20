@@ -4,8 +4,8 @@ namespace Tests\Unit\Helpers;
 
 use App\Helpers\PaginationHelper;
 use App\Models\User;
+use App\Services\User\UserManager;
 use App\Services\User\UserService;
-use App\Services\User\UserServiceInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
@@ -18,7 +18,7 @@ class PaginationHelperTest extends TestCase
 
     private PaginationHelper $paginationHelper;
 
-    private UserServiceInterface $userRepository;
+    private UserManager $userRepository;
 
     private int $usersCount;
 
