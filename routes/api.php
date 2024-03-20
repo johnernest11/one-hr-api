@@ -28,4 +28,6 @@ Route::prefix('/v1/app-settings')->group(base_path('routes/api/app-settings.rout
  *
  * @note Remove or Change as necessary
  */
-Route::prefix('/v1/webhooks')->group(base_path('routes/api/webhooks.routes.php'));
+Route::middleware(['enabled.webhooks'])
+    ->prefix('/v1/webhooks')
+    ->group(base_path('routes/api/webhooks.routes.php'));

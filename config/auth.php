@@ -142,12 +142,11 @@ return [
      | Multi-Auth Mechanism Switch
      |--------------------------------------------------------------------------
      |
-     | Set if Sanctum, JWT, and Basic Auth Systems are enabled.
+     | Set if Sanctum or JWT authentication are enabled.
      |
     */
     'mechanism' => [
         'sanctum_enabled' => env('SANCTUM_AUTH_ENABLED', true),
         'jwt_enabled' => env('JWT_AUTH_ENABLED', false),
-        'api_key_enabled' => env('API_KEY_ENABLED', false),
     ],
 ];

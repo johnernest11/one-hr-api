@@ -14,12 +14,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
 
 class ApiKey extends Model implements Authenticatable
 {
     use HasFactory;
-    use HasPermissions;
+    use HasRoles;
     use SoftDeletes;
 
     /**

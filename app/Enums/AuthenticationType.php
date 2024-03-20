@@ -14,6 +14,5 @@ enum AuthenticationType: string
     /** @see https://jwt.io */
     case JWT = 'jwt';
 
-    /** @see https://www.twilio.com/docs/glossary/what-is-basic-authentication# */
-    case BASIC_AUTH = 'basic_auth';
+    case API_KEY = 'api_key';
 }
