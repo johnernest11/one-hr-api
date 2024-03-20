@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Enums\Role;
 use App\Enums\Role as RoleEnum;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
+use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Throwable;
@@ -37,7 +39,8 @@ class RolesTest extends TestCase
 
         $response = $response->decodeResponseJson();
 
-        // We seed the ff: standard_user, admin, system_support, super_user
-        $this->assertCount(4, $response['data']);
+        // We count the number of permissions in the Role enum class
+        $count = count(ConversionHelper::convertEnumToArray(Role::class));
+        $this->assertCount($count, $response['data']);
     }
 }

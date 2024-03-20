@@ -37,11 +37,11 @@ return [
 
     'guards' => [
         'token' => [
-            'driver' => 'multi_token',
+            'driver' => 'multi_token_driver',
             'provider' => 'users',
         ],
         'api_key' => [
-            'driver' => 'api_key',
+            'driver' => 'api_key_driver',
             'provider' => 'api_keys',
         ],
         'web' => [

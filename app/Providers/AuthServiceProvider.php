@@ -57,7 +57,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // This checks the request's bearer token for either Sanctum Opaque token or JWT
-        Auth::extend('multi_token', function () {
+        Auth::extend('multi_token_driver', function () {
             return new MultiTokenGuard(request());
         });
 
@@ -68,8 +68,8 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // This checks for an API Key in the `X-API-KEY` request header
-        Auth::extend('api_key', function (Application $app, string $name, array $config) {
-            return new ApiKeyGuard(request(), Auth::createUserProvider($config('auth.guards.api_key.provider')));
+        Auth::extend('api_key_driver', function (Application $app, string $name, array $config) {
+            return new ApiKeyGuard(request(), Auth::createUserProvider($config['provider']));
         });
     }
 }
