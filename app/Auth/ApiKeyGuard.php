@@ -3,7 +3,7 @@
 namespace App\Auth;
 
 use App\Models\ApiKey;
-use App\Services\ApiKey\ApiKeyServiceInterface;
+use App\Services\ApiKey\ApiKeyManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
@@ -17,7 +17,7 @@ class ApiKeyGuard implements Guard
 
     private ?Authenticatable $apiKey;
 
-    private ApiKeyServiceInterface $apiKeyService;
+    private ApiKeyManager $apiKeyService;
 
     const HEADER_NAME = 'X-API-KEY';
 
@@ -26,7 +26,7 @@ class ApiKeyGuard implements Guard
         $this->request = $request;
         $this->apiKeyProvider = $provider;
         $this->apiKey = null;
-        $this->apiKeyService = resolve(ApiKeyServiceInterface::class);
+        $this->apiKeyService = resolve(ApiKeyManager::class);
     }
 
     /**

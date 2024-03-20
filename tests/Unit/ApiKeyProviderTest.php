@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Auth\ApiKeyProvider;
 use App\Enums\WebhookPermission;
-use App\Services\ApiKey\ApiKeyServiceInterface;
+use App\Services\ApiKey\ApiKeyManager;
 use Carbon\Carbon;
 use ConversionHelper;
 use Illuminate\Contracts\Auth\UserProvider;
@@ -17,7 +17,7 @@ class ApiKeyProviderTest extends TestCase
 
     private UserProvider $apiKeyProvider;
 
-    private ApiKeyServiceInterface $apiKeyService;
+    private ApiKeyManager $apiKeyService;
 
     private array $apiKeyPermissions;
 
@@ -25,7 +25,7 @@ class ApiKeyProviderTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->apiKeyService = resolve(ApiKeyServiceInterface::class);
+        $this->apiKeyService = resolve(ApiKeyManager::class);
         $this->apiKeyProvider = new ApiKeyProvider($this->apiKeyService);
         $this->apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
     }

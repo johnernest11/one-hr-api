@@ -6,7 +6,7 @@ use App\Enums\WebhookPermission;
 use App\Models\User;
 use App\Rules\DbTextMaxLength;
 use App\Rules\DbVarcharMaxLength;
-use App\Services\ApiKey\ApiKeyServiceInterface;
+use App\Services\ApiKey\ApiKeyManager;
 use Carbon\Carbon;
 use ConversionHelper;
 use Illuminate\Console\Command;
@@ -29,9 +29,9 @@ class CreateApiKey extends Command
      */
     protected $description = 'Create an API Key';
 
-    private ApiKeyServiceInterface $apiKeyService;
+    private ApiKeyManager $apiKeyService;
 
-    public function __construct(ApiKeyServiceInterface $apiKeyService)
+    public function __construct(ApiKeyManager $apiKeyService)
     {
         parent::__construct();
         $this->apiKeyService = $apiKeyService;

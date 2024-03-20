@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-interface ApiKeyServiceInterface
+interface ApiKeyManager
 {
     /** Fetch a paginated list of API keys */
     public function all(): LengthAwarePaginator;

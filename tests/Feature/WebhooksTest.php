@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Enums\Role as RoleEnum;
 use App\Enums\WebhookPermission;
 use App\Models\User;
-use App\Services\ApiKey\ApiKeyServiceInterface;
+use App\Services\ApiKey\ApiKeyManager;
 use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -17,7 +17,7 @@ class WebhooksTest extends TestCase
 
     private string $baseUri = self::BASE_API_URI.'/webhooks/test-resources';
 
-    private ApiKeyServiceInterface $apiKeyService;
+    private ApiKeyManager $apiKeyService;
 
     private string $apiKey;
 
@@ -35,7 +35,7 @@ class WebhooksTest extends TestCase
         $user->syncRoles(fake()->randomElement($roles));
 
         $apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
-        $this->apiKeyService = resolve(ApiKeyServiceInterface::class);
+        $this->apiKeyService = resolve(ApiKeyManager::class);
         $this->apiKey = $this->apiKeyService->create(
             'test_name', $user->id, 'test_desc', now()->endOfDay(), $apiKeyPermissions
         )->rawKeyValue;

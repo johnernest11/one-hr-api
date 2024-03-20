@@ -3,7 +3,7 @@
 namespace App\Auth;
 
 use App\Models\ApiKey;
-use App\Services\ApiKey\ApiKeyServiceInterface;
+use App\Services\ApiKey\ApiKeyManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Hash;
 
 class ApiKeyProvider implements UserProvider
 {
-    private ApiKeyServiceInterface $apiKeyService;
+    private ApiKeyManager $apiKeyService;
 
-    public function __construct(ApiKeyServiceInterface $apiKeyService)
+    public function __construct(ApiKeyManager $apiKeyService)
     {
         $this->apiKeyService = $apiKeyService;
     }

@@ -6,7 +6,7 @@ use App\Auth\ApiKeyGuard;
 use App\Enums\WebhookPermission;
 use App\Models\ApiKey;
 use App\Models\User;
-use App\Services\ApiKey\ApiKeyServiceInterface;
+use App\Services\ApiKey\ApiKeyManager;
 use Auth;
 use Carbon\Carbon;
 use ConversionHelper;
@@ -21,7 +21,7 @@ class ApiKeyGuardTest extends TestCase
 
     const API_KEY_HEADER = 'X-API-KEY';
 
-    private ApiKeyServiceInterface $apiKeyService;
+    private ApiKeyManager $apiKeyService;
 
     private User $user;
 
@@ -39,7 +39,7 @@ class ApiKeyGuardTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->apiKeyService = resolve(ApiKeyServiceInterface::class);
+        $this->apiKeyService = resolve(ApiKeyManager::class);
 
         $this->user = $this->produceUsers();
         $this->apiKeyName = fake()->domainName;

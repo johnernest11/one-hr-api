@@ -12,7 +12,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Log;
 use Str;
 
-class ApiKeyService implements ApiKeyServiceInterface
+class ApiKeyService implements ApiKeyManager
 {
     use CanBuildPagination;
     use CanResolveModelFromId;

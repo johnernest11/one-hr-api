@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Models\ApiKey;
+use App\Services\ApiKey\ApiKeyManager;
 use App\Services\ApiKey\ApiKeyService;
-use App\Services\ApiKey\ApiKeyServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class ApiKeyServiceProvider extends ServiceProvider
@@ -14,7 +14,7 @@ class ApiKeyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(ApiKeyServiceInterface::class, function () {
+        $this->app->bind(ApiKeyManager::class, function () {
             return new ApiKeyService(new ApiKey());
         });
     }
