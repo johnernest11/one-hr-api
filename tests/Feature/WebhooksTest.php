@@ -53,6 +53,18 @@ class WebhooksTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function test_it_returns_401_without_an_api_key(): void
+    {
+        $response = $this->postJson($this->baseUri);
+        $response->assertStatus(401);
+    }
+
+    public function test_it_returns_401_for_invalid_api_key(): void
+    {
+        $response = $this->withHeader(static::API_KEY_HEADER, '1|incorrect_key')->postJson($this->baseUri);
+        $response->assertStatus(401);
+    }
+
     public function test_it_returns_403_for_incorrect_permissions(): void
     {
         // Create a key with not enough permissions (view only)
