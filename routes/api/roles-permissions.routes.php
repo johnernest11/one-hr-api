@@ -14,6 +14,6 @@ Route::middleware(['auth:token', 'verified.api'])->controller(RoleController::cl
 Route::middleware(['auth:token', 'verified.api'])->controller(PermissionController::class)
     ->name('permissions.')->group(function () {
         /** @uses PermissionController::view */
-        Route::middleware(['permission:'.Permission::VIEW_USER_ROLES->value])
+        Route::middleware(['permission:'.Permission::VIEW_PERMISSIONS->value])
             ->get('permissions', 'index')->name('index');
     });
