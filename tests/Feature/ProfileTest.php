@@ -60,7 +60,7 @@ class ProfileTest extends TestCase
             'city_id' => City::latest()->first()->id,
             'province_id' => Province::latest()->first()->id,
             'region_id' => Region::latest()->first()->id,
-            'postal_code' => '221',
+            'postal_code' => '2212',
         ];
 
         $response = $this->withToken($this->authToken)->patchJson($this->baseUri, $edits);

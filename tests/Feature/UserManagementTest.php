@@ -91,7 +91,7 @@ class UserManagementTest extends TestCase
             'sex' => 'male',
             'birthday' => '1997-01-04',
             'home_address' => 'Home Address',
-            'postal_code' => '211',
+            'postal_code' => '2111',
         ]);
 
         $missingRequiredFields = Arr::except(
@@ -145,7 +145,7 @@ class UserManagementTest extends TestCase
             'city_id' => City::first()->id,
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
-            'postal_code' => fake()->postcode(),
+            'postal_code' => fake()->numerify('####'),
             'profile_picture_path' => fake()->filePath(),
         ];
 

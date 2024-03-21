@@ -34,7 +34,7 @@ class AddressFactory extends Factory
             'city_id' => $cityId,
             'province_id' => $provinceId,
             'region_id' => $regionId,
-            'postal_code' => fake()->postcode(),
+            'postal_code' => fake()->numerify('####'),
         ];
     }
 }

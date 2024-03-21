@@ -82,7 +82,7 @@ class ProfileRequest extends FormRequest
             'city_id' => ['nullable', 'exists:cities,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'region_id' => ['nullable', 'exists:regions,id'],
-            'postal_code' => ['nullable', new DbVarcharMaxLength()],
+            'postal_code' => ['nullable', 'digits:4'],
             'profile_picture_path' => ['string', 'nullable', new DbVarcharMaxLength()],
         ];
     }
