@@ -123,7 +123,7 @@ class UserRequest extends FormRequest
             ],
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
-            'home_address' => ['string', 'nullable'],
+            'home_address' => ['string', 'nullable', new DbTextMaxLength()],
             'barangay_id' => ['nullable', 'exists:barangays,id'],
             'city_id' => ['nullable', 'exists:cities,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
