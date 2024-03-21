@@ -77,12 +77,17 @@ abstract class AuthController extends ApiController
 
     private function composeUserTokenData(string $token, string $clientName, Carbon $expiresAt, User $user, bool $withUserDetails = true): array
     {
-        return [
+        $data = [
             'token' => $token,
             'token_name' => $clientName,
             'expires_at' => $expiresAt,
-            'user' => $withUserDetails ? $user->fresh('userProfile') : $user,
         ];
+
+        if ($withUserDetails) {
+            $data['user'] = $user->fresh('userProfile');
+        }
+
+        return $data;
     }
 
     /** Create an authentication token for the user */
