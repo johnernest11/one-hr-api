@@ -116,6 +116,7 @@ class AuthRequest extends FormRequest
             'province_id' => ['nullable', 'exists:provinces,id'],
             'region_id' => ['nullable', 'exists:regions,id'],
             'postal_code' => ['nullable', 'digits:4'],
+            'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
         ];
     }
 

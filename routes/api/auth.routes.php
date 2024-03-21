@@ -18,7 +18,7 @@ Route::group(['as' => 'auth.'], function () {
     $jwtAuthService = resolve(AuthTokenManager::class);
 
     // We do a conditional for POST /auth/tokens (login)
-    Route::middleware(['throttle:10,1', 'lowercase_query:auth_type'])->name('store')->post('tokens', function (AuthRequest $request) use ($userService, $sanctumAuthService, $jwtAuthService) {
+    Route::middleware(['throttle:10,3', 'lowercase_query:auth_type'])->name('store')->post('tokens', function (AuthRequest $request) use ($userService, $sanctumAuthService, $jwtAuthService) {
         $authType = ! is_null($request->get('auth_type')) ? $request->get('auth_type') : null;
 
         if (is_null($authType) || $authType === AuthenticationType::SANCTUM->value) {
@@ -31,7 +31,7 @@ Route::group(['as' => 'auth.'], function () {
     });
 
     // We do a conditional for POST /auth/register
-    Route::middleware(['throttle:10,1', 'lowercase_query:auth_type'])->name('register')->post('register', function (AuthRequest $request) use ($userService, $sanctumAuthService, $jwtAuthService) {
+    Route::middleware(['throttle:10,3', 'lowercase_query:auth_type'])->name('register')->post('register', function (AuthRequest $request) use ($userService, $sanctumAuthService, $jwtAuthService) {
         $authType = ! is_null($request->get('auth_type')) ? $request->get('auth_type') : null;
 
         if (is_null($authType) || $authType === AuthenticationType::SANCTUM->value) {
