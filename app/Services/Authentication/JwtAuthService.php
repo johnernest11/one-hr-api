@@ -15,7 +15,7 @@ use STS\JWT\Exceptions\InvalidSignature;
 use STS\JWT\Exceptions\TokenExpired;
 use STS\JWT\Exceptions\ValidationException;
 
-class JWTAuthService implements AuthTokenManager
+class JwtAuthService implements AuthTokenManager
 {
     private string $jwtId;
 

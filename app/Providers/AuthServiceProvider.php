@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
-use App\Services\Authentication\JWTAuthService;
+use App\Services\Authentication\JwtAuthService;
 use App\Services\Authentication\SanctumAuthService;
 use Auth;
 use Illuminate\Foundation\Application;
@@ -33,7 +33,7 @@ class AuthServiceProvider extends ServiceProvider
         parent::register();
 
         $this->app->bind(AuthTokenManager::class, function () {
-            return new JWTAuthService();
+            return new JwtAuthService();
         });
 
         $this->app->bind(PersistentAuthTokenManager::class, function () {
