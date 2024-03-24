@@ -35,8 +35,8 @@ interface ApiKeyManager
     public function isValid(string $key): bool;
 
     /** Parse the ID from the API Key */
-    public function getIdFromKey(string $key);
+    public function getIdFromKey(string $key): string|int|null;
 
     /** Parse raw value from the API Key */
-    public function getValueFromKey(string $key);
+    public function getValueFromKey(string $key): ?string;
 }

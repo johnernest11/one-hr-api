@@ -139,7 +139,7 @@ return [
 
     /*
      |--------------------------------------------------------------------------
-     | Multi-Auth Mechanism Switch
+     | Multi Token Auth Mechanism Switch
      |--------------------------------------------------------------------------
      |
      | Set if Sanctum or JWT authentication are enabled.
