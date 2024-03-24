@@ -54,6 +54,15 @@ class ApiKey extends Model implements Authenticatable
     ];
 
     /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'key',
+    ];
+
+    /**
      * The attributes that should be eager-loaded
      *
      * @var array<int, string>
