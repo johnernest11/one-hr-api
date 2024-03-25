@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Enums\AppEnvironment;
 use App\Enums\Permission;
 use App\Models\User;
 use App\Notifications\EmailSystemAlertNotification;
@@ -27,14 +26,7 @@ class LogEventListener
      */
     public function handle(MessageLogged $event): void
     {
-        // Only send email notifications when in prod, uat, or development
-        if (! in_array(app()->environment(),
-            [
-                AppEnvironment::PRODUCTION->value,
-                AppEnvironment::UAT->value,
-                AppEnvironment::DEVELOPMENT->value,
-            ]
-        )) {
+        if (! in_array(app()->environment(), $this->getEnvironmentsToLog())) {
             return;
         }
 
@@ -54,8 +46,20 @@ class LogEventListener
                 $slackAlertSent = true;
             }
 
+            // This is disabled by default. Be wary of turning the flag on
+            // for sending error messages via email
+            if (! config('logging.enable_email_dev_alerts')) {
+                return;
+            }
+
             // We send email alerts to every System Support Role
             $user->notify(new EmailSystemAlertNotification($event->level, $event->message));
         }
+    }
+
+    private function getEnvironmentsToLog(): array
+    {
+        // Only send email notifications when in prod, uat, or development
+        return config('logging.event_listener_environments');
     }
 }

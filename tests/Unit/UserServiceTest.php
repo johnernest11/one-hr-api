@@ -2,18 +2,16 @@
 
 namespace Tests\Unit;
 
-use App\Enums\PaginationType;
-use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
 use App\Models\User;
 use App\Models\UserProfile;
-use App\Services\HttpResources\UserService;
+use App\Services\User\UserManager;
+use App\Services\User\UserService;
 use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 use Throwable;
@@ -21,9 +19,8 @@ use Throwable;
 class UserServiceTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
-    private UserServiceInterface $userService;
+    private UserManager $userService;
 
     protected function setUp(): void
     {
@@ -69,7 +66,7 @@ class UserServiceTest extends TestCase
         $request->replace(['limit' => $limit]);
         app()->instance('request', $request);
 
-        $users = $this->userService->all(PaginationType::LENGTH_AWARE);
+        $users = $this->userService->all();
 
         $this->assertEquals($count, $users->total());
         $this->assertCount($limit, $users->items());
@@ -94,13 +91,13 @@ class UserServiceTest extends TestCase
             'telephone_number' => '+6327'.fake()->randomNumber(7),
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => '1997-01-05',
-            'home_address' => $this->faker->streetName,
+            'home_address' => fake()->streetName,
             'barangay_id' => Barangay::first()->id,
             'city_id' => City::first()->id,
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
-            'postal_code' => $this->faker->postcode,
-            'profile_picture_path' => $this->faker->filePath,
+            'postal_code' => fake()->postcode,
+            'profile_picture_path' => fake()->filePath,
         ];
     }
 
@@ -112,10 +109,22 @@ class UserServiceTest extends TestCase
         $this->assertEquals($createdUser->id, $foundUser->id);
     }
 
-    public function test_it_can_soft_delete_a_user(): void
+    public function test_it_can_soft_delete_a_user_via_model(): void
     {
         $this->produceUsers(3);
         $this->userService->destroy(User::first());
+
+        $foundUsers = User::all();
+        $this->assertCount(2, $foundUsers);
+
+        $trashedUsers = User::onlyTrashed()->count();
+        $this->assertEquals(1, $trashedUsers);
+    }
+
+    public function test_it_can_soft_delete_a_user_via_id(): void
+    {
+        $this->produceUsers(3);
+        $this->userService->destroy(User::first()->id);
 
         $foundUsers = User::all();
         $this->assertCount(2, $foundUsers);
@@ -136,7 +145,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals(1, $trashedUserProfiles);
     }
 
-    public function test_it_can_update_password(): void
+    public function test_it_can_update_password_via_model(): void
     {
         $user = $this->produceUsers();
         $oldPassword = 'test_old_123';
@@ -149,5 +158,42 @@ class UserServiceTest extends TestCase
 
         $isCorrect = Hash::check($newPassword, $updatedUser->password);
         $this->assertTrue($isCorrect);
+    }
+
+    public function test_it_can_update_password_via_id(): void
+    {
+        $user = $this->produceUsers();
+        $oldPassword = 'test_old_123';
+        $user->password = $oldPassword;
+        $user->save();
+
+        $newPassword = 'test_new_123';
+        $updatedUser = $this->userService->updatePassword($user->id, $newPassword, $oldPassword);
+        $this->assertNotNull($updatedUser);
+
+        $isCorrect = Hash::check($newPassword, $updatedUser->password);
+        $this->assertTrue($isCorrect);
+    }
+
+    public function test_it_can_check_email_and_password_creds(): void
+    {
+        $user = $this->produceUsers();
+        $testEmail = 'test@example.com';
+        $testPassword = 'test123123';
+        $user->update(['email' => $testEmail, 'password' => $testPassword]);
+
+        $user = $this->userService->getUserViaEmailAndPassword($testEmail, $testPassword);
+        $this->assertNotNull($user);
+    }
+
+    public function test_it_can_check_mobile_and_password_creds(): void
+    {
+        $user = $this->produceUsers();
+        $testPassword = 'test123123';
+        $testMobileNumber = $user->userProfile->mobile_number;
+        $user->update(['password' => $testPassword]);
+
+        $user = $this->userService->getUserViaMobileNumberAndPassword($testMobileNumber, $testPassword);
+        $this->assertNotNull($user);
     }
 }

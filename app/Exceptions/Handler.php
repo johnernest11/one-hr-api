@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Enums\ApiErrorCode;
+use App\Enums\AppEnvironment;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -25,7 +26,7 @@ class Handler extends ExceptionHandler
     /**
      * A list of exception types with their corresponding custom log levels.
      *
-     * @var array<class-string<\Throwable>, \Psr\Log\LogLevel::*>
+     * @var array<class-string<Throwable>, \Psr\Log\LogLevel::*>
      */
     protected $levels = [
         //
@@ -34,7 +35,7 @@ class Handler extends ExceptionHandler
     /**
      * A list of the exception types that are not reported.
      *
-     * @var array<int, class-string<\Throwable>>
+     * @var array<int, class-string<Throwable>>
      */
     protected $dontReport = [
         //
@@ -165,7 +166,7 @@ class Handler extends ExceptionHandler
                     'stack_trace' => $e->getTraceAsString(),
                 ];
 
-                if (app()->environment('production')) {
+                if (app()->environment(AppEnvironment::PRODUCTION->value)) {
                     $body['message'] = 'An unknown error has occurred';
                     unset($body['stack_trace']);
                 }

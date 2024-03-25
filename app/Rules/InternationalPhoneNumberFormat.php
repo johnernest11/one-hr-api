@@ -2,43 +2,27 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Translation\PotentiallyTranslatedString;
 
-class InternationalPhoneNumberFormat implements Rule
+class InternationalPhoneNumberFormat implements ValidationRule
 {
     /**
-     * Create a new rule instance.
+     * Run the validation rule.
      *
-     * @return void
+     * @param  Closure(string): PotentiallyTranslatedString  $fail
      */
-    public function __construct()
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        //
-    }
-
-    /**
-     * Number must start with a [+] sign followed by numbers
-     * e.g. +639091122333
-     *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     */
-    public function passes($attribute, $value): bool
-    {
+        $errorMessage = 'The :attribute must follow the E.164 international phone number formatting: [+][country code][area code][local phone number]. E.g. +639091122333';
         if (is_null($value)) {
-            return false;
+            $fail($errorMessage);
         }
 
-        return preg_match("/^\+[0-9]+$/", $value) > 0;
-    }
-
-    /**
-     * Get the validation error message.
-     */
-    public function message(): string
-    {
-        /** phpcs:disable **/
-        return 'The :attribute must follow the E.164 international phone number formatting: [+][country code][area code][local phone number]. E.g. +639091122333, +63279434285';
-        /** phpcs:enable */
+        $validFormat = preg_match("/^\+[0-9]+$/", $value) > 0;
+        if (! $validFormat) {
+            $fail($errorMessage);
+        }
     }
 }

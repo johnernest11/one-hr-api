@@ -2,8 +2,8 @@
 
 namespace App\QueryFilters\Generic;
 
-use App\Interfaces\Database\SchemaServiceInterface;
 use App\QueryFilters\Filter;
+use App\Services\Database\SchemaInspector;
 use Illuminate\Database\Eloquent\Builder;
 use Log;
 use Str;
@@ -31,7 +31,7 @@ class SortFilter extends Filter
         // we do a regular orderBy with a column on the primary table
         // Ex. ?sort_by=username (username is found directly on the users table)
         if (! $this->checkIfSortByFilterIsNested($sortBy)) {
-            $schemaService = resolve(SchemaServiceInterface::class);
+            $schemaService = resolve(SchemaInspector::class);
             $columnExists = $schemaService->checkIfColumnExists($tableName, $sortBy);
             $sortBy = $columnExists ? $sortBy : 'id';
 
@@ -68,7 +68,7 @@ class SortFilter extends Filter
         $tableName = $this->getNestedSortByFilterRelatedTable($sortBy);
 
         // check if the table name exists
-        $schemaService = resolve(SchemaServiceInterface::class);
+        $schemaService = resolve(SchemaInspector::class);
         $tableExists = $schemaService->checkIfTableExists($tableName);
 
         if (! $tableExists) {
@@ -146,7 +146,7 @@ class SortFilter extends Filter
         string $tableName,
         string $filterName
     ): Builder {
-        $schemaService = resolve(SchemaServiceInterface::class);
+        $schemaService = resolve(SchemaInspector::class);
 
         $nestedSortBy = $this->getNestedSortByFilterValue($sortBy);
         $nestedTableName = $this->getNestedSortByFilterRelatedTable($sortBy);

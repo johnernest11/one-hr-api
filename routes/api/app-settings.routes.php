@@ -6,7 +6,7 @@ use App\Http\Controllers\AppSettingController;
 Route::controller(AppSettingController::class)->name('app-settings.')->group(function () {
     /** @uses AppSettingController::store */
     Route::middleware([
-        'auth:sanctum',
+        'auth:token',
         'verified.api',
         'permission:'.Permission::UPDATE_APP_SETTINGS->value,
     ])

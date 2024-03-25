@@ -6,14 +6,12 @@ use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Throwable;
 
 class AddressTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     public function setUp(): void
     {
