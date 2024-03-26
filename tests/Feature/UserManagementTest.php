@@ -10,15 +10,14 @@ use App\Models\Address\Region;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Notifications\WelcomeNotification;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Laravel\Sanctum\Sanctum;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 use Throwable;
@@ -26,9 +25,12 @@ use Throwable;
 class UserManagementTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private string $baseUri = self::BASE_API_URI.'/users';
+
+    private string $authToken;
+
+    private PersistentAuthTokenManager $tokenManager;
 
     public function setUp(): void
     {
@@ -38,9 +40,12 @@ class UserManagementTest extends TestCase
 
         /** @var User $user */
         $user = $this->produceUsers();
-        $roles = [RoleEnum::ADMIN->value, RoleEnum::SUPER_USER->value];
+        $roles = [RoleEnum::ADMIN, RoleEnum::SUPER_USER];
         $user->syncRoles(fake()->randomElement($roles));
-        Sanctum::actingAs($user);
+
+        $this->tokenManager = resolve(PersistentAuthTokenManager::class);
+        $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
+        $this->authToken = $this->tokenManager->generateToken($user, $authTokenExpiration, 'mock_token');
     }
 
     /**
@@ -57,7 +62,7 @@ class UserManagementTest extends TestCase
         $input['region_id'] = Region::first()->id;
         $input['profile_picture_path'] = fake()->filePath();
 
-        $response = $this->postJson($this->baseUri, $input);
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
         $response->assertStatus($statusCode);
 
         if ($statusCode !== 422) {
@@ -86,7 +91,7 @@ class UserManagementTest extends TestCase
             'sex' => 'male',
             'birthday' => '1997-01-04',
             'home_address' => 'Home Address',
-            'postal_code' => '211',
+            'postal_code' => '2111',
         ]);
 
         $missingRequiredFields = Arr::except(
@@ -108,7 +113,7 @@ class UserManagementTest extends TestCase
         $input = $this->getRequiredUserInputSample();
         $input['email'] = $user->email;
 
-        $response = $this->postJson($this->baseUri, $input);
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
         $response->assertStatus(422);
 
         $response = $response->decodeResponseJson();
@@ -140,11 +145,11 @@ class UserManagementTest extends TestCase
             'city_id' => City::first()->id,
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
-            'postal_code' => fake()->postcode(),
+            'postal_code' => fake()->numerify('####'),
             'profile_picture_path' => fake()->filePath(),
         ];
 
-        $response = $this->patchJson("$this->baseUri/$user->id", $edits);
+        $response = $this->withToken($this->authToken)->patchJson("$this->baseUri/$user->id", $edits);
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson();
@@ -209,7 +214,7 @@ class UserManagementTest extends TestCase
         ];
 
         // try to update the first user's username and email with user 2's
-        $response = $this->patchJson("$this->baseUri/{$users[0]->id}", $user2Info);
+        $response = $this->withToken($this->authToken)->patchJson("$this->baseUri/{$users[0]->id}", $user2Info);
         $response->assertStatus(422);
     }
 
@@ -225,14 +230,14 @@ class UserManagementTest extends TestCase
             'mobile_number' => $user->userProfile->mobile_number,
         ];
 
-        $response = $this->patchJson("$this->baseUri/$user->id", $input);
+        $response = $this->withToken($this->authToken)->patchJson("$this->baseUri/$user->id", $input);
         $response->assertStatus(200);
     }
 
     /** @dataProvider differentMobileNumbers */
     public function test_it_should_validate_mobile_number_formats($input, $statusCode): void
     {
-        $result = $this->postJson($this->baseUri, $input);
+        $result = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
         $result->assertStatus($statusCode);
     }
 
@@ -258,7 +263,7 @@ class UserManagementTest extends TestCase
     /** @dataProvider differentTelephoneNumbers */
     public function test_it_should_validate_telephone_number_formats($input, $statusCode): void
     {
-        $result = $this->postJson('api/v1/users', $input);
+        $result = $this->withToken($this->authToken)->postJson('api/v1/users', $input);
         $result->assertStatus($statusCode);
     }
 
@@ -285,7 +290,7 @@ class UserManagementTest extends TestCase
     {
         $user = $this->produceUsers();
 
-        $response = $this->get("$this->baseUri/$user->id");
+        $response = $this->withToken($this->authToken)->getJson("$this->baseUri/$user->id");
         $response->assertStatus(200);
     }
 
@@ -294,7 +299,7 @@ class UserManagementTest extends TestCase
     {
         $user = $this->produceUsers();
 
-        $response = $this->delete("$this->baseUri/$user->id");
+        $response = $this->withToken($this->authToken)->delete("$this->baseUri/$user->id");
         $response->assertStatus(204);
         $this->assertDatabaseHas('users', ['id' => $user->id]);
     }
@@ -305,7 +310,7 @@ class UserManagementTest extends TestCase
         $this->produceUsers(5);
         $totalUserCount = User::count('id');
 
-        $response = $this->get($this->baseUri);
+        $response = $this->withToken($this->authToken)->getJson($this->baseUri);
         $response = $response->decodeResponseJson();
 
         $this->assertIsArray($response['data']);
@@ -319,7 +324,7 @@ class UserManagementTest extends TestCase
         $totalUserCount = User::count('id');
 
         $limit = 5;
-        $response = $this->get("$this->baseUri?limit=$limit");
+        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?limit=$limit");
         $response = $response->decodeResponseJson();
 
         $this->assertArrayHasKey('pagination', $response);
@@ -331,7 +336,7 @@ class UserManagementTest extends TestCase
     public function test_it_sets_up_the_active_and_email_verified_at_fields_when_not_provided(): void
     {
         $onlyRequiredInputs = $this->getRequiredUserInputSample();
-        $response = $this->postJson($this->baseUri, $onlyRequiredInputs);
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $onlyRequiredInputs);
         $response = $response->decodeResponseJson();
         $user = User::find($response['data']['id']);
 
@@ -343,7 +348,7 @@ class UserManagementTest extends TestCase
     public function test_if_email_verified_is_not_in_payload_then_email_verified_at_should_be_null(): void
     {
         $input = $this->getRequiredUserInputSample();
-        $response = $this->postJson($this->baseUri, $input);
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
         $response = $response->decodeResponseJson();
         $user = User::find($response['data']['id']);
         $this->assertNull($user->email_verified_at);
@@ -354,7 +359,7 @@ class UserManagementTest extends TestCase
     {
         $input = $this->getRequiredUserInputSample();
         $input['email_verified'] = false;
-        $response = $this->postJson($this->baseUri, $input);
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
         $response = $response->decodeResponseJson();
         $user = User::find($response['data']['id']);
         $this->assertNull($user->email_verified_at);
@@ -365,7 +370,7 @@ class UserManagementTest extends TestCase
     {
         $input = $this->getRequiredUserInputSample();
         $input['email_verified'] = true;
-        $response = $this->postJson($this->baseUri, $input);
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
         $response = $response->decodeResponseJson();
         $user = User::find($response['data']['id']);
         $this->assertTrue((bool) strtotime($user->email_verified_at->toDateString()));
@@ -375,7 +380,7 @@ class UserManagementTest extends TestCase
     {
         $user = $this->produceUsers();
         $file = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
-        $response = $this->post("$this->baseUri/$user->id/profile-picture", ['photo' => $file]);
+        $response = $this->withToken($this->authToken)->postJson("$this->baseUri/$user->id/profile-picture", ['photo' => $file]);
         $response->assertStatus(200);
 
         // clean the bucket
@@ -385,7 +390,7 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_set_a_default_role_as_standard_user(): void
     {
-        $response = $this->post($this->baseUri, $this->getRequiredUserInputSample());
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $this->getRequiredUserInputSample());
         $response = $response->decodeResponseJson();
 
         $this->assertCount(1, $response['data']['roles']);
@@ -399,7 +404,7 @@ class UserManagementTest extends TestCase
         $secondRole = Role::query()->where('name', RoleEnum::ADMIN->value)->first()->id;
         $expectedRoles = ['roles' => [$firstRole, $secondRole]];
 
-        $response = $this->post($this->baseUri, array_merge($this->getRequiredUserInputSample(), $expectedRoles));
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, array_merge($this->getRequiredUserInputSample(), $expectedRoles));
         $response->assertStatus(201);
 
         $response = $response->decodeResponseJson();
@@ -415,7 +420,7 @@ class UserManagementTest extends TestCase
         $this->produceUsers(1, ['email' => $email]);
 
         $email = strtoupper($email);
-        $response = $this->get("$this->baseUri?email=$email");
+        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?email=$email");
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson();
@@ -431,11 +436,16 @@ class UserManagementTest extends TestCase
         $this->produceUsers(3, [], true);
         $this->produceUsers(2);
 
-        $response = $this->get("$this->baseUri?verified=1");
-        $response->decodeResponseJson();
-        $this->assertCount(2, $response['data']);
+        // We create a new authenticated user (+1 verified) since the old one is deleted
+        $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);
+        $newAuthToken = $this->tokenManager->generateToken($authUser, now()->addMinutes(5));
 
-        $response = $this->get("$this->baseUri?verified=0");
+        $response = $this->withToken($newAuthToken)->getJson("$this->baseUri?verified=1");
+        $response->decodeResponseJson();
+        $response->assertStatus(200);
+        $this->assertCount(3, $response['data']);
+
+        $response = $this->withToken($newAuthToken)->getJson("$this->baseUri?verified=0");
         $response->decodeResponseJson();
         $this->assertCount(3, $response['data']);
     }
@@ -452,7 +462,12 @@ class UserManagementTest extends TestCase
         $role = Role::query()->where('name', '=', RoleEnum::SUPER_USER->value)->first();
         $superUser->syncRoles($role->id);
 
-        $response = $this->get("$this->baseUri?role=$role->id");
+        // We create a new token since the previous owner is deleted
+        $newToken = $this->tokenManager->generateToken($superUser, now()->addMinutes(5));
+
+        $response = $this->withToken($newToken)->getJson("$this->baseUri?role=$role->id");
+        $response->assertStatus(200);
+
         $response = $response->decodeResponseJson();
 
         $this->assertCount(1, $response['data']);
@@ -465,14 +480,14 @@ class UserManagementTest extends TestCase
 
         // test `asc` sort
         $sortedLastNames = UserProfile::orderBy('last_name')->pluck('last_name')->toArray();
-        $response = $this->get("$this->baseUri?sort=asc&sort_by=user_profile.last_name");
+        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?sort=asc&sort_by=user_profile.last_name");
         $response = $response->decodeResponseJson();
         $mappedLastNames = array_map(fn ($userProfile) => $userProfile['last_name'], $response['data']);
         $this->assertEquals($sortedLastNames, $mappedLastNames);
 
         // test `desc` sort
         $sortedLastNames = UserProfile::orderBy('last_name', 'desc')->pluck('last_name')->toArray();
-        $response = $this->get("$this->baseUri?sort=desc&sort_by=user_profile.last_name");
+        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?sort=desc&sort_by=user_profile.last_name");
         $response = $response->decodeResponseJson();
         $mappedLastNames = array_map(fn ($userProfile) => $userProfile['last_name'], $response['data']);
         $this->assertEquals($sortedLastNames, $mappedLastNames);
@@ -485,14 +500,14 @@ class UserManagementTest extends TestCase
 
         // test `asc` sort
         $sortedLastNames = UserProfile::orderBy('first_name')->pluck('first_name')->toArray();
-        $response = $this->get("$this->baseUri?sort=asc&sort_by=user_profile.first_name");
+        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?sort=asc&sort_by=user_profile.first_name");
         $response = $response->decodeResponseJson();
         $mappedLastNames = array_map(fn ($userProfile) => $userProfile['first_name'], $response['data']);
         $this->assertEquals($sortedLastNames, $mappedLastNames);
 
         // test `desc` sort
         $sortedLastNames = UserProfile::orderBy('first_name', 'desc')->pluck('first_name')->toArray();
-        $response = $this->get("$this->baseUri?sort=desc&sort_by=user_profile.first_name");
+        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?sort=desc&sort_by=user_profile.first_name");
         $response = $response->decodeResponseJson();
         $mappedLastNames = array_map(fn ($userProfile) => $userProfile['first_name'], $response['data']);
         $this->assertEquals($sortedLastNames, $mappedLastNames);
@@ -502,10 +517,17 @@ class UserManagementTest extends TestCase
     public function test_it_can_search_via_last_name(): void
     {
         User::query()->delete();
-        $last_name = $this->produceUsers()->userProfile->last_name;
 
-        $last_name = Str::substr($last_name, 2);
-        $response = $this->get("$this->baseUri/search?query=$last_name");
+        $createdUser = $this->produceUsers();
+        $createdUser->userProfile->update(['last_name' => Str::uuid()]);
+        $lastName = urlencode($createdUser->userProfile->last_name);
+        $lastName = Str::substr($lastName, 2);
+
+        // We create a new user and token since the old one is deleted
+        $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);
+        $authToken = $this->tokenManager->generateToken($authUser, now()->addMinutes(5));
+
+        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$lastName");
         $response = $response->decodeResponseJson();
         $this->assertCount(1, $response['data']);
     }
@@ -514,10 +536,17 @@ class UserManagementTest extends TestCase
     public function test_it_can_search_via_first_name(): void
     {
         User::query()->delete();
-        $first_name = $this->produceUsers()->userProfile->first_name;
 
-        $first_name = Str::substr($first_name, 2);
-        $response = $this->get("$this->baseUri/search?query=$first_name");
+        $createdUser = $this->produceUsers();
+        $createdUser->userProfile->update(['first_name' => Str::uuid()]);
+        $firstName = urlencode($createdUser->userProfile->first_name);
+        $firstName = Str::substr($firstName, 2);
+
+        // We create a new user and token since the old one is deleted
+        $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);
+        $authToken = $this->tokenManager->generateToken($authUser, now()->addMinutes(5));
+
+        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$firstName");
         $response = $response->decodeResponseJson();
         $this->assertCount(1, $response['data']);
     }
@@ -526,10 +555,16 @@ class UserManagementTest extends TestCase
     public function test_it_can_search_via_middle_name(): void
     {
         User::query()->delete();
-        $middle_name = $this->produceUsers()->userProfile->middle_name;
+        $createdUser = $this->produceUsers();
+        $createdUser->userProfile->update(['middle_name' => Str::uuid()]);
+        $middleName = urlencode($createdUser->userProfile->middle_name);
+        $middleName = Str::substr($middleName, 2);
 
-        $middle_name = Str::substr($middle_name, 2);
-        $response = $this->get("$this->baseUri/search?query=$middle_name");
+        // We create a new user and token since the old one is deleted
+        $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);
+        $authToken = $this->tokenManager->generateToken($authUser, now()->addMinutes(5));
+
+        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$middleName");
         $response = $response->decodeResponseJson();
         $this->assertCount(1, $response['data']);
     }
@@ -538,10 +573,16 @@ class UserManagementTest extends TestCase
     public function test_it_can_search_via_ext_name(): void
     {
         User::query()->delete();
-        $ext_name = $this->produceUsers()->userProfile->ext_name;
+        $createdUser = $this->produceUsers();
+        $createdUser->userProfile->update(['ext_name' => Str::uuid()]);
+        $extName = urlencode($createdUser->userProfile->ext_name);
 
-        $ext_name = urlencode($ext_name);
-        $response = $this->get("$this->baseUri/search?query=$ext_name");
+        // We make a new token since the old auth user is deleted
+        // We create a new user and token since the old one is deleted
+        $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);
+        $authToken = $this->tokenManager->generateToken($authUser, now()->addMinutes(5));
+
+        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$extName");
         $response = $response->decodeResponseJson();
         $this->assertCount(1, $response['data']);
     }
@@ -551,9 +592,16 @@ class UserManagementTest extends TestCase
     {
         User::query()->delete();
         $email = $this->produceUsers()->email;
-
         $email = Str::substr($email, 0, -2);
-        $response = $this->get("$this->baseUri/search?query=$email");
+
+        // We create a new user and token since the old one is deleted
+        $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);
+        $authUser->syncRoles([RoleEnum::ADMIN]);
+        $authToken = $this->tokenManager->generateToken($authUser, now()->addMinutes(5));
+
+        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$email");
+        $response->assertStatus(200);
+
         $response = $response->decodeResponseJson();
         $this->assertCount(1, $response['data']);
     }

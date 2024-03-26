@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Requests\UserRequest;
-use App\Interfaces\HttpResources\UserServiceInterface;
+use App\Services\User\UserManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -11,7 +11,7 @@ use Spatie\Permission\Models\Role;
 
 class CreateUser extends Command
 {
-    private UserServiceInterface $userService;
+    private UserManager $userService;
 
     /**
      * The name and signature of the console command.
@@ -27,7 +27,7 @@ class CreateUser extends Command
      */
     protected $description = 'Create a user';
 
-    public function __construct(UserServiceInterface $userService)
+    public function __construct(UserManager $userService)
     {
         parent::__construct();
         $this->userService = $userService;
@@ -50,7 +50,7 @@ class CreateUser extends Command
             'email' => $email,
             'password' => $password,
             'password_confirmation' => $passwordConfirmation,
-            'roles' => [Role::findByName($role, 'sanctum')->id],
+            'roles' => [Role::findByName($role, 'token')->id],
             'email_verified' => true,
         ];
         $createUserRules = (new UserRequest())->getStoreUserRules();

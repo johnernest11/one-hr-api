@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AuthenticationType;
 use App\Enums\SexualCategory;
+use App\Rules\DbTextMaxLength;
 use App\Rules\DbVarcharMaxLength;
 use App\Rules\InternationalPhoneNumberFormat;
 use App\Rules\PhoneCountryFormat;
@@ -50,6 +52,7 @@ class AuthRequest extends FormRequest
             'password' => ['required', 'string'],
             'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'with_user' => ['nullable', 'bool'], // Send the token back with user information
+            'auth_type' => ['nullable', 'in:'.AuthenticationType::SANCTUM->value.','.AuthenticationType::JWT->value],
         ];
     }
 
@@ -108,12 +111,13 @@ class AuthRequest extends FormRequest
             ],
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
-            'home_address' => ['string', 'nullable'],
+            'home_address' => ['string', 'nullable', new DbTextMaxLength()],
             'barangay_id' => ['nullable', 'exists:barangays,id'],
             'city_id' => ['nullable', 'exists:cities,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'region_id' => ['nullable', 'exists:regions,id'],
-            'postal_code' => ['nullable', new DbVarcharMaxLength()],
+            'postal_code' => ['nullable', 'digits:4'],
+            'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
         ];
     }
 
@@ -126,6 +130,7 @@ class AuthRequest extends FormRequest
             'email.exists' => 'The :attribute is not registered',
             'birthday.before_or_equal' => 'The :attribute field must not be greater than today',
             'mobile_number.phone' => 'The :attribute field format must be a valid mobile number',
+            'auth_type.in' => 'The :attribute field must either `jwt` or `sanctum`',
         ];
     }
 }

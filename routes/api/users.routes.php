@@ -3,7 +3,7 @@
 use App\Enums\Permission;
 use App\Http\Controllers\UserController;
 
-Route::middleware(['auth:sanctum', 'verified.api'])->controller(UserController::class)->name('users.')->group(function () {
+Route::middleware(['auth:token', 'verified.api'])->controller(UserController::class)->name('users.')->group(function () {
     /** @uses UserController::store */
     Route::middleware(['permission:'.Permission::CREATE_USERS->value])
         ->post('', 'store')

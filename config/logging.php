@@ -124,9 +124,12 @@ return [
     |--------------------------------------------------------------------------
     | Log level for the App\Listeners\LogEventListener
     |--------------------------------------------------------------------------
-    | Set the log level for the LogEventListener
+    | Set the log level, environments to log, and email alerts
+    | for the App\Listeners\LogEventListener
     |
     */
 
-    'event_listener_level' => env('LOG_EVENT_LISTENER_LEVEL'),
+    'event_listener_level' => env('LOG_EVENT_LISTENER_LEVEL', 'warning'),
+    'event_listener_environments' => ['production', 'development', 'uat'],
+    'enable_email_dev_alerts' => env('ENABLE_EMAIL_DEV_ALERTS', false),
 ];

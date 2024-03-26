@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Services\User;
+
+use App\Enums\PaginationType;
+use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\CursorPaginator;
+
+interface UserManager
+{
+    /**
+     * Fetch a list of users
+     */
+    public function all(): LengthAwarePaginator;
+
+    /**
+     * Create a new user
+     */
+    public function create(array $userInfo): User;
+
+    /**
+     * Update an existing user
+     */
+    public function update(User|int|string $modelOrId, array $newUserInfo): User;
+
+    /**
+     * Fetch a single User
+     */
+    public function read($id): User;
+
+    /**
+     * Delete a single User
+     */
+    public function destroy(User|int|string $modelOrId): User;
+
+    /**
+     * Search for a user
+     */
+    public function search(
+        string $term,
+        ?PaginationType $pagination = null
+    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
+
+    public function updatePassword(User|int|string $modelOrId, string $newPassword, string $oldPassword): ?User;
+
+    /**
+     * Fetch a user with the email and password credentials
+     */
+    public function getUserViaEmailAndPassword(string $email, string $password): ?User;
+
+    /**
+     * Fetch the user with the mobile number and password credentials
+     */
+    public function getUserViaMobileNumberAndPassword(string $mobileNumber, string $password): ?User;
+}

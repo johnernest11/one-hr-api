@@ -1,7 +1,7 @@
 ## About WebAppKit API
 
-WebAppKit API is a Laravel 9 RESTFul starter kit for SPA and mobile clients. This kit includes the following features:
-- Implementation of a Token-based Authentication with [Sanctum](https://laravel.com/docs/9.x/sanctum)
+WebAppKit API is a Laravel 10 RESTFul starter kit for SPA and mobile clients. This kit includes the following features:
+- Implementation of a Token-based Authentication with [Sanctum](https://laravel.com/docs/9.x/sanctum) and [JWT](https://github.com/stechstudio/laravel-jwt)
 - Implementation of Role-based Access Control with [Spatie](https://spatie.be/docs/laravel-permission/v5/introduction)
 - Implementation of CRUD for user profile with profile picture upload
 - Implementation Forgot and Reset Password with Email Notification
@@ -10,6 +10,7 @@ WebAppKit API is a Laravel 9 RESTFul starter kit for SPA and mobile clients. Thi
 - System Alert notifications for critical errors/warnings (Email & Slack)
 - Pipeline implementation of HTTP query filters
 - Implementation of search functionality with DB fulltext indexes
+- Sample webhooks available with API Key authentication and permission-based authorization
 - AWS SQS integration for user notifications (emails, slack alerts). Comes with Redis queueing pre-configured
 - Composer and Git hook automation with GrumpPhp
 - [Clockwork](https://github.com/itsgoingd/clockwork) installed for performance monitoring while in development. Remember to install the browser extension
@@ -38,14 +39,19 @@ Create a user with role. See the command at `app/Console/Commands/CreateUser.php
 php artisan user:create
 ```
 \
+Create an API Key for Webhook integration. See the command at `app/Console/Commands/CreateApiKey.php`
+```
+php artisan api_key:create
+```
+\
 Running `composer install`, `composer update`, `git commit` will trigger automated tasks specified in `grumphp.yml`
-   - PSR-compliant code formatting
-   - Package security checks
-   - Unit and feature tests
+- PSR-compliant code formatting
+- Package security checks
+- Unit and feature tests
 
 ## Serve the API locally
-   - Terminal 1: Run `php artisan serve`
-   - Terminal 2: Run `php artisan queue:work --queue=default,emails,notifications,listeners`
+- Terminal 1: Run `php artisan serve`
+- Terminal 2: Run `php artisan queue:work --queue=default,emails,notifications,listeners`
 
 ## Style Guide Ver. 0.1
 - Use **FormRequest** validators when available

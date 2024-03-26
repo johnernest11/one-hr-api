@@ -8,20 +8,20 @@ use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
+use App\Services\Authentication\Interfaces\AuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use Throwable;
 
 class ProfileTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private string $baseUri = self::BASE_API_URI.'/profile';
+
+    private string $authToken;
 
     protected function setUp(): void
     {
@@ -29,13 +29,16 @@ class ProfileTest extends TestCase
         $this->artisan('db:seed');
 
         $this->user = $this->produceUsers();
-        $this->user->syncRoles(RoleEnum::STANDARD_USER->value);
-        Sanctum::actingAs($this->user);
+        $this->user->syncRoles(RoleEnum::STANDARD_USER);
+
+        $authSanctumService = resolve(AuthTokenManager::class);
+        $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
+        $this->authToken = $authSanctumService->generateToken($this->user, $authTokenExpiration, 'mock_token');
     }
 
     public function test_user_can_view_profile(): void
     {
-        $response = $this->get($this->baseUri);
+        $response = $this->withToken($this->authToken)->getJson($this->baseUri);
         $response->assertStatus(200);
     }
 
@@ -57,10 +60,10 @@ class ProfileTest extends TestCase
             'city_id' => City::latest()->first()->id,
             'province_id' => Province::latest()->first()->id,
             'region_id' => Region::latest()->first()->id,
-            'postal_code' => '221',
+            'postal_code' => '2212',
         ];
 
-        $response = $this->patchJson($this->baseUri, $edits);
+        $response = $this->withToken($this->authToken)->patchJson($this->baseUri, $edits);
         $response->assertStatus(200);
         $result = $response->decodeResponseJson();
 
@@ -100,7 +103,7 @@ class ProfileTest extends TestCase
     public function test_it_can_upload_profile_picture(): void
     {
         $file = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
-        $response = $this->post("$this->baseUri/profile-picture", ['photo' => $file]);
+        $response = $this->withToken($this->authToken)->postJson("$this->baseUri/profile-picture", ['photo' => $file]);
         $response->assertStatus(200);
 
         // clean the bucket
@@ -119,12 +122,12 @@ class ProfileTest extends TestCase
             'password' => $newPassword,
             'password_confirmation' => $newPassword,
         ];
-        $result = $this->patchJson("$this->baseUri/password", $input);
+        $result = $this->withToken($this->authToken)->patchJson("$this->baseUri/password", $input);
         $result->assertStatus(200);
 
         // login again with the new password
         $creds = ['email' => $this->user->email, 'password' => $newPassword];
-        $response = $this->post('api/v1/auth/tokens', $creds);
+        $response = $this->postJson('api/v1/auth/tokens', $creds);
         $response->assertStatus(200);
     }
 }

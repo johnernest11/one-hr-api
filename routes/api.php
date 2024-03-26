@@ -18,7 +18,16 @@ Route::prefix('/v1/availability')->group(base_path('routes/api/availability.rout
 Route::prefix('v1/address')->group(base_path('routes/api/address.routes.php'));
 
 /** V1 Roles */
-Route::prefix('/v1/roles')->group(base_path('routes/api/roles.routes.php'));
+Route::prefix('/v1')->group(base_path('routes/api/roles-permissions.routes.php'));
 
 /** V1 App settings */
 Route::prefix('/v1/app-settings')->group(base_path('routes/api/app-settings.routes.php'));
+
+/**
+ * V1 Webhook Tests
+ *
+ * @note Remove or Change as necessary
+ */
+Route::middleware(['enabled.webhooks'])
+    ->prefix('/v1/webhooks')
+    ->group(base_path('routes/api/webhooks.routes.php'));

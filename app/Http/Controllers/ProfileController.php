@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Enums\ApiErrorCode;
 use App\Http\Requests\ProfileRequest;
-use App\Interfaces\CloudFileServices\CloudFileServiceInterface;
-use App\Interfaces\HttpResources\UserServiceInterface;
 use App\Models\User;
+use App\Services\CloudStorageServices\CloudStorageManager;
+use App\Services\User\UserManager;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProfileController extends ApiController
 {
-    private UserServiceInterface $userService;
+    private UserManager $userService;
 
-    public function __construct(UserServiceInterface $userService)
+    public function __construct(UserManager $userService)
     {
         $this->userService = $userService;
     }
@@ -42,7 +42,7 @@ class ProfileController extends ApiController
     /**
      * Upload profile picture
      */
-    public function uploadProfilePicture(ProfileRequest $request, CloudFileServiceInterface $uploader): JsonResponse
+    public function uploadProfilePicture(ProfileRequest $request, CloudStorageManager $uploader): JsonResponse
     {
         $userId = auth()->user()->id;
 

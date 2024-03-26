@@ -68,5 +68,8 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        'lowercase_query' => \App\Http\Middleware\LowerCaseQueryParam::class,
+        'api_key_permission' => \App\Http\Middleware\ApiKeyPermission::class,
+        'enabled.webhooks' => \App\Http\Middleware\EnsureWebhooksAreEnabled::class,
     ];
 }

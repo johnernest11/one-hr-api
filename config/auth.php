@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'token',
         'passwords' => 'users',
     ],
 
@@ -36,6 +36,14 @@ return [
     */
 
     'guards' => [
+        'token' => [
+            'driver' => 'multi_token_driver',
+            'provider' => 'users', // Even tho we don't technically use a provider, Spatie needs for roles and permissions
+        ],
+        'api_key' => [
+            'driver' => 'api_key_driver',
+            'provider' => 'api_keys',
+        ],
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
@@ -63,6 +71,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'api_keys' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\ApiKey::class,
         ],
 
         // 'users' => [
@@ -125,4 +137,16 @@ return [
         ],
     ],
 
+    /*
+     |--------------------------------------------------------------------------
+     | Multi Token Auth Mechanism Switch
+     |--------------------------------------------------------------------------
+     |
+     | Set if Sanctum or JWT authentication are enabled.
+     |
+    */
+    'mechanism' => [
+        'sanctum_enabled' => env('SANCTUM_AUTH_ENABLED', true),
+        'jwt_enabled' => env('JWT_AUTH_ENABLED', false),
+    ],
 ];
