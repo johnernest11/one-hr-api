@@ -20,6 +20,7 @@ WebAppKit API is a Laravel 10 RESTFul starter kit for SPA and mobile clients. Th
 ## Set up your local development environment
 - Minimum of PHP 8.1 installed with a database engine that supports JSON types and possibly with full text search (e.g. MySQL8, MariaDB 10.5)
 - Create a **.env** and a **.env.testing** files from the **.env.example** that came with this project. For security purposes, please request the contents of these files from the SCRUM master / Tech Lead
+  - Multi-Auth Update: Make sure that `SANCTUM_AUTH_ENABLED`, `JWT_AUTH_ENABLED`, `WEBHOOKS_ENABLED` are set to true in `.env.testing`
 - Locate your **php.ini** file and change the value **upload_max_filesize** to **10M**. See this [guide](https://devanswers.co/ubuntu-php-php-ini-configuration-file/) if you're having trouble finding the directory of your php.ini file
 - Make sure you have MySQL and Redis running locally (or depending on what's stated in the **.env** file)
 - Run the command `composer install`  to install all the project and dev dependencies
