@@ -61,7 +61,7 @@ class UserService implements UserManager
             }
 
             if (isset($userInfo['email_verified'])) {
-                $userCredentials['email_verified_at'] = $userInfo['email_verified'] ? Carbon::now('utc') : null;
+                $userCredentials['email_verified_at'] = $userInfo['email_verified'] ? Carbon::now() : null;
             }
 
             $user = $this->model::create($userCredentials);
