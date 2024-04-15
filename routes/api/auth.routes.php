@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\AuthenticationType;
-use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\JwtAuthController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\SanctumAuthController;
@@ -59,7 +58,7 @@ Route::middleware(['auth:token', 'verified.api'])->controller(SanctumAuthControl
 // Email Verification
 Route::controller(VerifyController::class)->group(function () {
     /** @uses VerifyController::resendEmailVerification */
-    Route::middleware(['auth:sanctum'])
+    Route::middleware(['auth:token'])
         ->get('email/send-verification', 'resendEmailVerification')
         ->name('auth.verification.resend');
 
@@ -71,9 +70,9 @@ Route::controller(VerifyController::class)->group(function () {
 
 // Password Management
 Route::controller(PasswordController::class)->name('auth.password.')->group(function () {
-    /** @uses AuthController::forgotPassword */
+    /** @uses PasswordController::forgotPassword */
     Route::post('forgot-password', 'forgotPassword')->name('forgot');
 
-    /** @uses AuthController::resetPassword */
+    /** @uses PasswordController::resetPassword */
     Route::post('reset-password', 'resetPassword')->name('reset');
 });

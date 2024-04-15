@@ -43,6 +43,7 @@ class Kernel extends HttpKernel
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ForceJsonResponse::class,
+            \App\Http\Middleware\EnsureUserIsActivated::class,
         ],
     ];
 
@@ -71,5 +72,6 @@ class Kernel extends HttpKernel
         'lowercase_query' => \App\Http\Middleware\LowerCaseQueryParam::class,
         'api_key_permission' => \App\Http\Middleware\ApiKeyPermission::class,
         'enabled.webhooks' => \App\Http\Middleware\EnsureWebhooksAreEnabled::class,
+        'block.deactivated' => \App\Http\Middleware\EnsureUserIsActivated::class,
     ];
 }

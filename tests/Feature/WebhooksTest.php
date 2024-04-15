@@ -65,6 +65,19 @@ class WebhooksTest extends TestCase
         $response->assertStatus(401);
     }
 
+    public function test_it_returns_401_if_api_key_is_disabled(): void
+    {
+        $user = $this->produceUsers();
+        $apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
+        $apiKey = $this->apiKeyService->create('test_name', $user->id, 'test_desc', now()->endOfDay(), $apiKeyPermissions);
+        $rawKey = $apiKey->rawKeyValue;
+        $apiKey->active = false;
+        $apiKey->save();
+
+        $response = $this->withHeader(static::API_KEY_HEADER, $rawKey)->postJson($this->baseUri);
+        $response->assertStatus(401);
+    }
+
     public function test_it_returns_403_for_incorrect_permissions(): void
     {
         // Create a key with not enough permissions (view only)

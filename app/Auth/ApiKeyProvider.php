@@ -29,10 +29,6 @@ class ApiKeyProvider implements UserProvider
             return null;
         }
 
-        if (! $apiKey->active) {
-            return null;
-        }
-
         if ($apiKey->isExpired()) {
             return null;
         }
