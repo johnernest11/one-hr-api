@@ -58,7 +58,7 @@ Route::middleware(['auth:token', 'verified.api'])->controller(SanctumAuthControl
 // Email Verification
 Route::controller(VerifyController::class)->group(function () {
     /** @uses VerifyController::resendEmailVerification */
-    Route::middleware(['auth:sanctum'])
+    Route::middleware(['auth:token'])
         ->get('email/send-verification', 'resendEmailVerification')
         ->name('auth.verification.resend');
 
