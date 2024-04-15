@@ -28,6 +28,8 @@ class SanctumAuthService implements PersistentAuthTokenManager
 
         // The token maybe pruned / deleted
         if (! $sanctumToken) {
+            Log::debug('Sanctum token not in the database', ['method' => __METHOD__]);
+
             return false;
         }
 
@@ -41,6 +43,8 @@ class SanctumAuthService implements PersistentAuthTokenManager
 
         // Check the token has not expired
         if ($sanctumToken->expires_at && $sanctumToken->expires_at->isPast()) {
+            Log::debug('Sanctum token has expired', ['method' => __METHOD__]);
+
             return false;
         }
 

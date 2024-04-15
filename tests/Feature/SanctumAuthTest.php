@@ -28,6 +28,8 @@ class SanctumAuthTest extends TestCase
 
     private string $authToken;
 
+    private PersistentAuthTokenManager $tokenManager;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -46,9 +48,9 @@ class SanctumAuthTest extends TestCase
             ->has(UserProfile::factory())
             ->create();
 
-        $authSanctumService = resolve(PersistentAuthTokenManager::class);
+        $this->tokenManager = resolve(PersistentAuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
-        $this->authToken = $authSanctumService->generateToken($this->user, $authTokenExpiration, 'mock_token');
+        $this->authToken = $this->tokenManager->generateToken($this->user, $authTokenExpiration, 'mock_token');
     }
 
     /** Start */
@@ -161,11 +163,9 @@ class SanctumAuthTest extends TestCase
     /** @throws Throwable */
     public function test_user_can_fetch_all_access_tokens_owned(): void
     {
-        // create token with browser
-        $this->postJson("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
-
-        // create token with phone
-        $this->postJson("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
+        $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
+        $this->tokenManager->generateToken($this->user, $authTokenExpiration, 'mock_token');
+        $this->tokenManager->generateToken($this->user, $authTokenExpiration, 'mock_token');
 
         $response = $this->withToken($this->authToken)->getJson("$this->baseUri/tokens", $this->userCreds);
 
@@ -202,8 +202,9 @@ class SanctumAuthTest extends TestCase
     public function test_user_can_invalidate_all_access_tokens(): void
     {
         // create multiple tokens
-        $this->postJson("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'Chrome']));
-        $this->postJson("$this->baseUri/tokens", array_merge($this->userCreds, ['client_name' => 'My iPhone14']));
+        $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
+        $this->tokenManager->generateToken($this->user, $authTokenExpiration, 'mock_token');
+        $this->tokenManager->generateToken($this->user, $authTokenExpiration, 'mock_token');
 
         $response = $this
             ->withToken($this->authToken)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\ApiErrorCode;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Password;
 use Str;
@@ -17,8 +18,21 @@ class PasswordController extends ApiController
      */
     public function forgotPassword(AuthRequest $request): JsonResponse
     {
-        $status = Password::sendResetLink($request->only('email'));
+        $email = $request->input('email');
+        $user = User::where('email', $email)->first();
+        if (! $user) {
+            $data = ['message' => 'Password reset request sent', 'email' => $request->get('email')];
 
+            return $this->success($data, Response::HTTP_OK);
+        }
+
+        if (! $user->active) {
+            $message = 'The email address provided is associated to a deactivated user';
+
+            return $this->error($message, Response::HTTP_FORBIDDEN, ApiErrorCode::FORBIDDEN);
+        }
+
+        $status = Password::sendResetLink(['email' => $email]);
         if ($status !== Password::RESET_LINK_SENT) {
             return $this->error(
                 'Unable to send password reset email',

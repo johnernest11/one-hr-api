@@ -132,7 +132,7 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
      */
     public function password(): Attribute
     {
-        return Attribute::set(fn ($value) => Hash::make($value));
+        return Attribute::set(fn ($value) => is_null($value) ? null : Hash::make($value));
     }
 
     /**

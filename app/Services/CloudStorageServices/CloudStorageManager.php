@@ -9,7 +9,7 @@ interface CloudStorageManager
     /**
      * Upload a file
      */
-    public function upload($ownerId, UploadedFile $file, ?string $parentDir = null, ?string $childDir = null): array;
+    public function upload(string $path, UploadedFile|string $file, ?string $fileName = null): string;
 
     /**
      * Delete a file

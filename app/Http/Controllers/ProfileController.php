@@ -7,11 +7,14 @@ use App\Http\Requests\ProfileRequest;
 use App\Models\User;
 use App\Services\CloudStorageServices\CloudStorageManager;
 use App\Services\User\UserManager;
+use App\Traits\Controllers\CanMoveUploadProfilePhotoToCloud;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProfileController extends ApiController
 {
+    use CanMoveUploadProfilePhotoToCloud;
+
     private UserManager $userService;
 
     public function __construct(UserManager $userService)
@@ -42,13 +45,12 @@ class ProfileController extends ApiController
     /**
      * Upload profile picture
      */
-    public function uploadProfilePicture(ProfileRequest $request, CloudStorageManager $uploader): JsonResponse
+    public function uploadProfilePicture(ProfileRequest $request, CloudStorageManager $cloudStorage): JsonResponse
     {
-        $userId = auth()->user()->id;
-
+        /** @var User $user */
+        $user = auth()->user();
         $file = $request->file('photo');
-        $result = $uploader->upload($userId, $file, 'images', 'profile-pictures');
-        $this->userService->update($userId, ['profile_picture_path' => $result['path']]);
+        $result = $this->moveProfilePictureToCloud($user, $file, $cloudStorage, $this->userService);
 
         return $this->success(['data' => $result], Response::HTTP_OK);
     }
