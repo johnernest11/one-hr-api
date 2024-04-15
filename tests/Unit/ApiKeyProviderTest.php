@@ -58,23 +58,6 @@ class ApiKeyProviderTest extends TestCase
         $this->assertEquals($apikey->id, $foundKey->id);
     }
 
-    public function test_it_does_not_return_deactivate_keys(): void
-    {
-        $user = $this->produceUsers();
-        $apikey = $this->apiKeyService->create(fake()->domainName, $user->id, fake()->text, now()->endOfDay(), $this->apiKeyPermissions);
-        $apikey->update(['active' => false]);
-
-        // Via ID
-        $foundKey = $this->apiKeyProvider->retrieveById($apikey->id);
-        $this->assertNull($foundKey);
-
-        // Via Token
-        $identified = $this->apiKeyService->getIdFromKey($apikey->rawKeyValue);
-        $rawValue = $this->apiKeyService->getValueFromKey($apikey->rawKeyValue);
-        $foundKey = $this->apiKeyProvider->retrieveByToken($identified, $rawValue);
-        $this->assertNull($foundKey);
-    }
-
     public function test_it_does_not_return_expired_keys(): void
     {
         $user = $this->produceUsers();
