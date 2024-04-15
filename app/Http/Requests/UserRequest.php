@@ -110,7 +110,7 @@ class UserRequest extends FormRequest
             'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
-                'unique:user_profiles,mobile_number,'.request('id'),
+                'unique:user_profiles,mobile_number,'.request('id').',user_id',
                 new InternationalPhoneNumberFormat(),
                 new PhoneCountryFormat('PH'),
                 'phone:mobile',
