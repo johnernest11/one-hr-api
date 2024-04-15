@@ -46,6 +46,14 @@ abstract class AuthController extends ApiController
             );
         }
 
+        if (! $user->active) {
+            return $this->error(
+                'Account is deactivated.',
+                Response::HTTP_FORBIDDEN,
+                ApiErrorCode::FORBIDDEN
+            );
+        }
+
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $clientName = $request->get('client_name') ?? 'api_token';
         $expiresAt = $this->getTokenExpiration();
