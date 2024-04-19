@@ -13,6 +13,7 @@ abstract class MfaChannel
         $otp = TOTP::create();
         $secret = $otp->getSecret();
 
+        return '';
     }
 
     /** Verify MFA code */
