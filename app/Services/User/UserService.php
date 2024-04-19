@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 
-class UserService implements UserManager
+class UserService implements UserAccountManager, UserCredentialManager
 {
     use CanBuildPagination;
     use CanResolveModelFromId;
@@ -96,10 +96,10 @@ class UserService implements UserManager
     }
 
     /** {@inheritDoc} */
-    public function read($id): User
+    public function read($id, array $relationships = ['userProfile']): User
     {
         /** @var User $user */
-        $user = $this->model::with('userProfile')->findOrFail($id);
+        $user = $this->model::with($relationships)->findOrFail($id);
 
         return $user;
     }

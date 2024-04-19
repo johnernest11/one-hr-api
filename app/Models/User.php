@@ -121,9 +121,20 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
         return $this->hasOne(UserProfile::class);
     }
 
+    /**
+     * A user can own many API Keys
+     */
     public function apiKeys(): HasMany
     {
         return $this->hasMany(ApiKey::class);
+    }
+
+    /**
+     * A User has many MFA Keys
+     */
+    public function mfaKeys(): HasMany
+    {
+        return $this->hasMany(MfaKey::class);
     }
 
     /**

@@ -59,8 +59,6 @@ class SortFilter extends Filter
     /**
      * Clients may opt to search via a nested relationship
      * such as: user_profile.last_name
-     *
-     * @return ?Builder
      */
     private function joinRelatedTable($sortBy, Builder $builder): ?Builder
     {

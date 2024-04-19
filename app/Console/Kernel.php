@@ -12,7 +12,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        /** Cleanup expired tokens */
+        /**
+         * Cleanup expired Sanctum tokens
+         *
+         * @see https://laravel.com/docs/10.x/sanctum#revoking-tokens
+         */
         $schedule->command('sanctum:prune-expired --hours=24')->daily();
 
         /**

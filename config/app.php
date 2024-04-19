@@ -194,7 +194,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\UserServiceProvider::class,
         App\Providers\FacadeServiceProvider::class,
         App\Providers\CloudFileServiceProvider::class,
         App\Providers\DbServiceProvider::class,

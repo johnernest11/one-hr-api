@@ -2,19 +2,19 @@
 
 namespace Tests\Unit;
 
-use App\Services\Database\SchemaInfoService;
+use App\Services\Database\SchemaInspector;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class SchemaServiceTest extends TestCase
 {
-    private SchemaInfoService $service;
+    private SchemaInspector $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new SchemaInfoService();
+        $this->service = new SchemaInspector();
 
         // create dummy table
         Schema::create('stubs', function (Blueprint $table) {

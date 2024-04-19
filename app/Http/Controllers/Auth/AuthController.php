@@ -7,18 +7,22 @@ use App\Events\UserRegistered;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
-use App\Services\User\UserManager;
+use App\Services\User\UserAccountManager;
+use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class AuthController extends ApiController
 {
-    private UserManager $userService;
+    private UserCredentialManager $userCredentialManager;
 
-    public function __construct(UserManager $userService)
+    private UserAccountManager $userAccountManager;
+
+    public function __construct(UserAccountManager $accountManager, UserCredentialManager $credentialManager)
     {
-        $this->userService = $userService;
+        $this->userAccountManager = $accountManager;
+        $this->userCredentialManager = $credentialManager;
     }
 
     /**
@@ -33,9 +37,9 @@ abstract class AuthController extends ApiController
 
         // Users should be able to log in via email or mobile_number
         if ($email) {
-            $user = $this->userService->getUserViaEmailAndPassword($email, $password);
+            $user = $this->userCredentialManager->getUserViaEmailAndPassword($email, $password);
         } elseif ($mobileNumber) {
-            $user = $this->userService->getUserViaMobileNumberAndPassword($mobileNumber, $password);
+            $user = $this->userCredentialManager->getUserViaMobileNumberAndPassword($mobileNumber, $password);
         }
 
         if (! $user) {
@@ -70,7 +74,7 @@ abstract class AuthController extends ApiController
      */
     public function register(AuthRequest $request): JsonResponse
     {
-        $user = $this->userService->create($request->validated());
+        $user = $this->userAccountManager->create($request->validated());
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $clientName = $request->get('client_name') ?? 'api_token';

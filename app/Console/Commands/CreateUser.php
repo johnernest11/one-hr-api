@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Requests\UserRequest;
-use App\Services\User\UserManager;
+use App\Services\User\UserAccountManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -11,7 +11,7 @@ use Spatie\Permission\Models\Role;
 
 class CreateUser extends Command
 {
-    private UserManager $userService;
+    private UserAccountManager $userAccountManager;
 
     /**
      * The name and signature of the console command.
@@ -27,10 +27,10 @@ class CreateUser extends Command
      */
     protected $description = 'Create a user';
 
-    public function __construct(UserManager $userService)
+    public function __construct(UserAccountManager $userAccountManager)
     {
         parent::__construct();
-        $this->userService = $userService;
+        $this->userAccountManager = $userAccountManager;
     }
 
     /**
@@ -63,7 +63,7 @@ class CreateUser extends Command
             return Command::FAILURE;
         }
 
-        $user = $this->userService->create($data);
+        $user = $this->userAccountManager->create($data);
         $this->info("User created: #$user->id | $user->email | {$user->userProfile->full_name}");
 
         return Command::SUCCESS;
