@@ -148,8 +148,8 @@ class UserRequest extends FormRequest
             'role' => ['integer', 'min:1'],
             'sort' => ['in:asc,desc'],
             'sort_by' => ['string'],
-            'limit' => ['int'],
-            'page' => ['int'],
+            'limit' => ['int', 'min:1', 'max:100'],
+            'page' => ['int', 'min:1'],
             'email' => ['email'],
         ];
     }
