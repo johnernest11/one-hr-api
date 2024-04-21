@@ -20,9 +20,9 @@ class AppSettingsService implements AppSettingsManager
     /**
      * {@inheritDoc}
      */
-    public function setThemeConfig(string $theme): bool
+    public function setTheme(string $theme): bool
     {
-        $this->model::updateOrCreate(['name', 'theme'], ['value' => $theme]);
+        $this->model::updateOrCreate(['name' => 'theme'], ['value' => $theme]);
 
         return true;
     }
@@ -30,9 +30,9 @@ class AppSettingsService implements AppSettingsManager
     /**
      * {@inheritDoc}
      */
-    public function getThemeConfig(): array
+    public function getTheme(): string
     {
-        return $this->model::whereDay('name', 'theme')->first()->toArray();
+        return $this->model::where('name', 'theme')->first()->value;
     }
 
     /**
@@ -40,12 +40,16 @@ class AppSettingsService implements AppSettingsManager
      */
     public function setMfaConfig(bool $enabled, MfaMethod ...$mfaOptions): bool
     {
+        // We care for distinct values passed in the steps method
+        $stepsInArrayVal = array_map(fn (MfaMethod $method) => $method->value, $mfaOptions);
+        $stepsUnique = array_unique($stepsInArrayVal);
+
         $value = json_encode([
             'enabled' => $enabled,
-            'steps' => $mfaOptions,
+            'steps' => $stepsUnique,
         ]);
 
-        $this->model::updateOrCreate(['name', 'mfa'], ['value' => $value]);
+        $this->model::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
 
         return true;
     }
@@ -55,7 +59,9 @@ class AppSettingsService implements AppSettingsManager
      */
     public function getMfaConfig(): array
     {
-        return $this->model::where('name', 'mfa')->first()->toArray();
+        $value = $this->model::where('name', 'mfa')->first()->value;
+
+        return json_decode($value, true);
     }
 
     /**
@@ -66,20 +72,25 @@ class AppSettingsService implements AppSettingsManager
     public function setSettings(array $settings): Collection
     {
         return DB::transaction(function () use ($settings) {
-
             if (isset($settings['theme'])) {
-                $value = ['value' => $settings['theme'], 'created_at' => now(), 'updated_at' => now()];
-                AppSettings::updateOrCreate(['name' => 'theme'], $value);
+                AppSettings::updateOrCreate(['name' => 'theme'], ['value' => $settings['theme']]);
             }
 
             if (isset($settings['mfa'])) {
                 $mfaValue = $this->json_encode_mfa_value($settings['mfa']);
-                $value = ['name' => 'mfa', 'value' => $mfaValue, 'created_at' => now(), 'updated_at' => now()];
-                AppSettings::updateOrCreate(['name' => 'mfa'], $value);
+                AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $mfaValue]);
             }
 
             return AppSettings::all();
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSettings(): Collection
+    {
+        return $this->model::all();
     }
 
     private function json_encode_mfa_value(array $mfaSettings): string
@@ -90,7 +101,7 @@ class AppSettingsService implements AppSettingsManager
             $mfaValue['enabled'] = $mfaSettings['enabled'];
         }
         if (isset($mfaSettings['steps'])) {
-            $mfaValue['steps'] = $mfaSettings['steps'];
+            $mfaValue['steps'] = array_unique($mfaSettings['steps']);
         }
 
         // We set the current if the enabled flag is not given
@@ -110,13 +121,5 @@ class AppSettingsService implements AppSettingsManager
         }
 
         return json_encode($mfaValue);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getSettings(): Collection
-    {
-        return $this->model::all();
     }
 }

@@ -42,7 +42,7 @@ class AppSettingsRequest extends FormRequest
             'theme' => [new Enum(AppTheme::class)],
             'mfa.enabled' => ['boolean'],
             'mfa.steps' => ['min:1', 'array'],
-            'mfa.steps.*' => [new Enum(MfaMethod::class)],
+            'mfa.steps.*' => ['distinct', new Enum(MfaMethod::class)],
         ];
     }
 

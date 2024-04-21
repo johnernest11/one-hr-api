@@ -10,12 +10,12 @@ interface AppSettingsManager
     /**
      * Set the theme of the application
      */
-    public function setThemeConfig(string $theme): bool;
+    public function setTheme(string $theme): bool;
 
     /**
      * Get the theme configurations
      */
-    public function getThemeConfig(): Collection|array;
+    public function getTheme(): string;
 
     /**
      * Set MFA Configurations
@@ -25,7 +25,7 @@ interface AppSettingsManager
     /**
      * Get the MFA configurations
      */
-    public function getMfaConfig(): Collection|array;
+    public function getMfaConfig(): array;
 
     /**
      * Set all the settings configuration
