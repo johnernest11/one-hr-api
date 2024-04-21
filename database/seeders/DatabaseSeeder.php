@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ProvincesSeeder::class,
             CitiesSeeder::class,
             BarangaysSeeder::class,
+            AppSettingsSeeder::class,
         ]);
     }
 }

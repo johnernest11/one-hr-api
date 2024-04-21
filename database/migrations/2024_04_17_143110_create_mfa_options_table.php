@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mfa_keys', function (Blueprint $table) {
+        Schema::create('mfa_options', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->string('auth_type');
-            $table->string('auth_key');
-            $table->timestamp('expires_at')->nullable();
-            $table->timestamp('verified_at')->nullable();
+            $table->string('type'); // sms, email, google-authenticator
+            $table->string('secret');
             $table->timestamps();
 
-            $table->unique(['user_id', 'auth_type']);
+            $table->unique(['user_id', 'type']);
         });
     }
 
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mfa_keys');
+        Schema::dropIfExists('mfa_options');
     }
 };

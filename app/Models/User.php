@@ -132,9 +132,9 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     /**
      * A User has many MFA Keys
      */
-    public function mfaKeys(): HasMany
+    public function mfaOptions(): HasMany
     {
-        return $this->hasMany(MfaKey::class);
+        return $this->hasMany(MfaOption::class);
     }
 
     /**

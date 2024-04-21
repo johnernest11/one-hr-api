@@ -3,10 +3,12 @@
 namespace App\Http\Requests;
 
 use App\Enums\AppTheme;
+use App\Enums\MfaMethod;
+use ConversionHelper;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class AppSettingRequest extends FormRequest
+class AppSettingsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -37,7 +39,20 @@ class AppSettingRequest extends FormRequest
     private function getStoreSettingsRules(): array
     {
         return [
-            'theme' => ['required', new Enum(AppTheme::class)],
+            'theme' => [new Enum(AppTheme::class)],
+            'mfa.enabled' => ['boolean'],
+            'mfa.steps' => ['min:1', 'array'],
+            'mfa.steps.*' => [new Enum(MfaMethod::class)],
+        ];
+    }
+
+    public function messages(): array
+    {
+        $mfaSteps = implode(', ', ConversionHelper::convertEnumToArray(MfaMethod::class));
+
+        return [
+            'mfa.steps.min' => 'The MFA steps must at least have one MFA method',
+            'mfa.steps.*.Illuminate\Validation\Rules\Enum' => "Valid MFA Steps are: $mfaSteps",
         ];
     }
 }
