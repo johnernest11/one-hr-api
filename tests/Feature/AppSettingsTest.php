@@ -40,7 +40,7 @@ class AppSettingsTest extends TestCase
             'theme' => AppTheme::LIGHT->value,
             'mfa' => [
                 'enabled' => true,
-                'steps' => ConversionHelper::convertEnumToArray(MfaMethod::class),
+                'steps' => ConversionHelper::enumToArray(MfaMethod::class),
             ],
         ];
 
@@ -63,7 +63,6 @@ class AppSettingsTest extends TestCase
     {
         $payload = ['mfa' => $input];
 
-        \Log::debug(__CLASS__, ['payload' => $payload, 'statusCode' => $statusCode]);
         $response = $this->withToken($this->authToken)->postJson($this->baseUri, $payload);
         $response->assertStatus($statusCode);
     }

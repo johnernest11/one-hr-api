@@ -63,7 +63,7 @@ class RolesAndPermissionsSeeder extends Seeder
          * Permissions for the API Keys.
          * We set basic test permissions for webhooks. Add more permissions depending on the project.
          */
-        foreach (ConversionHelper::convertEnumToArray(WebhookPermission::class) as $permissions) {
+        foreach (ConversionHelper::enumToArray(WebhookPermission::class) as $permissions) {
             Permission::create(['name' => $permissions, 'guard_name' => 'api_key']);
         }
 

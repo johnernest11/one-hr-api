@@ -79,7 +79,7 @@ class CreateApiKey extends Command
             $data['expires_at'],
 
             // Change this as needed
-            ConversionHelper::convertEnumToArray(WebhookPermission::class)
+            ConversionHelper::enumToArray(WebhookPermission::class)
         );
         $this->info($apiKey);
         $this->info('Un-hashed: '.$apiKey->rawKeyValue);

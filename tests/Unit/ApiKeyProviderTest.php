@@ -27,7 +27,7 @@ class ApiKeyProviderTest extends TestCase
         $this->artisan('db:seed');
         $this->apiKeyService = resolve(ApiKeyManager::class);
         $this->apiKeyProvider = new ApiKeyProvider($this->apiKeyService);
-        $this->apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
+        $this->apiKeyPermissions = ConversionHelper::enumToArray(WebhookPermission::class);
     }
 
     public function test_can_retrieve_by_id(): void

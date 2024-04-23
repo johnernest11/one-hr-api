@@ -7,6 +7,7 @@ use App\Events\UserRegistered;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
+use App\Services\AppSettings\AppSettingsManager;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
@@ -19,10 +20,13 @@ abstract class AuthController extends ApiController
 
     private UserAccountManager $userAccountManager;
 
-    public function __construct(UserAccountManager $accountManager, UserCredentialManager $credentialManager)
+    // private AppSettingsManager $appSettingsManager;
+
+    public function __construct(UserAccountManager $accManager, UserCredentialManager $credManager)
     {
-        $this->userAccountManager = $accountManager;
-        $this->userCredentialManager = $credentialManager;
+        $this->userAccountManager = $accManager;
+        $this->userCredentialManager = $credManager;
+        // $this->appSettingsManager = $settingsManager;
     }
 
     /**
@@ -57,6 +61,14 @@ abstract class AuthController extends ApiController
                 ApiErrorCode::FORBIDDEN
             );
         }
+
+        // We proceed with the MFA flow if enabled
+        //        $mfaConfig = $this->appSettingsManager->getMfaConfig();
+        //        if ($mfaConfig['enabled']) {
+        //            $mfaSteps = $mfaConfig['steps'];
+        //
+        //            return $this->success(['data' => $mfaSteps], Response::HTTP_OK);
+        //        }
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $clientName = $request->get('client_name') ?? 'api_token';

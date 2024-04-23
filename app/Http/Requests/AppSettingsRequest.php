@@ -48,7 +48,7 @@ class AppSettingsRequest extends FormRequest
 
     public function messages(): array
     {
-        $mfaSteps = implode(', ', ConversionHelper::convertEnumToArray(MfaMethod::class));
+        $mfaSteps = implode(', ', ConversionHelper::enumToArray(MfaMethod::class));
 
         return [
             'mfa.steps.min' => 'The MFA steps must at least have one MFA method',

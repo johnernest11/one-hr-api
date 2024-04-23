@@ -45,7 +45,7 @@ class ApiKeyGuardTest extends TestCase
         $this->apiKeyName = fake()->domainName;
         $this->apiKeyDescription = fake()->text;
         $this->apiKeyExpiration = Carbon::now()->endOfDay();
-        $this->apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
+        $this->apiKeyPermissions = ConversionHelper::enumToArray(WebhookPermission::class);
         $this->apiKeyProvider = Auth::createUserProvider(config('auth.guards.api_key.provider'));
     }
 

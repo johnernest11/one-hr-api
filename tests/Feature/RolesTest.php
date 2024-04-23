@@ -40,7 +40,7 @@ class RolesTest extends TestCase
         $response = $response->decodeResponseJson();
 
         // We count the number of permissions in the Role enum class
-        $count = count(ConversionHelper::convertEnumToArray(Role::class));
+        $count = count(ConversionHelper::enumToArray(Role::class));
         $this->assertCount($count, $response['data']);
     }
 }

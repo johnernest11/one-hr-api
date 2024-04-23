@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('old_name')->nullable();
             $table->enum('classification',
-                ConversionHelper::convertEnumToArray(MunicipalClassification::class)
+                ConversionHelper::enumToArray(MunicipalClassification::class)
             )->index();
             $table->string('city_class')->nullable();
             $table->string('income_classification')->nullable();

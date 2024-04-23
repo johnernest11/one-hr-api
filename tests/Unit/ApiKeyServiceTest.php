@@ -24,7 +24,7 @@ class ApiKeyServiceTest extends TestCase
         parent::setUp();
         $this->artisan('db:seed');
         $this->apiKeyService = new ApiKeyService(new ApiKey());
-        $this->apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
+        $this->apiKeyPermissions = ConversionHelper::enumToArray(WebhookPermission::class);
     }
 
     public function test_it_can_create_an_api_key(): void
