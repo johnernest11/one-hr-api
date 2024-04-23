@@ -41,9 +41,16 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting(): void
     {
-        // Rate limit for login, registration, and other authentication-related routes
-        RateLimiter::for('api-auth', function (Request $request) {
-            return Limit::perMinutes(3, 10)->by($request->ip());
+        // Specific rate limit for login API route (combination of email and ip address)
+        RateLimiter::for('api-login', function (Request $request) {
+            $key = $this->getLoginThrottleKey($request);
+
+            return Limit::perMinutes(3, 10)->by($key);
+        });
+
+        // Specific rate limit for the registration API route
+        RateLimiter::for('api-register', function (Request $request) {
+            return Limit::perMinute(60)->by($request->ip());
         });
 
         // Default rate limit for Users accessing API routes
@@ -58,5 +65,17 @@ class RouteServiceProvider extends ServiceProvider
                 $request->user('api_key')?->id ? $request->user('api_key')->id.'_hook' : $request->ip()
             );
         });
+    }
+
+    /**
+     * Login throttle key is the combination of the IP address
+     * and email from the request payload (if it exists)
+     */
+    private function getLoginThrottleKey(Request $request): string
+    {
+        $email = $request->input('email');
+        $ip = $request->ip();
+
+        return $email ? $email.$ip : $ip;
     }
 }
