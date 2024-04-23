@@ -20,13 +20,13 @@ abstract class AuthController extends ApiController
 
     private UserAccountManager $userAccountManager;
 
-    // private AppSettingsManager $appSettingsManager;
+    private AppSettingsManager $appSettingsManager;
 
-    public function __construct(UserAccountManager $accManager, UserCredentialManager $credManager)
+    public function __construct(UserAccountManager $accManager, UserCredentialManager $credManager, AppSettingsManager $settingsManager)
     {
         $this->userAccountManager = $accManager;
         $this->userCredentialManager = $credManager;
-        // $this->appSettingsManager = $settingsManager;
+        $this->appSettingsManager = $settingsManager;
     }
 
     /**
@@ -63,12 +63,12 @@ abstract class AuthController extends ApiController
         }
 
         // We proceed with the MFA flow if enabled
-        //        $mfaConfig = $this->appSettingsManager->getMfaConfig();
-        //        if ($mfaConfig['enabled']) {
-        //            $mfaSteps = $mfaConfig['steps'];
-        //
-        //            return $this->success(['data' => $mfaSteps], Response::HTTP_OK);
-        //        }
+        $mfaConfig = $this->appSettingsManager->getMfaConfig();
+        if ($mfaConfig['enabled']) {
+            $mfaSteps = $mfaConfig['steps'];
+
+            return $this->success(['data' => $mfaSteps], Response::HTTP_OK);
+        }
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $clientName = $request->get('client_name') ?? 'api_token';

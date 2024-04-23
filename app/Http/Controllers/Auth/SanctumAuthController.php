@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
+use App\Services\AppSettings\AppSettingsManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
@@ -15,9 +16,9 @@ class SanctumAuthController extends AuthController
 {
     private PersistentAuthTokenManager $tokenManager;
 
-    public function __construct(UserAccountManager $accManager, UserCredentialManager $credManager, PersistentAuthTokenManager $tokenManager)
+    public function __construct(UserAccountManager $accManager, UserCredentialManager $credManager, PersistentAuthTokenManager $tokenManager, AppSettingsManager $settingsManager)
     {
-        parent::__construct($accManager, $credManager);
+        parent::__construct($accManager, $credManager, $settingsManager);
         $this->tokenManager = $tokenManager;
     }
 

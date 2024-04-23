@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\SanctumAuthController;
 use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Requests\AuthRequest;
+use App\Services\AppSettings\AppSettingsManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\User\UserAccountManager;
@@ -17,35 +18,36 @@ Route::group(['as' => 'auth.'], function () {
     $credentialManager = resolve(UserCredentialManager::class);
     $sanctumAuthService = resolve(PersistentAuthTokenManager::class);
     $jwtAuthService = resolve(AuthTokenManager::class);
+    $appSettingsManager = resolve(AppSettingsManager::class);
 
     // We do a conditional for POST /auth/tokens (login)
     Route::middleware(['throttle:10,3', 'lowercase_query:auth_type'])->name('store')
-        ->post('tokens', function (AuthRequest $request) use ($accountManager, $credentialManager, $sanctumAuthService, $jwtAuthService) {
+        ->post('tokens', function (AuthRequest $request) use ($accountManager, $credentialManager, $sanctumAuthService, $jwtAuthService, $appSettingsManager) {
 
             $authType = ! is_null($request->get('auth_type')) ? $request->get('auth_type') : null;
 
             if (is_null($authType) || $authType === AuthenticationType::SANCTUM->value) {
                 /** @uses SanctumAuthController::store */
-                return (new SanctumAuthController($accountManager, $credentialManager, $sanctumAuthService))->store($request);
+                return (new SanctumAuthController($accountManager, $credentialManager, $sanctumAuthService, $appSettingsManager))->store($request);
             }
 
             /** @uses JwtAuthController::store */
-            return (new JwtAuthController($accountManager, $credentialManager, $jwtAuthService))->store($request);
+            return (new JwtAuthController($accountManager, $credentialManager, $jwtAuthService, $appSettingsManager))->store($request);
         });
 
     // We do a conditional for POST /auth/register
     Route::middleware(['throttle:10,3', 'lowercase_query:auth_type'])->name('register')
-        ->post('register', function (AuthRequest $request) use ($accountManager, $credentialManager, $sanctumAuthService, $jwtAuthService) {
+        ->post('register', function (AuthRequest $request) use ($accountManager, $credentialManager, $sanctumAuthService, $jwtAuthService, $appSettingsManager) {
 
             $authType = ! is_null($request->get('auth_type')) ? $request->get('auth_type') : null;
 
             if (is_null($authType) || $authType === AuthenticationType::SANCTUM->value) {
                 /** @uses SanctumAuthController::register */
-                return (new SanctumAuthController($accountManager, $credentialManager, $sanctumAuthService))->register($request);
+                return (new SanctumAuthController($accountManager, $credentialManager, $sanctumAuthService, $appSettingsManager))->register($request);
             }
 
             /** @uses JwtAuthController::register */
-            return (new JwtAuthController($accountManager, $credentialManager, $jwtAuthService))->register($request);
+            return (new JwtAuthController($accountManager, $credentialManager, $jwtAuthService, $appSettingsManager))->register($request);
         });
 });
 
