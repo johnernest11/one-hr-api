@@ -81,8 +81,10 @@ class RouteServiceProvider extends ServiceProvider
     }
 
     /**
-     * Default API User throttle key is the combination of the IP address
-     * and route name or uri, and `_user` appended
+     * Create the throttle key for User API Endpoints
+     *
+     * Authenticated:   User ID + '_user'
+     * Unauthenticated: Route Name or URI + IP address + '_users'
      */
     private function getApiUserThrottleKey(Request $request): string
     {
@@ -99,8 +101,10 @@ class RouteServiceProvider extends ServiceProvider
     }
 
     /**
-     * Default API User throttle key is the combination of the IP address
-     * and route name or uri, and `_hook` appended
+     * Create the throttle key for Webhook API Endpoints
+     *
+     * Authenticated:   API Key ID + '_hook'
+     * Unauthenticated: Route Name or URI + IP address + '_hooks'
      */
     private function getApiWebhookThrottleKey(Request $request): string
     {
