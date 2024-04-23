@@ -101,6 +101,14 @@ class SetUpMfa extends Command
                 break;
             }
 
+            // We stop if the user inputs the same MfaMethod
+            if (in_array($mfaOption, $selectedMfaSteps)) {
+                $this->error('You have entered a duplicate MFA method name');
+
+                return [];
+            }
+
+            // We stop if the user inputs an invalid MfaMethod value
             if (! in_array($mfaOption, $allMfaOptions)) {
                 $this->error('Invalid MFA method name...');
 

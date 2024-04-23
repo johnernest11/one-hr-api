@@ -17,7 +17,8 @@
         "propaganistas/laravel-phone": "^5.0.3",
         "spatie/laravel-permission": "^6.0",
         "spomky-labs/otphp": "^11.2",
-        "stechstudio/laravel-jwt": "^2.2"
+        "stechstudio/laravel-jwt": "^2.2",
+        "ext-intl": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
