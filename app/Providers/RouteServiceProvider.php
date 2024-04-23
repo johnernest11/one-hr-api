@@ -55,15 +55,16 @@ class RouteServiceProvider extends ServiceProvider
 
         // Default rate limit for Users accessing API routes
         RateLimiter::for('api-users', function (Request $request) {
-            return Limit::perMinute(120)->by(
-                $request->user('token')?->id ? $request->user('token')->id.'_user' : $request->ip());
+            $key = $this->getApiUserThrottleKey($request);
+
+            return Limit::perMinute(120)->by($key);
         });
 
         // Default rate limit for API Keys accessing Webhook API routes
         RateLimiter::for('api-webhooks', function (Request $request) {
-            return Limit::perMinute(250)->by(
-                $request->user('api_key')?->id ? $request->user('api_key')->id.'_hook' : $request->ip()
-            );
+            $key = $this->getApiWebhookThrottleKey($request);
+
+            return Limit::perMinute(250)->by($key);
         });
     }
 
@@ -77,5 +78,41 @@ class RouteServiceProvider extends ServiceProvider
         $ip = $request->ip();
 
         return $email ? $email.$ip : $ip;
+    }
+
+    /**
+     * Default API User throttle key is the combination of the IP address
+     * and route name or uri, and `_user` appended
+     */
+    private function getApiUserThrottleKey(Request $request): string
+    {
+        $appendKey = '_user';
+        $userId = $request->user('token')?->id;
+        if ($userId) {
+            return $userId.$appendKey;
+        }
+
+        $ip = $request->ip();
+        $route = $request->route()->getName() ?? $request->route()->uri();
+
+        return $route.$ip.$appendKey;
+    }
+
+    /**
+     * Default API User throttle key is the combination of the IP address
+     * and route name or uri, and `_hook` appended
+     */
+    private function getApiWebhookThrottleKey(Request $request): string
+    {
+        $appendKey = '_hook';
+        $apiKeyId = $request->user('api_key')?->id;
+        if ($apiKeyId) {
+            return $apiKeyId.$appendKey;
+        }
+
+        $ip = $request->ip();
+        $route = $request->route()->getName() ?? $request->route()->uri();
+
+        return $route.$ip.$appendKey;
     }
 }
