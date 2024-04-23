@@ -21,7 +21,7 @@ Route::group(['as' => 'auth.'], function () {
     $appSettingsManager = resolve(AppSettingsManager::class);
 
     // We do a conditional for POST /auth/tokens (login)
-    Route::middleware(['throttle:10,3', 'lowercase_query:auth_type'])->name('store')
+    Route::middleware(['throttle:api-login', 'lowercase_query:auth_type'])->name('store')
         ->post('tokens', function (AuthRequest $request) use ($accountManager, $credentialManager, $sanctumAuthService, $jwtAuthService, $appSettingsManager) {
 
             $authType = ! is_null($request->get('auth_type')) ? $request->get('auth_type') : null;
@@ -36,7 +36,7 @@ Route::group(['as' => 'auth.'], function () {
         });
 
     // We do a conditional for POST /auth/register
-    Route::middleware(['throttle:10,3', 'lowercase_query:auth_type'])->name('register')
+    Route::middleware(['throttle:api-register', 'lowercase_query:auth_type'])->name('register')
         ->post('register', function (AuthRequest $request) use ($accountManager, $credentialManager, $sanctumAuthService, $jwtAuthService, $appSettingsManager) {
 
             $authType = ! is_null($request->get('auth_type')) ? $request->get('auth_type') : null;
