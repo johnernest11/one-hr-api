@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\MFA;
+namespace App\Services\Verification;
 
 use App\Enums\MfaOption;
 use App\Models\MfaCredential;
@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Traits\Services\CanResolveModelFromId;
 use OTPHP\TOTP;
 
-abstract class MfaChannel
+abstract class VerificationChannel
 {
     use CanResolveModelFromId;
 

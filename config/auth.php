@@ -161,6 +161,6 @@ return [
     |
     */
     'mfa_options' => [
-        \App\Services\MFA\Options\MfaEmailChannel::class,
+        \App\Services\Verification\Options\EmailVerificationChannel::class,
     ],
 ];

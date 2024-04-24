@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services\MFA\Options;
+namespace App\Services\Verification\Options;
 
 use App\Models\User;
-use App\Services\MFA\MfaChannel;
+use App\Services\Verification\VerificationChannel;
 
-class MfaEmailChannel extends MfaChannel
+class EmailVerificationChannel extends VerificationChannel
 {
     /**
      * {@inheritDoc}
