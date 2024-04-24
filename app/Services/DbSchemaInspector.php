@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services\Database;
+namespace App\Services;
 
 use Cache;
 use Illuminate\Support\Facades\DB;
 use Schema;
 
-class SchemaInspector
+class DbSchemaInspector
 {
     /**
      * Get all the columns in a database table

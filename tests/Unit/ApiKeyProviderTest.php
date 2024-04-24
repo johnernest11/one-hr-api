@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Auth\ApiKeyProvider;
 use App\Enums\WebhookPermission;
-use App\Services\ApiKey\ApiKeyManager;
+use App\Services\ApiKeyManager;
 use Carbon\Carbon;
 use ConversionHelper;
 use Illuminate\Contracts\Auth\UserProvider;

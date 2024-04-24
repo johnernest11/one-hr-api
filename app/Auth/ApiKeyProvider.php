@@ -3,7 +3,7 @@
 namespace App\Auth;
 
 use App\Models\ApiKey;
-use App\Services\ApiKey\ApiKeyManager;
+use App\Services\ApiKeyManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

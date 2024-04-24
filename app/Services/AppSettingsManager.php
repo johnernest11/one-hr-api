@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AppSettings;
+namespace App\Services;
 
 use App\Enums\MfaOption;
 use App\Models\AppSettings;
@@ -8,35 +8,28 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class AppSettingsService implements AppSettingsManager
+class AppSettingsManager
 {
-    private AppSettings $model;
-
-    public function __construct(AppSettings $model)
-    {
-        $this->model = $model;
-    }
-
     /**
-     * {@inheritDoc}
+     * Set the theme of the application
      */
     public function setTheme(string $theme): bool
     {
-        $this->model::updateOrCreate(['name' => 'theme'], ['value' => $theme]);
+        AppSettings::updateOrCreate(['name' => 'theme'], ['value' => $theme]);
 
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * Get current theme set
      */
     public function getTheme(): string
     {
-        return $this->model::where('name', 'theme')->first()->value;
+        return AppSettings::where('name', 'theme')->first()->value;
     }
 
     /**
-     * {@inheritDoc}
+     * Set MFA configurations
      */
     public function setMfaConfig(bool $enabled, MfaOption ...$mfaOptions): bool
     {
@@ -48,23 +41,23 @@ class AppSettingsService implements AppSettingsManager
             'steps' => $stepsUnique,
         ]);
 
-        $this->model::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
 
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * Get the MFA configurations
      */
     public function getMfaConfig(): array
     {
-        $value = $this->model::where('name', 'mfa')->first()->value;
+        $value = AppSettings::where('name', 'mfa')->first()->value;
 
         return json_decode($value, true);
     }
 
     /**
-     * {@inheritDoc}
+     * Set the application settings
      *
      * @throws Throwable
      */
@@ -85,11 +78,11 @@ class AppSettingsService implements AppSettingsManager
     }
 
     /**
-     * {@inheritDoc}
+     * Get the current application settings
      */
     public function getSettings(): Collection
     {
-        return $this->model::all();
+        return AppSettings::all();
     }
 
     private function json_encode_mfa_value(array $mfaSettings): string
@@ -104,7 +97,7 @@ class AppSettingsService implements AppSettingsManager
         }
 
         // We set the current if the enabled flag is not given
-        $currentMfaConfig = $this->model::where('name', 'mfa')->first();
+        $currentMfaConfig = AppSettings::where('name', 'mfa')->first();
         if ($currentMfaConfig) {
             $currentMfaValue = json_decode($currentMfaConfig->value, true);
             if (! isset($mfaValue['enabled'])) {

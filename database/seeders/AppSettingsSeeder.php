@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\AppTheme;
 use App\Models\AppSettings;
-use App\Services\AppSettings\AppSettingsManager;
+use App\Services\AppSettingsManager;
 use Illuminate\Database\Seeder;
 
 class AppSettingsSeeder extends Seeder

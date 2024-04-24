@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\ApiKey;
+namespace App\Services;
 
 use App\Enums\PaginationType;
 use App\Models\ApiKey;
@@ -9,38 +9,32 @@ use App\Traits\Services\CanResolveModelFromId;
 use Carbon\Carbon;
 use Hash;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Log;
 use Str;
 
-class ApiKeyService implements ApiKeyManager
+class ApiKeyManager
 {
     use CanBuildPagination;
     use CanResolveModelFromId;
 
-    private ApiKey $model;
-
-    public function __construct(ApiKey $model)
-    {
-        $this->model = $model;
-    }
-
     /**
-     * {@inheritDoc}
+     * Fetch a paginated list of API keys
      */
     public function all(): LengthAwarePaginator
     {
-        $query = $this->model::filtered()->without('user');
+        $query = ApiKey::filtered()->without('user');
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
     }
 
     /**
-     * {@inheritDoc}
+     * Create an API Key
      */
     public function create(string $name, string|int $userId, string $description, Carbon $expiresAt, array $permissions): ApiKey
     {
         $key = Str::upper(Str::uuid());
-        $createdKey = $this->model::create([
+        $createdKey = ApiKey::create([
             'name' => $name,
             'description' => $description,
             'expires_at' => $expiresAt,
@@ -54,29 +48,23 @@ class ApiKeyService implements ApiKeyManager
         return $createdKey;
     }
 
-    /** Build the raw key value we send back to the user */
-    private function buildRawKey(string $key, int|string $keyId): string
-    {
-        return "$keyId|$key";
-    }
-
     /**
-     * {@inheritDoc}
+     * Retrieve a single API Key
+     *
+     * @throws ModelNotFoundException
      */
     public function read(int|string $id): ApiKey
     {
-        return $this->model::findOrFail($id);
+        return ApiKey::findOrFail($id);
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @param  array  $updatedInfo
+     * Update the records of an API Key (except the key)
      */
     public function update(ApiKey|int|string $modelOrId, string $name, string $description): ApiKey
     {
         /** @var ApiKey $apiKey */
-        $apiKey = $this->retrieveModel($modelOrId);
+        $apiKey = $this->retrieveModel($modelOrId, ApiKey::query());
         $apiKey->update([
             'name' => $name,
             'description' => $description,
@@ -86,27 +74,30 @@ class ApiKeyService implements ApiKeyManager
     }
 
     /**
-     * {@inheritDoc}
+     * Delete a single API Key
      */
     public function destroy(ApiKey|int|string $modelOrId): bool
     {
         /** @var ApiKey $apiKey */
-        $apiKey = $this->retrieveModel($modelOrId);
+        $apiKey = $this->retrieveModel($modelOrId, ApiKey::query());
 
         return (bool) $apiKey->delete();
     }
 
     /**
-     * {@inheritDoc}
+     * Activate or Deactivate an API Key
      */
     public function setActiveStatus(Apikey|int|string $modelOrId, bool $isActive): bool
     {
         /** @var ApiKey $apiKey */
-        $apiKey = $this->retrieveModel($modelOrId);
+        $apiKey = $this->retrieveModel($modelOrId, ApiKey::query());
 
         return $apiKey->update(['active' => $isActive]);
     }
 
+    /**
+     * Check if an API Key is valid or not
+     */
     public function isValid(string $key): bool
     {
         $idAndKey = explode('|', $key);
@@ -120,7 +111,7 @@ class ApiKeyService implements ApiKeyManager
         }
         [$id, $rawKey] = $idAndKey;
 
-        $apiKey = $this->model::find($id);
+        $apiKey = ApiKey::find($id);
         if (! $apiKey) {
             Log::debug('API Key ID not found', ['value' => $key, 'method' => __METHOD__]);
 
@@ -149,7 +140,7 @@ class ApiKeyService implements ApiKeyManager
     }
 
     /**
-     * {@inheritDoc}
+     * Parse the ID from the API Key
      */
     public function getIdFromKey(string $key): string|int|null
     {
@@ -163,7 +154,7 @@ class ApiKeyService implements ApiKeyManager
     }
 
     /**
-     * {@inheritDoc}
+     * Parse raw value from the API Key
      */
     public function getValueFromKey(string $key): ?string
     {
@@ -174,6 +165,14 @@ class ApiKeyService implements ApiKeyManager
         }
 
         return $idAndKey[1];
+    }
+
+    /**
+     * Build the raw key value we send back to the user
+     */
+    private function buildRawKey(string $key, int|string $keyId): string
+    {
+        return "$keyId|$key";
     }
 
     /**

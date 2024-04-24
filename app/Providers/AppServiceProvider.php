@@ -3,13 +3,10 @@
 namespace App\Providers;
 
 use App\Enums\AppEnvironment;
-use App\Models\AppSettings;
-use App\Models\User;
-use App\Services\AppSettings\AppSettingsManager;
-use App\Services\AppSettings\AppSettingsService;
+use App\Services\AppSettingsManager;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
-use App\Services\User\UserService;
+use App\Services\User\UserManager;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -31,15 +28,15 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->bind(UserAccountManager::class, function () {
-            return new UserService(new User());
+            return new UserManager();
         });
 
         $this->app->bind(UserCredentialManager::class, function () {
-            return new UserService(new User());
+            return new UserManager();
         });
 
         $this->app->bind(AppSettingsManager::class, function () {
-            return new AppSettingsService(new AppSettings());
+            return new AppSettingsManager();
         });
     }
 

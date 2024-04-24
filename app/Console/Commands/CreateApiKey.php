@@ -6,7 +6,7 @@ use App\Enums\WebhookPermission;
 use App\Models\User;
 use App\Rules\DbTextMaxLength;
 use App\Rules\DbVarcharMaxLength;
-use App\Services\ApiKey\ApiKeyManager;
+use App\Services\ApiKeyManager;
 use Carbon\Carbon;
 use ConversionHelper;
 use Illuminate\Console\Command;

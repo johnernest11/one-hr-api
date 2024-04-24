@@ -19,25 +19,18 @@ use Illuminate\Support\Facades\DB;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Throwable;
 
-class UserService implements UserAccountManager, UserCredentialManager
+class UserManager implements UserAccountManager, UserCredentialManager
 {
     use CanBuildPagination;
     use CanResolveModelFromId;
 
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
-    private User $model;
-
-    public function __construct(User $model)
-    {
-        $this->model = $model;
-    }
-
     /** {@inheritDoc} */
     public function all(): LengthAwarePaginator
     {
         /** @var Builder $users */
-        $query = $this->model->filtered();
+        $query = User::filtered();
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
     }
@@ -64,7 +57,7 @@ class UserService implements UserAccountManager, UserCredentialManager
                 $userCredentials['email_verified_at'] = $userInfo['email_verified'] ? Carbon::now() : null;
             }
 
-            $user = $this->model::create($userCredentials);
+            $user = User::create($userCredentials);
 
             $userRoles = empty($userInfo['roles']) ? [Role::STANDARD_USER->value] : $userInfo['roles'];
             $user->syncRoles($userRoles);
@@ -99,7 +92,7 @@ class UserService implements UserAccountManager, UserCredentialManager
     public function read($id, array $relationships = ['userProfile']): User
     {
         /** @var User $user */
-        $user = $this->model::with($relationships)->findOrFail($id);
+        $user = User::with($relationships)->findOrFail($id);
 
         return $user;
     }
@@ -113,7 +106,7 @@ class UserService implements UserAccountManager, UserCredentialManager
     {
         return DB::transaction(function () use ($modelOrId, $newUserInfo) {
             /** @var User $user */
-            $user = $this->retrieveModel($modelOrId);
+            $user = $this->retrieveModel($modelOrId, User::query());
 
             unset($newUserInfo['password_confirmation']);
 
@@ -150,7 +143,7 @@ class UserService implements UserAccountManager, UserCredentialManager
         string $term,
         ?PaginationType $pagination = null
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
-        $users = $this->model::query()
+        $users = User::query()
             ->with('userProfile')
             ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
 
@@ -170,7 +163,7 @@ class UserService implements UserAccountManager, UserCredentialManager
     public function destroy(User|int|string $modelOrId): User
     {
         /** @var User $user */
-        $user = $this->retrieveModel($modelOrId);
+        $user = $this->retrieveModel($modelOrId, User::query());
 
         $user->delete();
 
@@ -180,7 +173,7 @@ class UserService implements UserAccountManager, UserCredentialManager
     public function updatePassword(User|int|string $modelOrId, string $newPassword, string $oldPassword): ?User
     {
         /** @var User $user */
-        $user = $this->retrieveModel($modelOrId);
+        $user = $this->retrieveModel($modelOrId, User::query());
 
         if (! Hash::check($oldPassword, $user->password)) {
             return null;
@@ -195,7 +188,7 @@ class UserService implements UserAccountManager, UserCredentialManager
     /** {@inheritDoc} */
     public function getUserViaEmailAndPassword(string $email, string $password): ?User
     {
-        $user = $this->model::where('email', $email)->first();
+        $user = User::where('email', $email)->first();
         $hasCorrectCreds = $user && \Illuminate\Support\Facades\Hash::check($password, $user->password);
         if (! $hasCorrectCreds) {
             return null;

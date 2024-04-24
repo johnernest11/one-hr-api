@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AppSettingsRequest;
-use App\Services\AppSettings\AppSettingsManager;
+use App\Services\AppSettingsManager;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;

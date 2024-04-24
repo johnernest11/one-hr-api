@@ -4,18 +4,18 @@ namespace Tests\Unit;
 
 use App\Enums\WebhookPermission;
 use App\Models\ApiKey;
-use App\Services\ApiKey\ApiKeyService;
+use App\Services\ApiKeyManager;
 use Carbon\Carbon;
 use ConversionHelper;
 use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ApiKeyServiceTest extends TestCase
+class ApiKeyManagerTest extends TestCase
 {
     use RefreshDatabase;
 
-    private ApiKeyService $apiKeyService;
+    private ApiKeyManager $apiKeyService;
 
     private array $apiKeyPermissions;
 
@@ -23,7 +23,7 @@ class ApiKeyServiceTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->apiKeyService = new ApiKeyService(new ApiKey());
+        $this->apiKeyService = new ApiKeyManager();
         $this->apiKeyPermissions = ConversionHelper::enumToArray(WebhookPermission::class);
     }
 

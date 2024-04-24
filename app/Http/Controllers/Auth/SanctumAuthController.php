@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
-use App\Services\AppSettings\AppSettingsManager;
+use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;

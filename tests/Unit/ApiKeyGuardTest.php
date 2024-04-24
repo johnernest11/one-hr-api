@@ -6,7 +6,7 @@ use App\Auth\ApiKeyGuard;
 use App\Enums\WebhookPermission;
 use App\Models\ApiKey;
 use App\Models\User;
-use App\Services\ApiKey\ApiKeyManager;
+use App\Services\ApiKeyManager;
 use Auth;
 use Carbon\Carbon;
 use ConversionHelper;

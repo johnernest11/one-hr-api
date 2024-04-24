@@ -5,7 +5,7 @@ namespace Tests\Unit\Helpers;
 use App\Helpers\PaginationHelper;
 use App\Models\User;
 use App\Services\User\UserAccountManager;
-use App\Services\User\UserService;
+use App\Services\User\UserManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
@@ -26,7 +26,7 @@ class PaginationHelperTest extends TestCase
     {
         parent::setUp();
         $this->paginationHelper = new PaginationHelper();
-        $this->userService = new UserService(new User());
+        $this->userService = new UserManager(new User());
     }
 
     public function test_can_format_length_aware_pagination()

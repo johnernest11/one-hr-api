@@ -5,22 +5,22 @@ namespace Tests\Unit;
 use App\Enums\AppTheme;
 use App\Enums\MfaOption;
 use App\Models\AppSettings;
-use App\Services\AppSettings\AppSettingsService;
+use App\Services\AppSettingsManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Throwable;
 
-class AppSettingsServiceTest extends TestCase
+class AppSettingsManagerTest extends TestCase
 {
     use RefreshDatabase;
 
-    private AppSettingsService $service;
+    private AppSettingsManager $service;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->service = new AppSettingsService(new AppSettings());
+        $this->service = new AppSettingsManager();
     }
 
     /**

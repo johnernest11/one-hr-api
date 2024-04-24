@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\QueryFilters\Generic\ActiveFilter;
-use App\Services\ApiKey\ApiKeyService;
+use App\Services\ApiKeyManager;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
@@ -74,7 +74,7 @@ class ApiKey extends Model implements Authenticatable
     /**
      * This temporary property populated when the key is just created.
      *
-     * @see ApiKeyService::create()
+     * @see ApiKeyManager::create()
      */
     public ?string $rawKeyValue = null;
 

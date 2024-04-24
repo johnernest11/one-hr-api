@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\MfaOption;
-use App\Services\AppSettings\AppSettingsManager;
+use App\Services\AppSettingsManager;
 use ConversionHelper;
 use Illuminate\Console\Command;
 use Str;

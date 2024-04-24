@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Enums\Role as RoleEnum;
 use App\Enums\WebhookPermission;
 use App\Models\User;
-use App\Services\ApiKey\ApiKeyManager;
+use App\Services\ApiKeyManager;
 use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
