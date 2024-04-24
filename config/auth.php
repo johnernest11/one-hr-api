@@ -149,4 +149,18 @@ return [
         'sanctum_enabled' => env('SANCTUM_AUTH_ENABLED', true),
         'jwt_enabled' => env('JWT_AUTH_ENABLED', false),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Multi-Factor Authentication Options
+    |--------------------------------------------------------------------------
+    |
+    | This configuration defines the available Multi-Factor Authentication (MFA) options
+    | supported by the application. Each option must be a class extending the
+    | App\Services\MFA\MfaChannel or the App\Services\MFA\MfaApp abstract classes
+    |
+    */
+    'mfa_options' => [
+        \App\Services\MFA\Options\MfaEmailChannel::class,
+    ],
 ];

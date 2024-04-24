@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MfaOption extends Model
+class MfaCredential extends Model
 {
     use HasFactory;
 
@@ -34,7 +34,7 @@ class MfaOption extends Model
     ];
 
     /**
-     * An MFA Key belongs to exactly one user
+     * An MFA Credential belongs to exactly one user
      */
     public function user(): BelongsTo
     {

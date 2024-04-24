@@ -2,20 +2,28 @@
 
 namespace App\Services\MFA;
 
-use App\Models\MfaOption;
-use App\Models\MfaVerification;
+use App\Models\MfaAttempt;
+use App\Models\MfaCredential;
 use Str;
 
 class MfaOptionsPipeline
 {
-    private MfaOption $mfaOptionModel;
+    private MfaCredential $mfaOptionModel;
 
-    private MfaVerification $mfaVerificationModel;
+    private MfaAttempt $mfaVerificationModel;
 
-    public function __construct(MfaOption $mfaOption, MfaVerification $mfaVerification)
+    /**
+     * Here are all the available MFA Options
+     * the pipeline will run. Add your created
+     * MFA option in here.
+     */
+    protected array $mfaOptionsRegistry;
+
+    public function __construct(MfaCredential $mfaOption, MfaAttempt $mfaVerification)
     {
         $this->mfaOptionModel = $mfaOption;
         $this->mfaVerificationModel = $mfaVerification;
+        $this->mfaOptionsRegistry = config('auth.mfa_options');
     }
 
     /**
@@ -38,7 +46,7 @@ class MfaOptionsPipeline
         return $createdToken;
     }
 
-    public function getPipelines(): array
+    public function runMfaPipeline(): array
     {
         return [];
     }

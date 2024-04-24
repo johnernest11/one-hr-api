@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mfa_options', function (Blueprint $table) {
+        Schema::create('mfa_credentials', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('type'); // sms, email, google-authenticator
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mfa_options');
+        Schema::dropIfExists('mfa_credentials');
     }
 };

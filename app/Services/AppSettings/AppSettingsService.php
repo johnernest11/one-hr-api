@@ -2,7 +2,7 @@
 
 namespace App\Services\AppSettings;
 
-use App\Enums\MfaMethod;
+use App\Enums\MfaOption;
 use App\Models\AppSettings;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -38,10 +38,9 @@ class AppSettingsService implements AppSettingsManager
     /**
      * {@inheritDoc}
      */
-    public function setMfaConfig(bool $enabled, MfaMethod ...$mfaOptions): bool
+    public function setMfaConfig(bool $enabled, MfaOption ...$mfaOptions): bool
     {
-        // We care for distinct values passed in the steps method
-        $stepsInArrayVal = array_map(fn (MfaMethod $method) => $method->value, $mfaOptions);
+        $stepsInArrayVal = array_map(fn (MfaOption $option) => $option->value, $mfaOptions);
         $stepsUnique = array_unique($stepsInArrayVal);
 
         $value = json_encode([

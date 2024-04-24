@@ -2,7 +2,7 @@
 
 namespace App\Services\AppSettings;
 
-use App\Enums\MfaMethod;
+use App\Enums\MfaOption;
 use Illuminate\Database\Eloquent\Collection;
 
 interface AppSettingsManager
@@ -20,7 +20,7 @@ interface AppSettingsManager
     /**
      * Set MFA Configurations
      */
-    public function setMfaConfig(bool $enabled, MfaMethod ...$mfaOptions): bool;
+    public function setMfaConfig(bool $enabled, MfaOption ...$mfaOptions): bool;
 
     /**
      * Get the MFA configurations

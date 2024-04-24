@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\AppTheme;
-use App\Enums\MfaMethod;
+use App\Enums\MfaOption;
 use ConversionHelper;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -42,13 +42,13 @@ class AppSettingsRequest extends FormRequest
             'theme' => [new Enum(AppTheme::class)],
             'mfa.enabled' => ['boolean'],
             'mfa.steps' => ['min:1', 'array'],
-            'mfa.steps.*' => ['distinct', new Enum(MfaMethod::class)],
+            'mfa.steps.*' => ['distinct', new Enum(MfaOption::class)],
         ];
     }
 
     public function messages(): array
     {
-        $mfaSteps = implode(', ', ConversionHelper::enumToArray(MfaMethod::class));
+        $mfaSteps = implode(', ', ConversionHelper::enumToArray(MfaOption::class));
 
         return [
             'mfa.steps.min' => 'The MFA steps must at least have one MFA method',
