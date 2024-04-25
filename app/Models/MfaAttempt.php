@@ -20,7 +20,8 @@ class MfaAttempt extends Model
     protected $fillable = [
         'user_id',
         'token',
-        'mfa_steps',
+        'steps',
+        'expires_at',
     ];
 
     /**
@@ -29,7 +30,7 @@ class MfaAttempt extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'mfa_steps' => 'array',
+        'steps' => 'array',
     ];
 
     /**
@@ -40,13 +41,6 @@ class MfaAttempt extends Model
     protected $hidden = [
         'token',
     ];
-
-    /**
-     * This temporary property populated when the token is just created.
-     *
-     * @see TODO: Add there to find this
-     */
-    public ?string $rawTokenValue = null;
 
     /**
      * @Attribute

@@ -15,7 +15,7 @@ class SetUpMfaTest extends TestCase
      */
     public function test_it_can_disable_mfa_options(): void
     {
-        $this->artisan('app:set-mfa')
+        $this->artisan('app:mfa')
             ->expectsChoice('Turn-on Multi-Factor Authentication?', 'No', [1 => 'Yes', 2 => 'No'])
             ->assertOk();
 
@@ -27,7 +27,7 @@ class SetUpMfaTest extends TestCase
     {
         $options = ['email_channel', 'google_authenticator', 'sms_channel'];
 
-        $this->artisan('app:set-mfa')
+        $this->artisan('app:mfa')
             ->expectsChoice('Turn-on Multi-Factor Authentication?', 'Yes', [1 => 'Yes', 2 => 'No'])
             ->expectsQuestion('Enter the name of the 1st MFA option ', $options[0])
             ->expectsQuestion('Enter the name of the 2nd MFA option (Leave as blank to stop adding)', $options[1])
@@ -44,7 +44,7 @@ class SetUpMfaTest extends TestCase
     {
         $options = ['google_authenticator'];
 
-        $this->artisan('app:set-mfa')
+        $this->artisan('app:mfa')
             ->expectsChoice('Turn-on Multi-Factor Authentication?', 'Yes', [1 => 'Yes', 2 => 'No'])
             ->expectsQuestion('Enter the name of the 1st MFA option ', $options[0])
             ->expectsQuestion('Enter the name of the 2nd MFA option (Leave as blank to stop adding)', '')
@@ -58,7 +58,7 @@ class SetUpMfaTest extends TestCase
 
     public function test_it_will_stop_if_entered_mfa_option_is_incorrect(): void
     {
-        $this->artisan('app:set-mfa')
+        $this->artisan('app:mfa')
             ->expectsChoice('Turn-on Multi-Factor Authentication?', 'Yes', [1 => 'Yes', 2 => 'No'])
             ->expectsQuestion('Enter the name of the 1st MFA option ', 'non-existent')
             ->assertFailed();
@@ -68,7 +68,7 @@ class SetUpMfaTest extends TestCase
     {
         $options = ['google_authenticator'];
 
-        $this->artisan('app:set-mfa')
+        $this->artisan('app:mfa')
             ->expectsChoice('Turn-on Multi-Factor Authentication?', 'Yes', [1 => 'Yes', 2 => 'No'])
             ->expectsQuestion('Enter the name of the 1st MFA option ', $options[0])
             ->expectsQuestion('Enter the name of the 2nd MFA option (Leave as blank to stop adding)', $options[0])

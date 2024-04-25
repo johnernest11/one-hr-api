@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('token')->unique();
-            $table->json('mfa_steps');
+            $table->json('steps');
             $table->timestamps();
+            $table->timestamp('expires_at')->nullable();
         });
     }
 

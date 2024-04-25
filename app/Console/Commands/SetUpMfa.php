@@ -15,7 +15,7 @@ class SetUpMfa extends Command
      *
      * @var string
      */
-    protected $signature = 'app:set-mfa';
+    protected $signature = 'app:mfa';
 
     /**
      * The console command description.

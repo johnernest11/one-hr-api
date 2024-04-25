@@ -8,7 +8,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
 use App\Services\AppSettingsManager;
-use App\Services\MfaPipelineManager;
+use App\Services\MFA\MfaPipelineManager;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
@@ -74,8 +74,11 @@ abstract class AuthController extends ApiController
         $mfaConfig = $this->appSettingsManager->getMfaConfig();
         if ($mfaConfig['enabled']) {
             $mfaSteps = $mfaConfig['steps'];
-            $mfaAttemptToken = $this->mfaPipelineManager->generateMfaAttemptToken($user, $mfaSteps);
-            $data = ['mfa_token' => $mfaAttemptToken];
+            $mfaAttempt = $this->mfaPipelineManager->generateMfaAttemptToken($user, $mfaSteps);
+            $data = [
+                'mfa_token' => $mfaAttempt['token'],
+                'mfa_steps' => $mfaAttempt['steps'],
+            ];
 
             return $this->success(['data' => $data], Response::HTTP_OK);
         }

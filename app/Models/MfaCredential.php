@@ -18,10 +18,8 @@ class MfaCredential extends Model
      */
     protected $fillable = [
         'user_id',
-        'auth_type',
-        'auth_key',
-        'expires_at',
-        'verified_at',
+        'type',
+        'secret',
     ];
 
     /**

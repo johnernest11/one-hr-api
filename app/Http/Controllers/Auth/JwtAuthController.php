@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
-use App\Services\MfaPipelineManager;
+use App\Services\MFA\MfaPipelineManager;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;

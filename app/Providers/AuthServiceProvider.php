@@ -13,7 +13,7 @@ use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\Authentication\JwtAuthService;
 use App\Services\Authentication\SanctumAuthService;
-use App\Services\MfaPipelineManager;
+use App\Services\MFA\MfaPipelineManager;
 use Auth;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -47,7 +47,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(MfaPipelineManager::class, function () {
-            return new MfaPipelineManager();
+            return new MfaPipelineManager(config('auth.mfa_options'), now()->addHours(8));
         });
     }
 

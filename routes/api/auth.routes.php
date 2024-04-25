@@ -9,7 +9,7 @@ use App\Http\Requests\AuthRequest;
 use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
-use App\Services\MfaPipelineManager;
+use App\Services\MFA\MfaPipelineManager;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 
