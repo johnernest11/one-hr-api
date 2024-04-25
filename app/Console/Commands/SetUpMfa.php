@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\MfaOption;
+use App\Enums\VerificationMethod;
 use App\Services\AppSettingsManager;
 use ConversionHelper;
 use Illuminate\Console\Command;
@@ -49,7 +49,7 @@ class SetUpMfa extends Command
         $this->printAllAvailableMfaMethods();
 
         // Build the options for selection
-        $allMfaOptions = ConversionHelper::enumToArray(MfaOption::class);
+        $allMfaOptions = ConversionHelper::enumToArray(VerificationMethod::class);
         $totalOptions = count($allMfaOptions);
 
         $selectedMfaSteps = $this->getMfaOrderInput($totalOptions, $allMfaOptions);
@@ -86,12 +86,12 @@ class SetUpMfa extends Command
             $ordinal = ConversionHelper::numberToOrdinal($i);
 
             $blankNote = $i > 1 ? '(Leave as blank to stop adding)' : '';
-            $mfaOption = $this->ask("Enter the name of the $ordinal MFA option $blankNote");
+            $mfaOption = $this->ask("Enter the name of the $ordinal MFA method $blankNote");
             $mfaOption = Str::lower($mfaOption);
 
-            // There must be at least one MFA option inputted
+            // There must be at least one MFA method inputted
             if ($i === 1 && ! $mfaOption) {
-                $this->error('You must have at least one MFA option');
+                $this->error('You must have at least one MFA method');
 
                 return [];
             }
@@ -103,14 +103,14 @@ class SetUpMfa extends Command
 
             // We stop if the user inputs the same MfaMethod
             if (in_array($mfaOption, $selectedMfaSteps)) {
-                $this->error('You have entered a duplicate MFA option name');
+                $this->error('You have entered a duplicate MFA method name');
 
                 return [];
             }
 
             // We stop if the user inputs an invalid MfaMethod value
             if (! in_array($mfaOption, $allMfaOptions)) {
-                $this->error('Invalid MFA option name...');
+                $this->error('Invalid MFA method name...');
 
                 return [];
             }
@@ -123,13 +123,13 @@ class SetUpMfa extends Command
 
     private function printAllAvailableMfaMethods(): void
     {
-        $this->info('These are the current Multi-Factor Authentication options available');
-        $options = [
-            [MfaOption::GOOGLE_AUTHENTICATOR->value, 'Use the Google Authenticator Mobile App to generate codes'],
-            [MfaOption::EMAIL_CHANNEL->value, 'Receive a one-time code via email'],
-            [MfaOption::SMS_CHANNEL->value, 'Receive a one-time code via SMS'],
+        $this->info('These are the current Multi-Factor Authentication methods available');
+        $methods = [
+            [VerificationMethod::GOOGLE_AUTHENTICATOR->value, 'Use the Google Authenticator Mobile App to generate codes'],
+            [VerificationMethod::EMAIL_CHANNEL->value, 'Receive a one-time code via email'],
+            [VerificationMethod::SMS_CHANNEL->value, 'Receive a one-time code via SMS'],
         ];
-        $this->table(['Name', 'Description'], $options);
+        $this->table(['Name', 'Description'], $methods);
         $this->newLine();
     }
 
@@ -152,6 +152,6 @@ class SetUpMfa extends Command
 
     private function convertToEnums(array $mfaSteps): array
     {
-        return array_map(fn ($val) => MfaOption::from($val), $mfaSteps);
+        return array_map(fn ($val) => VerificationMethod::from($val), $mfaSteps);
     }
 }

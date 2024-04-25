@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Enums\MfaAuthTypes;
+use App\Enums\VerificationMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MfaCredential extends Model
+class VerificationFactor extends Model
 {
     use HasFactory;
 
@@ -28,7 +28,7 @@ class MfaCredential extends Model
      * @var string[]
      */
     protected $casts = [
-        'auth_type' => MfaAuthTypes::class,
+        'type' => VerificationMethod::class,
     ];
 
     /**

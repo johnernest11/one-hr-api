@@ -2,14 +2,14 @@
 
 namespace App\Services\Verification;
 
-use App\Enums\MfaOption;
-use App\Models\MfaCredential;
+use App\Enums\VerificationMethod;
 use App\Models\User;
+use App\Models\VerificationFactor;
 use App\Traits\Services\CanResolveModelFromId;
 use App\Traits\Services\MfaPipeStage;
 use OTPHP\TOTP;
 
-abstract class VerificationChannel
+abstract class DeliveryVerificationMethod
 {
     use CanResolveModelFromId;
     use MfaPipeStage;
@@ -45,15 +45,15 @@ abstract class VerificationChannel
             return false;
         }
 
-        // Update the step in the `mfa_verifications` table
+        // Update the step in the `mfa_attempts` table
         return true;
     }
 
     protected function generateSecret(int|string $userId, bool $forceNew = false): string
     {
-        /** @var MfaCredential $secret */
+        /** @var VerificationFactor $secret */
         $mfaOption = User::where('user_id', '=', $userId)
-            ->where('type', '=', MfaOption::EMAIL_CHANNEL)
+            ->where('type', '=', VerificationMethod::EMAIL_CHANNEL)
             ->first();
 
         if ($mfaOption && ! $forceNew) {
@@ -66,7 +66,7 @@ abstract class VerificationChannel
         $createdOption = User::updateOrCreate(
             [
                 'user_id' => $userId,
-                'type' => MfaOption::EMAIL_CHANNEL,
+                'type' => VerificationMethod::EMAIL_CHANNEL,
             ],
             [
                 'secret' => $secret,

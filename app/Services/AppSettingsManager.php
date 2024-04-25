@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enums\MfaOption;
+use App\Enums\VerificationMethod;
 use App\Models\AppSettings;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -31,9 +31,9 @@ class AppSettingsManager
     /**
      * Set MFA configurations
      */
-    public function setMfaConfig(bool $enabled, MfaOption ...$mfaOptions): bool
+    public function setMfaConfig(bool $enabled, VerificationMethod ...$mfaOptions): bool
     {
-        $stepsInArrayVal = array_map(fn (MfaOption $option) => $option->value, $mfaOptions);
+        $stepsInArrayVal = array_map(fn (VerificationMethod $option) => $option->value, $mfaOptions);
         $stepsUnique = array_unique($stepsInArrayVal);
 
         $value = json_encode([

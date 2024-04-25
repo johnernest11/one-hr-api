@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services\Verification\Options;
+namespace App\Services\Verification\Methods;
 
 use App\Models\User;
-use App\Services\Verification\VerificationChannel;
+use App\Services\Verification\DeliveryVerificationMethod;
 
-class EmailVerificationChannel extends VerificationChannel
+class EmailChannelVerification extends DeliveryVerificationMethod
 {
     /**
      * {@inheritDoc}

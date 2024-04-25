@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Enums\AppTheme;
-use App\Enums\MfaOption;
+use App\Enums\VerificationMethod;
 use App\Models\AppSettings;
 use App\Services\AppSettingsManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,7 +32,7 @@ class AppSettingsManagerTest extends TestCase
             'theme' => AppTheme::DARK->value,
             'mfa' => [
                 'enabled' => true,
-                'steps' => [MfaOption::EMAIL_CHANNEL->value, MfaOption::GOOGLE_AUTHENTICATOR->value],
+                'steps' => [VerificationMethod::EMAIL_CHANNEL->value, VerificationMethod::GOOGLE_AUTHENTICATOR->value],
             ],
         ];
 
@@ -66,9 +66,9 @@ class AppSettingsManagerTest extends TestCase
     {
         $success = $this->service->setMfaConfig(
             true,
-            MfaOption::EMAIL_CHANNEL,
-            MfaOption::GOOGLE_AUTHENTICATOR,
-            MfaOption::SMS_CHANNEL
+            VerificationMethod::EMAIL_CHANNEL,
+            VerificationMethod::GOOGLE_AUTHENTICATOR,
+            VerificationMethod::SMS_CHANNEL
         );
 
         $this->assertTrue($success);
@@ -78,20 +78,20 @@ class AppSettingsManagerTest extends TestCase
     {
         $this->service->setMfaConfig(
             true,
-            MfaOption::EMAIL_CHANNEL,
-            MfaOption::GOOGLE_AUTHENTICATOR,
-            MfaOption::SMS_CHANNEL,
-            MfaOption::EMAIL_CHANNEL, // repeated
-            MfaOption::SMS_CHANNEL // repeated
+            VerificationMethod::EMAIL_CHANNEL,
+            VerificationMethod::GOOGLE_AUTHENTICATOR,
+            VerificationMethod::SMS_CHANNEL,
+            VerificationMethod::EMAIL_CHANNEL, // repeated
+            VerificationMethod::SMS_CHANNEL // repeated
         );
 
         $mfaConfig = $this->service->getMfaConfig();
 
         // Only the unique values are set (also, order matters)
         $this->assertEquals($mfaConfig['steps'], [
-            MfaOption::EMAIL_CHANNEL->value,
-            MfaOption::GOOGLE_AUTHENTICATOR->value,
-            MfaOption::SMS_CHANNEL->value,
+            VerificationMethod::EMAIL_CHANNEL->value,
+            VerificationMethod::GOOGLE_AUTHENTICATOR->value,
+            VerificationMethod::SMS_CHANNEL->value,
         ]);
     }
 
@@ -99,17 +99,17 @@ class AppSettingsManagerTest extends TestCase
     {
         $this->service->setMfaConfig(
             true,
-            MfaOption::EMAIL_CHANNEL,
-            MfaOption::GOOGLE_AUTHENTICATOR,
-            MfaOption::SMS_CHANNEL
+            VerificationMethod::EMAIL_CHANNEL,
+            VerificationMethod::GOOGLE_AUTHENTICATOR,
+            VerificationMethod::SMS_CHANNEL
         );
 
         $mfaConfig = $this->service->getMfaConfig();
         $this->assertTrue($mfaConfig['enabled']);
         $this->assertEquals($mfaConfig['steps'], [
-            MfaOption::EMAIL_CHANNEL->value,
-            MfaOption::GOOGLE_AUTHENTICATOR->value,
-            MfaOption::SMS_CHANNEL->value,
+            VerificationMethod::EMAIL_CHANNEL->value,
+            VerificationMethod::GOOGLE_AUTHENTICATOR->value,
+            VerificationMethod::SMS_CHANNEL->value,
         ]);
     }
 }

@@ -2,6 +2,6 @@
 
 namespace App\Services\Verification;
 
-abstract class VerificationAp
+abstract class AppVerificationMethod
 {
 }

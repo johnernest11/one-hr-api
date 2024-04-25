@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum MfaOption: string
+enum VerificationMethod: string
 {
     case GOOGLE_AUTHENTICATOR = 'google_authenticator';
     case EMAIL_CHANNEL = 'email_channel';

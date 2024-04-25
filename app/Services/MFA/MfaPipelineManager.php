@@ -2,11 +2,11 @@
 
 namespace App\Services\MFA;
 
-use App\Enums\MfaOption;
 use App\Enums\MfaPipelineAction;
+use App\Enums\VerificationMethod;
 use App\Models\MfaAttempt;
 use App\Models\User;
-use App\Services\Verification\VerificationChannel;
+use App\Services\Verification\DeliveryVerificationMethod;
 use App\Traits\Services\CanResolveModelFromId;
 use Carbon\Carbon;
 use Hash;
@@ -118,7 +118,7 @@ class MfaPipelineManager
 
         $channelBasedOptions = array_filter(
             $this->mfaOptionsRegistry,
-            fn ($option) => is_subclass_of($option, VerificationChannel::class)
+            fn ($option) => is_subclass_of($option, DeliveryVerificationMethod::class)
         );
 
         Log::debug(__METHOD__, ['options' => $channelBasedOptions]);
@@ -145,7 +145,7 @@ class MfaPipelineManager
      * Get the current MFA step the user needs to complete
      * in an MFA attempt
      */
-    public function getCurrentMfaStep(string $mfaToken): ?MfaOption
+    public function getCurrentMfaStep(string $mfaToken): ?VerificationMethod
     {
         $idAndToken = $this->extractMfaTokenIdAndValue($mfaToken);
         if (count($idAndToken) === 0) {

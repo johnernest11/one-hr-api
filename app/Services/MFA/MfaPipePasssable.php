@@ -2,8 +2,8 @@
 
 namespace App\Services\MFA;
 
-use App\Enums\MfaOption;
 use App\Enums\MfaPipelineAction;
+use App\Enums\VerificationMethod;
 use App\Models\User;
 
 class MfaPipePasssable
@@ -12,9 +12,9 @@ class MfaPipePasssable
 
     public User $user;
 
-    public MfaOption $currentStep;
+    public VerificationMethod $currentStep;
 
-    public function __construct(MfaPipelineAction $action, User $user, MfaOption $mfaOption)
+    public function __construct(MfaPipelineAction $action, User $user, VerificationMethod $mfaOption)
     {
         $this->action = $action;
         $this->user = $user;

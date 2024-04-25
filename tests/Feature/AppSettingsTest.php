@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use App\Enums\AppTheme;
-use App\Enums\MfaOption;
 use App\Enums\Role as RoleEnum;
+use App\Enums\VerificationMethod;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use ConversionHelper;
@@ -40,7 +40,7 @@ class AppSettingsTest extends TestCase
             'theme' => AppTheme::LIGHT->value,
             'mfa' => [
                 'enabled' => true,
-                'steps' => ConversionHelper::enumToArray(MfaOption::class),
+                'steps' => ConversionHelper::enumToArray(VerificationMethod::class),
             ],
         ];
 
@@ -72,10 +72,10 @@ class AppSettingsTest extends TestCase
         return [
             [['enabled' => 123, 'steps' => ['invalid_method']], 422],
             [['enabled' => true, 'steps' => ['invalid_method']], 422],
-            [['enabled' => false, 'steps' => [MfaOption::EMAIL_CHANNEL->value]], 200],
-            [['enabled' => true, 'steps' => [MfaOption::GOOGLE_AUTHENTICATOR->value]], 200],
+            [['enabled' => false, 'steps' => [VerificationMethod::EMAIL_CHANNEL->value]], 200],
+            [['enabled' => true, 'steps' => [VerificationMethod::GOOGLE_AUTHENTICATOR->value]], 200],
             [['enabled' => false], 200],
-            [['steps' => [MfaOption::GOOGLE_AUTHENTICATOR->value, MfaOption::EMAIL_CHANNEL->value]], 200],
+            [['steps' => [VerificationMethod::GOOGLE_AUTHENTICATOR->value, VerificationMethod::EMAIL_CHANNEL->value]], 200],
         ];
     }
 
