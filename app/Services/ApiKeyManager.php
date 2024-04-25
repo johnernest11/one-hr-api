@@ -102,7 +102,7 @@ class ApiKeyManager
     {
         $idAndKey = explode('|', $key);
         if (count($idAndKey) !== 2) {
-            Log::debug('Cannot separate the API Key ID and Raw value value correctly', [
+            Log::debug('Cannot separate the API Key ID from the raw value correctly', [
                 'value' => $key,
                 'method' => __METHOD__,
             ]);

@@ -8,6 +8,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
 use App\Services\AppSettingsManager;
+use App\Services\MfaPipelineManager;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
@@ -22,11 +23,18 @@ abstract class AuthController extends ApiController
 
     private AppSettingsManager $appSettingsManager;
 
-    public function __construct(UserAccountManager $accManager, UserCredentialManager $credManager, AppSettingsManager $settingsManager)
-    {
+    private MfaPipelineManager $mfaPipelineManager;
+
+    public function __construct(
+        UserAccountManager $accManager,
+        UserCredentialManager $credManager,
+        AppSettingsManager $settingsManager,
+        MfaPipelineManager $mfaPipelineManager,
+    ) {
         $this->userAccountManager = $accManager;
         $this->userCredentialManager = $credManager;
         $this->appSettingsManager = $settingsManager;
+        $this->mfaPipelineManager = $mfaPipelineManager;
     }
 
     /**
@@ -66,8 +74,10 @@ abstract class AuthController extends ApiController
         $mfaConfig = $this->appSettingsManager->getMfaConfig();
         if ($mfaConfig['enabled']) {
             $mfaSteps = $mfaConfig['steps'];
+            $mfaAttemptToken = $this->mfaPipelineManager->generateMfaAttemptToken($user, $mfaSteps);
+            $data = ['mfa_token' => $mfaAttemptToken];
 
-            return $this->success(['data' => $mfaSteps], Response::HTTP_OK);
+            return $this->success(['data' => $data], Response::HTTP_OK);
         }
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.

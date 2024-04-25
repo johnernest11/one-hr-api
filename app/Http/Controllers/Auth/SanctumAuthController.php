@@ -6,6 +6,7 @@ use App\Http\Requests\AuthRequest;
 use App\Models\User;
 use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use App\Services\MfaPipelineManager;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
@@ -16,9 +17,14 @@ class SanctumAuthController extends AuthController
 {
     private PersistentAuthTokenManager $tokenManager;
 
-    public function __construct(UserAccountManager $accManager, UserCredentialManager $credManager, PersistentAuthTokenManager $tokenManager, AppSettingsManager $settingsManager)
-    {
-        parent::__construct($accManager, $credManager, $settingsManager);
+    public function __construct(
+        UserAccountManager $accManager,
+        UserCredentialManager $credManager,
+        PersistentAuthTokenManager $tokenManager,
+        AppSettingsManager $settingsManager,
+        MfaPipelineManager $mfaPipelineManager
+    ) {
+        parent::__construct($accManager, $credManager, $settingsManager, $mfaPipelineManager);
         $this->tokenManager = $tokenManager;
     }
 
