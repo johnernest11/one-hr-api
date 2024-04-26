@@ -15,8 +15,16 @@ class MfaRequest extends FormRequest
 
         return match ($routeName) {
             'auth.mfa.verify-code' => $this->getVerifyCodeRules(),
+            'auth.mfa.send-code' => $this->getSendCodeRules(),
             default => []
         };
+    }
+
+    private function getSendCodeRules(): array
+    {
+        return [
+            'token' => ['required'],
+        ];
     }
 
     private function getVerifyCodeRules(): array

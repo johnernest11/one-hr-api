@@ -6,6 +6,7 @@ use App\Enums\MfaPipelineAction;
 use App\Enums\VerificationMethod;
 use App\Models\MfaAttempt;
 use App\Models\User;
+use App\Services\Verification\AppVerificationMethod;
 use App\Services\Verification\DeliveryVerificationMethod;
 use App\Traits\Services\CanResolveModelFromId;
 use Carbon\Carbon;
@@ -18,14 +19,28 @@ class MfaPipelineManager
 {
     use CanResolveModelFromId;
 
-    protected array $mfaOptionsRegistry;
+    protected array $mfaMethodsRegistry;
 
-    protected Carbon $expiresAt;
+    protected Carbon $mfaAttemptExpiresAt;
 
-    public function __construct(array $mfaOptionsRegistry, Carbon $expiresAt)
+    private array $channelBasedMethodsRegistry;
+
+    private array $appBasedMethodsRegistry;
+
+    public function __construct(array $mfaMethodsRegistry, Carbon $mfaAttemptExpiresAt)
     {
-        $this->mfaOptionsRegistry = $mfaOptionsRegistry;
-        $this->expiresAt = $expiresAt;
+        $this->mfaMethodsRegistry = $mfaMethodsRegistry;
+        $this->mfaAttemptExpiresAt = $mfaAttemptExpiresAt;
+
+        $this->channelBasedMethodsRegistry = array_filter(
+            $this->mfaMethodsRegistry,
+            fn ($method) => is_subclass_of($method, DeliveryVerificationMethod::class)
+        );
+
+        $this->appBasedMethodsRegistry = array_filter(
+            $this->mfaMethodsRegistry,
+            fn ($method) => is_subclass_of($method, AppVerificationMethod::class)
+        );
     }
 
     /**
@@ -45,7 +60,7 @@ class MfaPipelineManager
             'user_id' => $user->id,
             'token' => $token,
             'steps' => $stepsWithStatus,
-            'expires_at' => $this->expiresAt,
+            'expires_at' => $this->mfaAttemptExpiresAt,
         ]);
 
         Log::debug(__METHOD__, ['steps' => $stepsWithStatus, 'is_array' => is_array($stepsWithStatus)]);
@@ -54,6 +69,58 @@ class MfaPipelineManager
             'token' => $this->buildRawMfaTokenFormat($mfaAttempt, $token),
             'steps' => $stepsWithStatus,
         ];
+    }
+
+    /**
+     * Generate the secret for all the verification options
+     * in the MFA pipeline
+     */
+    public function runSecretGeneration(string $mfaAttemptToken): string
+    {
+        $mfaAttempt = $this->getMfaAttemptRecordFromToken($mfaAttemptToken);
+        $activeStep = $this->getCurrentMfaStep($mfaAttemptToken);
+        $passable = new MfaPipePasssable(MfaPipelineAction::GENERATE_SECRET, $mfaAttempt->user, $activeStep);
+
+        /** @var bool $success */
+        return app(Pipeline::class)
+            ->send($passable)
+            ->through(...$this->mfaMethodsRegistry)
+            ->thenReturn();
+    }
+
+    /**
+     * Deliver the OTP to the user for the current
+     * channel-based verification options in the pipeline.
+     *
+     * E.g. EmailVerificationChannel, SmsVerificationChannel, PushNotifVerificationChannel
+     */
+    public function runCodeDelivery(string $mfaAttemptToken): bool
+    {
+        $mfaAttempt = $this->getMfaAttemptRecordFromToken($mfaAttemptToken);
+        $activeStep = $this->getCurrentMfaStep($mfaAttemptToken);
+        $passable = new MfaPipePasssable(MfaPipelineAction::SEND_CODE, $mfaAttempt->user, $activeStep);
+
+        /** @var bool $success */
+        $success = app(Pipeline::class)
+            ->send($passable)
+            ->through(...$this->channelBasedMethodsRegistry)
+            ->thenReturn();
+
+        return $success;
+    }
+
+    public function runQrCodeGeneration(string $mfaAttemptToken): bool
+    {
+        return true;
+    }
+
+    /**
+     * Verify the code given by the user
+     * with the current MFA option in the pipeline
+     */
+    public function runCodeVerification(): bool
+    {
+        return true;
     }
 
     public function verifyMfaAttemptToken(string $mfaToken): bool
@@ -86,77 +153,28 @@ class MfaPipelineManager
     }
 
     /**
-     * Generate the secret for all the verification options
-     * in the MFA pipeline
-     */
-    public function runSecretGeneration(User|int|string $userModelOrId): bool
-    {
-        /** @var User $user */
-        $user = $this->retrieveModel($userModelOrId, User::query());
-        $passable = new MfaPipePasssable(MfaPipelineAction::GENERATE_SECRET, $user);
-
-        /** @var bool $success */
-        $success = app(Pipeline::class)
-            ->send($passable)
-            ->through(...$this->mfaOptionsRegistry)
-            ->thenReturn();
-
-        return $success;
-    }
-
-    /**
-     * Deliver the OTP to the user for the current
-     * channel-based verification options in the pipeline.
-     *
-     * E.g. EmailVerificationChannel, SmsVerificationChannel, PushNotifVerificationChannel
-     */
-    public function runCodeDelivery(User|int|string $userModelOrId): bool
-    {
-        /** @var User $user */
-        $user = $this->retrieveModel($userModelOrId, User::query());
-        $passable = new MfaPipePasssable(MfaPipelineAction::SEND_CODE, $user);
-
-        $channelBasedOptions = array_filter(
-            $this->mfaOptionsRegistry,
-            fn ($option) => is_subclass_of($option, DeliveryVerificationMethod::class)
-        );
-
-        Log::debug(__METHOD__, ['options' => $channelBasedOptions]);
-
-        /** @var bool $success */
-        $success = app(Pipeline::class)
-            ->send($passable)
-            ->through(...$channelBasedOptions)
-            ->thenReturn();
-
-        return $success;
-    }
-
-    /**
-     * Verify the code given by the user
-     * with the current MFA option in the pipeline
-     */
-    public function runCodeVerification(): bool
-    {
-        return true;
-    }
-
-    /**
      * Get the current MFA step the user needs to complete
      * in an MFA attempt
      */
     public function getCurrentMfaStep(string $mfaToken): ?VerificationMethod
     {
-        $idAndToken = $this->extractMfaTokenIdAndValue($mfaToken);
-        if (count($idAndToken) === 0) {
+        $attempt = $this->getMfaAttemptRecordFromToken($mfaToken);
+        if (! $attempt) {
             return null;
         }
 
-        $attempt = MfaAttempt::where('id', $idAndToken['id'])
-            ->where('token', $idAndToken['token'])
-            ->firstOrFail();
+        foreach ($attempt->steps as $step) {
+            if (! $step['completed']) {
+                return VerificationMethod::from($step['name']);
+            }
+        }
 
-        return $attempt->steps;
+        Log::debug('Unable to find the next step', [
+            'method' => __METHOD__,
+            'mfa_attempt_id' => $attempt->id,
+        ]);
+
+        return null;
     }
 
     private function buildRawMfaTokenFormat(MfaAttempt $mfaAttempt, string $token): string
@@ -177,5 +195,26 @@ class MfaPipelineManager
         }
 
         return ['id' => $idAndToken[0], 'token' => $idAndToken[1]];
+    }
+
+    private function getMfaAttemptRecordFromToken(string $mfaAttemptToken): ?MfaAttempt
+    {
+        $idAndToken = $this->extractMfaTokenIdAndValue($mfaAttemptToken);
+        if (count($idAndToken) === 0) {
+            return null;
+        }
+
+        $attempt = MfaAttempt::where('id', $idAndToken['id'])->firstOrFail();
+
+        if (! Hash::check($idAndToken['token'], $attempt->token)) {
+            Log::debug('The token has an incorrect hash', [
+                'method' => __METHOD__,
+                'mfa_attempt_id' => $idAndToken['id'],
+            ]);
+
+            return null;
+        }
+
+        return $attempt;
     }
 }

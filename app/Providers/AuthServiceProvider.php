@@ -47,7 +47,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(MfaPipelineManager::class, function () {
-            return new MfaPipelineManager(config('auth.mfa_options'), now()->addHours(8));
+            return new MfaPipelineManager(config('auth.mfa_methods'), now()->addHours(8));
         });
     }
 

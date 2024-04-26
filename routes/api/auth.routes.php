@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\JwtAuthController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\SanctumAuthController;
 use App\Http\Controllers\Auth\VerifyController;
+use App\Http\Controllers\MfaController;
 use App\Http\Requests\AuthRequest;
 use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
@@ -85,4 +86,10 @@ Route::controller(PasswordController::class)->name('auth.password.')->group(func
 
     /** @uses PasswordController::resetPassword */
     Route::post('reset-password', 'resetPassword')->name('reset');
+});
+
+// MFA Routes
+Route::controller(MfaController::class)->name('auth.mfa.')->group(function () {
+    /** @uses MfaController::sendCode */
+    Route::post('mfa/send-code', 'sendCode')->name('send-code');
 });

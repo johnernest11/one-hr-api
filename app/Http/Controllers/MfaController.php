@@ -21,10 +21,16 @@ class MfaController extends ApiController
      */
     public function sendCode(MfaRequest $request): JsonResponse
     {
-        $user = auth('token')->user();
-        $this->mfaPipelineManager->runCodeDelivery();
+        $mfaToken = $request->input('token');
+        $tokenIsValid = $this->mfaPipelineManager->verifyMfaAttemptToken($mfaToken);
+        if (! $tokenIsValid) {
+            return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST);
+        }
 
-        return $this->success(['data' => null], Response::HTTP_OK);
+        $step = $this->mfaPipelineManager->getCurrentMfaStep($mfaToken);
+        $this->mfaPipelineManager->runCodeDelivery($mfaToken);
+
+        return $this->success(['message' => 'OTP sent successfully', 'step' => $step], Response::HTTP_ACCEPTED);
     }
 
     /**

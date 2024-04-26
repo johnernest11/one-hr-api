@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('type'); // sms, email, google-authenticator
-            $table->string('secret');
+            $table->text('secret');
             $table->timestamps();
 
             $table->unique(['user_id', 'type']);

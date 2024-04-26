@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Notifications\Auth\QueuedResetPasswordNotification;
 use App\Notifications\Auth\QueuedVerifyEmailNotification;
 use App\Notifications\Auth\VerifyAccountNotification;
+use App\Notifications\EmailOtpNotification;
 use App\QueryFilters\Generic\ActiveFilter;
 use App\QueryFilters\Generic\SortFilter;
 use App\QueryFilters\User\EmailFilter;
@@ -184,6 +185,11 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new QueuedResetPasswordNotification($token));
+    }
+
+    public function sendEmailOtpNotification(string $otp, int $expirationInMinutes): void
+    {
+        $this->notify(new EmailOtpNotification($otp, $expirationInMinutes));
     }
 
     /**

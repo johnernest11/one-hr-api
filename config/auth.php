@@ -152,7 +152,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Multi-Factor Authentication Options
+    | Multi-Factor Authentication Methods
     |--------------------------------------------------------------------------
     |
     | This configuration defines the available Multi-Factor Authentication (MFA) options
@@ -160,7 +160,7 @@ return [
     | App\Services\Verification\AppVerificationMethod or the
     | App\Services\Verification\DeliveryVerificationMethod abstract classes
     */
-    'mfa_options' => [
+    'mfa_methods' => [
         \App\Services\Verification\Methods\EmailChannelVerification::class,
     ],
 ];

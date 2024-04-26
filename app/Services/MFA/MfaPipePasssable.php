@@ -14,10 +14,10 @@ class MfaPipePasssable
 
     public VerificationMethod $currentStep;
 
-    public function __construct(MfaPipelineAction $action, User $user, VerificationMethod $mfaOption)
+    public function __construct(MfaPipelineAction $action, User $user, VerificationMethod $currentStep)
     {
         $this->action = $action;
         $this->user = $user;
-        $this->currentStep = $mfaOption;
+        $this->currentStep = $currentStep;
     }
 }
