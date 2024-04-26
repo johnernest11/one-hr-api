@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MfaRequest;
-use App\Services\MFA\MfaPipelineManager;
+use App\Services\MfaOrchestrator;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class MfaController extends ApiController
 {
-    private MfaPipelineManager $mfaPipelineManager;
+    private MfaOrchestrator $mfaPipelineManager;
 
-    public function __construct(MfaPipelineManager $mfaPipelineManager)
+    public function __construct(MfaOrchestrator $mfaPipelineManager)
     {
         $this->mfaPipelineManager = $mfaPipelineManager;
     }

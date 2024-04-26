@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Services\MFA;
+namespace App\Services;
 
-use App\Enums\MfaPipelineAction;
 use App\Enums\VerificationMethod;
 use App\Models\MfaAttempt;
 use App\Models\User;
@@ -11,11 +10,10 @@ use App\Services\Verification\DeliveryVerificationMethod;
 use App\Traits\Services\CanResolveModelFromId;
 use Carbon\Carbon;
 use Hash;
-use Illuminate\Pipeline\Pipeline;
 use Log;
 use Str;
 
-class MfaPipelineManager
+class MfaOrchestrator
 {
     use CanResolveModelFromId;
 
@@ -72,20 +70,31 @@ class MfaPipelineManager
     }
 
     /**
-     * Generate the secret for all the verification options
-     * in the MFA pipeline
+     * Generate the secret for all the verification methods
+     * in the MFA methods registry
      */
-    public function runSecretGeneration(string $mfaAttemptToken): string
+    public function runSecretGeneration(string $mfaAttemptToken): bool
     {
         $mfaAttempt = $this->getMfaAttemptRecordFromToken($mfaAttemptToken);
         $activeStep = $this->getCurrentMfaStep($mfaAttemptToken);
-        $passable = new MfaPipePasssable(MfaPipelineAction::GENERATE_SECRET, $mfaAttempt->user, $activeStep);
 
-        /** @var bool $success */
-        return app(Pipeline::class)
-            ->send($passable)
-            ->through(...$this->mfaMethodsRegistry)
-            ->thenReturn();
+        foreach ($this->mfaMethodsRegistry as $methodClass) {
+            /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
+            $factor = resolve($methodClass);
+
+            if ($activeStep === $factor->verificationMethod()) {
+                $factor->generateSecret($mfaAttempt->user);
+
+                return true;
+            }
+        }
+
+        Log::debug('Unable to create a secret', [
+            'method' => __METHOD__,
+            'active_step' => $activeStep,
+        ]);
+
+        return false;
     }
 
     /**
@@ -97,16 +106,26 @@ class MfaPipelineManager
     public function runCodeDelivery(string $mfaAttemptToken): bool
     {
         $mfaAttempt = $this->getMfaAttemptRecordFromToken($mfaAttemptToken);
+        $user = $mfaAttempt->user;
         $activeStep = $this->getCurrentMfaStep($mfaAttemptToken);
-        $passable = new MfaPipePasssable(MfaPipelineAction::SEND_CODE, $mfaAttempt->user, $activeStep);
 
-        /** @var bool $success */
-        $success = app(Pipeline::class)
-            ->send($passable)
-            ->through(...$this->channelBasedMethodsRegistry)
-            ->thenReturn();
+        foreach ($this->mfaMethodsRegistry as $methodClass) {
+            /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
+            $factor = resolve($methodClass);
+            if ($activeStep === $factor->verificationMethod()) {
+                $code = $factor->generateCode($user);
+                $factor->sendCode($user, $code);
 
-        return $success;
+                return true;
+            }
+        }
+
+        Log::debug('Unable to send MFA code', [
+            'method' => __METHOD__,
+            'active_step' => $activeStep,
+        ]);
+
+        return false;
     }
 
     public function runQrCodeGeneration(string $mfaAttemptToken): bool
@@ -132,7 +151,7 @@ class MfaPipelineManager
 
         $mfaAttempt = MfaAttempt::find($idAndToken['id']);
         if (! $mfaAttempt) {
-            Log::debug('MFA Attempt ID not found', ['ID' => $idAndToken['id'], 'method' => __METHOD__]);
+            Log::debug('MFA Attempt ID not found', ['id' => $idAndToken['id'], 'method' => __METHOD__]);
 
             return false;
         }
@@ -144,7 +163,7 @@ class MfaPipelineManager
         }
 
         if (now() >= $mfaAttempt->expires_at) {
-            Log::debug('MFA Attempt token expired', ['mfa_id' => $mfaAttempt->id, 'method' => __METHOD__]);
+            Log::debug('MFA Attempt token expired', ['mfa_attempt_id' => $mfaAttempt->id, 'method' => __METHOD__]);
 
             return false;
         }

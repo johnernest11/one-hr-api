@@ -10,7 +10,7 @@ use App\Http\Requests\AuthRequest;
 use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
-use App\Services\MFA\MfaPipelineManager;
+use App\Services\MfaOrchestrator;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 
@@ -21,7 +21,7 @@ Route::group(['as' => 'auth.'], function () {
     $sanctumAuthService = resolve(PersistentAuthTokenManager::class);
     $jwtAuthService = resolve(AuthTokenManager::class);
     $appSettingsManager = resolve(AppSettingsManager::class);
-    $mfaPipelineManager = resolve(MfaPipelineManager::class);
+    $mfaPipelineManager = resolve(MfaOrchestrator::class);
 
     // We do a conditional for POST /auth/tokens (login)
     Route::middleware(['throttle:api-login', 'lowercase_query:auth_type'])->name('store')

@@ -6,13 +6,11 @@ use App\Enums\VerificationMethod;
 use App\Models\User;
 use App\Models\VerificationFactor;
 use App\Traits\Services\CanResolveModelFromId;
-use App\Traits\Services\MfaPipeStage;
 use OTPHP\TOTP;
 
 abstract class DeliveryVerificationMethod
 {
     use CanResolveModelFromId;
-    use MfaPipeStage;
 
     /** Create an MFA Code */
     public function generateCode(int|string|User $modelOrId): string
@@ -42,7 +40,7 @@ abstract class DeliveryVerificationMethod
         return true;
     }
 
-    protected function generateSecret(User|int|string $userIdOrModel, bool $forceNew = false): string
+    public function generateSecret(User|int|string $userIdOrModel, bool $forceNew = false): string
     {
         $user = $this->retrieveModel($userIdOrModel, User::query());
         /** @var VerificationFactor $secret */
@@ -73,11 +71,11 @@ abstract class DeliveryVerificationMethod
     }
 
     /**
-     * The time it takes before the MFA Code expires (10 minutes default).
+     * The time it takes before the MFA Code expires (15 minutes default).
      */
     protected function getCodeExpirationSeconds(): int
     {
-        return 10 * 60;
+        return 15 * 60;
     }
 
     /** Send an MFA code notification to the user */

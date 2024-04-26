@@ -8,7 +8,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
 use App\Services\AppSettingsManager;
-use App\Services\MFA\MfaPipelineManager;
+use App\Services\MfaOrchestrator;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
@@ -23,13 +23,13 @@ abstract class AuthController extends ApiController
 
     private AppSettingsManager $appSettingsManager;
 
-    private MfaPipelineManager $mfaPipelineManager;
+    private MfaOrchestrator $mfaPipelineManager;
 
     public function __construct(
         UserAccountManager $accManager,
         UserCredentialManager $credManager,
         AppSettingsManager $settingsManager,
-        MfaPipelineManager $mfaPipelineManager,
+        MfaOrchestrator $mfaPipelineManager,
     ) {
         $this->userAccountManager = $accManager;
         $this->userCredentialManager = $credManager;
