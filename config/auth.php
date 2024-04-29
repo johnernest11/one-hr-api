@@ -163,4 +163,19 @@ return [
     'mfa_methods' => [
         \App\Services\Verification\Methods\EmailVerificationChannel::class,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Multi-Factor Authentication Expirations
+    |--------------------------------------------------------------------------
+    |
+    | This configuration defines the expiration time (in seconds) of MFA codes
+    | implemented by delivery and channel-based classes
+    |
+    */
+    'mfa_codes' => [
+        'expiration' => [
+            'email' => 12 * 60, // 12 minutes
+        ],
+    ],
 ];

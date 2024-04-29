@@ -38,6 +38,10 @@ class MfaController extends ApiController
         }
 
         $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaToken);
+        if (! $step) {
+            return $this->error('All MFA steps have already been completed', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+        }
+
         $this->mfaOrchestrator->runCodeDelivery($mfaToken);
 
         return $this->success(['message' => 'OTP sent successfully', 'current_step' => $step], Response::HTTP_ACCEPTED);
@@ -70,7 +74,7 @@ class MfaController extends ApiController
             return $this->error('Invalid MFA Code provided', Response::HTTP_UNPROCESSABLE_ENTITY, ApiErrorCode::INVALID_MFA_CODE);
         }
 
-        $mfaStepsCompleted = $this->mfaOrchestrator->allMfaStepsCompleted($mfaToken);
+        $mfaStepsCompleted = $this->mfaOrchestrator->allMfaStepsAreCompleted($mfaToken);
         if (! $mfaStepsCompleted) {
             return $this->success(['message' => 'MFA code validation success', 'current_step' => 'google_authenticator'], Response::HTTP_OK);
         }

@@ -29,4 +29,12 @@ class EmailVerificationChannel extends DeliveryVerificationMethod
     {
         return VerificationMethod::EMAIL_CHANNEL;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getCodeExpirationSeconds(): int
+    {
+        return config('auth.mfa_codes.expiration.email');
+    }
 }

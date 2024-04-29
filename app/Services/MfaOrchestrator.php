@@ -155,49 +155,26 @@ class MfaOrchestrator
         $activeStep = $this->getCurrentMfaStep($mfaAttemptToken);
 
         // Check if all steps are completed
-        if (! $activeStep && $this->allMfaStepsCompleted($mfaAttemptToken)) {
+        if (! $activeStep && $this->allMfaStepsAreCompleted($mfaAttemptToken)) {
             Log::debug('All MFA Steps are completed', ['method' => __METHOD__]);
 
-            return true;
+            return false;
         }
 
-        // Run through the registry list to verify the code
+        // Run through the registry list to verify the code and flag the MFA step as completed
         foreach ($this->mfaMethodsRegistry as $methodClass) {
             /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
             $factor = resolve($methodClass);
 
             if ($activeStep === $factor->verificationMethod()) {
-                $this->completeStep($mfaAttempt, $activeStep);
+                $isValid = $factor->verifyCode($mfaAttempt->user, $code);
+                if ($isValid) {
+                    $this->completeStep($mfaAttempt, $activeStep);
+                }
 
-                return $factor->verifyCode($mfaAttempt->user, $code);
+                return $isValid;
             }
         }
-
-        return true;
-    }
-
-    private function completeStep(string|MfaAttempt $mfaAttemptTokenOrModel, VerificationMethod $activeStep): bool
-    {
-        $mfaAttempt = $mfaAttemptTokenOrModel;
-        if (! ($mfaAttempt instanceof MfaAttempt)) {
-            $mfaAttempt = $this->resolveMfaAttemptFrom($mfaAttemptTokenOrModel);
-        }
-
-        if (! $mfaAttempt) {
-            Log::debug('Unable to resolve the MFA Attempt record from token', ['method' => __METHOD__]);
-        }
-
-        $updatedSteps = [];
-        foreach ($mfaAttempt->steps as $step) {
-            if ($step['name'] === $activeStep->value) {
-                $updatedSteps[] = ['name' => $step['name'], 'completed' => true];
-
-                continue;
-            }
-            $updatedSteps[] = $step;
-        }
-        $mfaAttempt->steps = $updatedSteps;
-        $mfaAttempt->save();
 
         return true;
     }
@@ -205,7 +182,7 @@ class MfaOrchestrator
     /**
      * Check if all MFA steps have been completed
      */
-    public function allMfaStepsCompleted(string $mfaAttemptToken): bool
+    public function allMfaStepsAreCompleted(string $mfaAttemptToken): bool
     {
         $mfaAttempt = $this->resolveMfaAttemptFrom($mfaAttemptToken);
         if (! $mfaAttempt) {
@@ -329,5 +306,31 @@ class MfaOrchestrator
         }
 
         return $mfaAttempt;
+    }
+
+    private function completeStep(string|MfaAttempt $mfaAttemptTokenOrModel, VerificationMethod $activeStep): bool
+    {
+        $mfaAttempt = $mfaAttemptTokenOrModel;
+        if (! ($mfaAttempt instanceof MfaAttempt)) {
+            $mfaAttempt = $this->resolveMfaAttemptFrom($mfaAttemptTokenOrModel);
+        }
+
+        if (! $mfaAttempt) {
+            Log::debug('Unable to resolve the MFA Attempt record from token', ['method' => __METHOD__]);
+        }
+
+        $updatedSteps = [];
+        foreach ($mfaAttempt->steps as $step) {
+            if ($step['name'] === $activeStep->value) {
+                $updatedSteps[] = ['name' => $step['name'], 'completed' => true];
+
+                continue;
+            }
+            $updatedSteps[] = $step;
+        }
+        $mfaAttempt->steps = $updatedSteps;
+        $mfaAttempt->save();
+
+        return true;
     }
 }
