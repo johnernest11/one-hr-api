@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('token')->unique();
             $table->json('steps');
+            $table->json('auth_metadata')->nullable(); // Any metadata during the login process
             $table->timestamps();
             $table->timestamp('expires_at')->nullable();
         });

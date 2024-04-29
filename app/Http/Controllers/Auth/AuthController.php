@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\ApiErrorCode;
+use App\Enums\AuthenticationType;
 use App\Events\UserRegistered;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
@@ -70,11 +71,16 @@ abstract class AuthController extends ApiController
             );
         }
 
+        // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
+        $clientName = $request->get('client_name') ?? 'api_token';
+        $authType = $request->get('auth_type') ?? AuthenticationType::SANCTUM->value;
+
         // We proceed with the MFA flow if enabled
         $mfaConfig = $this->appSettingsManager->getMfaConfig();
         if ($mfaConfig['enabled']) {
             $mfaSteps = $mfaConfig['steps'];
-            $mfaAttempt = $this->mfaPipelineManager->generateMfaAttemptToken($user, $mfaSteps);
+            $authMeta = ['token_name' => $clientName, 'auth_type' => $authType];
+            $mfaAttempt = $this->mfaPipelineManager->generateMfaAttemptToken($user, $mfaSteps, $authMeta);
             $this->mfaPipelineManager->runSecretGeneration($mfaAttempt['token']);
 
             $data = [
@@ -85,8 +91,6 @@ abstract class AuthController extends ApiController
             return $this->success(['data' => $data], Response::HTTP_OK);
         }
 
-        // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
-        $clientName = $request->get('client_name') ?? 'api_token';
         $expiresAt = $this->getTokenExpiration();
         $token = $this->generateAuthToken($user, $expiresAt, $clientName);
 

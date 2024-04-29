@@ -71,7 +71,7 @@ abstract class DeliveryVerificationMethod
     }
 
     /**
-     * The time it takes before the MFA Code expires (15 minutes default).
+     * The time it takes before the MFA Code expires (10 minutes default).
      */
     protected function getCodeExpirationSeconds(): int
     {

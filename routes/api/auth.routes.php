@@ -92,4 +92,7 @@ Route::controller(PasswordController::class)->name('auth.password.')->group(func
 Route::controller(MfaController::class)->name('auth.mfa.')->group(function () {
     /** @uses MfaController::sendCode */
     Route::post('mfa/send-code', 'sendCode')->name('send-code');
+
+    /** @uses MfaController::verifyCode */
+    Route::post('mfa/verify-code', 'verifyCode')->name('verify-code');
 });

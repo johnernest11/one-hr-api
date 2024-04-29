@@ -21,6 +21,7 @@ class MfaAttempt extends Model
         'user_id',
         'token',
         'steps',
+        'auth_metadata',
         'expires_at',
     ];
 
@@ -31,6 +32,7 @@ class MfaAttempt extends Model
      */
     protected $casts = [
         'steps' => 'array',
+        'auth_metadata' => 'array',
     ];
 
     /**

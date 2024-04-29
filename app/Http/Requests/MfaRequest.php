@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AuthenticationType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MfaRequest extends FormRequest
@@ -32,6 +33,17 @@ class MfaRequest extends FormRequest
         return [
             'code' => ['required'],
             'token' => ['required'],
+            'auth_type' => ['nullable', 'in:'.AuthenticationType::SANCTUM->value.','.AuthenticationType::JWT->value],
+        ];
+    }
+
+    /**
+     * Custom validation messages
+     */
+    public function messages(): array
+    {
+        return [
+            'auth_type.in' => 'The :attribute field must either `jwt` or `sanctum`',
         ];
     }
 }

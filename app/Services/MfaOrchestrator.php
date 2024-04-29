@@ -46,7 +46,7 @@ class MfaOrchestrator
      * MFA verification state. This enables support for concurrent login
      * attempts by verifying tokens associated with previous login attempts.
      */
-    public function generateMfaAttemptToken(User|int|string $userModelOrId, array|string $mfaSteps): array
+    public function generateMfaAttemptToken(User|int|string $userModelOrId, array $mfaSteps, array $authMeta = []): array
     {
         $user = $this->retrieveModel($userModelOrId, User::query());
         $token = Str::upper(Str::uuid());
@@ -58,6 +58,7 @@ class MfaOrchestrator
             'user_id' => $user->id,
             'token' => $token,
             'steps' => $stepsWithStatus,
+            'auth_metadata' => $authMeta,
             'expires_at' => $this->mfaAttemptExpiresAt,
         ]);
 
@@ -77,6 +78,13 @@ class MfaOrchestrator
     {
         $mfaAttempt = $this->getMfaAttemptRecordFromToken($mfaAttemptToken);
         $activeStep = $this->getCurrentMfaStep($mfaAttemptToken);
+        if (! $activeStep) {
+            Log::debug('Secret generation stopped as there are no active steps.', [
+                'method' => __METHOD__,
+            ]);
+
+            return true;
+        }
 
         foreach ($this->mfaMethodsRegistry as $methodClass) {
             /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
@@ -108,6 +116,13 @@ class MfaOrchestrator
         $mfaAttempt = $this->getMfaAttemptRecordFromToken($mfaAttemptToken);
         $user = $mfaAttempt->user;
         $activeStep = $this->getCurrentMfaStep($mfaAttemptToken);
+        if (! $activeStep) {
+            Log::debug('Code delivery stopped as there are no active steps.', [
+                'method' => __METHOD__,
+            ]);
+
+            return true;
+        }
 
         foreach ($this->mfaMethodsRegistry as $methodClass) {
             /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
@@ -128,16 +143,81 @@ class MfaOrchestrator
         return false;
     }
 
-    public function runQrCodeGeneration(string $mfaAttemptToken): bool
-    {
-        return true;
-    }
-
     /**
      * Verify the code given by the user
      * with the current MFA option in the pipeline
      */
-    public function runCodeVerification(): bool
+    public function runCodeVerification(string $mfaAttemptToken, string|int $code): bool
+    {
+        $mfaAttempt = $this->getMfaAttemptRecordFromToken($mfaAttemptToken);
+
+        // Get the MFA step that needs verification
+        $activeStep = $this->getCurrentMfaStep($mfaAttemptToken);
+
+        // Check if all steps are completed
+        if (! $activeStep && $this->allMfaStepsCompleted($mfaAttemptToken)) {
+            Log::debug('All MFA Steps are completed', ['method' => __METHOD__]);
+
+            return true;
+        }
+
+        // Run through the registry list to verify the code
+        foreach ($this->mfaMethodsRegistry as $methodClass) {
+            /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
+            $factor = resolve($methodClass);
+
+            if ($activeStep === $factor->verificationMethod()) {
+                $this->completeStep($mfaAttempt, $activeStep);
+
+                return $factor->verifyCode($mfaAttempt->user, $code);
+            }
+        }
+
+        return true;
+    }
+
+    private function completeStep(string|MfaAttempt $mfaAttemptTokenOrModel, VerificationMethod $activeStep): bool
+    {
+        $mfaAttempt = $mfaAttemptTokenOrModel;
+        if (! ($mfaAttempt instanceof MfaAttempt)) {
+            $mfaAttempt = $this->resolveMfaAttemptFrom($mfaAttemptTokenOrModel);
+        }
+
+        if (! $mfaAttempt) {
+            Log::debug('Unable to resolve the MFA Attempt record from token', ['method' => __METHOD__]);
+        }
+
+        $updatedSteps = [];
+        foreach ($mfaAttempt->steps as $step) {
+            if ($step['name'] === $activeStep->value) {
+                $updatedSteps[] = ['name' => $step['name'], 'completed' => true];
+
+                continue;
+            }
+            $updatedSteps[] = $step;
+        }
+        $mfaAttempt->steps = $updatedSteps;
+        $mfaAttempt->save();
+
+        return true;
+    }
+
+    /**
+     * Check if all MFA steps have been completed
+     */
+    public function allMfaStepsCompleted(string $mfaAttemptToken): bool
+    {
+        $mfaAttempt = $this->resolveMfaAttemptFrom($mfaAttemptToken);
+        if (! $mfaAttempt) {
+            Log::debug('Unable to resolve MFA Attempt record from token', ['method' => __METHOD__]);
+
+            return false;
+        }
+
+        return collect($mfaAttempt->steps)->every(fn ($s) => $s['completed']);
+    }
+
+    public function runQrCodeGeneration(string $mfaAttemptToken): bool
     {
         return true;
     }
@@ -175,9 +255,10 @@ class MfaOrchestrator
      * Get the current MFA step the user needs to complete
      * in an MFA attempt
      */
-    public function getCurrentMfaStep(string $mfaToken): ?VerificationMethod
+    public function getCurrentMfaStep(string|MfaAttempt $mfaAttemptTokenOrModel): ?VerificationMethod
     {
-        $attempt = $this->getMfaAttemptRecordFromToken($mfaToken);
+        $attempt = $this->resolveMfaAttemptFrom($mfaAttemptTokenOrModel);
+
         if (! $attempt) {
             return null;
         }
@@ -188,12 +269,36 @@ class MfaOrchestrator
             }
         }
 
-        Log::debug('Unable to find the next step', [
+        Log::debug('There is not more next step in the MFA pipeline', [
             'method' => __METHOD__,
             'mfa_attempt_id' => $attempt->id,
         ]);
 
         return null;
+    }
+
+    /**
+     * Get the MFA Attempt record via token
+     */
+    public function getMfaAttemptRecordFromToken(string $mfaAttemptToken): ?MfaAttempt
+    {
+        $idAndToken = $this->extractMfaTokenIdAndValue($mfaAttemptToken);
+        if (count($idAndToken) === 0) {
+            return null;
+        }
+
+        $attempt = MfaAttempt::where('id', $idAndToken['id'])->firstOrFail();
+
+        if (! Hash::check($idAndToken['token'], $attempt->token)) {
+            Log::debug('The token has an incorrect hash', [
+                'method' => __METHOD__,
+                'mfa_attempt_id' => $idAndToken['id'],
+            ]);
+
+            return null;
+        }
+
+        return $attempt;
     }
 
     private function buildRawMfaTokenFormat(MfaAttempt $mfaAttempt, string $token): string
@@ -216,24 +321,13 @@ class MfaOrchestrator
         return ['id' => $idAndToken[0], 'token' => $idAndToken[1]];
     }
 
-    private function getMfaAttemptRecordFromToken(string $mfaAttemptToken): ?MfaAttempt
+    private function resolveMfaAttemptFrom(string|MfaAttempt $mfaAttemptTokenOrModel): ?MfaAttempt
     {
-        $idAndToken = $this->extractMfaTokenIdAndValue($mfaAttemptToken);
-        if (count($idAndToken) === 0) {
-            return null;
+        $mfaAttempt = $mfaAttemptTokenOrModel;
+        if (! ($mfaAttempt instanceof MfaAttempt)) {
+            $mfaAttempt = $this->getMfaAttemptRecordFromToken($mfaAttemptTokenOrModel);
         }
 
-        $attempt = MfaAttempt::where('id', $idAndToken['id'])->firstOrFail();
-
-        if (! Hash::check($idAndToken['token'], $attempt->token)) {
-            Log::debug('The token has an incorrect hash', [
-                'method' => __METHOD__,
-                'mfa_attempt_id' => $idAndToken['id'],
-            ]);
-
-            return null;
-        }
-
-        return $attempt;
+        return $mfaAttempt;
     }
 }

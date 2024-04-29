@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Services\Verification\DeliveryVerificationMethod;
 use Carbon\Carbon;
 
-class EmailChannelVerification extends DeliveryVerificationMethod
+class EmailVerificationChannel extends DeliveryVerificationMethod
 {
     /**
      * {@inheritDoc}
