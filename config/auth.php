@@ -1,5 +1,8 @@
 <?php
 
+use App\Services\Verification\Methods\EmailVerificationChannel;
+use App\Services\Verification\Methods\GAuthenticatorVerificationApp;
+
 return [
 
     /*
@@ -156,12 +159,13 @@ return [
     |--------------------------------------------------------------------------
     |
     | This configuration defines the available support MFA Verification Methods.
-    | Each method must be a class extending the App\Services\Verification\AppVerificationMethod
-    | or the App\Services\Verification\DeliveryVerificationMethod abstract classes
+    | Each method must be a class that extends the App\Services\Verification\AppVerificationMethod
+    | abstract class or implements App\Services\Verification\DeliveryVerificationMethod interface
     |
     */
     'mfa_methods' => [
-        \App\Services\Verification\Methods\EmailVerificationChannel::class,
+        EmailVerificationChannel::class,
+        GAuthenticatorVerificationApp::class,
     ],
 
     /*

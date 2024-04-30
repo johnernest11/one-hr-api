@@ -42,6 +42,10 @@ class MfaController extends ApiController
             return $this->error('All MFA steps have already been completed', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
         }
 
+        if (! $this->mfaOrchestrator->stepSupportsCodeDelivery($step)) {
+            return $this->error('Current MFA step does not support code delivery', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+        }
+
         $this->mfaOrchestrator->runCodeDelivery($mfaToken);
 
         return $this->success(['message' => 'OTP sent successfully', 'current_step' => $step], Response::HTTP_ACCEPTED);
@@ -52,7 +56,28 @@ class MfaController extends ApiController
      */
     public function generateQrCode(MfaRequest $request): JsonResponse
     {
-        return $this->success(['data' => null], Response::HTTP_OK);
+        $mfaToken = $request->input('token');
+        $tokenIsValid = $this->mfaOrchestrator->verifyMfaAttemptToken($mfaToken);
+        if (! $tokenIsValid) {
+            return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
+        }
+
+        $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaToken);
+        if (! $step) {
+            return $this->error('All MFA steps have already been completed', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+        }
+
+        if (! $this->mfaOrchestrator->stepSupportsQrCodeGeneration($step)) {
+            return $this->error('Current MFA step does not support QR code generation', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+        }
+
+        $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaToken);
+        $data = [
+            'current_step' => $step,
+            'qr_code' => $qrCode,
+        ];
+
+        return $this->success(['data' => $data], Response::HTTP_OK);
     }
 
     /**

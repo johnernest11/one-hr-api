@@ -17,6 +17,7 @@ class MfaRequest extends FormRequest
         return match ($routeName) {
             'auth.mfa.verify-code' => $this->getVerifyCodeRules(),
             'auth.mfa.send-code' => $this->getSendCodeRules(),
+            'auth.mfa.generate-qrcode' => $this->getGenerateQrcodeRules(),
             default => []
         };
     }
@@ -34,6 +35,13 @@ class MfaRequest extends FormRequest
             'code' => ['required'],
             'token' => ['required'],
             'auth_type' => ['nullable', 'in:'.AuthenticationType::SANCTUM->value.','.AuthenticationType::JWT->value],
+        ];
+    }
+
+    private function getGenerateQrcodeRules(): array
+    {
+        return [
+            'token' => ['required'],
         ];
     }
 

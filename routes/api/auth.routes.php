@@ -93,6 +93,9 @@ Route::controller(MfaController::class)->name('auth.mfa.')->group(function () {
     /** @uses MfaController::sendCode */
     Route::post('mfa/send-code', 'sendCode')->name('send-code');
 
+    /** @uses MfaController::generateQrCode */
+    Route::post('mfa/generate-qrcode', 'generateQrCode')->name('generate-qrcode');
+
     /** @uses MfaController::verifyCode */
     Route::post('mfa/verify-code', 'verifyCode')->name('verify-code');
 });

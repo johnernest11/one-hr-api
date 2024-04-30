@@ -12,39 +12,40 @@ abstract class DeliveryVerificationMethod
 {
     use CanResolveModelFromId;
 
-    /** Create an MFA Code */
+    /**
+     * Create a verification code
+     */
     public function generateCode(int|string|User $modelOrId): string
     {
         /** @var User $user */
         $user = $this->retrieveModel($modelOrId, User::query());
-        $secret = $this->generateSecret($user->id);
+        $secret = $this->getOrCreateSecret($user->id);
         $totp = TOTP::create($secret, $this->getCodeExpirationSeconds());
 
         return $totp->now();
     }
 
-    /** Verify MFA code */
+    /**
+     * Verify the code
+     */
     public function verifyCode(int|string|User $userModelOrId, string $input): bool
     {
         $user = $this->retrieveModel($userModelOrId, User::query());
-        $secret = $this->generateSecret($user->id);
+        $secret = $this->getOrCreateSecret($user->id);
         $timestamp = time();
         $totp = TOTP::create($secret, $this->getCodeExpirationSeconds());
 
-        $isCorrect = $totp->verify($input, $timestamp);
-        if (! $isCorrect) {
-            return false;
-        }
-
-        // Update the step in the `mfa_attempts` table
-        return true;
+        return $totp->verify($input, $timestamp);
     }
 
-    public function generateSecret(User|int|string $userIdOrModel, bool $forceNew = false): string
+    /**
+     * Generate the secret where the verification codes will be based on
+     */
+    public function getOrCreateSecret(User|int|string $userIdOrModel, bool $forceNew = false): string
     {
         $user = $this->retrieveModel($userIdOrModel, User::query());
         /** @var VerificationFactor $secret */
-        $verificationFactor = VerificationFactor::where('user_id', '=', $user->id)
+        $verificationFactor = VerificationFactor::where('user_id', $user->id)
             ->where('type', '=', VerificationMethod::EMAIL_CHANNEL)
             ->first();
 

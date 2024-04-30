@@ -37,7 +37,7 @@ class MfaOrchestrator
 
         $this->appBasedMethodsRegistry = array_filter(
             $this->mfaMethodsRegistry,
-            fn ($method) => is_subclass_of($method, AppVerificationMethod::class)
+            fn ($method) => (bool) class_implements($method, AppVerificationMethod::class)
         );
     }
 
@@ -91,7 +91,7 @@ class MfaOrchestrator
             $factor = resolve($methodClass);
 
             if ($activeStep === $factor->verificationMethod()) {
-                $factor->generateSecret($mfaAttempt->user);
+                $factor->getOrCreateSecret($mfaAttempt->user);
 
                 return true;
             }
@@ -180,23 +180,43 @@ class MfaOrchestrator
     }
 
     /**
-     * Check if all MFA steps have been completed
+     * Generate the QR code that authenticator apps will scan.
+     * This is only available for app-based verification options in the pipeline.
+     *
+     * E.g. GoogleAuthenticator, TwilioAuthy
      */
-    public function allMfaStepsAreCompleted(string $mfaAttemptToken): bool
+    public function runQrCodeGeneration(string $mfaAttemptToken): ?string
     {
-        $mfaAttempt = $this->resolveMfaAttemptFrom($mfaAttemptToken);
-        if (! $mfaAttempt) {
-            Log::debug('Unable to resolve MFA Attempt record from token', ['method' => __METHOD__]);
+        $mfaAttempt = $this->getMfaAttemptRecordFromToken($mfaAttemptToken);
 
-            return false;
+        // Get the MFA step that needs verification
+        $activeStep = $this->getCurrentMfaStep($mfaAttemptToken);
+
+        // Check if all steps are completed
+        if (! $activeStep && $this->allMfaStepsAreCompleted($mfaAttemptToken)) {
+            Log::debug('All MFA Steps are completed', ['method' => __METHOD__]);
+
+            return null;
         }
 
-        return collect($mfaAttempt->steps)->every(fn ($s) => $s['completed']);
-    }
+        // Run through the registry list to verify the code and flag the MFA step as completed
+        $user = $mfaAttempt->user;
+        foreach ($this->mfaMethodsRegistry as $methodClass) {
+            /** @var AppVerificationMethod $factor */
+            $factor = resolve($methodClass);
 
-    public function runQrCodeGeneration(string $mfaAttemptToken): bool
-    {
-        return true;
+            if ($activeStep === $factor->verificationMethod()) {
+                return $factor->generateQrCode($user, 'DSWD DX Team', $user->email, $factor->getOrCreateSecret($user));
+            }
+        }
+
+        Log::debug('Unable to create QR code', [
+            'method' => __METHOD__,
+            'active_step' => $activeStep,
+        ]
+        );
+
+        return null;
     }
 
     public function verifyMfaAttemptToken(string $mfaToken): bool
@@ -255,6 +275,38 @@ class MfaOrchestrator
     }
 
     /**
+     * Check if the MFA Step (Verification method) supports code delivery
+     */
+    public function stepSupportsCodeDelivery(VerificationMethod $verificationMethod): bool
+    {
+        foreach ($this->channelBasedMethodsRegistry as $channelClass) {
+            /** @var DeliveryVerificationMethod $channelFactor */
+            $channelFactor = resolve($channelClass);
+            if ($verificationMethod === $channelFactor->verificationMethod()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the MFA Step (Verification method) supports QR code generation
+     */
+    public function stepSupportsQrCodeGeneration(VerificationMethod $verificationMethod): bool
+    {
+        foreach ($this->appBasedMethodsRegistry as $appClass) {
+            /** @var AppVerificationMethod $channelFactor */
+            $channelFactor = resolve($appClass);
+            if ($verificationMethod === $channelFactor->verificationMethod()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get the MFA Attempt record via token
      */
     public function getMfaAttemptRecordFromToken(string $mfaAttemptToken): ?MfaAttempt
@@ -276,6 +328,21 @@ class MfaOrchestrator
         }
 
         return $attempt;
+    }
+
+    /**
+     * Check if all MFA steps have been completed
+     */
+    public function allMfaStepsAreCompleted(string $mfaAttemptToken): bool
+    {
+        $mfaAttempt = $this->resolveMfaAttemptFrom($mfaAttemptToken);
+        if (! $mfaAttempt) {
+            Log::debug('Unable to resolve MFA Attempt record from token', ['method' => __METHOD__]);
+
+            return false;
+        }
+
+        return collect($mfaAttempt->steps)->every(fn ($s) => $s['completed']);
     }
 
     private function buildRawMfaTokenFormat(MfaAttempt $mfaAttempt, string $token): string
