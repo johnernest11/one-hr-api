@@ -68,7 +68,6 @@ class AppSettingsManagerTest extends TestCase
             true,
             VerificationMethod::EMAIL_CHANNEL,
             VerificationMethod::GOOGLE_AUTHENTICATOR,
-            VerificationMethod::SMS_CHANNEL
         );
 
         $this->assertTrue($success);
@@ -80,9 +79,7 @@ class AppSettingsManagerTest extends TestCase
             true,
             VerificationMethod::EMAIL_CHANNEL,
             VerificationMethod::GOOGLE_AUTHENTICATOR,
-            VerificationMethod::SMS_CHANNEL,
-            VerificationMethod::EMAIL_CHANNEL, // repeated
-            VerificationMethod::SMS_CHANNEL // repeated
+            VerificationMethod::EMAIL_CHANNEL // repeated
         );
 
         $mfaConfig = $this->service->getMfaConfig();
@@ -91,7 +88,6 @@ class AppSettingsManagerTest extends TestCase
         $this->assertEquals($mfaConfig['steps'], [
             VerificationMethod::EMAIL_CHANNEL->value,
             VerificationMethod::GOOGLE_AUTHENTICATOR->value,
-            VerificationMethod::SMS_CHANNEL->value,
         ]);
     }
 
@@ -101,7 +97,6 @@ class AppSettingsManagerTest extends TestCase
             true,
             VerificationMethod::EMAIL_CHANNEL,
             VerificationMethod::GOOGLE_AUTHENTICATOR,
-            VerificationMethod::SMS_CHANNEL
         );
 
         $mfaConfig = $this->service->getMfaConfig();
@@ -109,7 +104,6 @@ class AppSettingsManagerTest extends TestCase
         $this->assertEquals($mfaConfig['steps'], [
             VerificationMethod::EMAIL_CHANNEL->value,
             VerificationMethod::GOOGLE_AUTHENTICATOR->value,
-            VerificationMethod::SMS_CHANNEL->value,
         ]);
     }
 }

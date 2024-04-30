@@ -127,7 +127,6 @@ class SetUpMfa extends Command
         $methods = [
             [VerificationMethod::GOOGLE_AUTHENTICATOR->value, 'Use the Google Authenticator Mobile App to generate codes'],
             [VerificationMethod::EMAIL_CHANNEL->value, 'Receive a one-time code via email'],
-            [VerificationMethod::SMS_CHANNEL->value, 'Receive a one-time code via SMS'],
         ];
         $this->table(['Name', 'Description'], $methods);
         $this->newLine();

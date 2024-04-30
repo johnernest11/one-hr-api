@@ -25,13 +25,12 @@ class SetUpMfaTest extends TestCase
 
     public function test_it_can_enable_mfa_and_all_steps(): void
     {
-        $methods = ['email_channel', 'google_authenticator', 'sms_channel'];
+        $methods = ['email_channel', 'google_authenticator'];
 
         $this->artisan('app:mfa')
             ->expectsChoice('Turn-on Multi-Factor Authentication?', 'Yes', [1 => 'Yes', 2 => 'No'])
             ->expectsQuestion('Enter the name of the 1st MFA method ', $methods[0])
             ->expectsQuestion('Enter the name of the 2nd MFA method (Leave as blank to stop adding)', $methods[1])
-            ->expectsQuestion('Enter the name of the 3rd MFA method (Leave as blank to stop adding)', $methods[2])
             ->expectsConfirmation('Are you sure with this order?', 'yes')
             ->assertOk();
 
