@@ -91,6 +91,7 @@ abstract class AuthController extends ApiController
             return $this->success(['data' => $data], Response::HTTP_OK);
         }
 
+        // Continue with the login if MFA is not enabled
         $expiresAt = $this->getTokenExpiration();
         $token = $this->generateAuthToken($user, $expiresAt, $clientName);
 

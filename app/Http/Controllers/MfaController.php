@@ -67,6 +67,7 @@ class MfaController extends ApiController
             return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
         }
 
+        // Validate MFA Code
         $code = $request->input('code');
         $success = $this->mfaOrchestrator->runCodeVerification($mfaToken, $code);
 
@@ -74,12 +75,13 @@ class MfaController extends ApiController
             return $this->error('Invalid MFA Code provided', Response::HTTP_UNPROCESSABLE_ENTITY, ApiErrorCode::INVALID_MFA_CODE);
         }
 
+        // If there are still incomplete MFA steps, we just return a success message
         $mfaStepsCompleted = $this->mfaOrchestrator->allMfaStepsAreCompleted($mfaToken);
         if (! $mfaStepsCompleted) {
             return $this->success(['message' => 'MFA code validation success', 'current_step' => 'google_authenticator'], Response::HTTP_OK);
         }
 
-        // We create a login token if the user has completed their MFA
+        // If all the MFA steps are completed, we authenticate the user
         $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptRecordFromToken($mfaToken);
         $user = $mfaAttempt->user->load('userProfile');
         $authMeta = $mfaAttempt->auth_metadata;
