@@ -76,6 +76,6 @@ class City extends Model
      */
     protected function province(): BelongsTo
     {
-        return $this->belongsTo(ProvinceFilter::class);
+        return $this->belongsTo(Province::class);
     }
 }

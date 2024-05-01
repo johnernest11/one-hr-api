@@ -87,6 +87,6 @@ class Barangay extends Model
      */
     protected function city(): BelongsTo
     {
-        return $this->belongsTo(Province::class);
+        return $this->belongsTo(City::class);
     }
 }
