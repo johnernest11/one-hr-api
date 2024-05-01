@@ -46,7 +46,7 @@ class Region extends Model
      *
      * @returns HasMany
      */
-    protected function address(): HasMany
+    public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
     }

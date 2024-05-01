@@ -64,7 +64,7 @@ class City extends Model
      *
      * @returns HasMany
      */
-    protected function address(): HasMany
+    public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
     }
@@ -74,7 +74,7 @@ class City extends Model
      *
      * @returns BelongsTo
      */
-    protected function province(): BelongsTo
+    public function province(): BelongsTo
     {
         return $this->belongsTo(Province::class);
     }
