@@ -23,7 +23,7 @@
         "stechstudio/laravel-jwt": "^2.2"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": "^2.12",
+        "barryvdh/laravel-ide-helper": "^3.0",
         "enlightn/security-checker": "^1.10",
         "fakerphp/faker": "^1.9.1",
         "itsgoingd/clockwork": "^5.1",
