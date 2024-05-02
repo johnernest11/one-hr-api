@@ -29,6 +29,7 @@ class VerificationFactor extends Model
      */
     protected $casts = [
         'type' => VerificationMethod::class,
+        'secret' => 'encrypted',
     ];
 
     /**

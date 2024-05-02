@@ -73,8 +73,8 @@ class MfaController extends ApiController
 
         $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaToken);
         $data = [
-            'current_step' => $step,
             'qr_code' => $qrCode,
+            'current_step' => $step,
         ];
 
         return $this->success(['data' => $data], Response::HTTP_OK);
@@ -93,6 +93,7 @@ class MfaController extends ApiController
         }
 
         // Validate MFA Code
+        $currentStep = $this->mfaOrchestrator->getCurrentMfaStep($mfaToken);
         $code = $request->input('code');
         $success = $this->mfaOrchestrator->runCodeVerification($mfaToken, $code);
 
@@ -102,8 +103,16 @@ class MfaController extends ApiController
 
         // If there are still incomplete MFA steps, we just return a success message
         $mfaStepsCompleted = $this->mfaOrchestrator->allMfaStepsAreCompleted($mfaToken);
+        $nextStep = $this->mfaOrchestrator->getCurrentMfaStep($currentStep);
         if (! $mfaStepsCompleted) {
-            return $this->success(['message' => 'MFA code validation success', 'current_step' => 'google_authenticator'], Response::HTTP_OK);
+            return $this->success(
+                [
+                    'message' => 'MFA code validation success',
+                    'current_step' => $currentStep,
+                    'next_step' => $nextStep,
+                ],
+                Response::HTTP_OK
+            );
         }
 
         // If all the MFA steps are completed, we authenticate the user
