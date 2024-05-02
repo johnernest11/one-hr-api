@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Pipeline\Pipeline;
 
+/**
+ * @mixin IdeHelperRegion
+ */
 class Region extends Model
 {
     use HasFactory;

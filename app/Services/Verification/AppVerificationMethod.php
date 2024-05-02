@@ -26,5 +26,5 @@ interface AppVerificationMethod
     /**
      * Generate the QR code that the authenticator clients will scan
      */
-    public function generateQrCode(int|string|User $user, string $companyName, string $holder, string $secret): string;
+    public function generateQrCode(int|string|User $user, string $secret): string;
 }

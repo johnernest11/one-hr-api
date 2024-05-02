@@ -149,18 +149,31 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     /**
      * @Attribute
      * Hash the password whenever it is changed
+     *
+     * @Note
+     * The getter will be removed when https://github.com/barryvdh/laravel-ide-helper/issues/1531 is fixed
      */
-    public function password(): Attribute
+    protected function password(): Attribute
     {
-        return Attribute::set(fn ($value) => is_null($value) ? null : Hash::make($value));
+        return Attribute::make(
+            get: fn ($value) => $value,
+            set: fn ($value) => is_null($value) ? null : Hash::make($value)
+        );
     }
 
     /**
-     * Set email to lowercase
+     * @Attribute
+     * Set email to lowercase.
+     *
+     * @Note
+     * The getter will be removed when https://github.com/barryvdh/laravel-ide-helper/issues/1531 is fixed
      */
-    public function email(): Attribute
+    protected function email(): Attribute
     {
-        return Attribute::set(fn ($value) => strtolower($value));
+        return Attribute::make(
+            get: fn ($value) => $value,
+            set: fn ($value) => strtolower($value)
+        );
     }
 
     /*

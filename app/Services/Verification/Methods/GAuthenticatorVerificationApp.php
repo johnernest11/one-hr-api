@@ -33,7 +33,7 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
 
         $secret = $this->getOrCreateSecret($user->id);
 
-        return $this->google2fa->verify($secret, $input);
+        return $this->google2fa->verify($input, $secret);
     }
 
     /**
@@ -53,7 +53,7 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
             return $verificationFactor->secret;
         }
 
-        $secret = $this->google2fa->generateSecretKey();
+        $secret = $this->google2fa->generateSecretKey(32);
         $verificationFactor = VerificationFactor::updateOrCreate(
             [
                 'user_id' => $user->id,
@@ -72,15 +72,15 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
     /**
      * {@inheritDoc}
      */
-    public function generateQrCode(int|string|User $user, string $companyName, string $holder, string $secret): string
+    public function generateQrCode(int|string|User $user, string $secret): string
     {
         $verificationFactor = VerificationFactor::where('user_id', $user->id)
             ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
             ->firstOrFail();
 
         $g2faUrl = $this->google2fa->getQRCodeUrl(
-            $companyName,
-            $holder,
+            config('app.name'),
+            $user->email,
             $verificationFactor->secret
         );
 

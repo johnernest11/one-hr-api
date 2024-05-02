@@ -47,10 +47,16 @@ class MfaAttempt extends Model
     /**
      * @Attribute
      * Hash the token whenever it is set
+     *
+     * @Note
+     * The getter will be removed when https://github.com/barryvdh/laravel-ide-helper/issues/1531 is fixed
      */
-    public function token(): Attribute
+    protected function token(): Attribute
     {
-        return Attribute::set(fn ($value) => Hash::make($value));
+        return Attribute::make(
+            get: fn ($value) => Hash::make($value),
+            set: fn ($value) => Hash::make($value)
+        );
     }
 
     /**

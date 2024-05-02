@@ -206,7 +206,7 @@ class MfaOrchestrator
             $factor = resolve($methodClass);
 
             if ($activeStep === $factor->verificationMethod()) {
-                return $factor->generateQrCode($user, 'DSWD DX Team', $user->email, $factor->getOrCreateSecret($user));
+                return $factor->generateQrCode($user, $factor->getOrCreateSecret($user));
             }
         }
 
