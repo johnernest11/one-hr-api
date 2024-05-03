@@ -37,7 +37,12 @@ class MfaController extends ApiController
             return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
         }
 
-        $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaToken);
+        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
+        if (! $mfaAttempt) {
+            return $this->error('Unable to find MFA attempt record from token', Response::HTTP_NOT_FOUND, ApiErrorCode::RESOURCE_NOT_FOUND);
+        }
+
+        $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
         if (! $step) {
             return $this->error('All MFA steps have already been completed', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
         }
@@ -46,7 +51,7 @@ class MfaController extends ApiController
             return $this->error('Current MFA step does not support code delivery', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
         }
 
-        $this->mfaOrchestrator->runCodeDelivery($mfaToken);
+        $this->mfaOrchestrator->runCodeDelivery($mfaAttempt);
 
         return $this->success(['message' => 'OTP sent successfully', 'current_step' => $step], Response::HTTP_ACCEPTED);
     }
@@ -62,7 +67,12 @@ class MfaController extends ApiController
             return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
         }
 
-        $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaToken);
+        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
+        if (! $mfaAttempt) {
+            return $this->error('Unable to find MFA attempt record from token', Response::HTTP_NOT_FOUND, ApiErrorCode::RESOURCE_NOT_FOUND);
+        }
+
+        $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
         if (! $step) {
             return $this->error('All MFA steps have already been completed', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
         }
@@ -71,7 +81,7 @@ class MfaController extends ApiController
             return $this->error('Current MFA step does not support QR code generation', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
         }
 
-        $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaToken);
+        $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaAttempt);
         $data = [
             'qr_code' => $qrCode,
             'current_step' => $step,
@@ -93,17 +103,22 @@ class MfaController extends ApiController
         }
 
         // Validate MFA Code
-        $currentStep = $this->mfaOrchestrator->getCurrentMfaStep($mfaToken);
+        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
+        if (! $mfaAttempt) {
+            return $this->error('Unable to find MFA attempt record from token', Response::HTTP_NOT_FOUND, ApiErrorCode::RESOURCE_NOT_FOUND);
+        }
+
+        $currentStep = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
         $code = $request->input('code');
-        $success = $this->mfaOrchestrator->runCodeVerification($mfaToken, $code);
+        $success = $this->mfaOrchestrator->runCodeVerification($mfaAttempt, $code);
 
         if (! $success) {
             return $this->error('Invalid MFA Code provided', Response::HTTP_UNPROCESSABLE_ENTITY, ApiErrorCode::INVALID_MFA_CODE);
         }
 
         // If there are still incomplete MFA steps, we just return a success message
-        $mfaStepsCompleted = $this->mfaOrchestrator->allMfaStepsAreCompleted($mfaToken);
-        $nextStep = $this->mfaOrchestrator->getCurrentMfaStep($mfaToken);
+        $mfaStepsCompleted = $this->mfaOrchestrator->allMfaStepsAreCompleted($mfaAttempt);
+        $nextStep = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
         if (! $mfaStepsCompleted) {
             return $this->success(
                 [
@@ -116,7 +131,6 @@ class MfaController extends ApiController
         }
 
         // If all the MFA steps are completed, we authenticate the user
-        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptRecordFromToken($mfaToken);
         $user = $mfaAttempt->user->load('userProfile');
         $authMeta = $mfaAttempt->auth_metadata;
 

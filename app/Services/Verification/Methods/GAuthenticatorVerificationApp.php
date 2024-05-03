@@ -75,19 +75,11 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
      *
      * @throws Throwable
      */
-    public function generateQrCode(int|string|User $user, bool $withBackupCodes = true): string
+    public function generateQrCode(int|string|User $user): string
     {
-        $verificationFactor = DB::transaction(function () use ($user, $withBackupCodes) {
-            $verificationFactor = VerificationFactor::where('user_id', $user->id)
-                ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
-                ->firstOrFail();
-
-            if ($withBackupCodes) {
-                $this->generateBackupCodes($verificationFactor);
-            }
-
-            return $verificationFactor;
-        });
+        $verificationFactor = VerificationFactor::where('user_id', $user->id)
+            ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
+            ->firstOrFail();
 
         $g2faUrl = $this->google2fa->getQRCodeUrl(
             config('app.name'),
@@ -119,18 +111,16 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
             $verificationFactor->backupCodes()->delete();
 
             $generatedCodes = [];
-            foreach (range(1, $count) as $num) {
+            foreach (range(1, $count) as $ignored) {
                 $generatedCodes[] = [
                     'verification_factor_id' => $verificationFactor->id,
                     'code' => $this->getBackupCode(),
                 ];
             }
 
-            return $verificationFactor
-                ->backupCodes()
-                ->createMany($generatedCodes)
-                ->pluck('code')
-                ->toArray();
+            $verificationFactor->backupCodes()->createMany($generatedCodes)->pluck('code');
+
+            return array_map(fn (array $gc) => $gc['code'], $generatedCodes);
         });
     }
 

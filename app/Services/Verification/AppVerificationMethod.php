@@ -27,7 +27,7 @@ interface AppVerificationMethod
     /**
      * Generate the QR code that the authenticator clients will scan
      */
-    public function generateQrCode(int|string|User $user, bool $withBackupCodes = true): string;
+    public function generateQrCode(int|string|User $user): string;
 
     /**
      * Generate backup codes that the user can use if they lose their primary device
