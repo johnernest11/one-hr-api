@@ -16,8 +16,16 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('type'); // sms, email, google-authenticator
             $table->text('secret');
-            $table->timestamps();
 
+            /**
+             * App-based MFA only shows the QR code once for the user to scan,
+             * we use this flag to check weather to show generate the QR code or not.
+             * Deliver-based MFA (Email, SMS) typically do not have this feature and
+             * have the `enrolled_at` value filled in by default
+             */
+            $table->timestamp('enrolled_at')->nullable();
+
+            $table->timestamps();
             $table->unique(['user_id', 'type']);
         });
     }

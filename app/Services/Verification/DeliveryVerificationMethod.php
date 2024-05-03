@@ -65,6 +65,7 @@ abstract class DeliveryVerificationMethod
                 'user_id' => $user->id,
                 'type' => $this->verificationMethod(),
                 'secret' => $secret,
+                'enrolled_at' => now(),
             ]
         );
 

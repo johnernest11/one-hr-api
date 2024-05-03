@@ -103,7 +103,7 @@ class MfaController extends ApiController
 
         // If there are still incomplete MFA steps, we just return a success message
         $mfaStepsCompleted = $this->mfaOrchestrator->allMfaStepsAreCompleted($mfaToken);
-        $nextStep = $this->mfaOrchestrator->getCurrentMfaStep($currentStep);
+        $nextStep = $this->mfaOrchestrator->getCurrentMfaStep($mfaToken);
         if (! $mfaStepsCompleted) {
             return $this->success(
                 [

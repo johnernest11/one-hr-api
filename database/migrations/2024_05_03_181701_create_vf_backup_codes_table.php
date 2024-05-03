@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('verification_factor_backup_codes', function (Blueprint $table) {
+        Schema::create('vf_backup_codes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('verification_factor_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('code');
+            $table->text('code');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('verification_factor_backup_codes');
+        Schema::dropIfExists('vf_backup_codes');
     }
 };

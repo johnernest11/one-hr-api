@@ -8,6 +8,8 @@ use App\Models\VerificationFactor;
 use App\Services\Verification\AppVerificationMethod;
 use App\Traits\Services\CanResolveModelFromId;
 use ConversionHelper;
+use DB;
+use Illuminate\Support\Str;
 use PragmaRX\Google2FA\Google2FA;
 use Throwable;
 
@@ -30,7 +32,6 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
     public function verifyCode(int|string|User $userModelOrId, string $input): bool
     {
         $user = $this->retrieveModel($userModelOrId, User::query());
-
         $secret = $this->getOrCreateSecret($user->id);
 
         return $this->google2fa->verify($input, $secret);
@@ -71,12 +72,22 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
 
     /**
      * {@inheritDoc}
+     *
+     * @throws Throwable
      */
-    public function generateQrCode(int|string|User $user, string $secret): string
+    public function generateQrCode(int|string|User $user, bool $withBackupCodes = true): string
     {
-        $verificationFactor = VerificationFactor::where('user_id', $user->id)
-            ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
-            ->firstOrFail();
+        $verificationFactor = DB::transaction(function () use ($user, $withBackupCodes) {
+            $verificationFactor = VerificationFactor::where('user_id', $user->id)
+                ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
+                ->firstOrFail();
+
+            if ($withBackupCodes) {
+                $this->generateBackupCodes($verificationFactor);
+            }
+
+            return $verificationFactor;
+        });
 
         $g2faUrl = $this->google2fa->getQRCodeUrl(
             config('app.name'),
@@ -91,5 +102,51 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
     public function verificationMethod(): VerificationMethod
     {
         return VerificationMethod::GOOGLE_AUTHENTICATOR;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws Throwable
+     */
+    public function generateBackupCodes(int|string|VerificationFactor $verificationFactor, int $count = 5): array
+    {
+        /** @var VerificationFactor $verificationFactor */
+        $verificationFactor = $this->retrieveModel($verificationFactor, VerificationFactor::query());
+
+        return DB::transaction(function () use ($verificationFactor, $count) {
+            // We delete the old backup codes
+            $verificationFactor->backupCodes()->delete();
+
+            $generatedCodes = [];
+            foreach (range(1, $count) as $num) {
+                $generatedCodes[] = [
+                    'verification_factor_id' => $verificationFactor->id,
+                    'code' => $this->getBackupCode(),
+                ];
+            }
+
+            return $verificationFactor
+                ->backupCodes()
+                ->createMany($generatedCodes)
+                ->pluck('code')
+                ->toArray();
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function verifyBackupCode(int|string|VerificationFactor $verificationFactor): bool
+    {
+        return true;
+    }
+
+    /**
+     * Create a backup code
+     */
+    protected function getBackupCode(): string
+    {
+        return Str::upper(Str::uuid()->toString());
     }
 }
