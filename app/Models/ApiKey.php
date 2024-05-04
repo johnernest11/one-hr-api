@@ -126,15 +126,11 @@ class ApiKey extends Model implements Authenticatable
     /**
      * @Attribute
      * Hash the key whenever it is set
-     *
-     * @Note
-     * The getter will be removed when https://github.com/barryvdh/laravel-ide-helper/issues/1531 is fixed
      */
     protected function key(): Attribute
     {
-        return Attribute::make(
-            get: fn ($value) => $value,
-            set: fn ($value) => Hash::make($value)
+        return Attribute::set(
+            fn ($value) => Hash::make($value)
         );
     }
 
