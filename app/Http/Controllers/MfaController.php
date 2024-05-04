@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\ApiErrorCode;
 use App\Enums\AuthenticationType;
 use App\Http\Requests\MfaRequest;
+use App\Models\MfaAttempt;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\MfaOrchestrator;
@@ -32,14 +33,10 @@ class MfaController extends ApiController
     public function sendCode(MfaRequest $request): JsonResponse
     {
         $mfaToken = $request->input('token');
-        $tokenIsValid = $this->mfaOrchestrator->verifyMfaAttemptToken($mfaToken);
-        if (! $tokenIsValid) {
-            return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
-        }
+        $mfaAttempt = $this->validateTokenAndGetMfaAttempt($mfaToken);
 
-        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
-        if (! $mfaAttempt) {
-            return $this->error('Unable to find MFA attempt record from token', Response::HTTP_NOT_FOUND, ApiErrorCode::RESOURCE_NOT_FOUND);
+        if ($mfaAttempt instanceof JsonResponse) {
+            return $mfaAttempt;
         }
 
         $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
@@ -62,14 +59,10 @@ class MfaController extends ApiController
     public function generateQrCode(MfaRequest $request): JsonResponse
     {
         $mfaToken = $request->input('token');
-        $tokenIsValid = $this->mfaOrchestrator->verifyMfaAttemptToken($mfaToken);
-        if (! $tokenIsValid) {
-            return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
-        }
+        $mfaAttempt = $this->validateTokenAndGetMfaAttempt($mfaToken);
 
-        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
-        if (! $mfaAttempt) {
-            return $this->error('Unable to find MFA attempt record from token', Response::HTTP_NOT_FOUND, ApiErrorCode::RESOURCE_NOT_FOUND);
+        if ($mfaAttempt instanceof JsonResponse) {
+            return $mfaAttempt;
         }
 
         $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
@@ -82,8 +75,11 @@ class MfaController extends ApiController
         }
 
         $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaAttempt);
+        $backupCodes = $this->mfaOrchestrator->runBackupCodesGeneration($mfaAttempt);
+
         $data = [
             'qr_code' => $qrCode,
+            'backup_codes' => $backupCodes,
             'current_step' => $step,
         ];
 
@@ -97,15 +93,10 @@ class MfaController extends ApiController
     {
         // Validate Attempt Token
         $mfaToken = $request->input('token');
-        $tokenIsValid = $this->mfaOrchestrator->verifyMfaAttemptToken($mfaToken);
-        if (! $tokenIsValid) {
-            return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
-        }
+        $mfaAttempt = $this->validateTokenAndGetMfaAttempt($mfaToken);
 
-        // Validate MFA Code
-        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
-        if (! $mfaAttempt) {
-            return $this->error('Unable to find MFA attempt record from token', Response::HTTP_NOT_FOUND, ApiErrorCode::RESOURCE_NOT_FOUND);
+        if ($mfaAttempt instanceof JsonResponse) {
+            return $mfaAttempt;
         }
 
         $currentStep = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
@@ -158,5 +149,20 @@ class MfaController extends ApiController
         ];
 
         return $this->success(['data' => $data], Response::HTTP_OK);
+    }
+
+    private function validateTokenAndGetMfaAttempt(string $mfaToken): JsonResponse|MfaAttempt
+    {
+        $tokenIsValid = $this->mfaOrchestrator->verifyMfaAttemptToken($mfaToken);
+        if (! $tokenIsValid) {
+            return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
+        }
+
+        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
+        if (! $mfaAttempt) {
+            return $this->error('Unable to find MFA attempt record from token', Response::HTTP_NOT_FOUND, ApiErrorCode::RESOURCE_NOT_FOUND);
+        }
+
+        return $mfaAttempt;
     }
 }

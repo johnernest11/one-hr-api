@@ -132,8 +132,8 @@ class MfaOrchestrator
             return true;
         }
 
-        foreach ($this->mfaMethodsRegistry as $methodClass) {
-            /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
+        foreach ($this->channelBasedMethodsRegistry as $methodClass) {
+            /** @var DeliveryVerificationMethod $factor */
             $factor = resolve($methodClass);
             if ($activeStep === $factor->verificationMethod()) {
                 $code = $factor->generateCode($user);
@@ -193,6 +193,7 @@ class MfaOrchestrator
      */
     public function runQrCodeGeneration(MfaAttempt $mfaAttempt): ?string
     {
+        Log::debug('Before steps');
         // Get the MFA step that needs verification
         $activeStep = $this->getCurrentMfaStep($mfaAttempt);
 
@@ -210,7 +211,10 @@ class MfaOrchestrator
             $factor = resolve($methodClass);
 
             if ($activeStep === $factor->verificationMethod()) {
-                return $factor->generateQrCode($user);
+                $qrCode = $factor->generateQrCode($user);
+                $factor->completeEnrollment($user);
+
+                return $qrCode;
             }
         }
 
@@ -222,7 +226,7 @@ class MfaOrchestrator
         return null;
     }
 
-    public function runGenerateBackupCodes(MfaAttempt $mfaAttempt): array
+    public function runBackupCodesGeneration(MfaAttempt $mfaAttempt): array
     {
         // Get the MFA step that needs verification
         $activeStep = $this->getCurrentMfaStep($mfaAttempt);
@@ -240,7 +244,7 @@ class MfaOrchestrator
             $factor = resolve($methodClass);
 
             if ($activeStep === $factor->verificationMethod()) {
-                return $factor->generateBackupCodes($mfaAttempt); // TODO: Change
+                return $factor->generateBackupCodes($mfaAttempt->user);
             }
         }
 

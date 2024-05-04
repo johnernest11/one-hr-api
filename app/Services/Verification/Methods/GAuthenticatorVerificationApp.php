@@ -99,12 +99,31 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
     /**
      * {@inheritDoc}
      *
+     * @param  int|string|VerificationFactor  $verificationFactor
+     */
+    public function completeEnrollment(User|int|string $userModelOrId): bool
+    {
+        $user = $this->retrieveModel($userModelOrId, User::query());
+        $verificationFactor = VerificationFactor::where('user_id', $user->id)
+            ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
+            ->firstOrFail();
+
+        $verificationFactor->enrolled_at = now();
+
+        return $verificationFactor->save();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @throws Throwable
      */
-    public function generateBackupCodes(int|string|VerificationFactor $verificationFactor, int $count = 5): array
+    public function generateBackupCodes(User|int|string $userModelOrId, int $count = 5): array
     {
-        /** @var VerificationFactor $verificationFactor */
-        $verificationFactor = $this->retrieveModel($verificationFactor, VerificationFactor::query());
+        $user = $this->retrieveModel($userModelOrId, User::query());
+        $verificationFactor = VerificationFactor::where('user_id', $user->id)
+            ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
+            ->firstOrFail();
 
         return DB::transaction(function () use ($verificationFactor, $count) {
             // We delete the old backup codes
@@ -127,7 +146,7 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
     /**
      * {@inheritDoc}
      */
-    public function verifyBackupCode(int|string|VerificationFactor $verificationFactor): bool
+    public function verifyBackupCode(User|int|string $userModelOrId): bool
     {
         return true;
     }

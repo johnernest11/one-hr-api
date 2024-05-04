@@ -4,7 +4,6 @@ namespace App\Services\Verification;
 
 use App\Enums\VerificationMethod;
 use App\Models\User;
-use App\Models\VerificationFactor;
 
 interface AppVerificationMethod
 {
@@ -32,10 +31,17 @@ interface AppVerificationMethod
     /**
      * Generate backup codes that the user can use if they lose their primary device
      */
-    public function generateBackupCodes(VerificationFactor|int|string $verificationFactor, int $count = 5): array;
+    public function generateBackupCodes(User|int|string $userModelOrId, int $count = 5): array;
 
     /**
      * Verify if the backup code is valid
      */
-    public function verifyBackupCode(VerificationFactor|int|string $verificationFactor): bool;
+    public function verifyBackupCode(User|int|string $userModelOrId): bool;
+
+    /**
+     * We only show the QR code for the user to scan during their initial login
+     * with an app-based MFA. This method will flag the database if the user has
+     * already enrolled, so we don't show the QR code everytime they log in
+     */
+    public function completeEnrollment(User|int|string $userModelOrId): bool;
 }

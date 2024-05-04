@@ -65,6 +65,9 @@ abstract class DeliveryVerificationMethod
                 'user_id' => $user->id,
                 'type' => $this->verificationMethod(),
                 'secret' => $secret,
+
+                // Delivery based typically do not show one-time creds to be scanned / noted by the user,
+                // so they are marked as enrolled as default
                 'enrolled_at' => now(),
             ]
         );
