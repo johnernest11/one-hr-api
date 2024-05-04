@@ -67,6 +67,7 @@ class MfaOrchestrator
         return [
             'token' => $this->buildRawMfaTokenFormat($mfaAttempt, $token),
             'steps' => $stepsWithStatus,
+            'expires_at' => $this->mfaAttemptExpiresAt,
         ];
     }
 

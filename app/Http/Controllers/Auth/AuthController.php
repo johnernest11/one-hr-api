@@ -85,6 +85,7 @@ abstract class AuthController extends ApiController
 
             $data = [
                 'mfa_token' => $mfaAttempt['token'],
+                'mfa_token_expires_at' => $mfaAttempt['expires_at'],
                 'mfa_steps' => $mfaAttempt['steps'],
             ];
 

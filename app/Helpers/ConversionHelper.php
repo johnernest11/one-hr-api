@@ -5,7 +5,6 @@ namespace App\Helpers;
 use Endroid\QrCode\Builder\Builder;
 use InvalidArgumentException;
 use NumberFormatter;
-use Storage;
 
 class ConversionHelper
 {
@@ -35,17 +34,19 @@ class ConversionHelper
     /**
      * Convert a string to a base64 QR code representation
      */
-    public function stringToBase64QrCode(string $string, int $size = 400, int $margin = 4): string
+    public function stringToBase64QrCode(string $string, int $size = 400, int $margin = 4, ?string $logoPath = null): string
     {
         $result = Builder::create()
             ->data($string)
             ->size($size)
-            ->margin($margin)
-            ->logoPath(Storage::disk('assets')->path('verification-qrcode-logo.png'))
-            ->logoResizeToWidth(50)
-            ->logoPunchoutBackground(true)
-            ->build();
+            ->margin($margin);
 
-        return $result->getDataUri();
+        if ($logoPath) {
+            $result->logoPath($logoPath)
+                ->logoResizeToWidth(50)
+                ->logoPunchoutBackground(true);
+        }
+
+        return $result->build()->getDataUri();
     }
 }

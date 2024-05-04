@@ -11,6 +11,7 @@ use ConversionHelper;
 use DB;
 use Illuminate\Support\Str;
 use PragmaRX\Google2FA\Google2FA;
+use Storage;
 use Throwable;
 
 class GAuthenticatorVerificationApp implements AppVerificationMethod
@@ -87,7 +88,9 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
             $verificationFactor->secret
         );
 
-        return ConversionHelper::stringToBase64QrCode($g2faUrl);
+        $logoPath = Storage::disk('assets')->path('verification-qrcode-logo.png');
+
+        return ConversionHelper::stringToBase64QrCode($g2faUrl, 400, 4, $logoPath);
     }
 
     /** {@inheritDoc} */
