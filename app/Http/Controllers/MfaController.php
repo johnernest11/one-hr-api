@@ -206,7 +206,7 @@ class MfaController extends ApiController
     {
         $tokenIsValid = $this->mfaOrchestrator->verifyMfaAttemptToken($mfaToken);
         if (! $tokenIsValid) {
-            return $this->error('Invalid MFA Attempt Token', Response::HTTP_BAD_REQUEST, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
+            return $this->error('Invalid MFA Attempt Token', Response::HTTP_UNPROCESSABLE_ENTITY, ApiErrorCode::INVALID_MFA_ATTEMPT_TOKEN);
         }
 
         $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);

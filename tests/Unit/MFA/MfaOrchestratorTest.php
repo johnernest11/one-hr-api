@@ -177,6 +177,10 @@ class MfaOrchestratorTest extends TestCase
 
         $success = $this->mfaOrchestrator->verifyBackupCode($mfaAttempt, $backupCodes[0]);
         $this->assertTrue($success);
+
+        // Backup codes can only be used a single time
+        $success = $this->mfaOrchestrator->verifyBackupCode($mfaAttempt, $backupCodes[0]);
+        $this->assertFalse($success);
     }
 
     public function test_it_can_check_if_user_is_enrolled_to_mfa_step(): void

@@ -24,18 +24,18 @@ abstract class AuthController extends ApiController
 
     private AppSettingsManager $appSettingsManager;
 
-    private MfaOrchestrator $mfaPipelineManager;
+    private MfaOrchestrator $mfaOrchestrator;
 
     public function __construct(
         UserAccountManager $accManager,
         UserCredentialManager $credManager,
         AppSettingsManager $settingsManager,
-        MfaOrchestrator $mfaPipelineManager,
+        MfaOrchestrator $mfaOrchestrator,
     ) {
         $this->userAccountManager = $accManager;
         $this->userCredentialManager = $credManager;
         $this->appSettingsManager = $settingsManager;
-        $this->mfaPipelineManager = $mfaPipelineManager;
+        $this->mfaOrchestrator = $mfaOrchestrator;
     }
 
     /**
@@ -80,8 +80,8 @@ abstract class AuthController extends ApiController
         if ($mfaConfig['enabled']) {
             $mfaSteps = $mfaConfig['steps'];
             $authMeta = ['token_name' => $clientName, 'auth_type' => $authType];
-            $mfaAttempt = $this->mfaPipelineManager->generateMfaAttemptToken($user, $mfaSteps, $authMeta);
-            $this->mfaPipelineManager->runSecretGeneration($mfaAttempt['token']);
+            $mfaAttempt = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps, $authMeta);
+            $this->mfaOrchestrator->runSecretGeneration($mfaAttempt['token']);
 
             $data = [
                 'mfa_token' => $mfaAttempt['token'],
