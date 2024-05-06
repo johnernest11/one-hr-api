@@ -82,23 +82,27 @@ Route::controller(VerifyController::class)->group(function () {
 // Password Management
 Route::controller(PasswordController::class)->name('auth.password.')->group(function () {
     /** @uses PasswordController::forgotPassword */
-    Route::post('forgot-password', 'forgotPassword')->name('forgot');
+    Route::middleware(['throttle:api-forgot-password'])
+        ->post('forgot-password', 'forgotPassword')->name('forgot');
 
     /** @uses PasswordController::resetPassword */
     Route::post('reset-password', 'resetPassword')->name('reset');
 });
 
 // MFA Routes
-Route::controller(MfaController::class)->name('auth.mfa.')->group(function () {
-    /** @uses MfaController::sendCode */
-    Route::post('mfa/send-code', 'sendCode')->name('send-code');
+Route::middleware(['throttle:api-mfa'])->controller(MfaController::class)->name('auth.mfa.')
+    ->group(function () {
+        /** @uses MfaController::sendCode */
+        Route::middleware(['throttle:api-mfa-send-code'])
+            ->post('mfa/send-code', 'sendCode')
+            ->name('send-code');
 
-    /** @uses MfaController::generateQrCode */
-    Route::post('mfa/generate-qrcode', 'generateQrCode')->name('generate-qrcode');
+        /** @uses MfaController::generateQrCode */
+        Route::post('mfa/generate-qrcode', 'generateQrCode')->name('generate-qrcode');
 
-    /** @uses MfaController::verifyCode */
-    Route::post('mfa/verify-code', 'verifyCode')->name('verify-code');
+        /** @uses MfaController::verifyCode */
+        Route::post('mfa/verify-code', 'verifyCode')->name('verify-code');
 
-    /** @uses MfaController::verifyBackupCode */
-    Route::post('mfa/verify-backup-code', 'verifyBackupCode')->name('verify-backup-code');
-});
+        /** @uses MfaController::verifyBackupCode */
+        Route::post('mfa/verify-backup-code', 'verifyBackupCode')->name('verify-backup-code');
+    });
