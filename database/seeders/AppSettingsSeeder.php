@@ -6,11 +6,14 @@ use App\Enums\AppTheme;
 use App\Models\AppSettings;
 use App\Services\AppSettingsManager;
 use Illuminate\Database\Seeder;
+use Throwable;
 
 class AppSettingsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * @throws Throwable
      */
     public function run(): void
     {

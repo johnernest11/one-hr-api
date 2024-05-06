@@ -78,14 +78,10 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
      */
     public function generateQrCode(int|string|User $user): string
     {
-        $verificationFactor = VerificationFactor::where('user_id', $user->id)
-            ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
-            ->firstOrFail();
-
         $g2faUrl = $this->google2fa->getQRCodeUrl(
             config('app.name'),
             $user->email,
-            $verificationFactor->secret
+            $this->getOrCreateSecret($user)
         );
 
         $logoPath = Storage::disk('assets')->path('verification-qrcode-logo.png');

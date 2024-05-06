@@ -62,8 +62,6 @@ class MfaOrchestrator
             'expires_at' => $this->mfaAttemptExpiresAt,
         ]);
 
-        Log::debug(__METHOD__, ['steps' => $stepsWithStatus, 'is_array' => is_array($stepsWithStatus)]);
-
         return [
             'token' => $this->buildRawMfaTokenFormat($mfaAttempt, $token),
             'steps' => $stepsWithStatus,
@@ -254,7 +252,7 @@ class MfaOrchestrator
     }
 
     /**
-     * Generate the QR code that authenticator apps will scan.
+     * Generate back-up codes in case the user loses their primary device for app-based MFA.
      * This is only available for app-based verification options in the pipeline.
      *
      * E.g. GoogleAuthenticator, TwilioAuthy
@@ -284,7 +282,6 @@ class MfaOrchestrator
      */
     public function verifyBackupCode(MfaAttempt $mfaAttempt, string $code): bool
     {
-
         // Get the MFA step that needs verification
         $activeStep = $this->getCurrentMfaStep($mfaAttempt);
 
