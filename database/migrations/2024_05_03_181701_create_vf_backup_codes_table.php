@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('verification_factor_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->text('code');
+            $table->timestamp('used_at')->nullable();
             $table->timestamps();
         });
     }

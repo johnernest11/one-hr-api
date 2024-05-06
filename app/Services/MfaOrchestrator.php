@@ -194,14 +194,11 @@ class MfaOrchestrator
      */
     public function runQrCodeGeneration(MfaAttempt $mfaAttempt): ?string
     {
-        Log::debug('Before steps');
         // Get the MFA step that needs verification
         $activeStep = $this->getCurrentMfaStep($mfaAttempt);
 
         // Check if all steps are completed
         if (! $activeStep && $this->allMfaStepsAreCompleted($mfaAttempt)) {
-            Log::debug('All MFA Steps are completed', ['method' => __METHOD__]);
-
             return null;
         }
 
@@ -225,36 +222,6 @@ class MfaOrchestrator
         ]);
 
         return null;
-    }
-
-    public function runBackupCodesGeneration(MfaAttempt $mfaAttempt): array
-    {
-        // Get the MFA step that needs verification
-        $activeStep = $this->getCurrentMfaStep($mfaAttempt);
-
-        // Check if all steps are completed
-        if (! $activeStep && $this->allMfaStepsAreCompleted($mfaAttempt)) {
-            Log::debug('All MFA Steps are completed', ['method' => __METHOD__]);
-
-            return [];
-        }
-
-        // Run through the registry list and generate backup codes
-        foreach ($this->mfaMethodsRegistry as $methodClass) {
-            /** @var AppVerificationMethod $factor */
-            $factor = resolve($methodClass);
-
-            if ($activeStep === $factor->verificationMethod()) {
-                return $factor->generateBackupCodes($mfaAttempt->user);
-            }
-        }
-
-        Log::debug('Unable to create QR code', [
-            'method' => __METHOD__,
-            'active_step' => $activeStep,
-        ]);
-
-        return [];
     }
 
     public function verifyMfaAttemptToken(string $mfaToken): bool
@@ -284,6 +251,88 @@ class MfaOrchestrator
         }
 
         return true;
+    }
+
+    /**
+     * Generate the QR code that authenticator apps will scan.
+     * This is only available for app-based verification options in the pipeline.
+     *
+     * E.g. GoogleAuthenticator, TwilioAuthy
+     */
+    public function generateBackupCodes(VerificationMethod $verificationMethod, User $user): array
+    {
+        // Run through the registry list and generate backup codes
+        foreach ($this->mfaMethodsRegistry as $methodClass) {
+            /** @var AppVerificationMethod $factor */
+            $factor = resolve($methodClass);
+
+            if ($verificationMethod === $factor->verificationMethod()) {
+                return $factor->generateBackupCodes($user);
+            }
+        }
+
+        Log::debug('Unable to create backup codes', [
+            'method' => __METHOD__,
+            'verification_method' => $verificationMethod,
+        ]);
+
+        return [];
+    }
+
+    /**
+     * Verify the backup code generate by App-based MFA methods
+     */
+    public function verifyBackupCode(MfaAttempt $mfaAttempt, string $code): bool
+    {
+
+        // Get the MFA step that needs verification
+        $activeStep = $this->getCurrentMfaStep($mfaAttempt);
+
+        // Check if all steps are completed
+        if (! $activeStep && $this->allMfaStepsAreCompleted($mfaAttempt)) {
+            return false;
+        }
+
+        // Run through the registry list and generate the QR code
+        $user = $mfaAttempt->user;
+        foreach ($this->mfaMethodsRegistry as $methodClass) {
+            /** @var AppVerificationMethod $factor */
+            $factor = resolve($methodClass);
+
+            if ($activeStep === $factor->verificationMethod()) {
+                return $factor->verifyBackupCode($user, $code);
+            }
+        }
+
+        Log::debug('Unable to verify backup code', [
+            'method' => __METHOD__,
+            'active_step' => $activeStep,
+        ]);
+
+        return false;
+    }
+
+    /**
+     * Check if the user is enrolled to the MFA step.
+     */
+    public function userIsEnrolledToMfaStep(VerificationMethod $verificationMethod, User $user): bool
+    {
+        // Run through the registry list and generate backup codes
+        foreach ($this->mfaMethodsRegistry as $methodClass) {
+            /** @var AppVerificationMethod $factor */
+            $factor = resolve($methodClass);
+
+            if ($verificationMethod === $factor->verificationMethod()) {
+                return $factor->userIsEnrolled($user);
+            }
+        }
+
+        Log::debug('Unable to check if the user is enrolled to the MFA method', [
+            'method' => __METHOD__,
+            'verification_method' => $verificationMethod,
+        ]);
+
+        return false;
     }
 
     /**
@@ -324,15 +373,33 @@ class MfaOrchestrator
 
     /**
      * Check if the MFA Step (Verification method) supports QR code generation
+     *
+     * Right now, all App-based Verification Methods supports this
      */
     public function stepSupportsQrCodeGeneration(VerificationMethod $verificationMethod): bool
     {
         foreach ($this->appBasedMethodsRegistry as $appClass) {
-            /** @var AppVerificationMethod $channelFactor */
-            $channelFactor = resolve($appClass);
-            if ($verificationMethod === $channelFactor->verificationMethod()) {
-                return true;
-            }
+            /** @var AppVerificationMethod $factor */
+            $factor = resolve($appClass);
+
+            return $verificationMethod === $factor->verificationMethod();
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the MFA Step (Verification method) supports Backup Codes
+     *
+     * Right now, all App-based Verification Methods support this
+     */
+    public function stepSupportsBackupCodeVerification(VerificationMethod $verificationMethod): bool
+    {
+        foreach ($this->appBasedMethodsRegistry as $appClass) {
+            /** @var AppVerificationMethod $factor */
+            $factor = resolve($appClass);
+
+            return $verificationMethod === $factor->verificationMethod();
         }
 
         return false;

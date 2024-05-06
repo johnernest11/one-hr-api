@@ -98,4 +98,7 @@ Route::controller(MfaController::class)->name('auth.mfa.')->group(function () {
 
     /** @uses MfaController::verifyCode */
     Route::post('mfa/verify-code', 'verifyCode')->name('verify-code');
+
+    /** @uses MfaController::verifyBackupCode */
+    Route::post('mfa/verify-backup-code', 'verifyBackupCode')->name('verify-backup-code');
 });

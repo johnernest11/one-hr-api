@@ -5,11 +5,11 @@ namespace App\Services\Verification\Methods;
 use App\Enums\VerificationMethod;
 use App\Models\User;
 use App\Models\VerificationFactor;
+use App\Models\VfBackupCode;
 use App\Services\Verification\AppVerificationMethod;
 use App\Traits\Services\CanResolveModelFromId;
 use ConversionHelper;
 use DB;
-use Illuminate\Support\Str;
 use PragmaRX\Google2FA\Google2FA;
 use Storage;
 use Throwable;
@@ -93,12 +93,6 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
         return ConversionHelper::stringToBase64QrCode($g2faUrl, 400, 4, $logoPath);
     }
 
-    /** {@inheritDoc} */
-    public function verificationMethod(): VerificationMethod
-    {
-        return VerificationMethod::GOOGLE_AUTHENTICATOR;
-    }
-
     /**
      * {@inheritDoc}
      *
@@ -117,11 +111,24 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
     }
 
     /**
+     * Check if the user is enrolled to the verification method
+     */
+    public function userIsEnrolled(User|int|string $userModelOrId): bool
+    {
+        $user = $this->retrieveModel($userModelOrId, User::query());
+        $verificationFactor = VerificationFactor::where('user_id', $user->id)
+            ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
+            ->firstOrFail();
+
+        return (bool) $verificationFactor->enrolled_at;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @throws Throwable
      */
-    public function generateBackupCodes(User|int|string $userModelOrId, int $count = 5): array
+    public function generateBackupCodes(User|int|string $userModelOrId, int $count = 10): array
     {
         $user = $this->retrieveModel($userModelOrId, User::query());
         $verificationFactor = VerificationFactor::where('user_id', $user->id)
@@ -149,9 +156,29 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
     /**
      * {@inheritDoc}
      */
-    public function verifyBackupCode(User|int|string $userModelOrId): bool
+    public function verifyBackupCode(User|int|string $userModelOrId, string $code): bool
     {
-        return true;
+        $user = $this->retrieveModel($userModelOrId, User::query());
+        $verificationFactor = VerificationFactor::where('user_id', $user->id)
+            ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
+            ->firstOrFail();
+
+        $backupCodes = $verificationFactor->backupCodes()->cursor();
+
+        /** @var VfBackupCode $backupCode */
+        foreach ($backupCodes as $backupCode) {
+            if ($code === $backupCode->code && is_null($backupCode->used_at)) {
+                return $backupCode->update(['used_at' => now()]);
+            }
+        }
+
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    public function verificationMethod(): VerificationMethod
+    {
+        return VerificationMethod::GOOGLE_AUTHENTICATOR;
     }
 
     /**
@@ -159,6 +186,13 @@ class GAuthenticatorVerificationApp implements AppVerificationMethod
      */
     protected function getBackupCode(): string
     {
-        return Str::upper(Str::uuid()->toString());
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        $length = 12;
+        $code = '';
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $characters[rand(0, strlen($characters) - 1)];
+        }
+
+        return $code;
     }
 }

@@ -31,17 +31,22 @@ interface AppVerificationMethod
     /**
      * Generate backup codes that the user can use if they lose their primary device
      */
-    public function generateBackupCodes(User|int|string $userModelOrId, int $count = 5): array;
+    public function generateBackupCodes(User|int|string $userModelOrId, int $count = 10): array;
 
     /**
      * Verify if the backup code is valid
      */
-    public function verifyBackupCode(User|int|string $userModelOrId): bool;
+    public function verifyBackupCode(User|int|string $userModelOrId, string $code): bool;
 
     /**
      * We only show the QR code for the user to scan during their initial login
-     * with an app-based MFA. This method will flag the database if the user has
+     * with an app-based verification method. This method will flag the database if the user has
      * already enrolled, so we don't show the QR code everytime they log in
      */
     public function completeEnrollment(User|int|string $userModelOrId): bool;
+
+    /**
+     * Check if the user is enrolled to the verification method
+     */
+    public function userIsEnrolled(User|int|string $userModelOrId): bool;
 }

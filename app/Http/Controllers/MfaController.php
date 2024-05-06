@@ -6,6 +6,7 @@ use App\Enums\ApiErrorCode;
 use App\Enums\AuthenticationType;
 use App\Http\Requests\MfaRequest;
 use App\Models\MfaAttempt;
+use App\Models\User;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\MfaOrchestrator;
@@ -28,7 +29,7 @@ class MfaController extends ApiController
     }
 
     /**
-     * Channel-based MFA Options can deliver the MFA code to the users
+     * Channel-based MFA Methods can deliver the MFA code to the users
      */
     public function sendCode(MfaRequest $request): JsonResponse
     {
@@ -54,7 +55,7 @@ class MfaController extends ApiController
     }
 
     /**
-     * App-based MFA Options can generate a QR code
+     * App-based MFA Methods can generate a QR code
      */
     public function generateQrCode(MfaRequest $request): JsonResponse
     {
@@ -74,20 +75,23 @@ class MfaController extends ApiController
             return $this->error('Current MFA step does not support QR code generation', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
         }
 
-        $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaAttempt);
-        $backupCodes = $this->mfaOrchestrator->runBackupCodesGeneration($mfaAttempt);
+        if ($this->mfaOrchestrator->userIsEnrolledToMfaStep($step, $mfaAttempt->user)) {
+            return $this->error('QR Code generation is only available once during MFA', Response::HTTP_FORBIDDEN, ApiErrorCode::FORBIDDEN);
+        }
 
+        $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaAttempt);
+        $backupCodes = $this->mfaOrchestrator->generateBackupCodes($step, $mfaAttempt->user);
         $data = [
             'qr_code' => $qrCode,
-            'backup_codes' => $backupCodes,
             'current_step' => $step,
+            'backup_codes' => $backupCodes,
         ];
 
         return $this->success(['data' => $data], Response::HTTP_OK);
     }
 
     /**
-     * All MFA Options can verify the MFA code from the user
+     * All MFA Methods can verify the MFA code from the user
      */
     public function verifyCode(MfaRequest $request): JsonResponse
     {
@@ -149,6 +153,53 @@ class MfaController extends ApiController
         ];
 
         return $this->success(['data' => $data], Response::HTTP_OK);
+    }
+
+    /**
+     * Verify a backup code provided by the user.
+     * A successful verification will return back the QR code
+     * for the MFA step that the user can scan again.
+     */
+    public function verifyBackupCode(MfaRequest $request): JsonResponse
+    {
+        // Validate Attempt Token
+        $mfaToken = $request->input('token');
+        $mfaAttempt = $this->validateTokenAndGetMfaAttempt($mfaToken);
+
+        if ($mfaAttempt instanceof JsonResponse) {
+            return $mfaAttempt;
+        }
+
+        $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
+        if (! $step) {
+            return $this->error('All MFA steps have already been completed', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+        }
+
+        if (! $this->mfaOrchestrator->stepSupportsBackupCodeVerification($step)) {
+            $message = "The $step->value verification method does not support backup codes.";
+
+            return $this->error($message, Response::HTTP_UNPROCESSABLE_ENTITY, ApiErrorCode::VALIDATION);
+        }
+
+        /** @var User $user */
+        $code = $request->input('code');
+        $success = $this->mfaOrchestrator->verifyBackupCode($mfaAttempt, $code);
+
+        if (! $success) {
+            return $this->error('Invalid MFA Backup Code provided', Response::HTTP_UNPROCESSABLE_ENTITY, ApiErrorCode::INVALID_MFA_BACKUP_CODE);
+        }
+
+        // If success, we return the QR code that the user can re-scan
+        $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaAttempt);
+
+        return $this->success(
+            [
+                'message' => 'Backup code validation success. New QR code generated.',
+                'current_step' => $step,
+                'qr_code' => $qrCode,
+            ],
+            Response::HTTP_OK
+        );
     }
 
     private function validateTokenAndGetMfaAttempt(string $mfaToken): JsonResponse|MfaAttempt

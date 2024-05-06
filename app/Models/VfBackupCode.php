@@ -15,6 +15,7 @@ class VfBackupCode extends Model
     protected $fillable = [
         'verification_factor_id',
         'code',
+        'used_at',
     ];
 
     protected $casts = [

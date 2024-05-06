@@ -18,6 +18,7 @@ class MfaRequest extends FormRequest
             'auth.mfa.verify-code' => $this->getVerifyCodeRules(),
             'auth.mfa.send-code' => $this->getSendCodeRules(),
             'auth.mfa.generate-qrcode' => $this->getGenerateQrcodeRules(),
+            'auth.mfa.verify-backup-code' => $this->verifyBackupCode(),
             default => []
         };
     }
@@ -42,6 +43,14 @@ class MfaRequest extends FormRequest
     {
         return [
             'token' => ['required'],
+        ];
+    }
+
+    private function verifyBackupCode(): array
+    {
+        return [
+            'token' => ['required'],
+            'code' => ['required'],
         ];
     }
 
