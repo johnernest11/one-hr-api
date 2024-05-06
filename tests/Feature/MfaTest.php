@@ -183,7 +183,10 @@ class MfaTest extends TestCase
      */
     public function test_it_can_verify_backup_codes(): void
     {
-        $mfaSteps = [VerificationMethod::GOOGLE_AUTHENTICATOR->value, VerificationMethod::EMAIL_CHANNEL->value];
+        $mfaSteps = [
+            VerificationMethod::GOOGLE_AUTHENTICATOR->value,
+            VerificationMethod::EMAIL_CHANNEL->value,
+        ];
         $value = json_encode([
             'enabled' => true,
             'steps' => $mfaSteps,
@@ -236,14 +239,90 @@ class MfaTest extends TestCase
         $response->assertStatus(409);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function test_it_proceeds_to_next_step_after_successful_verification(): void
     {
-        // TODO
+        $mfaSteps = [
+            VerificationMethod::EMAIL_CHANNEL->value,
+            VerificationMethod::GOOGLE_AUTHENTICATOR->value,
+        ];
+
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
+
+        $user = $this->produceUsers();
+        $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps);
+        $factor = new EmailVerificationChannel();
+        $code = $factor->generateCode($user);
+        $response = $this->postJson($this->baseUri.'/verify-code', [
+            'token' => $mfaToken['token'],
+            'code' => $code,
+        ]);
+
+        $response->assertStatus(200);
+        $response = $response->decodeResponseJson();
+        $this->assertEquals(VerificationMethod::GOOGLE_AUTHENTICATOR->value, $response['data']['next_step']);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function test_it_returns_authentication_token_when_all_mfa_steps_are_complete(): void
     {
-        // TODO
+        $mfaSteps = [
+            VerificationMethod::GOOGLE_AUTHENTICATOR->value,
+            VerificationMethod::EMAIL_CHANNEL->value,
+        ];
+
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
+
+        $user = $this->produceUsers();
+        $tokenName = 'test_token';
+        $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps,
+            ['token_name' => $tokenName, 'with_user' => true]
+        );
+        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken['token']);
+
+        // Complete all steps except the last one
+        $steps = [];
+        foreach ($mfaAttempt->steps as $step) {
+            if ($step['name'] === VerificationMethod::EMAIL_CHANNEL->value) {
+                $steps[] = ['name' => $step['name'], 'completed' => false];
+
+                continue;
+            }
+
+            $steps[] = ['name' => $step['name'], 'completed' => true];
+        }
+
+        $mfaAttempt->steps = $steps;
+        $mfaAttempt->save();
+        $mfaAttempt->refresh();
+
+        $factor = new EmailVerificationChannel();
+        $code = $factor->generateCode($user);
+        $response = $this->postJson($this->baseUri.'/verify-code', [
+            'token' => $mfaToken['token'],
+            'code' => $code,
+        ]);
+
+        $response->assertStatus(200);
+        $response = $response->decodeResponseJson();
+        $this->assertArrayHasKey('user', $response['data']);
+        $this->assertArrayHasKey('token', $response['data']);
+        $this->assertArrayHasKey('expires_at', $response['data']);
+        $this->assertEquals($tokenName, $response['data']['token_name']);
     }
 
     public function test_it_returns_422_if_code_is_incorrect(): void

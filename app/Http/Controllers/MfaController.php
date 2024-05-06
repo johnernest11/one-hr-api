@@ -123,28 +123,32 @@ class MfaController extends ApiController
         $user = $mfaAttempt->user->load('userProfile');
         $authMeta = $mfaAttempt->auth_metadata;
 
-        if ($authMeta['auth_type'] === AuthenticationType::SANCTUM->value) {
+        $data = [];
+        if (isset($authMeta['with_user']) && $authMeta['with_user']) {
+            $data['user'] = $user;
+        }
+
+        if (! isset($authMeta['auth_type']) || $authMeta['auth_type'] === AuthenticationType::SANCTUM->value) {
             $expiresAt = now()->addMinutes(config('sanctum.expiration'));
             $authToken = $this->persistentAuthTokenManager->generateToken($user, $expiresAt);
 
-            $data = [
+            $data = array_merge($data, [
                 'token' => $authToken,
-                'token_name' => $authMeta['token_name'],
+                'token_name' => $authMeta['token_name'] ?? 'api_token',
                 'expires_at' => $expiresAt,
-                'user' => $user,
-            ];
+            ]);
 
             return $this->success(['data' => $data], Response::HTTP_OK);
         }
 
         $expiresAt = now()->addMinutes(config('jwt.lifetime_minutes'));
         $authToken = $this->authTokenManager->generateToken($user, $expiresAt);
-        $data = [
+
+        $data = array_merge($data, [
             'token' => $authToken,
-            'token_name' => $authMeta['token_name'],
+            'token_name' => $authMeta['token_name'] ?? 'api_token',
             'expires_at' => $expiresAt,
-            'user' => $user,
-        ];
+        ]);
 
         return $this->success(['data' => $data], Response::HTTP_OK);
     }

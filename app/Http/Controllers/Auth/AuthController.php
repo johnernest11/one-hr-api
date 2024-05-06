@@ -72,8 +72,9 @@ abstract class AuthController extends ApiController
         }
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
-        $clientName = $request->get('client_name') ?? 'api_token';
-        $authType = $request->get('auth_type') ?? AuthenticationType::SANCTUM->value;
+        $clientName = $request->get('client_name', 'api_token');
+        $authType = $request->get('auth_type', AuthenticationType::SANCTUM->value);
+        $withUserDetails = $request->get('with_user', false);
 
         // We proceed with the MFA flow if enabled
         $mfaConfig = $this->appSettingsManager->getMfaConfig();
@@ -95,8 +96,6 @@ abstract class AuthController extends ApiController
         // Continue with the login if MFA is not enabled
         $expiresAt = $this->getTokenExpiration();
         $token = $this->generateAuthToken($user, $expiresAt, $clientName);
-
-        $withUserDetails = $request->get('with_user', false);
         $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user, $withUserDetails);
 
         return $this->success(['data' => $dataResponse], Response::HTTP_OK);
