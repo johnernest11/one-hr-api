@@ -92,7 +92,7 @@ class MfaTest extends TestCase
 
         $response->assertStatus(202);
 
-        // It returns 400 if the step does not support code delivery
+        // It returns 409 if the step does not support code delivery
         $mfaSteps = [VerificationMethod::GOOGLE_AUTHENTICATOR->value];
         $value = json_encode([
             'enabled' => true,
@@ -105,7 +105,7 @@ class MfaTest extends TestCase
             'token' => $mfaToken['token'],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(409);
     }
 
     /**
@@ -133,6 +133,27 @@ class MfaTest extends TestCase
         $this->assertArrayHasKey('qr_code', $response['data']);
         $this->assertArrayHasKey('backup_codes', $response['data']);
         $this->assertNotEmpty($response['data']['backup_codes']);
+
+        // QR code can only be generated once
+        $response = $this->postJson($this->baseUri.'/generate-qrcode', [
+            'token' => $mfaToken['token'],
+        ]);
+        $response->assertStatus(403);
+
+        // It returns 409 if the step does support qr code generation
+        $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value];
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
+        $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps);
+        $response = $this->postJson($this->baseUri.'/generate-qrcode', [
+            'token' => $mfaToken['token'],
+        ]);
+
+        $response->assertStatus(409);
     }
 
     public function test_it_can_verify_otp_code_for_the_current_step(): void
@@ -186,6 +207,10 @@ class MfaTest extends TestCase
 
         $response->assertStatus(200);
 
+        // QR code is re-generated if the back-up code verification is a success
+        $response = $response->decodeResponseJson();
+        $this->assertArrayHasKey('qr_code', $response['data']);
+
         // Backup codes are only single-use
         $response = $this->postJson($this->baseUri.'/verify-backup-code', [
             'token' => $mfaToken['token'],
@@ -193,9 +218,35 @@ class MfaTest extends TestCase
         ]);
 
         $response->assertStatus(422);
+
+        // It returns 409 if the mfa step does not support backup codes
+        $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value];
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
+        $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps);
+        $response = $this->postJson($this->baseUri.'/verify-backup-code', [
+            'token' => $mfaToken['token'],
+            'code' => $codes[1],
+        ]);
+
+        $response->assertStatus(409);
     }
 
-    public function test_it_returns_422_status_code_if_code_is_incorrect(): void
+    public function test_it_proceeds_to_next_step_after_successful_verification(): void
+    {
+        // TODO
+    }
+
+    public function test_it_returns_authentication_token_when_all_mfa_steps_are_complete(): void
+    {
+        // TODO
+    }
+
+    public function test_it_returns_422_if_code_is_incorrect(): void
     {
         $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value, VerificationMethod::GOOGLE_AUTHENTICATOR->value];
         $value = json_encode([
@@ -215,7 +266,7 @@ class MfaTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_it_returns_422_status_code_if_mfa_token_is_invalid(): void
+    public function test_it_returns_422_if_mfa_token_is_invalid(): void
     {
         $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value, VerificationMethod::GOOGLE_AUTHENTICATOR->value];
         $value = json_encode([
@@ -231,5 +282,32 @@ class MfaTest extends TestCase
         ]);
 
         $response->assertStatus(422);
+    }
+
+    public function test_it_returns_409_if_all_mfa_steps_are_already_completed(): void
+    {
+        $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value, VerificationMethod::GOOGLE_AUTHENTICATOR->value];
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
+        $user = $this->produceUsers();
+        $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps);
+        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken['token']);
+
+        // Complete all the steps
+        $mfaAttempt->steps = array_map(fn ($val) => ['name' => $val['name'], 'completed' => true],
+            $mfaAttempt->steps
+        );
+        $mfaAttempt->save();
+        $mfaAttempt->refresh();
+
+        $response = $this->postJson($this->baseUri.'/send-code', [
+            'token' => $mfaToken['token'],
+        ]);
+
+        $response->assertStatus(409);
     }
 }

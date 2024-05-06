@@ -42,11 +42,11 @@ class MfaController extends ApiController
 
         $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
         if (! $step) {
-            return $this->error('All MFA steps have already been completed', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+            return $this->error('All MFA steps have already been completed', Response::HTTP_CONFLICT, ApiErrorCode::BAD_REQUEST);
         }
 
         if (! $this->mfaOrchestrator->stepSupportsCodeDelivery($step)) {
-            return $this->error('Current MFA step does not support code delivery', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+            return $this->error('Current MFA step does not support code delivery', Response::HTTP_CONFLICT, ApiErrorCode::BAD_REQUEST);
         }
 
         $this->mfaOrchestrator->runCodeDelivery($mfaAttempt);
@@ -68,11 +68,11 @@ class MfaController extends ApiController
 
         $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
         if (! $step) {
-            return $this->error('All MFA steps have already been completed', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+            return $this->error('All MFA steps have already been completed', Response::HTTP_CONFLICT, ApiErrorCode::BAD_REQUEST);
         }
 
         if (! $this->mfaOrchestrator->stepSupportsQrCodeGeneration($step)) {
-            return $this->error('Current MFA step does not support QR code generation', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+            return $this->error('Current MFA step does not support QR code generation', Response::HTTP_CONFLICT, ApiErrorCode::BAD_REQUEST);
         }
 
         if ($this->mfaOrchestrator->userIsEnrolledToMfaStep($step, $mfaAttempt->user)) {
@@ -114,15 +114,9 @@ class MfaController extends ApiController
         // If there are still incomplete MFA steps, we just return a success message
         $mfaStepsCompleted = $this->mfaOrchestrator->allMfaStepsAreCompleted($mfaAttempt);
         $nextStep = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
+        $data = ['message' => 'MFA code validation success', 'current_step' => $currentStep, 'next_step' => $nextStep];
         if (! $mfaStepsCompleted) {
-            return $this->success(
-                [
-                    'message' => 'MFA code validation success',
-                    'current_step' => $currentStep,
-                    'next_step' => $nextStep,
-                ],
-                Response::HTTP_OK
-            );
+            return $this->success(['data' => $data], Response::HTTP_OK);
         }
 
         // If all the MFA steps are completed, we authenticate the user
@@ -172,13 +166,13 @@ class MfaController extends ApiController
 
         $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
         if (! $step) {
-            return $this->error('All MFA steps have already been completed', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
+            return $this->error('All MFA steps have already been completed', Response::HTTP_CONFLICT, ApiErrorCode::BAD_REQUEST);
         }
 
         if (! $this->mfaOrchestrator->stepSupportsBackupCodeVerification($step)) {
             $message = "The $step->value verification method does not support backup codes.";
 
-            return $this->error($message, Response::HTTP_UNPROCESSABLE_ENTITY, ApiErrorCode::VALIDATION);
+            return $this->error($message, Response::HTTP_CONFLICT, ApiErrorCode::VALIDATION);
         }
 
         /** @var User $user */
@@ -191,15 +185,13 @@ class MfaController extends ApiController
 
         // If success, we return the QR code that the user can re-scan
         $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaAttempt);
+        $data = [
+            'message' => 'Backup code validation success. New QR code generated.',
+            'current_step' => $step,
+            'qr_code' => $qrCode,
+        ];
 
-        return $this->success(
-            [
-                'message' => 'Backup code validation success. New QR code generated.',
-                'current_step' => $step,
-                'qr_code' => $qrCode,
-            ],
-            Response::HTTP_OK
-        );
+        return $this->success(['data' => $data], Response::HTTP_OK);
     }
 
     private function validateTokenAndGetMfaAttempt(string $mfaToken): JsonResponse|MfaAttempt
