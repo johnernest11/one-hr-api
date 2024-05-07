@@ -19,7 +19,7 @@ interface CloudStorageManager
     /**
      * Generate a URL available by X seconds
      *
-     * @param  int  $timeLimit - time before the URL expires (in seconds)
+     * @param  int  $timeLimit  - time before the URL expires (in seconds)
      */
     public function generateTmpUrl($path, int $timeLimit): string;
 }
