@@ -160,7 +160,7 @@ return [
     |
     | This configuration defines the available support MFA Verification Methods.
     | Each method must be a class that extends the App\Services\Verification\AppVerificationMethod
-    | abstract class or implements App\Services\Verification\DeliveryVerificationMethod interface
+    | and App\Services\Verification\DeliveryVerificationMethod abstract classes
     |
     */
     'mfa_methods' => [

@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Hash;
 use Log;
 use Str;
+use Throwable;
 
 class MfaOrchestrator
 {
@@ -37,7 +38,7 @@ class MfaOrchestrator
 
         $this->appBasedMethodsRegistry = array_filter(
             $this->mfaMethodsRegistry,
-            fn ($method) => (bool) class_implements($method, AppVerificationMethod::class)
+            fn ($method) => is_subclass_of($method, AppVerificationMethod::class)
         );
     }
 
@@ -256,6 +257,8 @@ class MfaOrchestrator
      * This is only available for app-based verification options in the pipeline.
      *
      * E.g. GoogleAuthenticator, TwilioAuthy
+     *
+     * @throws Throwable
      */
     public function generateBackupCodes(VerificationMethod $verificationMethod, User $user): array
     {
