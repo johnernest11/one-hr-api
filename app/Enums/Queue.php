@@ -6,6 +6,6 @@ enum Queue: string
 {
     case EMAILS = 'emails';
     case DEFAULT = 'default';
-    case NOTIFICATIONS = 'notifications';
+    case DEV_ALERTS = 'dev_alerts';
     case OTP = 'otp';
 }

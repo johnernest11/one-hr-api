@@ -53,7 +53,7 @@ Running `composer install`, `composer update`, `git commit` will trigger automat
 
 ## Serve the API locally
 - Terminal 1: Run `php artisan serve`
-- Terminal 2: Run `php artisan queue:work --queue=otp,notifications,emails,default`
+- Terminal 2: Run `php artisan queue:work --queue=otp,emails,dev_alerts,default`
 
 ## Style Guide Ver. 0.2
 - Use **FormRequest** validators when available

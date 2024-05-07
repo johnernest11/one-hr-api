@@ -136,7 +136,7 @@ class MfaController extends ApiController
         // we automatically verify the user's email if it's still unverified
         $user = $mfaAttempt->user->load('userProfile');
         if ($currentStep === VerificationMethod::EMAIL_CHANNEL && ! $user->email_verified_at) {
-            $this->userAccountManager->update($user, ['email_verified_at' => now()]);
+            $user = $this->userAccountManager->update($user, ['email_verified_at' => now()]);
         }
 
         // If there are still incomplete MFA steps, we just return a success message
