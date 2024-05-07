@@ -50,7 +50,7 @@ class AwsS3StorageService implements CloudStorageManager
      *
      * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html
      *
-     * @param  int  $timeLimit (in seconds)
+     * @param  int  $timeLimit  (in seconds)
      */
     public function generateTmpUrl($path, int $timeLimit): string
     {
