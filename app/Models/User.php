@@ -166,13 +166,4 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     {
         $this->notify(new QueuedResetPasswordNotification($token));
     }
-
-    /**
-     * @SlackIntegration
-     * Route notifications for the Slack channel.
-     */
-    public function routeNotificationForSlack(Notification $notification): string
-    {
-        return config('integrations.slack.webhooks.dev_alerts');
-    }
 }
