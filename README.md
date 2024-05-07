@@ -13,6 +13,7 @@ WebAppKit API is a Laravel 10 RESTFul starter kit for SPA and mobile clients. Th
 - Sample webhooks available with API Key authentication and permission-based authorization
 - AWS SQS integration for user notifications (emails, slack alerts). Comes with Redis queueing pre-configured
 - Composer and Git hook automation with GrumpPhp
+- Modular implementation of Multi-factor Authentication with Email OTP and Google Authenticator
 - [Clockwork](https://github.com/itsgoingd/clockwork) installed for performance monitoring while in development. Remember to install the browser extension
 - Gitlab MR template in `.gitlab/merge_request_templates`
 - Feature and Unit tests coverage
@@ -52,9 +53,9 @@ Running `composer install`, `composer update`, `git commit` will trigger automat
 
 ## Serve the API locally
 - Terminal 1: Run `php artisan serve`
-- Terminal 2: Run `php artisan queue:work --queue=default,emails,notifications,listeners`
+- Terminal 2: Run `php artisan queue:work --queue=otp,notifications,emails,default`
 
-## Style Guide Ver. 0.1
+## Style Guide Ver. 0.2
 - Use **FormRequest** validators when available
 - Favor single quotes over double quotes
 - Make use of type-hinting
@@ -66,6 +67,7 @@ Running `composer install`, `composer update`, `git commit` will trigger automat
 - Follow and implement the [PHPDoc](https://docs.phpdoc.org/3.0/guide/guides/docblocks.html) style guide
 - Use `app\Exceptions\Handler.php` for centralized error handling
 - Stick with Eloquent as much as possible, create services to abstract or remove duplicating code
+- We use the `tests/Feature` specifically for API endpoint tests, and `tests/Unit` for unit and integration tests
 
 ## Note
 - The default timezone set for dates and timestamps is `Asia/Manila`. You can change this in `config/app.php`
