@@ -4,14 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Enums\ApiErrorCode;
 use App\Enums\AuthenticationType;
+use App\Enums\VerificationMethod;
 use App\Http\Requests\MfaRequest;
 use App\Models\MfaAttempt;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\MfaOrchestrator;
+use App\Services\User\UserAccountManager;
 use Illuminate\Http\JsonResponse;
+use Log;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class MfaController extends ApiController
 {
@@ -21,11 +25,18 @@ class MfaController extends ApiController
 
     private PersistentAuthTokenManager $persistentAuthTokenManager;
 
-    public function __construct(MfaOrchestrator $mfaOrchestrator, AuthTokenManager $authTokenManager, PersistentAuthTokenManager $persistentAuthTokenManager)
-    {
+    private UserAccountManager $userAccountManager;
+
+    public function __construct(
+        MfaOrchestrator $mfaOrchestrator,
+        AuthTokenManager $authTokenManager,
+        PersistentAuthTokenManager $persistentAuthTokenManager,
+        UserAccountManager $userAccountManager,
+    ) {
         $this->mfaOrchestrator = $mfaOrchestrator;
         $this->persistentAuthTokenManager = $persistentAuthTokenManager;
         $this->authTokenManager = $authTokenManager;
+        $this->userAccountManager = $userAccountManager;
     }
 
     /**
@@ -80,7 +91,17 @@ class MfaController extends ApiController
         }
 
         $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaAttempt);
-        $backupCodes = $this->mfaOrchestrator->generateBackupCodes($step, $mfaAttempt->user);
+
+        $backupCodes = [];
+        try {
+            $backupCodes = $this->mfaOrchestrator->generateBackupCodes($step, $mfaAttempt->user);
+        } catch (Throwable) {
+            Log::error('Unable to generate backup codes', [
+                'method' => __METHOD__,
+                'user_id' => $mfaAttempt->user,
+            ]);
+        }
+
         $data = [
             'qr_code' => $qrCode,
             'current_step' => $step,
@@ -111,6 +132,13 @@ class MfaController extends ApiController
             return $this->error('Invalid MFA Code provided', Response::HTTP_UNPROCESSABLE_ENTITY, ApiErrorCode::INVALID_MFA_CODE);
         }
 
+        // If the MFA code verification is successful and the step is the Email Channel,
+        // we automatically verify the user's email if it's still unverified
+        $user = $mfaAttempt->user->load('userProfile');
+        if ($currentStep === VerificationMethod::EMAIL_CHANNEL && ! $user->email_verified_at) {
+            $this->userAccountManager->update($user, ['email_verified_at' => now()]);
+        }
+
         // If there are still incomplete MFA steps, we just return a success message
         $mfaStepsCompleted = $this->mfaOrchestrator->allMfaStepsAreCompleted($mfaAttempt);
         $nextStep = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
@@ -120,7 +148,6 @@ class MfaController extends ApiController
         }
 
         // If all the MFA steps are completed, we authenticate the user
-        $user = $mfaAttempt->user->load('userProfile');
         $authMeta = $mfaAttempt->auth_metadata;
 
         $data = [];

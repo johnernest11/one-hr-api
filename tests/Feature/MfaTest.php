@@ -178,6 +178,34 @@ class MfaTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_it_automatically_verifies_user_email_if_verification_email_channel_is_successful(): void
+    {
+        $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value, VerificationMethod::GOOGLE_AUTHENTICATOR->value];
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
+
+        // Create a user with unverified email address
+        $user = $this->produceUsers(1, [], true);
+        $this->assertNull($user->email_verified_at);
+
+        $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps);
+        $factor = new EmailVerificationChannel();
+        $code = $factor->generateCode($user);
+        $response = $this->postJson($this->baseUri.'/verify-code', [
+            'token' => $mfaToken['token'],
+            'code' => $code,
+        ]);
+
+        $response->assertStatus(200);
+
+        $user->refresh();
+        $this->assertNotNull($user->email_verified_at);
+    }
+
     /**
      * @throws Throwable
      */

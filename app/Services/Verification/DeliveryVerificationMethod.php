@@ -5,12 +5,15 @@ namespace App\Services\Verification;
 use App\Enums\VerificationMethod;
 use App\Models\User;
 use App\Models\VerificationFactor;
+use App\Services\User\UserAccountManager;
 use App\Traits\Services\CanResolveModelFromId;
 use OTPHP\TOTP;
 
 abstract class DeliveryVerificationMethod
 {
     use CanResolveModelFromId;
+
+    private UserAccountManager $userAccountManager;
 
     /**
      * Create a verification code
@@ -34,17 +37,8 @@ abstract class DeliveryVerificationMethod
         $secret = $this->getOrCreateSecret($user->id);
         $timestamp = time();
         $totp = TOTP::create($secret, $this->getCodeExpirationSeconds());
-        $success = $totp->verify($input, $timestamp);
 
-        // Automatically verify the user's email if the verification factor is the Email Channel
-        if ($success && $this->verificationMethod() === VerificationMethod::EMAIL_CHANNEL) {
-            if (! $user->email_verified_at) {
-                $user->email_verified_at = now();
-                $user->save();
-            }
-        }
-
-        return $success;
+        return $totp->verify($input, $timestamp);
     }
 
     /**

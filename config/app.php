@@ -197,6 +197,7 @@ return [
         App\Providers\FacadeServiceProvider::class,
         App\Providers\CloudFileServiceProvider::class,
         App\Providers\DbServiceProvider::class,
+        App\Providers\VerificationFactorServiceProvider::class,
     ],
 
     /*
