@@ -74,6 +74,14 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(2)->by($key);
         });
 
+        // Rate limit for requesting email verifications
+        RateLimiter::for('api-email-verification', function (Request $request) {
+            $identifier = $request->user('token')?->id ?? $request->ip();
+            $key = 'email-verification'.$identifier;
+
+            return Limit::perMinute(2)->by($key);
+        });
+
         // Default Rate limit for MFA routes (based on MFA token)
         RateLimiter::for('api-mfa', function (Request $request) {
             $key = $this->getApiMfaThrottleKey($request);
@@ -81,7 +89,7 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($key);
         });
 
-        // Rate limit for
+        // Rate limit for sending MFA code via delivery channels
         RateLimiter::for('api-mfa-send-code', function (Request $request) {
             $key = $this->getApiMfaThrottleKey($request);
 

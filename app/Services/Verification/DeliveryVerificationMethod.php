@@ -34,8 +34,17 @@ abstract class DeliveryVerificationMethod
         $secret = $this->getOrCreateSecret($user->id);
         $timestamp = time();
         $totp = TOTP::create($secret, $this->getCodeExpirationSeconds());
+        $success = $totp->verify($input, $timestamp);
 
-        return $totp->verify($input, $timestamp);
+        // Automatically verify the user's email if the verification factor is the Email Channel
+        if ($success && $this->verificationMethod() === VerificationMethod::EMAIL_CHANNEL) {
+            if (! $user->email_verified_at) {
+                $user->email_verified_at = now();
+                $user->save();
+            }
+        }
+
+        return $success;
     }
 
     /**

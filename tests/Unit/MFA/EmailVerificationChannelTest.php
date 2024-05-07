@@ -38,6 +38,17 @@ class EmailVerificationChannelTest extends TestCase
         $this->assertTrue($correct);
     }
 
+    public function test_user_email_is_automatically_verified_if_mfa_code_is_valid(): void
+    {
+        $user = $this->produceUsers(1, [], true);
+
+        $code = $this->channel->generateCode($user);
+        $this->channel->verifyCode($user, $code);
+
+        $user->refresh();
+        $this->assertNotNull($user->email_verified_at);
+    }
+
     public function test_verification_fails_after_code_expiration(): void
     {
         Config::set('auth.mfa_codes.expiration.email', 1);
