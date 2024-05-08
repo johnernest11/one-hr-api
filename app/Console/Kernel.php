@@ -13,14 +13,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         /** Cleanup expired tokens */
-        $schedule->command('sanctum:prune-expired --hours=24')->daily();
-
-        /**
-         * Prune stale cache tags entries
-         *
-         * @see https://laravel.com/docs/10.x/upgrade
-         */
-        $schedule->command('cache:prune-stale-tags')->hourly();
+        $schedule->command('sanctum:prune-expired --hours=24')
+            ->daily()
+            ->onOneServer();
     }
 
     /**
