@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\PruneExpiredMfaAttempts;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -17,14 +18,18 @@ class Kernel extends ConsoleKernel
          *
          * @see https://laravel.com/docs/10.x/sanctum#revoking-tokens
          */
-        $schedule->command('sanctum:prune-expired --hours=24')->daily();
+        $schedule->command('sanctum:prune-expired --hours=24')
+            ->daily()
+            ->onOneServer();
 
         /**
-         * Prune stale cache tags entries
+         * Cleanup expired MFA Attempt records
          *
-         * @see https://laravel.com/docs/10.x/upgrade
+         * @see PruneExpiredMfaAttempts
          */
-        $schedule->command('cache:prune-stale-tags')->hourly();
+        $schedule->command('mfa:prune-expired-attempts')
+            ->daily()
+            ->onOneServer();
     }
 
     /**

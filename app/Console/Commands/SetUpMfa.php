@@ -15,14 +15,14 @@ class SetUpMfa extends Command
      *
      * @var string
      */
-    protected $signature = 'app:mfa';
+    protected $signature = 'mfa:setup';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Set-up MFA configurations';
+    protected $description = 'Setup MFA configurations';
 
     private AppSettingsManager $appSettingsManager;
 

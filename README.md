@@ -46,6 +46,16 @@ Create an API Key for Webhook integration. See the command at `app/Console/Comma
 php artisan api_key:create
 ```
 \
+Setup MFA configurations. See command at `app/Console/Commands/SetupMfa.php`
+```
+php artisan mfa:setup
+```
+\
+Delete expired MFA attempt records in the database (is also scheduled to run every 12AM). See command at `app/Console/Commands/PurgeExpiredMfaAttempts.php`
+```
+php artisan mfa:prune-expired-attempts
+```
+\
 Running `composer install`, `composer update`, `git commit` will trigger automated tasks specified in `grumphp.yml`
 - PSR-compliant code formatting
 - Package security checks
