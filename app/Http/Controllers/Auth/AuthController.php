@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\ApiErrorCode;
 use App\Enums\AuthenticationType;
+use App\Enums\VerificationMethod;
 use App\Events\UserRegistered;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
@@ -89,6 +90,13 @@ abstract class AuthController extends ApiController
                 'mfa_token_expires_at' => $mfaAttempt['expires_at'],
                 'mfa_steps' => $mfaAttempt['steps'],
             ];
+
+            // Deliver the MFA code if the first MFA step supports code delivery
+            $firstStep = VerificationMethod::from($mfaSteps[0]);
+            if ($this->mfaOrchestrator->stepSupportsCodeDelivery($firstStep)) {
+                $mfaAttemptRecord = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaAttempt['token']);
+                $this->mfaOrchestrator->runCodeDelivery($mfaAttemptRecord);
+            }
 
             return $this->success(['data' => $data], Response::HTTP_OK);
         }

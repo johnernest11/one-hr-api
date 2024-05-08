@@ -4,10 +4,13 @@ namespace Tests\Feature;
 
 use App\Enums\VerificationMethod;
 use App\Models\AppSettings;
+use App\Notifications\EmailOtpNotification;
 use App\Services\MfaOrchestrator;
 use App\Services\Verification\Methods\EmailVerificationChannel;
 use ConversionHelper;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Notification;
 use Tests\TestCase;
 use Throwable;
 
@@ -24,6 +27,7 @@ class MfaTest extends TestCase
         parent::setUp();
         $this->artisan('db:seed');
         $this->mfaOrchestrator = new MfaOrchestrator(config('auth.mfa_methods'), now()->addHours(8));
+        Notification::fake();
     }
 
     /**
@@ -72,6 +76,54 @@ class MfaTest extends TestCase
         $this->assertArrayHasKey('token', $response['data']);
         $this->assertArrayHasKey('expires_at', $response['data']);
         $this->assertArrayHasKey('user', $response['data']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_it_delivers_mfa_code_if_first_mfa_step_supports_it_after_login(): void
+    {
+        $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value];
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value])->value;
+
+        $email = fake()->email;
+        $password = fake()->password;
+        $user = $this->produceUsers(1, ['email' => $email, 'password' => $password]);
+
+        $this->postJson(self::BASE_API_URI.'/auth/tokens', [
+            'email' => $email,
+            'password' => $password,
+        ]);
+        Notification::assertSentTo($user, EmailOtpNotification::class);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_it_does_not_deliver_mfa_code_if_first_mfa_step_does_not_support_it_after_login(): void
+    {
+        $mfaSteps = [VerificationMethod::GOOGLE_AUTHENTICATOR->value];
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value])->value;
+
+        $email = fake()->email;
+        $password = fake()->password;
+        $user = $this->produceUsers(1, ['email' => $email, 'password' => $password]);
+
+        $this->postJson(self::BASE_API_URI.'/auth/tokens', [
+            'email' => $email,
+            'password' => $password,
+        ]);
+        Notification::assertNotSentTo($user, EmailOtpNotification::class);
     }
 
     public function test_it_sends_otp_code_for_delivery_based_mfa_steps(): void
