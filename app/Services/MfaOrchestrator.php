@@ -57,9 +57,11 @@ class MfaOrchestrator
         $token = Str::upper(Str::uuid());
 
         // Add default 'false' status to the steps
+        // Example value: [['name' => 'email_channel', 'completed' => false], [...]]
         $stepsWithStatus = array_map(fn ($s) => ['name' => $s, 'completed' => false], $mfaSteps);
 
         // Add whether the step is App-based or Delivery-based
+        // Example value: [['name' => 'email_channel', 'completed' => false, 'type' => 'delivery'], [...]]
         $stepsWithStatusAndType = [];
         foreach ($stepsWithStatus as $step) {
             foreach ($this->mfaMethodsRegistry as $methodClass) {
