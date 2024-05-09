@@ -26,6 +26,10 @@ class MfaOrchestrator
 
     private array $appBasedMethodsRegistry;
 
+    private static string $APP_MFA_TYPE = 'app';
+
+    private static string $DELIVERY_MFA_TYPE = 'delivery';
+
     public function __construct(array $mfaMethodsRegistry, Carbon $mfaAttemptExpiresAt)
     {
         $this->mfaMethodsRegistry = $mfaMethodsRegistry;
@@ -55,17 +59,32 @@ class MfaOrchestrator
         // Add default 'false' status to the steps
         $stepsWithStatus = array_map(fn ($s) => ['name' => $s, 'completed' => false], $mfaSteps);
 
+        // Add whether the step is App-based or Delivery-based
+        $stepsWithStatusAndType = [];
+        foreach ($stepsWithStatus as $step) {
+            foreach ($this->mfaMethodsRegistry as $methodClass) {
+                /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
+                $factor = resolve($methodClass);
+
+                if (VerificationMethod::from($step['name']) === $factor->verificationMethod()) {
+                    $step['type'] = is_subclass_of($methodClass, DeliveryVerificationMethod::class) ? static::$DELIVERY_MFA_TYPE : static::$APP_MFA_TYPE;
+                    $stepsWithStatusAndType[] = $step;
+                    break;
+                }
+            }
+        }
+
         $mfaAttempt = MfaAttempt::create([
             'user_id' => $user->id,
             'token' => $token,
-            'steps' => $stepsWithStatus,
+            'steps' => $stepsWithStatusAndType,
             'auth_metadata' => $authMeta,
             'expires_at' => $this->mfaAttemptExpiresAt,
         ]);
 
         return [
             'token' => $this->buildRawMfaTokenFormat($mfaAttempt, $token),
-            'steps' => $stepsWithStatus,
+            'steps' => $stepsWithStatusAndType,
             'expires_at' => $this->mfaAttemptExpiresAt,
         ];
     }
