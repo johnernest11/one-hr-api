@@ -60,17 +60,19 @@ class MfaOrchestrator
         // Example value: [['name' => 'email_channel', 'completed' => false], [...]]
         $stepsWithStatus = array_map(fn ($s) => ['name' => $s, 'completed' => false], $mfaSteps);
 
-        // Add whether the step is App-based or Delivery-based
-        // Example value: [['name' => 'email_channel', 'completed' => false, 'type' => 'delivery'], [...]]
-        $stepsWithStatusAndType = [];
+        // Add whether the step is App-based or Delivery-based and if the user is enrolled
+        // Example value: [['name' => 'email_channel', 'completed' => false, 'type' => 'delivery', 'enrolled' => false], [...]]
+        $stepsWithTypeAndEnrolledStatus = [];
         foreach ($stepsWithStatus as $step) {
             foreach ($this->mfaMethodsRegistry as $methodClass) {
                 /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
                 $factor = resolve($methodClass);
 
-                if (VerificationMethod::from($step['name']) === $factor->verificationMethod()) {
+                $verificationMethod = VerificationMethod::from($step['name']);
+                if ($verificationMethod === $factor->verificationMethod()) {
                     $step['type'] = is_subclass_of($methodClass, DeliveryVerificationMethod::class) ? static::$DELIVERY_MFA_TYPE : static::$APP_MFA_TYPE;
-                    $stepsWithStatusAndType[] = $step;
+                    $step['enrolled'] = $factor->userIsEnrolled($user, $verificationMethod);
+                    $stepsWithTypeAndEnrolledStatus[] = $step;
                     break;
                 }
             }
@@ -79,14 +81,14 @@ class MfaOrchestrator
         $mfaAttempt = MfaAttempt::create([
             'user_id' => $user->id,
             'token' => $token,
-            'steps' => $stepsWithStatusAndType,
+            'steps' => $stepsWithTypeAndEnrolledStatus,
             'auth_metadata' => $authMeta,
             'expires_at' => $this->mfaAttemptExpiresAt,
         ]);
 
         return [
             'token' => $this->buildRawMfaTokenFormat($mfaAttempt, $token),
-            'steps' => $stepsWithStatusAndType,
+            'steps' => $stepsWithTypeAndEnrolledStatus,
             'expires_at' => $this->mfaAttemptExpiresAt,
         ];
     }
@@ -230,7 +232,7 @@ class MfaOrchestrator
 
             if ($activeStep === $factor->verificationMethod()) {
                 $qrCode = $factor->generateQrCode($user);
-                $factor->completeEnrollment($user);
+                $factor->completeEnrollment($user, $activeStep);
 
                 return $qrCode;
             }
@@ -344,7 +346,7 @@ class MfaOrchestrator
             $factor = resolve($methodClass);
 
             if ($verificationMethod === $factor->verificationMethod()) {
-                return $factor->userIsEnrolled($user);
+                return $factor->userIsEnrolled($user, $verificationMethod);
             }
         }
 

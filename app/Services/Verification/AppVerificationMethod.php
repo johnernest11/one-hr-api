@@ -7,11 +7,13 @@ use App\Models\User;
 use App\Models\VerificationFactor;
 use App\Models\VfBackupCode;
 use App\Traits\Services\CanResolveModelFromId;
+use App\Traits\Services\Verification\CanManageUserEnrollment;
 use DB;
 use Throwable;
 
 abstract class AppVerificationMethod
 {
+    use CanManageUserEnrollment;
     use CanResolveModelFromId;
 
     /**
@@ -64,36 +66,6 @@ abstract class AppVerificationMethod
         }
 
         return false;
-    }
-
-    /**
-     * We only show the QR code for the user to scan during their initial login
-     * with an app-based verification method. This method will flag the database if the user has
-     * already enrolled, so we don't show the QR code everytime they log in
-     */
-    public function completeEnrollment(User|int|string $userModelOrId): bool
-    {
-        $user = $this->retrieveModel($userModelOrId, User::query());
-        $verificationFactor = VerificationFactor::where('user_id', $user->id)
-            ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
-            ->firstOrFail();
-
-        $verificationFactor->enrolled_at = now();
-
-        return $verificationFactor->save();
-    }
-
-    /**
-     * Check if the user is enrolled to the verification method
-     */
-    public function userIsEnrolled(User|int|string $userModelOrId): bool
-    {
-        $user = $this->retrieveModel($userModelOrId, User::query());
-        $verificationFactor = VerificationFactor::where('user_id', $user->id)
-            ->where('type', '=', VerificationMethod::GOOGLE_AUTHENTICATOR)
-            ->first();
-
-        return (bool) $verificationFactor?->enrolled_at;
     }
 
     /**

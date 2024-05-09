@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\MFA;
 
+use App\Enums\VerificationMethod;
+use App\Models\VerificationFactor;
 use App\Notifications\EmailOtpNotification;
 use App\Services\Verification\Methods\EmailVerificationChannel;
 use Config;
@@ -9,6 +11,7 @@ use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Notification;
 use Tests\TestCase;
+use Throwable;
 
 class EmailVerificationChannelTest extends TestCase
 {
@@ -61,5 +64,48 @@ class EmailVerificationChannelTest extends TestCase
         $this->channel->sendCode($user, $code);
 
         Notification::assertSentTo($user, EmailOtpNotification::class);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function test_it_can_complete_enrollment(): void
+    {
+        $user = $this->produceUsers();
+        $this->channel->getOrCreateSecret($user);
+
+        $factor = VerificationFactor::where('type', VerificationMethod::EMAIL_CHANNEL)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        // Email Verification Factor automatically enrolls users
+        $this->assertNotNull($factor->enrolled_at);
+
+        // Un-enroll for test
+        $factor->update(['enrolled_at' => null]);
+        $factor->refresh();
+
+        $this->channel->completeEnrollment($user, VerificationMethod::EMAIL_CHANNEL);
+        $factor->refresh();
+        $this->assertNotNull($factor->enrolled_at);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function test_it_can_check_if_user_is_enrolled(): void
+    {
+        $user = $this->produceUsers();
+        $this->channel->getOrCreateSecret($user);
+        $isEnrolled = $this->channel->userIsEnrolled($user, VerificationMethod::EMAIL_CHANNEL);
+        $this->assertTrue($isEnrolled);
+
+        // Un-enroll for test
+        VerificationFactor::where('type', VerificationMethod::EMAIL_CHANNEL)
+            ->where('user_id', $user->id)
+            ->update(['enrolled_at' => null]);
+
+        $isEnrolled = $this->channel->userIsEnrolled($user, VerificationMethod::EMAIL_CHANNEL);
+        $this->assertFalse($isEnrolled);
     }
 }

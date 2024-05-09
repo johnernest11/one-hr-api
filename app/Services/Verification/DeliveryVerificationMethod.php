@@ -7,13 +7,17 @@ use App\Models\User;
 use App\Models\VerificationFactor;
 use App\Services\User\UserAccountManager;
 use App\Traits\Services\CanResolveModelFromId;
+use App\Traits\Services\Verification\CanManageUserEnrollment;
 use OTPHP\TOTP;
 
 abstract class DeliveryVerificationMethod
 {
+    use CanManageUserEnrollment;
     use CanResolveModelFromId;
 
     private UserAccountManager $userAccountManager;
+
+    protected bool $autoEnroll = true;
 
     /**
      * Create a verification code
@@ -71,7 +75,7 @@ abstract class DeliveryVerificationMethod
 
                 // Delivery based typically do not show one-time creds to be scanned / noted by the user,
                 // so they are marked as enrolled as default
-                'enrolled_at' => now(),
+                'enrolled_at' => $this->autoEnroll ? now() : null,
             ]
         );
 
