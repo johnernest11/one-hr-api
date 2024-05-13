@@ -504,7 +504,8 @@ class MfaOrchestrator
         $updatedSteps = [];
         foreach ($mfaAttempt->steps as $step) {
             if ($step['name'] === $activeStep->value) {
-                $updatedSteps[] = ['name' => $step['name'], 'completed' => true];
+                $step['completed'] = true;
+                $updatedSteps[] = [...$step];
 
                 continue;
             }
