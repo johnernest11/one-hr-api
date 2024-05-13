@@ -50,7 +50,7 @@ class MfaAttempt extends Model
      */
     protected function token(): Attribute
     {
-        return Attribute::make(
+        return Attribute::set(
             fn ($value) => Hash::make($value)
         );
     }
