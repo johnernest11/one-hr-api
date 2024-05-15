@@ -16,7 +16,7 @@ class SetUpMfaTest extends TestCase
     public function test_it_can_disable_mfa_options(): void
     {
         $this->artisan('mfa:setup')
-            ->expectsChoice('Turn-on Multi-Factor Authentication?', 'No', [1 => 'Yes', 2 => 'No'])
+            ->expectsConfirmation('Turn-on Multi-Factor Authentication?')
             ->assertOk();
 
         $mfaConfig = json_decode(AppSettings::where('name', 'mfa')->first()->value, true);
@@ -28,7 +28,8 @@ class SetUpMfaTest extends TestCase
         $methods = ['email_channel', 'google_authenticator'];
 
         $this->artisan('mfa:setup')
-            ->expectsChoice('Turn-on Multi-Factor Authentication?', 'Yes', [1 => 'Yes', 2 => 'No'])
+            ->expectsConfirmation('Turn-on Multi-Factor Authentication?', 'yes')
+            ->expectsConfirmation('Allow MFA configurations to be managed via API endpoints?', 'yes')
             ->expectsQuestion('Enter the name of the 1st MFA method ', $methods[0])
             ->expectsQuestion('Enter the name of the 2nd MFA method (Leave as blank to stop adding)', $methods[1])
             ->expectsConfirmation('Are you sure with this order?', 'yes')
@@ -37,6 +38,7 @@ class SetUpMfaTest extends TestCase
         $mfaConfig = json_decode(AppSettings::where('name', 'mfa')->first()->value, true);
         $this->assertTrue($mfaConfig['enabled']);
         $this->assertEquals($methods, $mfaConfig['steps']);
+        $this->assertTrue($mfaConfig['allow_api_management']);
     }
 
     public function test_it_will_stop_adding_step_if_left_blank(): void
@@ -44,7 +46,8 @@ class SetUpMfaTest extends TestCase
         $methods = ['google_authenticator'];
 
         $this->artisan('mfa:setup')
-            ->expectsChoice('Turn-on Multi-Factor Authentication?', 'Yes', [1 => 'Yes', 2 => 'No'])
+            ->expectsConfirmation('Turn-on Multi-Factor Authentication?', 'yes')
+            ->expectsConfirmation('Allow MFA configurations to be managed via API endpoints?', 'yes')
             ->expectsQuestion('Enter the name of the 1st MFA method ', $methods[0])
             ->expectsQuestion('Enter the name of the 2nd MFA method (Leave as blank to stop adding)', '')
             ->expectsConfirmation('Are you sure with this order?', 'yes')
@@ -58,7 +61,8 @@ class SetUpMfaTest extends TestCase
     public function test_it_will_stop_if_entered_mfa_method_is_incorrect(): void
     {
         $this->artisan('mfa:setup')
-            ->expectsChoice('Turn-on Multi-Factor Authentication?', 'Yes', [1 => 'Yes', 2 => 'No'])
+            ->expectsConfirmation('Turn-on Multi-Factor Authentication?', 'yes')
+            ->expectsConfirmation('Allow MFA configurations to be managed via API endpoints?', 'yes')
             ->expectsQuestion('Enter the name of the 1st MFA method ', 'non-existent')
             ->assertFailed();
     }
@@ -68,7 +72,8 @@ class SetUpMfaTest extends TestCase
         $methods = ['google_authenticator'];
 
         $this->artisan('mfa:setup')
-            ->expectsChoice('Turn-on Multi-Factor Authentication?', 'Yes', [1 => 'Yes', 2 => 'No'])
+            ->expectsConfirmation('Turn-on Multi-Factor Authentication?', 'yes')
+            ->expectsConfirmation('Allow MFA configurations to be managed via API endpoints?', 'yes')
             ->expectsQuestion('Enter the name of the 1st MFA method ', $methods[0])
             ->expectsQuestion('Enter the name of the 2nd MFA method (Leave as blank to stop adding)', $methods[0])
             ->assertFailed();

@@ -66,6 +66,7 @@ class AppSettingsManagerTest extends TestCase
     {
         $success = $this->service->setMfaConfig(
             true,
+            true,
             VerificationMethod::EMAIL_CHANNEL,
             VerificationMethod::GOOGLE_AUTHENTICATOR,
         );
@@ -76,6 +77,7 @@ class AppSettingsManagerTest extends TestCase
     public function test_it_only_sets_unique_mfa_steps(): void
     {
         $this->service->setMfaConfig(
+            true,
             true,
             VerificationMethod::EMAIL_CHANNEL,
             VerificationMethod::GOOGLE_AUTHENTICATOR,
@@ -94,6 +96,7 @@ class AppSettingsManagerTest extends TestCase
     public function test_it_can_get_theme_config(): void
     {
         $this->service->setMfaConfig(
+            true,
             true,
             VerificationMethod::EMAIL_CHANNEL,
             VerificationMethod::GOOGLE_AUTHENTICATOR,

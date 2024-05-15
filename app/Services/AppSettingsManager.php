@@ -31,14 +31,15 @@ class AppSettingsManager
     /**
      * Set MFA configurations
      */
-    public function setMfaConfig(bool $enabled, VerificationMethod ...$mfaOptions): bool
+    public function setMfaConfig(bool $enabled, bool $allowApiManagement = true, VerificationMethod ...$mfaMethods): bool
     {
-        $stepsInArrayVal = array_map(fn (VerificationMethod $option) => $option->value, $mfaOptions);
+        $stepsInArrayVal = array_map(fn (VerificationMethod $option) => $option->value, $mfaMethods);
         $stepsUnique = array_unique($stepsInArrayVal);
 
         $value = json_encode([
             'enabled' => $enabled,
             'steps' => $stepsUnique,
+            'allow_api_management' => $allowApiManagement,
         ]);
 
         AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
@@ -69,7 +70,7 @@ class AppSettingsManager
             }
 
             if (isset($settings['mfa'])) {
-                $mfaValue = $this->json_encode_mfa_value($settings['mfa']);
+                $mfaValue = $this->jsonEncodeMfaValue($settings['mfa']);
                 AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $mfaValue]);
             }
 
@@ -85,15 +86,20 @@ class AppSettingsManager
         return AppSettings::all();
     }
 
-    private function json_encode_mfa_value(array $mfaSettings): string
+    private function jsonEncodeMfaValue(array $mfaSettings): string
     {
         $mfaValue = [];
 
         if (isset($mfaSettings['enabled'])) {
             $mfaValue['enabled'] = $mfaSettings['enabled'];
         }
+
         if (isset($mfaSettings['steps'])) {
             $mfaValue['steps'] = array_unique($mfaSettings['steps']);
+        }
+
+        if (isset($mfaSettings['allow_api_management'])) {
+            $mfaValue['allow_api_management'] = $mfaSettings['allow_api_management'];
         }
 
         // We set the current if the enabled flag is not given
@@ -101,14 +107,15 @@ class AppSettingsManager
         if ($currentMfaConfig) {
             $currentMfaValue = json_decode($currentMfaConfig->value, true);
             if (! isset($mfaValue['enabled'])) {
-                $currentEnabledValue = $currentMfaValue['enabled'];
-                $mfaValue['enabled'] = $currentEnabledValue;
+                $mfaValue['enabled'] = $currentMfaValue['enabled'];
             }
 
-            // We set the current if the steps are not given
             if (! isset($mfaValue['steps'])) {
-                $currentStepsValue = $currentMfaValue['steps'];
-                $mfaValue['steps'] = $currentStepsValue;
+                $mfaValue['steps'] = $currentMfaValue['steps'];
+            }
+
+            if (! isset($mfaValue['allow_api_management'])) {
+                $mfaValue['allow_api_management'] = $currentMfaValue['allow_api_management'];
             }
         }
 

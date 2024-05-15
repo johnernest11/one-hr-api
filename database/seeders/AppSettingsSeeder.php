@@ -22,7 +22,7 @@ class AppSettingsSeeder extends Seeder
 
         $default = [
             'theme' => AppTheme::LIGHT,
-            'mfa' => ['enabled' => false, 'steps' => []],
+            'mfa' => ['enabled' => false, 'steps' => [], 'allow_api_management' => true],
         ];
 
         $settingsManager->setSettings($default);

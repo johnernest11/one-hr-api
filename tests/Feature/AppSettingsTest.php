@@ -6,6 +6,7 @@ use App\Enums\AppTheme;
 use App\Enums\Role as RoleEnum;
 use App\Enums\VerificationMethod;
 use App\Models\User;
+use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -83,5 +84,23 @@ class AppSettingsTest extends TestCase
     {
         $response = $this->getJson($this->baseUri);
         $response->assertStatus(200);
+    }
+
+    public function test_it_returns_403_if_mfa_configuration_via_api_is_disabled(): void
+    {
+        // Disable the MFA Config Management via API
+        $manager = resolve(AppSettingsManager::class);
+        $manager->setMfaConfig(true, false, VerificationMethod::EMAIL_CHANNEL, VerificationMethod::GOOGLE_AUTHENTICATOR);
+
+        $input = [
+            'theme' => AppTheme::LIGHT->value,
+            'mfa' => [
+                'enabled' => false,
+                'steps' => ConversionHelper::enumToArray(VerificationMethod::class),
+            ],
+        ];
+
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
+        $response->assertStatus(403);
     }
 }

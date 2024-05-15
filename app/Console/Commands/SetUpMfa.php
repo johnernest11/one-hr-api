@@ -37,14 +37,16 @@ class SetUpMfa extends Command
      */
     public function handle(): int
     {
-        $status = $this->choice('Turn-on Multi-Factor Authentication?', [1 => 'Yes', 2 => 'No']);
+        $isEnabled = $this->confirm('Turn-on Multi-Factor Authentication?');
 
-        if (Str::lower($status) === 'no') {
+        if (! $isEnabled) {
             $this->appSettingsManager->setMfaConfig(false);
             $this->info('You have disabled multi-factor authentication');
 
             return Command::SUCCESS;
         }
+
+        $allowApiManagement = $this->confirm('Allow MFA configurations to be managed via API endpoints?');
 
         $this->printAllAvailableMfaMethods();
 
@@ -66,7 +68,7 @@ class SetUpMfa extends Command
         }
 
         // Save the MFA Options selected
-        $success = $this->appSettingsManager->setMfaConfig(true, ...$this->convertToEnums($selectedMfaSteps));
+        $success = $this->appSettingsManager->setMfaConfig(true, $allowApiManagement, ...$this->convertToEnums($selectedMfaSteps));
 
         if (! $success) {
             $this->error('Unable to save MFA configurations');
