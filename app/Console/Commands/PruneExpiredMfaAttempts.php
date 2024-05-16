@@ -26,8 +26,6 @@ class PruneExpiredMfaAttempts extends Command
      */
     public function handle(): void
     {
-        echo 'Testing '.PHP_EOL;
-        \Log::debug(__METHOD__, ['message' => 'Testing']);
         DB::table('mfa_attempts')
             ->where('expires_at', '<', now())
             ->delete();

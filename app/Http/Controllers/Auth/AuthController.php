@@ -81,7 +81,7 @@ abstract class AuthController extends ApiController
         $mfaConfig = $this->appSettingsManager->getMfaConfig();
         if ($mfaConfig['enabled']) {
             $mfaSteps = $mfaConfig['steps'];
-            $authMeta = ['token_name' => $clientName, 'auth_type' => $authType];
+            $authMeta = ['token_name' => $clientName, 'auth_type' => $authType, 'with_user' => $withUserDetails];
             $mfaAttempt = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps, $authMeta);
             $this->mfaOrchestrator->runSecretGeneration($mfaAttempt['token']);
 
