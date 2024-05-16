@@ -184,6 +184,7 @@ class MfaTest extends TestCase
         $response = $response->decodeResponseJson();
         $this->assertArrayHasKey('qr_code', $response['data']);
         $this->assertArrayHasKey('backup_codes', $response['data']);
+        $this->assertArrayHasKey('secret_key', $response['data']);
         $this->assertNotEmpty($response['data']['backup_codes']);
 
         // QR code can only be generated once

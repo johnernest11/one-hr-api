@@ -283,7 +283,7 @@ class MfaOrchestrator
      *
      * @throws Throwable
      */
-    public function generateBackupCodes(VerificationMethod $verificationMethod, User $user): array
+    public function runBackupCodeGeneration(VerificationMethod $verificationMethod, User $user): array
     {
         // Run through the registry list and generate backup codes
         foreach ($this->mfaMethodsRegistry as $methodClass) {
@@ -306,7 +306,7 @@ class MfaOrchestrator
     /**
      * Verify the backup code generate by App-based MFA methods
      */
-    public function verifyBackupCode(MfaAttempt $mfaAttempt, string $code): bool
+    public function runBackupCodeVerification(MfaAttempt $mfaAttempt, string $code): bool
     {
         // Get the MFA step that needs verification
         $activeStep = $this->getCurrentMfaStep($mfaAttempt);
@@ -333,6 +333,34 @@ class MfaOrchestrator
         ]);
 
         return false;
+    }
+
+    /**
+     * Get secret key of a verification factor. Users may need to enter the secret key in the
+     * authenticator app manually instead of scanning the QR code.
+     * A typical set-up key of a VerificationFactor is the decrypted value
+     * of the secret key
+     *
+     * This is only available for app-based MFA methods
+     */
+    public function runGetSecretKey(VerificationMethod $verificationMethod, User $user): ?string
+    {
+        // Run through the registry list and generate backup codes
+        foreach ($this->mfaMethodsRegistry as $methodClass) {
+            /** @var AppVerificationMethod $factor */
+            $factor = resolve($methodClass);
+
+            if ($verificationMethod === $factor->verificationMethod()) {
+                return $factor->getOrCreateSecret($user);
+            }
+        }
+
+        Log::debug('Unable to get the setup key', [
+            'method' => __METHOD__,
+            'verification_method' => $verificationMethod,
+        ]);
+
+        return null;
     }
 
     /**

@@ -86,7 +86,8 @@ class MfaController extends ApiController
             return $this->error('Current MFA step does not support QR code generation', Response::HTTP_CONFLICT, ApiErrorCode::BAD_REQUEST);
         }
 
-        if ($this->mfaOrchestrator->userIsEnrolledToMfaStep($step, $mfaAttempt->user)) {
+        $user = $mfaAttempt->user;
+        if ($this->mfaOrchestrator->userIsEnrolledToMfaStep($step, $user)) {
             return $this->error('QR Code generation is only available once during MFA', Response::HTTP_FORBIDDEN, ApiErrorCode::FORBIDDEN);
         }
 
@@ -94,18 +95,21 @@ class MfaController extends ApiController
 
         $backupCodes = [];
         try {
-            $backupCodes = $this->mfaOrchestrator->generateBackupCodes($step, $mfaAttempt->user);
+            $backupCodes = $this->mfaOrchestrator->runBackupCodeGeneration($step, $user);
         } catch (Throwable) {
             Log::error('Unable to generate backup codes', [
                 'method' => __METHOD__,
-                'user_id' => $mfaAttempt->user,
+                'user_id' => $user,
             ]);
         }
+
+        $secretKey = $this->mfaOrchestrator->runGetSecretKey($step, $user);
 
         $data = [
             'qr_code' => $qrCode,
             'current_step' => $step,
             'backup_codes' => $backupCodes,
+            'secret_key' => $secretKey,
         ];
 
         return $this->success(['data' => $data], Response::HTTP_OK);
@@ -208,7 +212,7 @@ class MfaController extends ApiController
 
         /** @var User $user */
         $code = $request->input('code');
-        $success = $this->mfaOrchestrator->verifyBackupCode($mfaAttempt, $code);
+        $success = $this->mfaOrchestrator->runBackupCodeVerification($mfaAttempt, $code);
 
         if (! $success) {
             return $this->error('Invalid MFA Backup Code provided', Response::HTTP_UNPROCESSABLE_ENTITY, ApiErrorCode::INVALID_MFA_BACKUP_CODE);
@@ -216,10 +220,12 @@ class MfaController extends ApiController
 
         // If success, we return the QR code that the user can re-scan
         $qrCode = $this->mfaOrchestrator->runQrCodeGeneration($mfaAttempt);
+        $secretKey = $this->mfaOrchestrator->runGetSecretKey($step, $mfaAttempt->user);
         $data = [
             'message' => 'Backup code validation success. New QR code generated.',
             'current_step' => $step,
             'qr_code' => $qrCode,
+            'secret_key' => $secretKey,
         ];
 
         return $this->success(['data' => $data], Response::HTTP_OK);

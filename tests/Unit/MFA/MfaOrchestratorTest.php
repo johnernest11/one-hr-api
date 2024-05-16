@@ -128,7 +128,7 @@ class MfaOrchestratorTest extends TestCase
         $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
         $this->mfaOrchestrator->runSecretGeneration($mfaToken);
 
-        $codes = $this->mfaOrchestrator->generateBackupCodes($step, $this->user);
+        $codes = $this->mfaOrchestrator->runBackupCodeGeneration($step, $this->user);
         $this->assertNotEmpty($codes);
     }
 
@@ -155,6 +155,23 @@ class MfaOrchestratorTest extends TestCase
         $this->assertTrue($success);
     }
 
+    public function test_it_can_get_secret_key(): void
+    {
+        $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value];
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value])->value;
+
+        $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($this->user, $mfaSteps)['token'];
+        $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
+        $this->mfaOrchestrator->runSecretGeneration($mfaToken);
+        $key = $this->mfaOrchestrator->runGetSecretKey(VerificationMethod::EMAIL_CHANNEL, $this->user);
+        $this->assertIsString($key);
+    }
+
     /**
      * @throws Throwable
      */
@@ -175,11 +192,11 @@ class MfaOrchestratorTest extends TestCase
         $authenticator = new GAuthenticatorVerificationApp();
         $backupCodes = $authenticator->generateBackupCodes($this->user);
 
-        $success = $this->mfaOrchestrator->verifyBackupCode($mfaAttempt, $backupCodes[0]);
+        $success = $this->mfaOrchestrator->runBackupCodeVerification($mfaAttempt, $backupCodes[0]);
         $this->assertTrue($success);
 
         // Backup codes can only be used a single time
-        $success = $this->mfaOrchestrator->verifyBackupCode($mfaAttempt, $backupCodes[0]);
+        $success = $this->mfaOrchestrator->runBackupCodeVerification($mfaAttempt, $backupCodes[0]);
         $this->assertFalse($success);
     }
 
