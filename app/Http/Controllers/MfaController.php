@@ -8,6 +8,7 @@ use App\Enums\VerificationMethod;
 use App\Http\Requests\MfaRequest;
 use App\Models\MfaAttempt;
 use App\Models\User;
+use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\MfaOrchestrator;
@@ -229,6 +230,13 @@ class MfaController extends ApiController
         ];
 
         return $this->success(['data' => $data], Response::HTTP_OK);
+    }
+
+    public function fetchAllAvailableMfaMethods(MfaRequest $request, AppSettingsManager $settingsManager): JsonResponse
+    {
+        $allSteps = $this->mfaOrchestrator->getAllMfaMethods($settingsManager);
+
+        return $this->success(['data' => $allSteps], Response::HTTP_OK);
     }
 
     private function validateTokenAndGetMfaAttempt(string $mfaToken): JsonResponse|MfaAttempt

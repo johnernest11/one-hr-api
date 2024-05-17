@@ -226,7 +226,7 @@ class MfaOrchestrator
 
         // Run through the registry list and generate the QR code
         $user = $mfaAttempt->user;
-        foreach ($this->mfaMethodsRegistry as $methodClass) {
+        foreach ($this->appBasedMethodsRegistry as $methodClass) {
             /** @var AppVerificationMethod $factor */
             $factor = resolve($methodClass);
 
@@ -286,7 +286,7 @@ class MfaOrchestrator
     public function runBackupCodeGeneration(VerificationMethod $verificationMethod, User $user): array
     {
         // Run through the registry list and generate backup codes
-        foreach ($this->mfaMethodsRegistry as $methodClass) {
+        foreach ($this->appBasedMethodsRegistry as $methodClass) {
             /** @var AppVerificationMethod $factor */
             $factor = resolve($methodClass);
 
@@ -318,7 +318,7 @@ class MfaOrchestrator
 
         // Run through the registry list and generate the QR code
         $user = $mfaAttempt->user;
-        foreach ($this->mfaMethodsRegistry as $methodClass) {
+        foreach ($this->appBasedMethodsRegistry as $methodClass) {
             /** @var AppVerificationMethod $factor */
             $factor = resolve($methodClass);
 
@@ -486,6 +486,28 @@ class MfaOrchestrator
     public function allMfaStepsAreCompleted(MfaAttempt $mfaAttempt): bool
     {
         return collect($mfaAttempt->steps)->every(fn ($s) => $s['completed']);
+    }
+
+    /**
+     * Get all MFA methods available, along with their activation status
+     */
+    public function getAllMfaMethods(AppSettingsManager $settingsManager): array
+    {
+        $allMethods = [];
+        $activatedMfaSteps = $settingsManager->getMfaConfig()['steps'];
+
+        foreach ($this->mfaMethodsRegistry as $verificationMethod) {
+            /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
+            $factor = resolve($verificationMethod);
+            $verificationMethodName = $factor->verificationMethod()->value;
+            $allMethods[] = [
+                'name' => $verificationMethodName,
+                'enabled' => in_array($verificationMethodName, $activatedMfaSteps),
+                'type' => is_subclass_of($verificationMethod, DeliveryVerificationMethod::class) ? static::$DELIVERY_MFA_TYPE : static::$APP_MFA_TYPE,
+            ];
+        }
+
+        return $allMethods;
     }
 
     private function buildRawMfaTokenFormat(MfaAttempt $mfaAttempt, string $token): string

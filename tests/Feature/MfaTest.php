@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\VerificationMethod;
 use App\Models\AppSettings;
 use App\Notifications\EmailOtpNotification;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\MfaOrchestrator;
 use App\Services\Verification\Methods\EmailVerificationChannel;
 use ConversionHelper;
@@ -469,5 +470,33 @@ class MfaTest extends TestCase
         ]);
 
         $response->assertStatus(409);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function test_it_can_fetch_all_available_mfa_methods(): void
+    {
+        $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value, VerificationMethod::GOOGLE_AUTHENTICATOR->value];
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value]);
+        $user = $this->produceUsers();
+        $authTokenManager = resolve(PersistentAuthTokenManager::class);
+        $authToken = $authTokenManager->generateToken($user, now()->addHour());
+
+        $response = $this->withToken($authToken)->getJson($this->baseUri.'/available-methods');
+        $response->assertStatus(200);
+
+        $response = $response->decodeResponseJson();
+        $this->assertCount(count($mfaSteps), $response['data']);
+
+        // Check if `enabled` status are correct
+        foreach ($response['data'] as $method) {
+            $this->assertTrue($method['enabled']);
+        }
     }
 }

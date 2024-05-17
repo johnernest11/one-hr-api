@@ -90,7 +90,7 @@ Route::controller(PasswordController::class)->name('auth.password.')->group(func
 });
 
 // MFA Routes
-Route::middleware(['throttle:api-mfa'])->controller(MfaController::class)->name('auth.mfa.')
+Route::controller(MfaController::class)->name('auth.mfa.')
     ->group(function () {
         /** @uses MfaController::sendCode */
         Route::middleware(['throttle:api-mfa-send-code'])
@@ -98,11 +98,16 @@ Route::middleware(['throttle:api-mfa'])->controller(MfaController::class)->name(
             ->name('send-code');
 
         /** @uses MfaController::generateQrCode */
-        Route::post('mfa/generate-qrcode', 'generateQrCode')->name('generate-qrcode');
+        Route::middleware(['throttle:api-mfa'])->post('mfa/generate-qrcode', 'generateQrCode')->name('generate-qrcode');
 
         /** @uses MfaController::verifyCode */
-        Route::post('mfa/verify-code', 'verifyCode')->name('verify-code');
+        Route::middleware(['throttle:api-mfa'])->post('mfa/verify-code', 'verifyCode')->name('verify-code');
 
         /** @uses MfaController::verifyBackupCode */
-        Route::post('mfa/verify-backup-code', 'verifyBackupCode')->name('verify-backup-code');
+        Route::middleware(['throttle:api-mfa'])->post('mfa/verify-backup-code', 'verifyBackupCode')->name('verify-backup-code');
+
+        /** @uses MfaController::fetchAllAvailableMfaMethods */
+        Route::middleware(['throttle:api-users', 'auth:token', 'verified.api'])
+            ->get('mfa/available-methods', 'fetchAllAvailableMfaMethods')
+            ->name('mfa.available-steps');
     });

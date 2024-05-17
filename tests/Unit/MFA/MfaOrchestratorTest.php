@@ -6,6 +6,7 @@ use App\Enums\VerificationMethod;
 use App\Models\AppSettings;
 use App\Models\User;
 use App\Notifications\EmailOtpNotification;
+use App\Services\AppSettingsManager;
 use App\Services\MfaOrchestrator;
 use App\Services\Verification\Methods\EmailVerificationChannel;
 use App\Services\Verification\Methods\GAuthenticatorVerificationApp;
@@ -296,5 +297,21 @@ class MfaOrchestratorTest extends TestCase
 
         $completed = $this->mfaOrchestrator->allMfaStepsAreCompleted($mfaAttempt);
         $this->assertTrue($completed);
+    }
+
+    public function test_it_can_fetch_all_available_mfa_methods(): void
+    {
+        $mfaSteps = ConversionHelper::enumToArray(VerificationMethod::class);
+        shuffle($mfaSteps);
+
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value])->value;
+
+        $availableSteps = $this->mfaOrchestrator->getAllMfaMethods(resolve(AppSettingsManager::class));
+        $this->assertCount(count($mfaSteps), $availableSteps);
     }
 }
