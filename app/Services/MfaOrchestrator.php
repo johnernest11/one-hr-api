@@ -493,18 +493,26 @@ class MfaOrchestrator
      */
     public function getAllMfaMethods(AppSettingsManager $settingsManager): array
     {
-        $allMethods = [];
         $activatedMfaSteps = $settingsManager->getMfaConfig()['steps'];
+        $allMethods = [];
 
         foreach ($this->mfaMethodsRegistry as $verificationMethod) {
             /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
             $factor = resolve($verificationMethod);
-            $verificationMethodName = $factor->verificationMethod()->value;
-            $allMethods[] = [
-                'name' => $verificationMethodName,
-                'enabled' => in_array($verificationMethodName, $activatedMfaSteps),
-                'type' => is_subclass_of($verificationMethod, DeliveryVerificationMethod::class) ? static::$DELIVERY_MFA_TYPE : static::$APP_MFA_TYPE,
-            ];
+            $methodName = $factor->verificationMethod()->value;
+            $methodType = is_subclass_of($verificationMethod, DeliveryVerificationMethod::class) ? static::$DELIVERY_MFA_TYPE : static::$APP_MFA_TYPE;
+
+            // If the method is activated, we insert it at the correct position
+            if (in_array($methodName, $activatedMfaSteps)) {
+                $method = ['name' => $methodName, 'enabled' => true, 'type' => $methodType];
+                $index = array_search($methodName, $activatedMfaSteps);
+                array_splice($allMethods, $index, 0, [$method]);
+
+                continue;
+            }
+
+            // If not enabled, we add them at the end of the list
+            $allMethods[] = ['name' => $methodName, 'enabled' => false, 'type' => $methodType];
         }
 
         return $allMethods;

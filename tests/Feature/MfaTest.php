@@ -477,7 +477,7 @@ class MfaTest extends TestCase
      */
     public function test_it_can_fetch_all_available_mfa_methods(): void
     {
-        $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value, VerificationMethod::GOOGLE_AUTHENTICATOR->value];
+        $mfaSteps = [VerificationMethod::GOOGLE_AUTHENTICATOR->value, VerificationMethod::EMAIL_CHANNEL->value];
         $value = json_encode([
             'enabled' => true,
             'steps' => $mfaSteps,
@@ -493,6 +493,9 @@ class MfaTest extends TestCase
 
         $response = $response->decodeResponseJson();
         $this->assertCount(count($mfaSteps), $response['data']);
+
+        // Check if the order is correct
+        $this->assertEquals($mfaSteps, array_map(fn ($method) => $method['name'], $response['data']));
 
         // Check if `enabled` status are correct
         foreach ($response['data'] as $method) {
