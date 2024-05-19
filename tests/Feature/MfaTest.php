@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\VerificationMethod;
 use App\Models\AppSettings;
+use App\Models\VerificationFactor;
 use App\Notifications\EmailOtpNotification;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\MfaOrchestrator;
@@ -501,5 +502,41 @@ class MfaTest extends TestCase
         foreach ($response['data'] as $method) {
             $this->assertTrue($method['enabled']);
         }
+    }
+
+    public function test_it_can_un_enroll_a_user(): void
+    {
+        $user = $this->produceUsers();
+        $authTokenManager = resolve(PersistentAuthTokenManager::class);
+        $authToken = $authTokenManager->generateToken($user, now()->addHour());
+
+        $method = VerificationMethod::EMAIL_CHANNEL;
+        $factor = VerificationFactor::factory()->create(['user_id' => $user->id, 'type' => $method->value]);
+        $this->assertNotNull($factor->enrolled_at);
+
+        // Returns 422 if mfa_step is not a valid MFA verification step
+        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user', [
+            'email' => $user->email,
+            'mfa_step' => 'not_valid_method',
+        ]);
+        $response->assertStatus(422);
+
+        // Returns 404 if user_id does not exists
+        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user', [
+            'email' => 'not_email_'.$user->email,
+            'mfa_step' => $method->value,
+        ]);
+        $response->assertStatus(404);
+
+        // Returns 200 if successful
+        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user', [
+            'email' => $user->email,
+            'mfa_step' => $method->value,
+        ]);
+        $response->assertStatus(200);
+
+        // enrolled_at should be null
+        $factor->refresh();
+        $this->assertNull($factor->enrolled_at);
     }
 }

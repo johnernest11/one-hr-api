@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\AuthenticationType;
+use App\Rules\MfaStep;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MfaRequest extends FormRequest
@@ -18,7 +19,8 @@ class MfaRequest extends FormRequest
             'auth.mfa.verify-code' => $this->getVerifyCodeRules(),
             'auth.mfa.send-code' => $this->getSendCodeRules(),
             'auth.mfa.generate-qrcode' => $this->getGenerateQrcodeRules(),
-            'auth.mfa.verify-backup-code' => $this->verifyBackupCode(),
+            'auth.mfa.verify-backup-code' => $this->getVerifyBackupCodeRules(),
+            'auth.mfa.un-enroll-user' => $this->getUnEnrollUserRules(),
             default => []
         };
     }
@@ -46,11 +48,19 @@ class MfaRequest extends FormRequest
         ];
     }
 
-    private function verifyBackupCode(): array
+    private function getVerifyBackupCodeRules(): array
     {
         return [
             'token' => ['required'],
             'code' => ['required'],
+        ];
+    }
+
+    private function getUnEnrollUserRules(): array
+    {
+        return [
+            'email' => ['required', 'email'],
+            'mfa_step' => ['required', new MfaStep()],
         ];
     }
 

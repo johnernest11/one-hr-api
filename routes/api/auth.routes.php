@@ -109,5 +109,10 @@ Route::controller(MfaController::class)->name('auth.mfa.')
         /** @uses MfaController::fetchAllAvailableMfaMethods */
         Route::middleware(['throttle:api-users', 'auth:token', 'verified.api'])
             ->get('mfa/available-methods', 'fetchAllAvailableMfaMethods')
-            ->name('mfa.available-steps');
+            ->name('available-steps');
+
+        /** @uses MfaController::unEnrollUser */
+        Route::middleware(['throttle:api-users', 'auth:token', 'verified.api'])
+            ->post('mfa/un-enroll-user', 'unEnrollUser')
+            ->name('un-enroll-user');
     });

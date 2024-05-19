@@ -232,11 +232,30 @@ class MfaController extends ApiController
         return $this->success(['data' => $data], Response::HTTP_OK);
     }
 
+    /**
+     * Fetch all available verification methods for MFA
+     */
     public function fetchAllAvailableMfaMethods(MfaRequest $request, AppSettingsManager $settingsManager): JsonResponse
     {
         $allSteps = $this->mfaOrchestrator->getAllMfaMethods($settingsManager);
 
         return $this->success(['data' => $allSteps], Response::HTTP_OK);
+    }
+
+    /**
+     * Enroll a user to an MFA verification method
+     */
+    public function unEnrollUser(MfaRequest $request): JsonResponse
+    {
+        $userEmail = $request->validated('email');
+        $verificationMethod = VerificationMethod::from($request->validated('mfa_step'));
+        $success = $this->mfaOrchestrator->unEnrollUser($userEmail, $verificationMethod);
+
+        if (! $success) {
+            return $this->error('Unable to un-enroll user from MFA step', Response::HTTP_INTERNAL_SERVER_ERROR, ApiErrorCode::SERVER);
+        }
+
+        return $this->success(['message' => 'User successfully un-enrolled'], Response::HTTP_OK);
     }
 
     private function validateTokenAndGetMfaAttempt(string $mfaToken): JsonResponse|MfaAttempt

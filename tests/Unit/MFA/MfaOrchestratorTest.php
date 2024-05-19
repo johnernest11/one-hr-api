@@ -225,7 +225,7 @@ class MfaOrchestratorTest extends TestCase
         $this->assertTrue($isEnrolled);
     }
 
-    public function test_it_can_un_enroll_a_user_from(): void
+    public function test_it_can_un_enroll_a_user_from_mfa_method(): void
     {
         $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value];
         $value = json_encode([
@@ -243,7 +243,7 @@ class MfaOrchestratorTest extends TestCase
         $isEnrolled = $this->mfaOrchestrator->userIsEnrolledToMfaStep($step, $this->user);
         $this->assertTrue($isEnrolled);
 
-        $success = $this->mfaOrchestrator->unEnrollUser($this->user, $step);
+        $success = $this->mfaOrchestrator->unEnrollUser($this->user->email, $step);
         $this->assertTrue($success);
 
         $verificationFactor = $this->user->verificationFactors()
