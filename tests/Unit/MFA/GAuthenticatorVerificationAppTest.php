@@ -55,7 +55,7 @@ class GAuthenticatorVerificationAppTest extends TestCase
             ->firstOrFail();
         $this->assertNull($factor->enrolled_at);
 
-        $this->authenticator->completeEnrollment($this->user, VerificationMethod::GOOGLE_AUTHENTICATOR);
+        $this->authenticator->enrollUser($this->user, VerificationMethod::GOOGLE_AUTHENTICATOR);
         $factor->refresh();
         $this->assertNotNull($factor->enrolled_at);
     }
@@ -69,7 +69,7 @@ class GAuthenticatorVerificationAppTest extends TestCase
         $isEnrolled = $this->authenticator->userIsEnrolled($this->user, VerificationMethod::GOOGLE_AUTHENTICATOR);
         $this->assertFalse($isEnrolled);
 
-        $this->authenticator->completeEnrollment($this->user, VerificationMethod::GOOGLE_AUTHENTICATOR);
+        $this->authenticator->enrollUser($this->user, VerificationMethod::GOOGLE_AUTHENTICATOR);
         $isEnrolled = $this->authenticator->userIsEnrolled($this->user, VerificationMethod::GOOGLE_AUTHENTICATOR);
         $this->assertTrue($isEnrolled);
     }

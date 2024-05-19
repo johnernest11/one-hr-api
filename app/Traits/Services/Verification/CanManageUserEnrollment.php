@@ -16,7 +16,7 @@ trait CanManageUserEnrollment
      * with an app-based verification method. This method will flag the database if the user has
      * already enrolled, so we don't show the QR code everytime they log in
      */
-    public function completeEnrollment(User|int|string $userModelOrId, VerificationMethod $method): bool
+    public function enrollUser(User|int|string $userModelOrId, VerificationMethod $method): bool
     {
         $user = $this->retrieveModel($userModelOrId, User::query());
         $verificationFactor = VerificationFactor::where('user_id', $user->id)
@@ -39,5 +39,23 @@ trait CanManageUserEnrollment
             ->first();
 
         return (bool) $verificationFactor?->enrolled_at;
+    }
+
+    /**
+     * Un-enroll a user from a verification method. This is primarily
+     * useful for app-based verification methods where there is a need
+     * to show the QR code and regenerate backup codes if the user
+     * no longer has access to both
+     */
+    public function unEnrollUser(User|int|string $userModelOrId, VerificationMethod $method): bool
+    {
+        $user = $this->retrieveModel($userModelOrId, User::query());
+        $verificationFactor = VerificationFactor::where('user_id', $user->id)
+            ->where('type', '=', $method)
+            ->firstOrFail();
+
+        $verificationFactor->enrolled_at = null;
+
+        return $verificationFactor->save();
     }
 }

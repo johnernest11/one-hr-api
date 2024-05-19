@@ -232,7 +232,7 @@ class MfaOrchestrator
 
             if ($activeStep === $factor->verificationMethod()) {
                 $qrCode = $factor->generateQrCode($user);
-                $factor->completeEnrollment($user, $activeStep);
+                $factor->enrollUser($user, $activeStep);
 
                 return $qrCode;
             }
@@ -516,6 +516,30 @@ class MfaOrchestrator
         }
 
         return $allMethods;
+    }
+
+    /**
+     * Un-enroll a user from a verification method. Useful for app-based
+     * verification methods where the QR code and backup codes need to be
+     * regenerated for the user
+     */
+    public function unEnrollUser(User|int|string $user, VerificationMethod $method): bool
+    {
+        foreach ($this->mfaMethodsRegistry as $verificationMethodClass) {
+            /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
+            $factor = resolve($verificationMethodClass);
+            if ($method === $factor->verificationMethod()) {
+                return $factor->unEnrollUser($user, $method);
+            }
+        }
+
+        Log::debug('Unable to un-enroll user from a verification method', [
+            'method' => __METHOD__,
+            'user_id' => $user->id,
+            'verification_method' => $method,
+        ]);
+
+        return false;
     }
 
     private function buildRawMfaTokenFormat(MfaAttempt $mfaAttempt, string $token): string

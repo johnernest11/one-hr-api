@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Enums\VerificationMethod;
 use App\Services\AppSettingsManager;
+use App\Services\Verification\AppVerificationMethod;
+use App\Services\Verification\DeliveryVerificationMethod;
 use ConversionHelper;
 use Illuminate\Console\Command;
 use Str;
@@ -51,7 +53,7 @@ class SetUpMfa extends Command
         $this->printAllAvailableMfaMethods();
 
         // Build the options for selection
-        $allMfaOptions = ConversionHelper::enumToArray(VerificationMethod::class);
+        $allMfaOptions = $this->getAllMfaMethods();
         $totalOptions = count($allMfaOptions);
 
         $selectedMfaSteps = $this->getMfaOrderInput($totalOptions, $allMfaOptions);
@@ -123,14 +125,40 @@ class SetUpMfa extends Command
         return $selectedMfaSteps;
     }
 
+    private function getAllMfaMethods(): array
+    {
+        $registeredMfaClasses = config('auth.mfa_methods');
+        $mfaVerificationMethods = [];
+        foreach ($registeredMfaClasses as $class) {
+            /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
+            $factor = resolve($class);
+            $mfaVerificationMethods[] = $factor->verificationMethod()->value;
+        }
+
+        return $mfaVerificationMethods;
+    }
+
     private function printAllAvailableMfaMethods(): void
     {
         $this->info('These are the current Multi-Factor Authentication methods available');
-        $methods = [
-            [VerificationMethod::GOOGLE_AUTHENTICATOR->value, 'Use the Google Authenticator Mobile App to generate codes'],
-            [VerificationMethod::EMAIL_CHANNEL->value, 'Receive a one-time code via email'],
-        ];
-        $this->table(['Name', 'Description'], $methods);
+
+        $registeredMfaClasses = config('auth.mfa_methods');
+        $mfaVerificationMethods = [];
+        foreach ($registeredMfaClasses as $class) {
+            /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */
+            $factor = resolve($class);
+            $verificationMethodName = Str::title(Str::replace('_', ' ', $factor->verificationMethod()->value));
+
+            // Build the description
+            $isDeliveryBased = is_subclass_of($class, DeliveryVerificationMethod::class);
+            $description = "Use the $verificationMethodName app to mobile app to generate codes";
+            if ($isDeliveryBased) {
+                $description = "Receive a one-time code via $verificationMethodName";
+            }
+            $mfaVerificationMethods[] = [$factor->verificationMethod()->value, $description];
+        }
+
+        $this->table(['Name', 'Description'], $mfaVerificationMethods);
         $this->newLine();
     }
 

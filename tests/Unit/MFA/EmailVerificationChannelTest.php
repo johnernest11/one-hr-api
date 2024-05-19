@@ -85,7 +85,7 @@ class EmailVerificationChannelTest extends TestCase
         $factor->update(['enrolled_at' => null]);
         $factor->refresh();
 
-        $this->channel->completeEnrollment($user, VerificationMethod::EMAIL_CHANNEL);
+        $this->channel->enrollUser($user, VerificationMethod::EMAIL_CHANNEL);
         $factor->refresh();
         $this->assertNotNull($factor->enrolled_at);
     }

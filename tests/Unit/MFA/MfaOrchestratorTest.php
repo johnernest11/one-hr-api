@@ -225,6 +225,34 @@ class MfaOrchestratorTest extends TestCase
         $this->assertTrue($isEnrolled);
     }
 
+    public function test_it_can_un_enroll_a_user_from(): void
+    {
+        $mfaSteps = [VerificationMethod::EMAIL_CHANNEL->value];
+        $value = json_encode([
+            'enabled' => true,
+            'steps' => $mfaSteps,
+        ]);
+
+        AppSettings::updateOrCreate(['name' => 'mfa'], ['value' => $value])->value;
+
+        $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($this->user, $mfaSteps)['token'];
+        $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
+        $this->mfaOrchestrator->runSecretGeneration($mfaToken);
+
+        $step = $this->mfaOrchestrator->getCurrentMfaStep($mfaAttempt);
+        $isEnrolled = $this->mfaOrchestrator->userIsEnrolledToMfaStep($step, $this->user);
+        $this->assertTrue($isEnrolled);
+
+        $success = $this->mfaOrchestrator->unEnrollUser($this->user, $step);
+        $this->assertTrue($success);
+
+        $verificationFactor = $this->user->verificationFactors()
+            ->where('type', $step->value)
+            ->firstOrFail();
+
+        $this->assertNull($verificationFactor->enrolled_at);
+    }
+
     public function test_it_can_get_the_current_mfa_step(): void
     {
         $mfaSteps = ConversionHelper::enumToArray(VerificationMethod::class);
