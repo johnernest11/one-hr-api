@@ -113,6 +113,6 @@ Route::controller(MfaController::class)->name('auth.mfa.')
 
         /** @uses MfaController::unEnrollUser */
         Route::middleware(['throttle:api-users', 'auth:token', 'verified.api'])
-            ->post('mfa/un-enroll-user', 'unEnrollUser')
+            ->post('mfa/un-enroll-user/{userId}', 'unEnrollUser')
             ->name('un-enroll-user');
     });

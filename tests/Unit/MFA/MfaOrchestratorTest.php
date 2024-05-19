@@ -243,7 +243,7 @@ class MfaOrchestratorTest extends TestCase
         $isEnrolled = $this->mfaOrchestrator->userIsEnrolledToMfaStep($step, $this->user);
         $this->assertTrue($isEnrolled);
 
-        $success = $this->mfaOrchestrator->unEnrollUser($this->user->email, $step);
+        $success = $this->mfaOrchestrator->unEnrollUser($this->user, $step);
         $this->assertTrue($success);
 
         $verificationFactor = $this->user->verificationFactors()

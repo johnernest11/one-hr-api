@@ -245,11 +245,10 @@ class MfaController extends ApiController
     /**
      * Enroll a user to an MFA verification method
      */
-    public function unEnrollUser(MfaRequest $request): JsonResponse
+    public function unEnrollUser(string|int $userId, MfaRequest $request): JsonResponse
     {
-        $userEmail = $request->validated('email');
         $verificationMethod = VerificationMethod::from($request->validated('mfa_step'));
-        $success = $this->mfaOrchestrator->unEnrollUser($userEmail, $verificationMethod);
+        $success = $this->mfaOrchestrator->unEnrollUser($userId, $verificationMethod);
 
         if (! $success) {
             return $this->error('Unable to un-enroll user from MFA step', Response::HTTP_INTERNAL_SERVER_ERROR, ApiErrorCode::SERVER);

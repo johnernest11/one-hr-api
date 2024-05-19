@@ -59,7 +59,6 @@ class MfaRequest extends FormRequest
     private function getUnEnrollUserRules(): array
     {
         return [
-            'email' => ['required', 'email'],
             'mfa_step' => ['required', new MfaStep()],
         ];
     }

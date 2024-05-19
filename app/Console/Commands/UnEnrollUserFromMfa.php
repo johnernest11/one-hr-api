@@ -58,7 +58,7 @@ class UnEnrollUserFromMfa extends Command
         }
 
         $chosenMethod = $this->choice('Which MFA method should be un-enrolled?', $mfaVerificationMethods);
-        $success = $this->mfaOrchestrator->unEnrollUser($email, VerificationMethod::from($chosenMethod));
+        $success = $this->mfaOrchestrator->unEnrollUser($user, VerificationMethod::from($chosenMethod));
 
         if (! $success) {
             $this->error('Unable to un-enroll user');

@@ -523,9 +523,9 @@ class MfaOrchestrator
      * verification methods where the QR code and backup codes need to be
      * regenerated for the user
      */
-    public function unEnrollUser(string $email, VerificationMethod $method): bool
+    public function unEnrollUser(User|int|string $userModeOrId, VerificationMethod $method): bool
     {
-        $user = User::where('email', $email)->firstOrFail();
+        $user = $this->retrieveModel($userModeOrId, User::query());
 
         foreach ($this->mfaMethodsRegistry as $verificationMethodClass) {
             /** @var DeliveryVerificationMethod|AppVerificationMethod $factor */

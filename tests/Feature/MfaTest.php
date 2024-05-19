@@ -10,6 +10,7 @@ use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\MfaOrchestrator;
 use App\Services\Verification\Methods\EmailVerificationChannel;
 use ConversionHelper;
+use DB;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Notification;
@@ -515,22 +516,28 @@ class MfaTest extends TestCase
         $this->assertNotNull($factor->enrolled_at);
 
         // Returns 422 if mfa_step is not a valid MFA verification step
-        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user', [
-            'email' => $user->email,
+        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user/'.$user->id, [
+            'user_id' => $user->id,
             'mfa_step' => 'not_valid_method',
         ]);
         $response->assertStatus(422);
 
         // Returns 404 if user_id does not exists
-        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user', [
-            'email' => 'not_email_'.$user->email,
+        $nonExistentUserId = DB::table('users')->count('id') + 1;
+        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user/'.$nonExistentUserId, [
+            'mfa_step' => $method->value,
+        ]);
+        $response->assertStatus(404);
+
+        // Returns 404 if user_id is not yet associated with a verification factor
+        $userWithoutFactor = $this->produceUsers();
+        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user/'.$userWithoutFactor->id, [
             'mfa_step' => $method->value,
         ]);
         $response->assertStatus(404);
 
         // Returns 200 if successful
-        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user', [
-            'email' => $user->email,
+        $response = $this->withToken($authToken)->postJson($this->baseUri.'/un-enroll-user/'.$user->id, [
             'mfa_step' => $method->value,
         ]);
         $response->assertStatus(200);
