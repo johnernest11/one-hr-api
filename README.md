@@ -83,4 +83,5 @@ Running `composer install`, `composer update`, `git commit` will trigger automat
 - The default timezone set for dates and timestamps is `Asia/Manila`. You can change this in `config/app.php`
 
 ## Authors
-- Jego Carlo Ramos (JegRamos)
+- Jego Carlo Ramos
+- John Paul Gulayan
