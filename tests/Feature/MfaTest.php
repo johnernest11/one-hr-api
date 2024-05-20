@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\Role;
 use App\Enums\VerificationMethod;
 use App\Models\AppSettings;
 use App\Models\VerificationFactor;
@@ -509,6 +510,7 @@ class MfaTest extends TestCase
     public function test_it_can_un_enroll_a_user(): void
     {
         $user = $this->produceUsers();
+        $user->syncRoles(Role::ADMIN);
         $authTokenManager = resolve(PersistentAuthTokenManager::class);
         $authToken = $authTokenManager->generateToken($user, now()->addHour());
 

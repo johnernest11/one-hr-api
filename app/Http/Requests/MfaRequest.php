@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\AuthenticationType;
 use App\Rules\MfaStep;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -37,7 +36,6 @@ class MfaRequest extends FormRequest
         return [
             'code' => ['required'],
             'token' => ['required'],
-            'auth_type' => ['nullable', 'in:'.AuthenticationType::SANCTUM->value.','.AuthenticationType::JWT->value],
         ];
     }
 

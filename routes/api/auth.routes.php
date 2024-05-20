@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\AuthenticationType;
+use App\Enums\Permission;
 use App\Http\Controllers\Auth\JwtAuthController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\SanctumAuthController;
@@ -112,7 +113,12 @@ Route::controller(MfaController::class)->name('auth.mfa.')
             ->name('available-steps');
 
         /** @uses MfaController::unEnrollUser */
-        Route::middleware(['throttle:api-users', 'auth:token', 'verified.api'])
+        Route::middleware([
+            'throttle:api-users',
+            'auth:token',
+            'verified.api',
+            'permission:'.Permission::UPDATE_USERS->value,
+        ])
             ->post('mfa/un-enroll-user/{userId}', 'unEnrollUser')
             ->name('un-enroll-user');
     });
