@@ -329,7 +329,8 @@ class MfaOrchestratorTest extends TestCase
 
     public function test_it_can_fetch_all_available_mfa_methods(): void
     {
-        $mfaSteps = ConversionHelper::enumToArray(VerificationMethod::class);
+        $registeredMfaClasses = config('auth.mfa_methods');
+        $mfaSteps = array_map(fn ($m) => resolve($m)->verificationMethod()->value, $registeredMfaClasses);
         shuffle($mfaSteps);
 
         $value = json_encode([

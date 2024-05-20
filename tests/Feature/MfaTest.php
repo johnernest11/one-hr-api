@@ -479,7 +479,8 @@ class MfaTest extends TestCase
      */
     public function test_it_can_fetch_all_available_mfa_methods(): void
     {
-        $mfaSteps = [VerificationMethod::GOOGLE_AUTHENTICATOR->value, VerificationMethod::EMAIL_CHANNEL->value];
+        $registeredMfaClasses = config('auth.mfa_methods');
+        $mfaSteps = array_map(fn ($m) => resolve($m)->verificationMethod()->value, $registeredMfaClasses);
         $value = json_encode([
             'enabled' => true,
             'steps' => $mfaSteps,
