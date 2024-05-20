@@ -255,7 +255,7 @@ class MfaOrchestrator
 
         $mfaAttempt = MfaAttempt::find($idAndToken['id']);
         if (! $mfaAttempt) {
-            Log::debug('MFA Attempt ID not found', ['id' => $idAndToken['id'], 'method' => __METHOD__]);
+            Log::debug('MFA Attempt ID no found', ['id' => $idAndToken['id'], 'method' => __METHOD__]);
 
             return false;
         }
