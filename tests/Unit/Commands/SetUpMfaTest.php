@@ -17,6 +17,7 @@ class SetUpMfaTest extends TestCase
     {
         $this->artisan('mfa:setup')
             ->expectsConfirmation('Turn-on Multi-Factor Authentication?')
+            ->expectsConfirmation('Allow MFA configurations to be managed via API endpoints?')
             ->assertOk();
 
         $mfaConfig = json_decode(AppSettings::where('name', 'mfa')->first()->value, true);
