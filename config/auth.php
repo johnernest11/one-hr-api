@@ -170,14 +170,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Multi-Factor Authentication Expirations
+    | Verification Factors Code Expirations
     |--------------------------------------------------------------------------
     |
-    | This configuration defines the expiration time (in seconds) of MFA codes
-    | implemented by delivery and channel-based classes
+    | This configuration defines the expiration time (in seconds) of verification
+    | codes implemented by delivery-based method classes
     |
     */
-    'mfa_codes' => [
+    'verification_codes' => [
         'expiration' => [
             'email' => 12 * 60, // 12 minutes
         ],

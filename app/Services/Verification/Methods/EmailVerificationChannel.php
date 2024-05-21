@@ -35,6 +35,6 @@ class EmailVerificationChannel extends DeliveryVerificationMethod
      */
     protected function getCodeExpirationSeconds(): int
     {
-        return config('auth.mfa_codes.expiration.email');
+        return config('auth.verification_codes.expiration.email');
     }
 }

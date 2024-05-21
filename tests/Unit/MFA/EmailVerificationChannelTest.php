@@ -43,7 +43,7 @@ class EmailVerificationChannelTest extends TestCase
 
     public function test_verification_fails_after_code_expiration(): void
     {
-        Config::set('auth.mfa_codes.expiration.email', 1);
+        Config::set('auth.verification_codes.expiration.email', 1);
         $user = $this->produceUsers();
         $code = $this->channel->generateCode($user);
 
