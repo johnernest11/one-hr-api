@@ -53,7 +53,7 @@ abstract class DeliveryVerificationMethod
         $user = $this->retrieveModel($userIdOrModel, User::query());
         /** @var VerificationFactor $secret */
         $verificationFactor = VerificationFactor::where('user_id', $user->id)
-            ->where('type', '=', VerificationMethod::EMAIL_CHANNEL)
+            ->where('type', '=', $this->verificationMethod())
             ->first();
 
         if ($verificationFactor && ! $forceNew) {
