@@ -208,7 +208,7 @@ class MfaController extends ApiController
         if (! $this->mfaOrchestrator->stepSupportsBackupCodeVerification($step)) {
             $message = "The $step->value verification method does not support backup codes.";
 
-            return $this->error($message, Response::HTTP_CONFLICT, ApiErrorCode::VALIDATION);
+            return $this->error($message, Response::HTTP_CONFLICT, ApiErrorCode::BAD_REQUEST);
         }
 
         /** @var User $user */
