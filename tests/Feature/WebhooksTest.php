@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Enums\Role as RoleEnum;
 use App\Enums\WebhookPermission;
 use App\Models\User;
-use App\Services\ApiKey\ApiKeyManager;
+use App\Services\ApiKeyManager;
 use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -34,7 +34,7 @@ class WebhooksTest extends TestCase
         $roles = [RoleEnum::ADMIN, RoleEnum::SUPER_USER];
         $user->syncRoles(fake()->randomElement($roles));
 
-        $apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
+        $apiKeyPermissions = ConversionHelper::enumToArray(WebhookPermission::class);
         $this->apiKeyService = resolve(ApiKeyManager::class);
         $this->apiKey = $this->apiKeyService->create(
             'test_name', $user->id, 'test_desc', now()->endOfDay(), $apiKeyPermissions
@@ -68,7 +68,7 @@ class WebhooksTest extends TestCase
     public function test_it_returns_401_if_api_key_is_disabled(): void
     {
         $user = $this->produceUsers();
-        $apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
+        $apiKeyPermissions = ConversionHelper::enumToArray(WebhookPermission::class);
         $apiKey = $this->apiKeyService->create('test_name', $user->id, 'test_desc', now()->endOfDay(), $apiKeyPermissions);
         $rawKey = $apiKey->rawKeyValue;
         $apiKey->active = false;

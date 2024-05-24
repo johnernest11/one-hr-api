@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Services\Database;
+namespace App\Services;
 
 use Cache;
 use Illuminate\Support\Facades\DB;
 use Schema;
 
-class SchemaInfoService implements SchemaInspector
+class DbSchemaInspector
 {
-    /** {@inheritDoc} */
+    /**
+     * Get all the columns in a database table
+     */
     public function getAllColumns(string $tableName): array
     {
         return Cache::rememberForever($this->getAllColumnsCacheKey($tableName), function () use ($tableName) {
@@ -16,7 +18,9 @@ class SchemaInfoService implements SchemaInspector
         });
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Get all the tables from the database
+     */
     public function getAllTables(): array
     {
         return Cache::rememberForever($this->getAllTablesCacheKey(), function () {
@@ -27,7 +31,9 @@ class SchemaInfoService implements SchemaInspector
         });
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Check if a column exists in a database table
+     */
     public function checkIfColumnExists(string $tableName, string $columnName): bool
     {
         $allColumns = $this->getAllColumns($tableName);
@@ -35,7 +41,9 @@ class SchemaInfoService implements SchemaInspector
         return in_array($columnName, $allColumns);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Check if a given table exists
+     */
     public function checkIfTableExists(string $tableName): bool
     {
         $allTables = $this->getAllTables();
@@ -43,7 +51,9 @@ class SchemaInfoService implements SchemaInspector
         return in_array($tableName, $allTables);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Get all column names of a table except
+     */
     public function getAllColumnNamesExcept(string $tableName, array $excludedColumns): array
     {
         $allColumns = $this->getAllColumns($tableName);

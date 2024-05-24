@@ -3,17 +3,25 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
-use App\Services\User\UserManager;
+use App\Services\MfaOrchestrator;
+use App\Services\User\UserAccountManager;
+use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
 
 class JwtAuthController extends AuthController
 {
     private AuthTokenManager $authTokenManager;
 
-    public function __construct(UserManager $userService, AuthTokenManager $authTokenManager)
-    {
-        parent::__construct($userService);
+    public function __construct(
+        UserAccountManager $accManager,
+        UserCredentialManager $credManager,
+        AuthTokenManager $authTokenManager,
+        AppSettingsManager $settingsManager,
+        MfaOrchestrator $mfaPipelineManager,
+    ) {
+        parent::__construct($accManager, $credManager, $settingsManager, $mfaPipelineManager);
         $this->authTokenManager = $authTokenManager;
     }
 

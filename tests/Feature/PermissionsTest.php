@@ -43,7 +43,7 @@ class PermissionsTest extends TestCase
         $response = $response->decodeResponseJson();
 
         // We count the number of permissions in the Permission enum class
-        $count = count(ConversionHelper::convertEnumToArray(Permission::class));
+        $count = count(ConversionHelper::enumToArray(Permission::class));
         $this->assertCount($count, $response['data']);
     }
 
@@ -58,7 +58,7 @@ class PermissionsTest extends TestCase
         $response = $response->decodeResponseJson();
 
         // We count the number of permissions in the WebhookPermission enum class
-        $count = count(ConversionHelper::convertEnumToArray(WebhookPermission::class));
+        $count = count(ConversionHelper::enumToArray(WebhookPermission::class));
         $this->assertCount($count, $response['data']);
     }
 
@@ -73,8 +73,8 @@ class PermissionsTest extends TestCase
         $response = $response->decodeResponseJson();
 
         // We count the number of permissions in the WebhookPermission enum class
-        $webhookPermissionsCount = count(ConversionHelper::convertEnumToArray(WebhookPermission::class));
-        $userPermissionsCount = count(ConversionHelper::convertEnumToArray(Permission::class));
+        $webhookPermissionsCount = count(ConversionHelper::enumToArray(WebhookPermission::class));
+        $userPermissionsCount = count(ConversionHelper::enumToArray(Permission::class));
         $total = $webhookPermissionsCount + $userPermissionsCount;
         $this->assertCount($total, $response['data']);
     }

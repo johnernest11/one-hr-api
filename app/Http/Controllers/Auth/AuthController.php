@@ -3,22 +3,40 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\ApiErrorCode;
+use App\Enums\AuthenticationType;
+use App\Enums\VerificationMethod;
 use App\Events\UserRegistered;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
-use App\Services\User\UserManager;
+use App\Services\AppSettingsManager;
+use App\Services\MfaOrchestrator;
+use App\Services\User\UserAccountManager;
+use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class AuthController extends ApiController
 {
-    private UserManager $userService;
+    private UserCredentialManager $userCredentialManager;
 
-    public function __construct(UserManager $userService)
-    {
-        $this->userService = $userService;
+    private UserAccountManager $userAccountManager;
+
+    private AppSettingsManager $appSettingsManager;
+
+    private MfaOrchestrator $mfaOrchestrator;
+
+    public function __construct(
+        UserAccountManager $accManager,
+        UserCredentialManager $credManager,
+        AppSettingsManager $settingsManager,
+        MfaOrchestrator $mfaOrchestrator,
+    ) {
+        $this->userAccountManager = $accManager;
+        $this->userCredentialManager = $credManager;
+        $this->appSettingsManager = $settingsManager;
+        $this->mfaOrchestrator = $mfaOrchestrator;
     }
 
     /**
@@ -33,9 +51,9 @@ abstract class AuthController extends ApiController
 
         // Users should be able to log in via email or mobile_number
         if ($email) {
-            $user = $this->userService->getUserViaEmailAndPassword($email, $password);
+            $user = $this->userCredentialManager->getUserViaEmailAndPassword($email, $password);
         } elseif ($mobileNumber) {
-            $user = $this->userService->getUserViaMobileNumberAndPassword($mobileNumber, $password);
+            $user = $this->userCredentialManager->getUserViaMobileNumberAndPassword($mobileNumber, $password);
         }
 
         if (! $user) {
@@ -55,11 +73,37 @@ abstract class AuthController extends ApiController
         }
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
-        $clientName = $request->get('client_name') ?? 'api_token';
+        $clientName = $request->get('client_name', 'api_token');
+        $authType = $request->get('auth_type', AuthenticationType::SANCTUM->value);
+        $withUserDetails = $request->get('with_user', false);
+
+        // We proceed with the MFA flow if enabled
+        $mfaConfig = $this->appSettingsManager->getMfaConfig();
+        if ($mfaConfig['enabled']) {
+            $mfaSteps = $mfaConfig['steps'];
+            $authMeta = ['token_name' => $clientName, 'auth_type' => $authType, 'with_user' => $withUserDetails];
+            $mfaAttempt = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps, $authMeta);
+            $this->mfaOrchestrator->runSecretGeneration($mfaAttempt['token']);
+
+            $data = [
+                'mfa_token' => $mfaAttempt['token'],
+                'mfa_token_expires_at' => $mfaAttempt['expires_at'],
+                'mfa_steps' => $mfaAttempt['steps'],
+            ];
+
+            // Deliver the MFA code if the first MFA step supports code delivery
+            $firstStep = VerificationMethod::from($mfaSteps[0]);
+            if ($this->mfaOrchestrator->stepSupportsCodeDelivery($firstStep)) {
+                $mfaAttemptRecord = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaAttempt['token']);
+                $this->mfaOrchestrator->runCodeDelivery($mfaAttemptRecord);
+            }
+
+            return $this->success(['data' => $data], Response::HTTP_OK);
+        }
+
+        // Continue with the login if MFA is not enabled
         $expiresAt = $this->getTokenExpiration();
         $token = $this->generateAuthToken($user, $expiresAt, $clientName);
-
-        $withUserDetails = $request->get('with_user', false);
         $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user, $withUserDetails);
 
         return $this->success(['data' => $dataResponse], Response::HTTP_OK);
@@ -70,7 +114,7 @@ abstract class AuthController extends ApiController
      */
     public function register(AuthRequest $request): JsonResponse
     {
-        $user = $this->userService->create($request->validated());
+        $user = $this->userAccountManager->create($request->validated());
 
         // For the token name, clients can optionally send 'My iPhone14', 'Google Chrome', etc.
         $clientName = $request->get('client_name') ?? 'api_token';

@@ -1,5 +1,8 @@
 <?php
 
+use App\Services\Verification\Methods\EmailVerificationChannel;
+use App\Services\Verification\Methods\GAuthenticatorVerificationApp;
+
 return [
 
     /*
@@ -148,5 +151,35 @@ return [
     'mechanism' => [
         'sanctum_enabled' => env('SANCTUM_AUTH_ENABLED', true),
         'jwt_enabled' => env('JWT_AUTH_ENABLED', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Multi-Factor Authentication Methods
+    |--------------------------------------------------------------------------
+    |
+    | This configuration defines the available support MFA Verification Methods.
+    | Each method must be a class that extends the App\Services\Verification\AppVerificationMethod
+    | and App\Services\Verification\DeliveryVerificationMethod abstract classes
+    |
+    */
+    'mfa_methods' => [
+        EmailVerificationChannel::class,
+        GAuthenticatorVerificationApp::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Verification Factors Code Expirations
+    |--------------------------------------------------------------------------
+    |
+    | This configuration defines the expiration time (in seconds) of verification
+    | codes implemented by delivery-based method classes
+    |
+    */
+    'verification_codes' => [
+        'expiration' => [
+            'email' => 12 * 60, // 12 minutes
+        ],
     ],
 ];

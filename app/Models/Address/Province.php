@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Pipeline\Pipeline;
 
+/**
+ * @mixin IdeHelperProvince
+ */
 class Province extends Model
 {
     use HasFactory;
@@ -51,7 +54,7 @@ class Province extends Model
      *
      * @returns HasMany
      */
-    protected function address(): HasMany
+    public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
     }
@@ -61,7 +64,7 @@ class Province extends Model
      *
      * @returns BelongsTo
      */
-    protected function region(): BelongsTo
+    public function region(): BelongsTo
     {
         return $this->belongsTo(Region::class);
     }

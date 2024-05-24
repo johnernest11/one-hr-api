@@ -23,7 +23,7 @@ class EmailSystemAlertNotification extends Notification implements ShouldQueue
      */
     public function __construct(string $level, string $message)
     {
-        $this->onQueue(Queue::NOTIFICATIONS->value);
+        $this->onQueue(Queue::DEV_ALERTS->value);
         $this->level = strtoupper($level);
         $this->message = $message;
     }

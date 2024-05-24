@@ -9,7 +9,7 @@ grumphp:
       lockfile: ./composer.lock
       run_always: false
     phpunit:
-      always_execute: true
+      always_execute: false
 services:
   App\Services\Grump\LaravelPint:
     arguments:

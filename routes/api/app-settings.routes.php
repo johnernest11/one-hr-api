@@ -1,10 +1,10 @@
 <?php
 
 use App\Enums\Permission;
-use App\Http\Controllers\AppSettingController;
+use App\Http\Controllers\AppSettingsController;
 
-Route::controller(AppSettingController::class)->name('app-settings.')->group(function () {
-    /** @uses AppSettingController::store */
+Route::controller(AppSettingsController::class)->name('app-settings.')->group(function () {
+    /** @uses AppSettingsController::store */
     Route::middleware([
         'auth:token',
         'verified.api',
@@ -12,6 +12,6 @@ Route::controller(AppSettingController::class)->name('app-settings.')->group(fun
     ])
         ->post('', 'store')->name('store');
 
-    /** @uses AppSettingController::index */
+    /** @uses AppSettingsController::index */
     Route::get('', 'index')->name('index');
 });

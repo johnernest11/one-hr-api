@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\PruneExpiredMfaAttempts;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -12,8 +13,21 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        /** Cleanup expired tokens */
+        /**
+         * Cleanup expired Sanctum tokens
+         *
+         * @see https://laravel.com/docs/10.x/sanctum#revoking-tokens
+         */
         $schedule->command('sanctum:prune-expired --hours=24')
+            ->daily()
+            ->onOneServer();
+
+        /**
+         * Cleanup expired MFA Attempt records
+         *
+         * @see PruneExpiredMfaAttempts
+         */
+        $schedule->command('mfa:prune-expired-attempts')
             ->daily()
             ->onOneServer();
     }

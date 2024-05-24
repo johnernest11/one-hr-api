@@ -20,8 +20,6 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        // prevent throttling because we run test in parallel
         $this->withoutMiddleware(ThrottleRequests::class);
     }
 

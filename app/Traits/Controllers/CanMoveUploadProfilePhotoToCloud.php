@@ -4,7 +4,7 @@ namespace App\Traits\Controllers;
 
 use App\Models\User;
 use App\Services\CloudStorageServices\CloudStorageManager;
-use App\Services\User\UserManager;
+use App\Services\User\UserAccountManager;
 use Illuminate\Http\UploadedFile;
 
 trait CanMoveUploadProfilePhotoToCloud
@@ -13,7 +13,7 @@ trait CanMoveUploadProfilePhotoToCloud
         User $user,
         UploadedFile $file,
         CloudStorageManager $cloudStorage,
-        UserManager $userService
+        UserAccountManager $userAccountManager
     ): array {
         $path = "images/$user->id/profile-pictures";
 
@@ -21,7 +21,7 @@ trait CanMoveUploadProfilePhotoToCloud
         $oldPath = $user->userProfile->profile_picture_path;
 
         $fullPath = $cloudStorage->upload($path, $file);
-        $updatedUser = $userService->update($user, ['profile_picture_path' => $fullPath]);
+        $updatedUser = $userAccountManager->update($user, ['profile_picture_path' => $fullPath]);
 
         // We delete the old profile picture
         if ($oldPath) {

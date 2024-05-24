@@ -3,7 +3,7 @@
 namespace App\QueryFilters\Generic;
 
 use App\QueryFilters\Filter;
-use App\Services\Database\SchemaInspector;
+use App\Services\DbSchemaInspector;
 use Illuminate\Database\Eloquent\Builder;
 use Log;
 use Str;
@@ -31,7 +31,7 @@ class SortFilter extends Filter
         // we do a regular orderBy with a column on the primary table
         // Ex. ?sort_by=username (username is found directly on the users table)
         if (! $this->checkIfSortByFilterIsNested($sortBy)) {
-            $schemaService = resolve(SchemaInspector::class);
+            $schemaService = resolve(DbSchemaInspector::class);
             $columnExists = $schemaService->checkIfColumnExists($tableName, $sortBy);
             $sortBy = $columnExists ? $sortBy : 'id';
 
@@ -59,16 +59,14 @@ class SortFilter extends Filter
     /**
      * Clients may opt to search via a nested relationship
      * such as: user_profile.last_name
-     *
-     * @return ?Builder
      */
-    private function joinRelatedTable($sortBy, Builder $builder): ?Builder
+    private function joinRelatedTable(string $sortBy, Builder $builder): ?Builder
     {
         // split the filter from the request
         $tableName = $this->getNestedSortByFilterRelatedTable($sortBy);
 
         // check if the table name exists
-        $schemaService = resolve(SchemaInspector::class);
+        $schemaService = resolve(DbSchemaInspector::class);
         $tableExists = $schemaService->checkIfTableExists($tableName);
 
         if (! $tableExists) {
@@ -146,7 +144,7 @@ class SortFilter extends Filter
         string $tableName,
         string $filterName
     ): Builder {
-        $schemaService = resolve(SchemaInspector::class);
+        $schemaService = resolve(DbSchemaInspector::class);
 
         $nestedSortBy = $this->getNestedSortByFilterValue($sortBy);
         $nestedTableName = $this->getNestedSortByFilterRelatedTable($sortBy);
