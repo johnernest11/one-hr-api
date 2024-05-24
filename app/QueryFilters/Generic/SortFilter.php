@@ -60,7 +60,7 @@ class SortFilter extends Filter
      * Clients may opt to search via a nested relationship
      * such as: user_profile.last_name
      */
-    private function joinRelatedTable($sortBy, Builder $builder): ?Builder
+    private function joinRelatedTable(string $sortBy, Builder $builder): ?Builder
     {
         // split the filter from the request
         $tableName = $this->getNestedSortByFilterRelatedTable($sortBy);

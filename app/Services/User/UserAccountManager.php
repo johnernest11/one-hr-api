@@ -29,7 +29,7 @@ interface UserAccountManager
     /**
      * Fetch a single User
      */
-    public function read($id, array $relationships): User;
+    public function read(int|string $id, array $relationships): User;
 
     /**
      * Delete a single User

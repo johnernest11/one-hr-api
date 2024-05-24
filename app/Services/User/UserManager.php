@@ -89,7 +89,7 @@ class UserManager implements UserAccountManager, UserCredentialManager
     }
 
     /** {@inheritDoc} */
-    public function read($id, array $relationships = ['userProfile']): User
+    public function read(int|string $id, array $relationships = ['userProfile']): User
     {
         /** @var User $user */
         $user = User::with($relationships)->findOrFail($id);
