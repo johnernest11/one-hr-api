@@ -114,7 +114,7 @@ class UserProfile extends Model
      * @Appended
      * Create full_name attribute
      */
-    public function fullName(): Attribute
+    protected function fullName(): Attribute
     {
         return Attribute::get(function () {
             $firstName = $this->first_name;
@@ -138,7 +138,7 @@ class UserProfile extends Model
      * @Appended
      * Create a profile_picture_url attribute
      */
-    public function profilePictureUrl(): Attribute
+    protected function profilePictureUrl(): Attribute
     {
         return Attribute::get(function () {
             if (! $this->profile_picture_path) {

@@ -7,7 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class S3FileServiceTest extends TestCase
+class AwsS3StorageServiceTest extends TestCase
 {
     protected function setUp(): void
     {

@@ -6,7 +6,7 @@ use App\Auth\ApiKeyGuard;
 use App\Enums\WebhookPermission;
 use App\Models\ApiKey;
 use App\Models\User;
-use App\Services\ApiKey\ApiKeyManager;
+use App\Services\ApiKeyManager;
 use Auth;
 use Carbon\Carbon;
 use ConversionHelper;
@@ -45,7 +45,7 @@ class ApiKeyGuardTest extends TestCase
         $this->apiKeyName = fake()->domainName;
         $this->apiKeyDescription = fake()->text;
         $this->apiKeyExpiration = Carbon::now()->endOfDay();
-        $this->apiKeyPermissions = ConversionHelper::convertEnumToArray(WebhookPermission::class);
+        $this->apiKeyPermissions = ConversionHelper::enumToArray(WebhookPermission::class);
         $this->apiKeyProvider = Auth::createUserProvider(config('auth.guards.api_key.provider'));
     }
 

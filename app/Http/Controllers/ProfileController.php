@@ -6,7 +6,8 @@ use App\Enums\ApiErrorCode;
 use App\Http\Requests\ProfileRequest;
 use App\Models\User;
 use App\Services\CloudStorageServices\CloudStorageManager;
-use App\Services\User\UserManager;
+use App\Services\User\UserAccountManager;
+use App\Services\User\UserCredentialManager;
 use App\Traits\Controllers\CanMoveUploadProfilePhotoToCloud;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,11 +16,14 @@ class ProfileController extends ApiController
 {
     use CanMoveUploadProfilePhotoToCloud;
 
-    private UserManager $userService;
+    private UserAccountManager $userAccountManager;
 
-    public function __construct(UserManager $userService)
+    private UserCredentialManager $userCredentialManager;
+
+    public function __construct(UserAccountManager $accountManager, UserCredentialManager $credentialManager)
     {
-        $this->userService = $userService;
+        $this->userAccountManager = $accountManager;
+        $this->userCredentialManager = $credentialManager;
     }
 
     /**
@@ -27,7 +31,7 @@ class ProfileController extends ApiController
      */
     public function view(): JsonResponse
     {
-        $user = $this->userService->read(auth()->user()->id);
+        $user = $this->userAccountManager->read(auth()->user()->id);
 
         return $this->success(['data' => $user], Response::HTTP_OK);
     }
@@ -37,7 +41,7 @@ class ProfileController extends ApiController
      */
     public function update(ProfileRequest $request): JsonResponse
     {
-        $user = $this->userService->update(auth()->user()->id, $request->validated());
+        $user = $this->userAccountManager->update(auth()->user()->id, $request->validated());
 
         return $this->success(['data' => $user], Response::HTTP_OK);
     }
@@ -50,7 +54,7 @@ class ProfileController extends ApiController
         /** @var User $user */
         $user = auth()->user();
         $file = $request->file('photo');
-        $result = $this->moveProfilePictureToCloud($user, $file, $cloudStorage, $this->userService);
+        $result = $this->moveProfilePictureToCloud($user, $file, $cloudStorage, $this->userAccountManager);
 
         return $this->success(['data' => $result], Response::HTTP_OK);
     }
@@ -65,7 +69,7 @@ class ProfileController extends ApiController
 
         $oldPassword = $request->get('old_password');
         $newPassword = $request->get('password');
-        $updatedUser = $this->userService->updatePassword($user, $newPassword, $oldPassword);
+        $updatedUser = $this->userCredentialManager->updatePassword($user, $newPassword, $oldPassword);
 
         if (! $updatedUser) {
             return $this->error(

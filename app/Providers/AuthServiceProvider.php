@@ -8,10 +8,12 @@ use App\Auth\ApiKeyProvider;
 use App\Auth\MultiTokenGuard;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Services\ApiKeyManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use App\Services\Authentication\JwtAuthService;
 use App\Services\Authentication\SanctumAuthService;
+use App\Services\MfaOrchestrator;
 use Auth;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -38,6 +40,14 @@ class AuthServiceProvider extends ServiceProvider
 
         $this->app->bind(PersistentAuthTokenManager::class, function () {
             return new SanctumAuthService();
+        });
+
+        $this->app->bind(ApiKeyManager::class, function () {
+            return new ApiKeyManager();
+        });
+
+        $this->app->bind(MfaOrchestrator::class, function () {
+            return new MfaOrchestrator(config('auth.mfa_methods'), now()->addHours(8));
         });
     }
 

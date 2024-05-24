@@ -8,7 +8,7 @@ use App\Enums\Role as RoleEnum;
 use App\Events\UserCreated;
 use App\Http\Requests\UserRequest;
 use App\Services\CloudStorageServices\CloudStorageManager;
-use App\Services\User\UserManager;
+use App\Services\User\UserAccountManager;
 use App\Traits\Controllers\CanMoveUploadProfilePhotoToCloud;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -20,11 +20,11 @@ class UserController extends ApiController
 {
     use CanMoveUploadProfilePhotoToCloud;
 
-    private UserManager $userService;
+    private UserAccountManager $userAccountManager;
 
-    public function __construct(UserManager $userService)
+    public function __construct(UserAccountManager $accountManager)
     {
-        $this->userService = $userService;
+        $this->userAccountManager = $accountManager;
     }
 
     /**
@@ -35,7 +35,7 @@ class UserController extends ApiController
      */
     public function index(UserRequest $request): JsonResponse
     {
-        $users = $this->userService->all();
+        $users = $this->userAccountManager->all();
         $formatted = PaginationHelper::formatPagination($users);
 
         return $this->success($formatted, Response::HTTP_OK);
@@ -51,7 +51,7 @@ class UserController extends ApiController
             return $this->error('A Super User cannot be created', Response::HTTP_FORBIDDEN, ApiErrorCode::BAD_REQUEST);
         }
 
-        $user = $this->userService->create($request->validated());
+        $user = $this->userAccountManager->create($request->validated());
         $temporaryPassword = $request->get('password');
         UserCreated::dispatch($user, $temporaryPassword);
 
@@ -63,7 +63,7 @@ class UserController extends ApiController
      */
     public function read($id): JsonResponse
     {
-        $user = $this->userService->read($id);
+        $user = $this->userAccountManager->read($id);
 
         return $this->success(['data' => $user], Response::HTTP_OK);
     }
@@ -75,9 +75,9 @@ class UserController extends ApiController
      */
     public function update($id, UserRequest $request): JsonResponse
     {
-        $user = $this->userService->read($id);
+        $user = $this->userAccountManager->read($id);
         $this->authorize('update', $user);
-        $updatedUser = $this->userService->update($user, $request->validated());
+        $updatedUser = $this->userAccountManager->update($user, $request->validated());
 
         return $this->success(['data' => $updatedUser], Response::HTTP_OK);
     }
@@ -89,9 +89,9 @@ class UserController extends ApiController
      */
     public function destroy($id): JsonResponse
     {
-        $user = $this->userService->read($id);
+        $user = $this->userAccountManager->read($id);
         $this->authorize('delete', $user);
-        $this->userService->destroy($user);
+        $this->userAccountManager->destroy($user);
 
         return $this->success(null, Response::HTTP_NO_CONTENT);
     }
@@ -101,9 +101,9 @@ class UserController extends ApiController
      */
     public function uploadProfilePicture($id, UserRequest $request, CloudStorageManager $cloudStorage): JsonResponse
     {
-        $user = $this->userService->read($id);
+        $user = $this->userAccountManager->read($id);
         $file = $request->file('photo');
-        $result = $this->moveProfilePictureToCloud($user, $file, $cloudStorage, $this->userService);
+        $result = $this->moveProfilePictureToCloud($user, $file, $cloudStorage, $this->userAccountManager);
 
         return $this->success(['data' => $result], Response::HTTP_OK);
     }
@@ -113,7 +113,7 @@ class UserController extends ApiController
      */
     public function search(UserRequest $request): JsonResponse
     {
-        $users = $this->userService->search($request->get('query'), PaginationType::LENGTH_AWARE);
+        $users = $this->userAccountManager->search($request->get('query'), PaginationType::LENGTH_AWARE);
         $formatted = PaginationHelper::formatPagination($users);
 
         return $this->success($formatted, Response::HTTP_OK);

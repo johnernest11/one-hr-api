@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Pipeline\Pipeline;
 
+/**
+ * @mixin IdeHelperRegion
+ */
 class Region extends Model
 {
     use HasFactory;
@@ -46,7 +49,7 @@ class Region extends Model
      *
      * @returns HasMany
      */
-    protected function address(): HasMany
+    public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
     }

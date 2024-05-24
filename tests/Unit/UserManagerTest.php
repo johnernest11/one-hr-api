@@ -9,30 +9,29 @@ use App\Models\Address\Region;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Services\User\UserManager;
-use App\Services\User\UserService;
 use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 use Throwable;
 
-class UserServiceTest extends TestCase
+class UserManagerTest extends TestCase
 {
     use RefreshDatabase;
 
-    private UserManager $userService;
+    private UserManager $userManager;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->userService = new UserService(new User());
+        $this->userManager = new UserManager();
     }
 
     /** @throws Throwable */
     public function test_it_can_create_a_user(): void
     {
-        $this->userService->create($this->getUserDetails());
+        $this->userManager->create($this->getUserDetails());
         $this->assertDatabaseCount('users', 1);
     }
 
@@ -41,7 +40,7 @@ class UserServiceTest extends TestCase
     {
         $user = $this->produceUsers();
         $edited = ['first_name' => fake()->firstName, 'last_name' => fake()->lastName];
-        $editedUser = $this->userService->update($user->id, $edited);
+        $editedUser = $this->userManager->update($user->id, $edited);
 
         $this->assertEquals($edited['first_name'], $editedUser->userProfile->first_name);
         $this->assertEquals($edited['last_name'], $editedUser->userProfile->last_name);
@@ -52,7 +51,7 @@ class UserServiceTest extends TestCase
         $count = 10;
         $this->produceUsers($count);
 
-        $users = $this->userService->all();
+        $users = $this->userManager->all();
         $this->assertCount($count, $users);
     }
 
@@ -66,7 +65,7 @@ class UserServiceTest extends TestCase
         $request->replace(['limit' => $limit]);
         app()->instance('request', $request);
 
-        $users = $this->userService->all();
+        $users = $this->userManager->all();
 
         $this->assertEquals($count, $users->total());
         $this->assertCount($limit, $users->items());
@@ -104,7 +103,7 @@ class UserServiceTest extends TestCase
     public function test_it_can_read_a_single_user(): void
     {
         $createdUser = $this->produceUsers();
-        $foundUser = $this->userService->read($createdUser->id);
+        $foundUser = $this->userManager->read($createdUser->id);
 
         $this->assertEquals($createdUser->id, $foundUser->id);
     }
@@ -112,7 +111,7 @@ class UserServiceTest extends TestCase
     public function test_it_can_soft_delete_a_user_via_model(): void
     {
         $this->produceUsers(3);
-        $this->userService->destroy(User::first());
+        $this->userManager->destroy(User::first());
 
         $foundUsers = User::all();
         $this->assertCount(2, $foundUsers);
@@ -124,7 +123,7 @@ class UserServiceTest extends TestCase
     public function test_it_can_soft_delete_a_user_via_id(): void
     {
         $this->produceUsers(3);
-        $this->userService->destroy(User::first()->id);
+        $this->userManager->destroy(User::first()->id);
 
         $foundUsers = User::all();
         $this->assertCount(2, $foundUsers);
@@ -136,7 +135,7 @@ class UserServiceTest extends TestCase
     public function test_user_and_user_profile_cascade_soft_delete(): void
     {
         $this->produceUsers(3);
-        $this->userService->destroy(User::first());
+        $this->userManager->destroy(User::first());
 
         $trashedUsers = User::onlyTrashed()->count();
         $this->assertEquals(1, $trashedUsers);
@@ -153,7 +152,7 @@ class UserServiceTest extends TestCase
         $user->save();
 
         $newPassword = 'test_new_123';
-        $updatedUser = $this->userService->updatePassword($user, $newPassword, $oldPassword);
+        $updatedUser = $this->userManager->updatePassword($user, $newPassword, $oldPassword);
         $this->assertNotNull($updatedUser);
 
         $isCorrect = Hash::check($newPassword, $updatedUser->password);
@@ -168,7 +167,7 @@ class UserServiceTest extends TestCase
         $user->save();
 
         $newPassword = 'test_new_123';
-        $updatedUser = $this->userService->updatePassword($user->id, $newPassword, $oldPassword);
+        $updatedUser = $this->userManager->updatePassword($user->id, $newPassword, $oldPassword);
         $this->assertNotNull($updatedUser);
 
         $isCorrect = Hash::check($newPassword, $updatedUser->password);
@@ -182,7 +181,7 @@ class UserServiceTest extends TestCase
         $testPassword = 'test123123';
         $user->update(['email' => $testEmail, 'password' => $testPassword]);
 
-        $user = $this->userService->getUserViaEmailAndPassword($testEmail, $testPassword);
+        $user = $this->userManager->getUserViaEmailAndPassword($testEmail, $testPassword);
         $this->assertNotNull($user);
     }
 
@@ -193,7 +192,7 @@ class UserServiceTest extends TestCase
         $testMobileNumber = $user->userProfile->mobile_number;
         $user->update(['password' => $testPassword]);
 
-        $user = $this->userService->getUserViaMobileNumberAndPassword($testMobileNumber, $testPassword);
+        $user = $this->userManager->getUserViaMobileNumberAndPassword($testMobileNumber, $testPassword);
         $this->assertNotNull($user);
     }
 }

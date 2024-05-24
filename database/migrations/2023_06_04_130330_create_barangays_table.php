@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('old_name')->nullable();
             $table->string('geo_level');
             $table->enum('classification',
-                ConversionHelper::convertEnumToArray(BarangayClassification::class)
+                ConversionHelper::enumToArray(BarangayClassification::class)
             )->index();
             $table->timestamps();
         });

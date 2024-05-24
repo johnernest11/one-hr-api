@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\QueryFilters\Generic\ActiveFilter;
-use App\Services\ApiKey\ApiKeyService;
+use App\Services\ApiKeyManager;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
@@ -74,7 +74,7 @@ class ApiKey extends Model implements Authenticatable
     /**
      * This temporary property populated when the key is just created.
      *
-     * @see ApiKeyService::create()
+     * @see ApiKeyManager::create()
      */
     public ?string $rawKeyValue = null;
 
@@ -127,9 +127,11 @@ class ApiKey extends Model implements Authenticatable
      * @Attribute
      * Hash the key whenever it is set
      */
-    public function key(): Attribute
+    protected function key(): Attribute
     {
-        return Attribute::set(fn ($value) => Hash::make($value));
+        return Attribute::set(
+            fn ($value) => Hash::make($value)
+        );
     }
 
     /**
@@ -157,7 +159,7 @@ class ApiKey extends Model implements Authenticatable
      *
      * @see Authenticatable
      */
-    public function getAuthPassword()
+    public function getAuthPassword(): null
     {
         return null;
     }
@@ -167,7 +169,7 @@ class ApiKey extends Model implements Authenticatable
      *
      * @see Authenticatable
      */
-    public function getRememberToken()
+    public function getRememberToken(): null
     {
         return null;
     }
@@ -187,7 +189,7 @@ class ApiKey extends Model implements Authenticatable
      *
      * @see Authenticatable
      */
-    public function getRememberTokenName()
+    public function getRememberTokenName(): null
     {
         return null;
     }

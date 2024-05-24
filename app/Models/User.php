@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Notifications\Auth\QueuedResetPasswordNotification;
 use App\Notifications\Auth\QueuedVerifyEmailNotification;
 use App\Notifications\Auth\VerifyAccountNotification;
+use App\Notifications\EmailOtpNotification;
 use App\QueryFilters\Generic\ActiveFilter;
 use App\QueryFilters\Generic\SortFilter;
 use App\QueryFilters\User\EmailFilter;
@@ -21,7 +22,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
@@ -121,26 +121,50 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
         return $this->hasOne(UserProfile::class);
     }
 
+    /**
+     * A user can own many API Keys
+     */
     public function apiKeys(): HasMany
     {
         return $this->hasMany(ApiKey::class);
     }
 
     /**
-     * @Attribute
-     * Hash the password whenever it is changed
+     * A User has many MFA Credentials (to support different MFA Methods)
      */
-    public function password(): Attribute
+    public function verificationFactors(): HasMany
     {
-        return Attribute::set(fn ($value) => is_null($value) ? null : Hash::make($value));
+        return $this->hasMany(VerificationFactor::class);
     }
 
     /**
-     * Set email to lowercase
+     * A user has many MFA attempts (to support concurrent log-ins)
      */
-    public function email(): Attribute
+    public function mfaAttempts(): HasMany
     {
-        return Attribute::set(fn ($value) => strtolower($value));
+        return $this->hasMany(MfaAttempt::class);
+    }
+
+    /**
+     * @Attribute
+     * Hash the password whenever it is changed
+     */
+    protected function password(): Attribute
+    {
+        return Attribute::set(
+            fn ($value) => is_null($value) ? null : Hash::make($value)
+        );
+    }
+
+    /**
+     * @Attribute
+     * Set email to lowercase.
+     */
+    protected function email(): Attribute
+    {
+        return Attribute::set(
+            fn ($value) => strtolower($value)
+        );
     }
 
     /*
@@ -165,5 +189,10 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new QueuedResetPasswordNotification($token));
+    }
+
+    public function sendEmailOtpNotification(string $otp, int $expirationInMinutes): void
+    {
+        $this->notify(new EmailOtpNotification($otp, $expirationInMinutes));
     }
 }

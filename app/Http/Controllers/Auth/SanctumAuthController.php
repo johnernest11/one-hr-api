@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
+use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
-use App\Services\User\UserManager;
+use App\Services\MfaOrchestrator;
+use App\Services\User\UserAccountManager;
+use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,9 +17,14 @@ class SanctumAuthController extends AuthController
 {
     private PersistentAuthTokenManager $tokenManager;
 
-    public function __construct(UserManager $userService, PersistentAuthTokenManager $tokenManager)
-    {
-        parent::__construct($userService);
+    public function __construct(
+        UserAccountManager $accManager,
+        UserCredentialManager $credManager,
+        PersistentAuthTokenManager $tokenManager,
+        AppSettingsManager $settingsManager,
+        MfaOrchestrator $mfaPipelineManager
+    ) {
+        parent::__construct($accManager, $credManager, $settingsManager, $mfaPipelineManager);
         $this->tokenManager = $tokenManager;
     }
 
