@@ -73,7 +73,6 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "neronmoon/scriptsdev": true,
             "phpro/grumphp": true
         }
     },
