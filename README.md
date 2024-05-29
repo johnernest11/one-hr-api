@@ -29,6 +29,7 @@ WebAppKit API is a Laravel 10 RESTFul starter kit for SPA and mobile clients. Th
   - App key generation
   - DB migrations
   - DB Seeders
+- To check if everything is working as expected, run: `php artisan test`
 
 ## Tools ready for you
 Runs a [code styler](https://laravel.com/docs/9.x/pint) for consistency and generate [IDE helper PHP Docs](https://github.com/barryvdh/laravel-ide-helper). See the command at `app/Console/Commands/StyleFixer.php`
