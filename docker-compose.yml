@@ -1,7 +1,11 @@
 services:
-  api:
+
+  # The Laravel API application
+  app:
     build: .
     restart: unless-stopped
+    environment:
+      PHP_FPM_POOL_NAME: 'app_api'
     depends_on:
       - db
       - cache-store
@@ -11,6 +15,37 @@ services:
       - '80:8080'
       - '443:8443'
 
+  # Laravel Queue Container
+  queue:
+    build: .
+    restart: unless-stopped
+    environment:
+      PHP_FPM_POOL_NAME: 'app_queue'
+    command: [
+      'php',
+      '/var/www/html/artisan',
+      'queue:work',
+      '--queue=otp,emails,dev_alerts,default',
+      '--tries=3',
+      '--sleep=3'
+    ]
+    networks:
+      - app-network
+    depends_on:
+      - db
+      - cache-store
+
+  # Dedicated Container for Scheduled tasks
+  tasks:
+    build: .
+    restart: unless-stopped
+    environment:
+      PHP_FPM_POOL_NAME: 'app_tasks'
+    command: ['php', '/var/www/html/artisan', 'schedule:work']
+    networks:
+      - app-network
+
+  # Main Database
   db:
     image: mysql:8.1.0
     restart: unless-stopped
@@ -27,12 +62,14 @@ services:
     networks:
       - app-network
 
-  # Caching
+  # Cache Database
   cache-store:
     image: redis:7.2.1-alpine
     restart: unless-stopped
     volumes:
-      - cache-store-vol:/data # Old syntax for named volume mount. Prefer the new one (db-dev, db-test)
+      - type: volume
+        source: cache-store-vol
+        target: /data
     ports:
       - '6379:6379'
     networks:

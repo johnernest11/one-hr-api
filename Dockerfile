@@ -19,5 +19,11 @@ COPY . /var/www/html
 # Setup working directory
 WORKDIR /var/www/html
 
-# Install Dependencies
+# Grant Permissions
+USER root
+RUN chown www-data /var/www/html/ # Parent directory permissions
+RUN chown -R www-data /var/www/html # Permissions of all the files inside
+USER www-data
+
+# Install App Dependencies via Composer
 RUN composer install --no-dev --optimize-autoloader
