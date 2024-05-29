@@ -13,7 +13,6 @@ abstract class ApiController extends Controller
     protected function success(?array $data, int $statusCode, array $headers = []): JsonResponse
     {
         $data = $data ?? [];
-        $data = $data;
 
         $results = array_merge(['success' => true], $data);
 
