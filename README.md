@@ -56,7 +56,7 @@ Delete expired MFA attempt records in the database (is also scheduled to run eve
 php artisan mfa:prune-expired-attempts
 ```
 \
-Running `composer install`, `composer update`, `git commit` will trigger automated tasks specified in `grumphp.yml`
+Running `git commit` will trigger automated tasks specified in `grumphp.yml`
 - PSR-compliant code formatting
 - Package security checks
 - Unit and feature tests
