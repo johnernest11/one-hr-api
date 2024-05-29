@@ -20,4 +20,4 @@ COPY . /var/www/html
 WORKDIR /var/www/html
 
 # Install Dependencies
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+RUN composer install --no-dev --optimize-autoloader
