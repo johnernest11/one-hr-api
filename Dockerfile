@@ -2,12 +2,6 @@ FROM serversideup/php:8.2-fpm-nginx
 
 LABEL authors="jegramos"
 
-# Copy source code to the created directory
-COPY . /var/www/html
-
-# Setup working directory
-WORKDIR /var/www/html
-
 # Switch to root so we can perform actions that require root priviledges
 USER root
 
@@ -19,6 +13,12 @@ RUN chown -R www-data /var/www/html
 
 # Drop back to our unprivileged user
 USER www-data
+
+# Copy source code to the created directory
+COPY . /var/www/html
+
+# Setup working directory
+WORKDIR /var/www/html
 
 # Install App Dependencies via Composer
 RUN composer install --no-dev --optimize-autoloader
