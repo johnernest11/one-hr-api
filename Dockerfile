@@ -8,14 +8,14 @@ USER root
 # Install the intl extension with root permissions
 RUN install-php-extensions intl
 
+# Copy source code to the created directory
+COPY . /var/www/html
+
 # Change the permission for all the files and dir inside /var/www/html
 RUN chown -R www-data /var/www/html
 
 # Drop back to our unprivileged user
 USER www-data
-
-# Copy source code to the created directory
-COPY . /var/www/html
 
 # Setup working directory
 WORKDIR /var/www/html
