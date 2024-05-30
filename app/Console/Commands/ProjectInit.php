@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\AppEnvironment;
 use Illuminate\Console\Command;
 
 class ProjectInit extends Command
@@ -28,7 +29,10 @@ class ProjectInit extends Command
         $this->call('key:generate');
         $this->call('migrate:refresh');
         $this->call('db:seed');
-        $this->call('app:styler', ['--ide_helper' => true]);
+
+        if (app()->environment() === AppEnvironment::LOCAL->value) {
+            $this->call('app:styler', ['--ide_helper' => true]);
+        }
 
         return Command::SUCCESS;
     }
