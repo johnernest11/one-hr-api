@@ -56,7 +56,7 @@ services:
     networks:
       - app-network
     profiles: [ 'store' ]
-    #ports:
+    # ports:
     #  - '3306:3306'
 
   # Cache Database
