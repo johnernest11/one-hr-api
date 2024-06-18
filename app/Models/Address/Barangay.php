@@ -13,9 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Pipeline\Pipeline;
 
-/**
- * @mixin IdeHelperBarangay
- */
 class Barangay extends Model
 {
     use HasFactory;
