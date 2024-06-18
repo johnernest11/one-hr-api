@@ -3,8 +3,7 @@ stages:
   - build
   - deploy
 
-image:
-  name: serversideup/php:8:2-fpm-nginx
+image: serversideup/php:8:2-fpm-nginx
 
 phpunit:
   stage: test
