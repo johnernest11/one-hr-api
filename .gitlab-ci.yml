@@ -7,9 +7,8 @@ image: serversideup/php:8:2-fpm-nginx
 
 phpunit:
   stage: test
-  before_script:
+  script:
     - install-php-extensions intl
     - echo "$WEBKIT_TESTING_ENV" > ".env.testing"
     - composer install
-  script:
     - php artisan test
