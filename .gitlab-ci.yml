@@ -3,7 +3,7 @@ stages:
 
 phpunit:
   # test
-  image: serversideup/php:8:2-fpm-nginx
+  image: "serversideup/php:8.2-fpm-nginx"
   stage: test
   before_script:
     - php -v
