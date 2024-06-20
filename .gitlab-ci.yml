@@ -7,7 +7,7 @@ phpunit:
   stage: test
   before_script:
     - php -v
-    - install-php-extensions intl
+    - sudo install-php-extensions intl
     - echo "Installed intl PHP Extension"
     - echo "$WEBKIT_TESTING_ENV" > ".env.testing"
     - composer install
