@@ -2,13 +2,11 @@ stages:
   - test
 
 phpunit:
-  image:
-    name: "serversideup/php:8.2-fpm-nginx"
-    docker:
-      user: root
+  image: "serversideup/php:8.2-fpm-nginx"
   stage: test
   before_script:
     - php -v
+    - whoami
     - install-php-extensions intl
     - echo "Installed intl PHP Extension"
     - echo "$WEBKIT_TESTING_ENV" > ".env.testing"
