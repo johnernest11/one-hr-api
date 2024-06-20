@@ -5,9 +5,10 @@ phpunit:
   stage: test
   image: serversideup/php:8:2-fpm-nginx
   before_script:
-#    - install-php-extensions intl
+    - install-php-extensions intl
+    - echo "Installed intl PHP Extension"
     - echo "$WEBKIT_TESTING_ENV" > ".env.testing"
-    - ls -lha
     - composer install
+    - echo "Composer install completed"
   script:
     - php artisan test
