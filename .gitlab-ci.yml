@@ -6,7 +6,7 @@ phpunit:
   stage: test
   before_script:
     - touch .env .env.testing
-    - cp -f $WEBKIT_TESTING_ENV .env .env.testing
+    - cp -f ${WEBKIT_TESTING_ENV} .env .env.testing
     - cat .env.testing
     - composer install
   script:
