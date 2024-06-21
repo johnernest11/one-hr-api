@@ -2,16 +2,12 @@ stages:
   - test
 
 phpunit:
-  image: "serversideup/php:8.2-fpm-nginx"
+  image: "jegramos/webkit-php:v1.0"
   stage: test
   before_script:
-    - php -v
-    - whoami
-    - su root
-    - whoami
-    - install-php-extensions intl
-    - echo "Installed intl PHP Extension"
     - echo "$WEBKIT_TESTING_ENV" > ".env.testing"
+    - echo "Created .env.testing"
+    - ls -lha
     - composer install
     - echo "Composer install completed"
   script:
