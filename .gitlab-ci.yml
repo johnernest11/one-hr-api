@@ -1,5 +1,11 @@
 stages:
   - test
+services:
+  - mysql:8.1.0
+
+variables:
+  MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
+  MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
 
 phpunit:
   image: "jegramos/webkit-php:v1.0"
