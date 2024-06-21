@@ -6,10 +6,7 @@ phpunit:
   stage: test
   before_script:
     - cp $WEBKIT_TESTING_ENV .env.testing
-    -  cat $WEBKIT_TESTING_ENV
-    - echo "Created .env.testing"
     - cat .env.testing
     - composer install
-    - echo "Composer install completed"
   script:
     - php artisan test
