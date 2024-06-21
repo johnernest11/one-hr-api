@@ -8,7 +8,7 @@ variables:
   MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
 
 phpunit:
-  image: "jegramos/webkit-php:v1.0"
+  image: "jegramos/webkit-php:v1.1"
   stage: test
   before_script:
     - cp $WEBKIT_TESTING_ENV .env
