@@ -7,7 +7,7 @@ phpunit:
   before_script:
     - echo "$WEBKIT_TESTING_ENV" > ".env.testing"
     - echo "Created .env.testing"
-    - ls -lha
+    - cat .env.testing
     - composer install
     - echo "Composer install completed"
   script:
