@@ -5,8 +5,8 @@ phpunit:
   image: "jegramos/webkit-php:v1.0"
   stage: test
   before_script:
-    - echo $WEBKIT_TESTING_ENV > .env
-    - echo $WEBKIT_TESTING_ENV > .env.testing
+    - cp $WEBKIT_TESTING_ENV .env
+    - cp $WEBKIT_TESTING_ENV .env.testing
     - cat .env.testing
     - composer install
   script:
