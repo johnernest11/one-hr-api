@@ -6,7 +6,7 @@ LABEL authors="jegramos"
 USER root
 
 # Install the intl extension with root permissions
-RUN install-php-extensions intl
+RUN install-php-extensions intl gd
 
 # Copy source code to the created directory
 COPY . /var/www/html
