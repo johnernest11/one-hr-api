@@ -23,12 +23,14 @@ phpunit:
 docker:
   image: docker:26.1.4-cli
   stage:  build
+  services:
+    - name: docker:26.1.4-dind
+      alias: docker-daemon
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
-  services:
-    - docker:26.1.4-dind
+    DOCKER_HOST: tcp://docker-daemon:2375/
   before_script:
-    - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
+    - docker login -u $IMAGE_REGISTRY_USER --password-stdin $IMAGE_REGISTRY_PASSWORD
   script:
     - docker build -t $IMAGE_NAME .
     - docker push $IMAGE_NAME
