@@ -26,11 +26,11 @@ docker:
   stage:  build
   services:
     - name: docker:26.1.4-dind
-      alias: docker_daemon
+      alias: docker-daemon
   variables:
     # Tell docker CLI how to talk to Docker daemon; see
     # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
-    DOCKER_HOST: tcp://docker_daemon:2375/
+    DOCKER_HOST: tcp://docker-daemon:2375/
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
@@ -38,5 +38,5 @@ docker:
     - cp $WEBKIT_DEVELOPMENT_ENV .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
-    - docker build -t IMAGE_API_NAME .
-    - docker push IMAGE_API_NAME
+    - docker build -t $IMAGE_API_NAME .
+    - docker push $IMAGE_API_NAME
