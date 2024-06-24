@@ -3,10 +3,11 @@ stages:
   - build
 
 variables:
-  IMAGE_NAME: jegramos/webkit-api
+  IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
+  IMAGE_API_NAME: jegramos/webkit-api
 
 phpunit:
-  image: "jegramos/webkit-php:v1.1"
+  image: $IMAGE_BASE_NAME
   stage: test
   services:
     - mysql:8.1.0
@@ -30,13 +31,12 @@ docker:
     # Tell docker CLI how to talk to Docker daemon; see
     # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
     DOCKER_HOST: tcp://docker_daemon:2375/
-    # Use the overlayfs driver for improved performance:
+    # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
   before_script:
     - cp $WEBKIT_DEVELOPMENT_ENV .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
-    - docker build -t $IMAGE_NAME .
-    - docker push $IMAGE_NAME
-
+    - docker build -t IMAGE_API_NAME .
+    - docker push IMAGE_API_NAME
