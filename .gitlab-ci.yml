@@ -1,19 +1,35 @@
 stages:
   - test
-services:
-  - mysql:8.1.0
+  - build
 
 variables:
-  MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
-  MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
+  IMAGE_NAME: jegramos/webkit-api
 
 phpunit:
   image: "jegramos/webkit-php:v1.1"
   stage: test
+  services:
+    - mysql:8.1.0
+  variables:
+     MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
+     MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
   before_script:
     - cp $WEBKIT_TESTING_ENV .env
     - cp $WEBKIT_TESTING_ENV .env.testing
-    - cat .env.testing
     - composer install
   script:
     - php artisan test
+
+docker:
+  image: docker:26.1.4-cli
+  stage:  build
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  services:
+    - docker:26.1.4-dind
+  before_script:
+    - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
+  script:
+    - docker build -t $IMAGE_NAME .
+    - docker push $IMAGE_NAME
+
