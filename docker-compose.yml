@@ -1,7 +1,7 @@
 services:
   # The Laravel API application
   app:
-    build: .
+    image: jegramos/webkit-api:latest
     restart: unless-stopped
     environment:
       PHP_FPM_POOL_NAME: 'app_api'
@@ -14,7 +14,7 @@ services:
 
   # Laravel Queue Container
   queue:
-    build: .
+    image: jegramos/webkit-api:latest
     restart: unless-stopped
     environment:
       PHP_FPM_POOL_NAME: 'app_queue'
@@ -32,7 +32,7 @@ services:
 
   # Dedicated Container for Scheduled tasks
   tasks:
-    build: .
+    image: jegramos/webkit-api:latest
     restart: unless-stopped
     environment:
       PHP_FPM_POOL_NAME: 'app_tasks'
