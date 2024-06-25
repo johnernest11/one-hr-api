@@ -42,7 +42,7 @@ docker:
     - docker build -t $IMAGE_API_NAME .
     - docker push $IMAGE_API_NAME
 
-development-server:
+docker-compose:
   stage: deploy
   variables:
     SERVER_IP: 13.212.234.124
@@ -50,7 +50,7 @@ development-server:
     - chmod 400 $WEBKIT_DEVELOP_PEM_KEY   
   script: 
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$SERVER_IP "
-        cp $WEBKIT_DEVELOPMENT_ENV .env &&
-        docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD &&
+        cp '$WEBKIT_DEVELOPMENT_ENV' .env &&
+        docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
         docker-compose —profile app up -d
       "
