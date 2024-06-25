@@ -56,9 +56,11 @@ services:
     networks:
       - app-network
     profiles: [ 'store' ]
-    # You may remove the port bindings if you don't need them
+    # You may remove the port bindings & extra_hosts if you don't need them
     ports:
       - '3306:3306'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   # Cache Database
   cache-store:
@@ -71,9 +73,11 @@ services:
     networks:
       - app-network
     profiles: [ 'store' ]
-    # You may remove the port bindings if you don't need them
+    # You may remove the port bindings & extra_hosts if you don't need them
     ports:
       - '6379:6379'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 networks:
   app-network:
