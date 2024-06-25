@@ -47,7 +47,7 @@ db-migrations:
   image: $IMAGE_BASE_NAME
   stage: init-db
   before_script:
-    - cp $WEBKIT_TESTING_ENV .env
+    - cp $WEBKIT_DEVELOPMENT_INIT_DB_ENV .env
     - composer install
   script:
     - php artisan migrate  
