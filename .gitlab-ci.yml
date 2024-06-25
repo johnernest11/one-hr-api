@@ -1,7 +1,7 @@
 stages:
   - test
   - build
-  - stage
+  - deploy
 
 variables:
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
@@ -42,7 +42,7 @@ docker:
     - docker build -t $IMAGE_API_NAME .
     - docker push $IMAGE_API_NAME
 
-docker-compose:
+development-server:
   stage: deploy
   variables:
     SERVER_IP: 13.212.234.124
