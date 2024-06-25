@@ -51,5 +51,5 @@ docker-compose:
   script: 
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$SERVER_IP "
         docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
-        docker-compose —profile app up -d
+        docker compose —profile app up -d
       "
