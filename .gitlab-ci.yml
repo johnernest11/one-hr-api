@@ -50,7 +50,6 @@ docker-compose:
     - chmod 400 $WEBKIT_DEVELOP_PEM_KEY   
   script: 
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$SERVER_IP "
-        cp '$WEBKIT_DEVELOPMENT_ENV' .env &&
         docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
         docker-compose —profile app up -d
       "
