@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - stage
 
 variables:
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
@@ -40,3 +41,16 @@ docker:
   script:
     - docker build -t $IMAGE_API_NAME .
     - docker push $IMAGE_API_NAME
+
+docker-compose:
+  stage: deploy
+  variables:
+    SERVER_IP: 13.212.234.124
+  before_script:
+    - chmod 400 $WEBKIT_DEVELOP_PEM_KEY   
+  script: 
+    - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$SERVER_IP "
+        cp $WEBKIT_DEVELOPMENT_ENV .env &&
+        docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD &&
+        docker-compose —profile app up -d
+      "
