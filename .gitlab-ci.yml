@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - init-db
   - deploy
 
 variables:
@@ -42,6 +43,15 @@ docker:
     - docker build -t $IMAGE_API_NAME .
     - docker push $IMAGE_API_NAME
 
+db-migrations:
+  image: $IMAGE_BASE_NAME
+  stage: init-db
+  before_script:
+    - cp $WEBKIT_TESTING_ENV .env
+    - composer install
+  script:
+    - php artisan migrate  
+
 docker-compose:
   stage: deploy
   variables:
@@ -51,5 +61,5 @@ docker-compose:
   script: 
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$SERVER_IP "
         docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
-        docker compose —profile app up -d
+        docker-compose --profile app up -d
       "
