@@ -56,8 +56,9 @@ services:
     networks:
       - app-network
     profiles: [ 'store' ]
-    # ports:
-    #  - '3306:3306'
+    # You may remove the port bindings if you don't need them
+    ports:
+      - '3306:3306'
 
   # Cache Database
   cache-store:
@@ -70,8 +71,9 @@ services:
     networks:
       - app-network
     profiles: [ 'store' ]
-    #ports:
-    #  - '6379:6379'
+    # You may remove the port bindings if you don't need them
+    ports:
+      - '6379:6379'
 
 networks:
   app-network:
