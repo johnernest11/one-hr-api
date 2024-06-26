@@ -54,12 +54,10 @@ db-migrations:
 
 docker-compose:
   stage: deploy
-  variables:
-    SERVER_IP: 13.212.234.124
   before_script:
     - chmod 400 $WEBKIT_DEVELOP_PEM_KEY   
   script: 
-    - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$SERVER_IP "
+    - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "
         docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
         docker-compose --profile app up -d
       "
