@@ -1,7 +1,7 @@
 stages:
   - test
   - build
-  - init-db
+  - prepare-db
   - deploy
 
 variables:
@@ -43,14 +43,15 @@ docker:
     - docker build -t $IMAGE_API_NAME .
     - docker push $IMAGE_API_NAME
 
-db-migrations:
+migrations-and-seeders:
   image: $IMAGE_BASE_NAME
-  stage: init-db
+  stage: prepare-db
   before_script:
     - cp $WEBKIT_DEVELOPMENT_INIT_DB_ENV .env
     - composer install
   script:
-    - php artisan migrate  
+    # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
+    - php artisan migrate --seed --force
 
 docker-compose:
   stage: deploy
