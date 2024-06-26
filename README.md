@@ -82,6 +82,7 @@ Running `git commit` will trigger automated tasks specified in `grumphp.yml`
 
 ## Note
 - The default timezone set for dates and timestamps is `Asia/Manila`. You can change this in `config/app.php`
+- Extend the Database\Seeders\CiCdCompliantSeeder class when making a seeder that will be called in database/seeders/DatabaseSeeder.php
 
 ## Authors
 - Jego Carlo Ramos
