@@ -24,7 +24,7 @@ services:
       'queue:work',
       '--queue=otp,emails,dev_alerts,default',
       '--tries=5',
-      '--sleep=2'
+      '--sleep=3'
     ]
     networks:
       - app-network
