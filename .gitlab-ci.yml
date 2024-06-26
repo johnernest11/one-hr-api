@@ -60,5 +60,6 @@ docker-compose:
   script: 
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "
         docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
+        cd .gitlab &&
         docker-compose --profile app -f docker-compose.yml up -d
       "
