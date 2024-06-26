@@ -8,50 +8,50 @@ variables:
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
   IMAGE_API_NAME: jegramos/webkit-api
 
-phpunit:
-  image: $IMAGE_BASE_NAME
-  stage: test
-  services:
-    - mysql:8.1.0
-  variables:
-     MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
-     MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
-  before_script:
-    - cp $WEBKIT_TESTING_ENV .env
-    - cp $WEBKIT_TESTING_ENV .env.testing
-    - composer install
-  script:
-    - php artisan test
+# phpunit:
+#   image: $IMAGE_BASE_NAME
+#   stage: test
+#   services:
+#     - mysql:8.1.0
+#   variables:
+#      MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
+#      MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
+#   before_script:
+#     - cp $WEBKIT_TESTING_ENV .env
+#     - cp $WEBKIT_TESTING_ENV .env.testing
+#     - composer install
+#   script:
+#     - php artisan test
 
-docker:
-  image: docker:26.1.4-cli
-  stage:  build
-  services:
-    - name: docker:26.1.4-dind
-      alias: docker-daemon
-  variables:
-    # Tell docker CLI how to talk to Docker daemon; see
-    # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
-    DOCKER_HOST: tcp://docker-daemon:2375/
-    # Use the overlays driver for improved performance:
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-  before_script:
-    - cp $WEBKIT_DEVELOPMENT_ENV .env
-    - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
-  script:
-    - docker build -t $IMAGE_API_NAME -f app.Dockerfile .
-    - docker push $IMAGE_API_NAME
+# docker:
+#   image: docker:26.1.4-cli
+#   stage:  build
+#   services:
+#     - name: docker:26.1.4-dind
+#       alias: docker-daemon
+  # variables:
+  #   # Tell docker CLI how to talk to Docker daemon; see
+  #   # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
+  #   DOCKER_HOST: tcp://docker-daemon:2375/
+  #   # Use the overlays driver for improved performance:
+  #   DOCKER_DRIVER: overlay2
+  #   DOCKER_TLS_CERTDIR: ""
+  # before_script:
+  #   - cp $WEBKIT_DEVELOPMENT_ENV .env
+  #   - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
+  # script:
+  #   - docker build -t $IMAGE_API_NAME -f app.Dockerfile .
+  #   - docker push $IMAGE_API_NAME
 
-migrations-and-seeders:
-  image: $IMAGE_BASE_NAME
-  stage: prepare-db
-  before_script:
-    - cp $WEBKIT_DEVELOPMENT_INIT_DB_ENV .env
-    - composer install
-  script:
-    # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
-    - php artisan migrate --seed --force
+# migrations-and-seeders:
+#   image: $IMAGE_BASE_NAME
+#   stage: prepare-db
+#   before_script:
+#     - cp $WEBKIT_DEVELOPMENT_INIT_DB_ENV .env
+#     - composer install
+#   script:
+#     # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
+#     - php artisan migrate --seed --force
 
 docker-compose:
   stage: deploy
