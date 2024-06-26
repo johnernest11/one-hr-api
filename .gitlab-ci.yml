@@ -59,14 +59,15 @@ docker-compose:
     CONFIG_DIR_NAME: app-config
   before_script:
     - chmod 400 $WEBKIT_DEVELOP_PEM_KEY 
-    # Create the directory where the docker-compose.yml will reside  
+    - cp $WEBKIT_DEVELOPMENT_ENV .env
+    # Create the directory where the docker-compose.yml and .env will reside  
     - ssh  -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "mkdir -p '$CONFIG_DIR_NAME'"
-    # Copy the docker-compose.yml to the server
-    - scp -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY docker-compose.yml ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP:~/$CONFIG_DIR_NAME/
+    # Copy the docker-compose.yml and .env to the server
+    - scp -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY docker-compose.yml .env ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP:~/$CONFIG_DIR_NAME/
   script: 
     # SSH to the server and build the app containers via docker compose
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "
         docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
-        cd $CONFIG_DIR_NAME &&
+        cd $CONFIG_DIR_NAME
         docker-compose --profile app up -d
       "
