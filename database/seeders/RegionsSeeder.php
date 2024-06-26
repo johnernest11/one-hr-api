@@ -4,15 +4,18 @@ namespace Database\Seeders;
 
 use App\Models\Address\Region;
 use Carbon\Carbon;
-use Illuminate\Database\Seeder;
 
-class RegionsSeeder extends Seeder
+class RegionsSeeder extends CiCdCompliantSeeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
+        if ($this->tableNotEmpty()) {
+            return;
+        }
+
         $rawData = file_get_contents(base_path('database/seeders/dumps/psgc_regions_1q23.json'));
         $regionsJson = json_decode($rawData, true);
 
@@ -31,5 +34,10 @@ class RegionsSeeder extends Seeder
         }
 
         Region::insert($regions);
+    }
+
+    protected function tableName(): string
+    {
+        return app(Region::class)->getTable();
     }
 }

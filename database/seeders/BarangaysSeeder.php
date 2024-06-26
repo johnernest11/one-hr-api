@@ -5,15 +5,18 @@ namespace Database\Seeders;
 use App\Enums\BarangayClassification;
 use App\Models\Address\Barangay;
 use Carbon\Carbon;
-use Illuminate\Database\Seeder;
 
-class BarangaysSeeder extends Seeder
+class BarangaysSeeder extends CiCdCompliantSeeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
+        if ($this->tableNotEmpty()) {
+            return;
+        }
+
         $rawData = file_get_contents(base_path('database/seeders/dumps/psgc_barangays_1q23.json'));
         $barangaysJson = json_decode($rawData, true);
 
@@ -45,5 +48,10 @@ class BarangaysSeeder extends Seeder
         }
 
         Barangay::insert($barangays);
+    }
+
+    protected function tableName(): string
+    {
+        return app(Barangay::class)->getTable();
     }
 }

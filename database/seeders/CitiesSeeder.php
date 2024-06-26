@@ -5,7 +5,9 @@ namespace Database\Seeders;
 use App\Enums\MunicipalClassification;
 use App\Models\Address\City;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Database\Seeder;
+use Log;
 
 class CitiesSeeder extends Seeder
 {
@@ -14,6 +16,13 @@ class CitiesSeeder extends Seeder
      */
     public function run(): void
     {
+        $tableName = app(City::class)->getTable();
+        if (DB::table($tableName)->count() > 0) {
+            Log::debug("$tableName table already seeded");
+
+            return;
+        }
+
         $rawData = file_get_contents(base_path('database/seeders/dumps/psgc_cities_1q23.json'));
         $citiesJson = json_decode($rawData, true);
 
