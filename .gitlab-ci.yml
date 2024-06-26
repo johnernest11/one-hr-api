@@ -40,7 +40,7 @@ docker:
     - cp $WEBKIT_DEVELOPMENT_ENV .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
-    - docker build -t $IMAGE_API_NAME .
+    - docker build -t $IMAGE_API_NAME -f app.Dockerfile .
     - docker push $IMAGE_API_NAME
 
 migrations-and-seeders:
