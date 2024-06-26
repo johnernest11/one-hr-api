@@ -16,10 +16,6 @@ class AppSettingsSeeder extends CiCdCompliantSeeder
      */
     public function run(): void
     {
-        if ($this->tableNotEmpty()) {
-            return;
-        }
-
         AppSettings::query()->delete();
         $settingsManager = resolve(AppSettingsManager::class);
 
@@ -31,6 +27,13 @@ class AppSettingsSeeder extends CiCdCompliantSeeder
         $settingsManager->setSettings($default);
     }
 
+    /** {@inheritDoc} */
+    public function shouldRun(): bool
+    {
+        return $this->tableIsEmpty();
+    }
+
+    /** {@inheritDoc} */
     protected function tableName(): string
     {
         return app(AppSettings::class)->getTable();

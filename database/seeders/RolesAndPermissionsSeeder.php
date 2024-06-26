@@ -17,10 +17,6 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
      */
     public function run(): void
     {
-        if ($this->tableNotEmpty()) {
-            return;
-        }
-
         /**
          * Reset cached roles and permissions
          *
@@ -81,5 +77,11 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
     protected function tableName(): string
     {
         return app(Role::class)->getTable();
+    }
+
+    /** {@inheritDoc} */
+    public function shouldRun(): bool
+    {
+        return $this->tableIsEmpty();
     }
 }

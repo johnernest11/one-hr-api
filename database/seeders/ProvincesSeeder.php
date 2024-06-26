@@ -12,10 +12,6 @@ class ProvincesSeeder extends CiCdCompliantSeeder
      */
     public function run(): void
     {
-        if ($this->tableNotEmpty()) {
-            return;
-        }
-
         $rawData = file_get_contents(base_path('database/seeders/dumps/psgc_provinces_1q23.json'));
         $provincesJson = json_decode($rawData, true);
 
@@ -38,8 +34,15 @@ class ProvincesSeeder extends CiCdCompliantSeeder
         Province::insert($provinces);
     }
 
+    /** {@inheritDoc} */
     protected function tableName(): string
     {
         return app(Province::class)->getTable();
+    }
+
+    /** {@inheritDoc} */
+    public function shouldRun(): bool
+    {
+        return $this->tableIsEmpty();
     }
 }
