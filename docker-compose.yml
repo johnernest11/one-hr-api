@@ -23,8 +23,8 @@ services:
       '/var/www/html/artisan',
       'queue:work',
       '--queue=otp,emails,dev_alerts,default',
-      '--tries=3',
-      '--sleep=3'
+      '--tries=5',
+      '--sleep=2'
     ]
     networks:
       - app-network
