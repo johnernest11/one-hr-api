@@ -4,9 +4,9 @@ stages:
     - prepare-db
     - deploy
 
-# variables:
-#   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
-#   IMAGE_API_NAME: jegramos/webkit-api
+variables:
+  IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
+  IMAGE_API_NAME: jegramos/webkit-api
 
 # phpunit:
 #   image: $IMAGE_BASE_NAME
