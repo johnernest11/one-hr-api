@@ -51,7 +51,7 @@ migrations-and-seeders:
     - composer install
   script:
     # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
-    - php artisan migrate --seed --force
+    - php artisan migrate:fresh --seed --force
 
 docker-compose:
   stage: deploy
