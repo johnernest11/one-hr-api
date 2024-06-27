@@ -8,20 +8,20 @@ variables:
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
   IMAGE_API_NAME: jegramos/webkit-api
 
-# phpunit:
-#   image: $IMAGE_BASE_NAME
-#   stage: test
-#   services:
-#     - mysql:8.1.0
-#   variables:
-#      MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
-#      MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
-#   before_script:
-#     - cp $WEBKIT_TESTING_ENV .env
-#     - cp $WEBKIT_TESTING_ENV .env.testing
-#     - composer install
-#   script:
-#     - php artisan test
+phpunit:
+  image: $IMAGE_BASE_NAME
+  stage: test
+  services:
+    - mysql:8.1.0
+  variables:
+     MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
+     MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
+  before_script:
+    - cp $WEBKIT_TESTING_ENV .env
+    - cp $WEBKIT_TESTING_ENV .env.testing
+    - composer install
+  script:
+    - php artisan test
 
 docker:
   image: docker:26.1.4-cli
@@ -51,7 +51,7 @@ migrations-and-seeders:
     - composer install --no-dev 
   script:
     # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
-    - php artisan migrate:fresh --seed --force
+    - php artisan migrate --seed --force
 
 docker-compose:
   stage: deploy
