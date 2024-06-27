@@ -67,7 +67,7 @@ services:
     build:
       context: .
       dockerfile: redis.Dockerfile
-    command:  /bin/sh -c redis-server --requirepass $REDIS_PASSWORD
+    command: redis-server --requirepass "${REDIS_PASSWORD}"
     restart: unless-stopped
     volumes:
       - type: volume
