@@ -1,8 +1,8 @@
-# stages:
+stages:
 #   - test
 #   - build
-#   - prepare-db
-#   - deploy
+    - prepare-db
+    - deploy
 
 # variables:
 #   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
