@@ -61,7 +61,7 @@ docker-compose:
     - chmod 400 $WEBKIT_DEVELOP_PEM_KEY 
     - cp $WEBKIT_DEVELOPMENT_ENV .env
     # Create the directory where the docker-compose.yml and .env will reside  
-    - ssh  -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "mkdir -p '$CONFIG_DIR_NAME'"
+    - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "mkdir -p '$CONFIG_DIR_NAME'"
     # Copy the docker-compose.yml and .env to the server
     - scp -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY docker-compose.yml .env ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP:~/$CONFIG_DIR_NAME/
   script: 
@@ -69,5 +69,8 @@ docker-compose:
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_DEVELOP_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "
         docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
         cd $CONFIG_DIR_NAME &&
+        docker-compose --profile app down &&
+        docker-compose --profile app pull &&
+        docker-compose --profile app build &&
         docker-compose --profile app up -d
       "
