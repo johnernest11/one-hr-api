@@ -64,7 +64,10 @@ services:
 
   # Cache Database
   cache-store:
-    image: redis:7.2.1-alpine
+    build:
+      context: .
+      dockerfile: redis.Dockerfile
+    command:  /bin/sh -c redis-server --requirepass $REDIS_PASSWORD
     restart: unless-stopped
     volumes:
       - type: volume
