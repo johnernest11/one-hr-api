@@ -1,7 +1,16 @@
 #!/bin/bash
-php /var/www/html/artisan config:clear
-php /var/www/html/artisan route:clear
-php /var/www/html/artisan view:clear
-php /var/www/html/artisan events:clear
-php /var/www/html/artisan config:cache
+#!/bin/bash
+
+commands=(
+  "config:clear"
+  "route:clear"
+  "view:clear"
+  "events:clear"
+  "config:cache"
+)
+
+for command in "${commands[@]}"; do
+  php /var/www/html/artisan "$command"
+done
+
 php /var/www/html/artisan down
