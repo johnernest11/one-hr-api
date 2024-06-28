@@ -6,6 +6,16 @@ services:
     # command: "php artisan config:clear && php artisan route:clear && php artisan view:clear && php artisan events:clear && php artisan config:cache && php artisan down"
     environment:
       PHP_FPM_POOL_NAME: 'app_api'
+    command: >
+      bash -c "
+        php artisan config:clear && 
+        php artisan route:clear && 
+        php artisan view:clear && 
+        php artisan events:clear && 
+        php artisan config:cache && 
+        php artisan down
+        /init
+      "
     volumes:
       - type: bind
         source: .env
