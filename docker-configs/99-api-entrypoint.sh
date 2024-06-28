@@ -10,5 +10,3 @@ commands=(
 for command in "${commands[@]}"; do
   php /var/www/html/artisan "$command"
 done
-
-php /var/www/html/artisan down

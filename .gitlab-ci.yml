@@ -1,43 +1,37 @@
 stages:
-#    - test
+    - test
     - build
-#    - prepare-db
+    - prepare-db
     - deploy
-#
+
 variables:
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
   IMAGE_API_NAME: jegramos/webkit-api
-#
-#phpunit:
-#  image: $IMAGE_BASE_NAME
-#  stage: test
-#  services:
-#    - mysql:8.1.0
-#  variables:
-#     MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
-#     MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
-#  before_script:
-#    - cp $WEBKIT_TESTING_ENV .env
-#    - cp $WEBKIT_TESTING_ENV .env.testing
-#    - composer install
-#  script:
-#    - php artisan test
-#
-#code-security-checker:
-#  image: $IMAGE_BASE_NAME
-#  stage: test
-#  services:
-#    - mysql:8.1.0
-#  variables:
-#    MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
-#    MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
-#  before_script:
-#    - cp $WEBKIT_TESTING_ENV .env
-#    - cp $WEBKIT_TESTING_ENV .env.testing
-#    - composer install
-#  script:
-#    - php vendor/bin/security-checker security:check ./composer.lock
-#
+
+phpunit:
+  image: $IMAGE_BASE_NAME
+  stage: test
+  services:
+    - mysql:8.1.0
+  variables:
+     MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
+     MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
+  before_script:
+    - cp $WEBKIT_TESTING_ENV .env
+    - cp $WEBKIT_TESTING_ENV .env.testing
+    - composer install
+  script:
+    - php artisan test
+
+code-security-checker:
+  image: $IMAGE_BASE_NAME
+  stage: test
+  before_script:
+    - cp $WEBKIT_TESTING_ENV .env
+    - composer install
+  script:
+    - php vendor/bin/security-checker security:check ./composer.lock
+
 docker:
   image: docker:26.1.4-cli
   stage:  build
@@ -59,15 +53,15 @@ docker:
     - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $IMAGE_API_NAME
 
-#migrations-and-seeders:
-#  image: $IMAGE_BASE_NAME
-#  stage: prepare-db
-#  before_script:
-#    - cp $WEBKIT_DEVELOPMENT_INIT_DB_ENV .env
-#    - composer install --no-dev
-#  script:
-#    # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
-#    - php artisan migrate --seed --force
+migrations-and-seeders:
+  image: $IMAGE_BASE_NAME
+  stage: prepare-db
+  before_script:
+    - cp $WEBKIT_DEVELOPMENT_INIT_DB_ENV .env
+    - composer install --no-dev
+  script:
+    # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
+    - php artisan migrate --seed --force
 
 docker-compose:
   stage: deploy
