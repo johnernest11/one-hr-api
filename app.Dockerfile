@@ -8,6 +8,9 @@ USER root
 # Install the intl extension with root permissions
 RUN install-php-extensions intl gd
 
+# We'll run our own custom entry point
+COPY --chmod=755 docker-configs/api-entrypoint.sh/ /etc/entrypoint.d/
+
 # Copy source code to the created directory
 COPY . /var/www/html
 
@@ -21,6 +24,9 @@ RUN --mount=type=secret,id=_env,dst=/var/www/html/.env  \
 
 # Change the permission for all the files and dir inside /var/www/html
 RUN chown -R www-data:www-data /var/www/html
+
+# As root, run the docker-php-serversideup-s6-init script
+RUN docker-php-serversideup-s6-init
 
 # Drop back to our unprivileged user
 USER www-data
