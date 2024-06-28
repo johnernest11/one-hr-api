@@ -11,14 +11,16 @@ RUN install-php-extensions intl gd
 # Copy source code to the created directory
 COPY . /var/www/html
 
-# Change the permission for all the files and dir inside /var/www/html
-RUN chown -R www-data /var/www/html
-
-# Drop back to our unprivileged user
-USER www-data
-
 # Setup working directory
 WORKDIR /var/www/html
 
-# Install App Dependencies via Composer
-RUN composer install --no-dev --optimize-autoloader
+# Mount the .env as a secret. See https://docs.render.com/docker-secrets
+# DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api -f app.Dockerfile --secret id=_env,source=.env .
+RUN --mount=type=secret,id=_env,dst=/var/www/html/.env  \
+    composer install --no-dev --optimize-autoloader
+
+# Change the permission for all the files and dir inside /var/www/html
+RUN chown -R www-data:www-data /var/www/html
+
+# Drop back to our unprivileged user
+USER www-data

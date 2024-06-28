@@ -5,6 +5,7 @@ storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
 storage/logs/*
+storage/*.key
 
 vendor/
 **/*node_modules
@@ -14,6 +15,11 @@ vendor/
 _ide_helper.php
 _ide_helper_models.php
 .phpstorm.meta.php
+
+.env
+.env.backup
+.env.production
+.env.testing
 
 **.git
 .idea

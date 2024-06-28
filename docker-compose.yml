@@ -5,6 +5,11 @@ services:
     restart: unless-stopped
     environment:
       PHP_FPM_POOL_NAME: 'app_api'
+    volumes:
+      - type: bind
+        source: .env
+        target: /var/www/html/.env
+        read_only: true
     networks:
       - app-network
     ports:
@@ -18,6 +23,11 @@ services:
     restart: unless-stopped
     environment:
       PHP_FPM_POOL_NAME: 'app_queue'
+    volumes:
+      - type: bind
+        source: .env
+        target: /var/www/html/.env
+        read_only: true
     command: [
       'php',
       '/var/www/html/artisan',
@@ -36,6 +46,11 @@ services:
     restart: unless-stopped
     environment:
       PHP_FPM_POOL_NAME: 'app_tasks'
+    volumes:
+      - type: bind
+        source: .env
+        target: /var/www/html/.env
+        read_only: true
     command: ['php', '/var/www/html/artisan', 'schedule:work']
     networks:
       - app-network
