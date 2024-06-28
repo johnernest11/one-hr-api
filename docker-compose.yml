@@ -3,15 +3,15 @@ services:
   app:
     image: jegramos/webkit-api:latest
     restart: unless-stopped
-    command: >
-      bash -c "
-        php artisan config:clear && 
-        php artisan route:clear &&
-        php artisan view:clear &&
-        php artisan events:clear &&
-        php artisan config:cache &&
-        php artisan down
-      "
+#    command: >
+#      bash -c "
+#        php artisan config:clear &&
+#        php artisan route:clear &&
+#        php artisan view:clear &&
+#        php artisan events:clear &&
+#        php artisan config:cache &&
+#        php artisan down
+#      "
     environment:
       PHP_FPM_POOL_NAME: 'app_api'
     volumes:
