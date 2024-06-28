@@ -23,6 +23,21 @@ phpunit:
   script:
     - php artisan test
 
+code-security-checker:
+  image: $IMAGE_BASE_NAME
+  stage: test
+  services:
+    - mysql:8.1.0
+  variables:
+    MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
+    MYSQL_ROOT_PASSWORD:  $WEBKIT_TESTING_DB_PASSWORD
+  before_script:
+    - cp $WEBKIT_TESTING_ENV .env
+    - cp $WEBKIT_TESTING_ENV .env.testing
+    - composer install
+  script:
+    - php vendor/bin/security-checker security:check ./composer.lock
+
 docker:
   image: docker:26.1.4-cli
   stage:  build
@@ -40,7 +55,8 @@ docker:
     - cp $WEBKIT_DEVELOPMENT_ENV .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
-    - docker build -t $IMAGE_API_NAME -f app.Dockerfile .
+    # Build the container with .env as a secret file
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $IMAGE_API_NAME
 
 migrations-and-seeders:
