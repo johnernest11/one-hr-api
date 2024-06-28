@@ -1,6 +1,7 @@
 #!/bin/bash
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-php artisan events:clear
-php artisan config:cache
+php /var/www/html/artisan config:clear
+php /var/www/html/artisan route:clear
+php /var/www/html/artisan view:clear
+php /var/www/html/artisan events:clear
+php /var/www/html/artisan config:cache
+php /var/www/html/artisan down
