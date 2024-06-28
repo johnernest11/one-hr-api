@@ -1,6 +1,4 @@
 #!/bin/bash
-#!/bin/bash
-
 commands=(
   "config:clear"
   "route:clear"
