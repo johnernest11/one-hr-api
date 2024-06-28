@@ -9,7 +9,7 @@ USER root
 RUN install-php-extensions intl gd
 
 # We'll run our own custom entry point
-COPY --chmod=755 docker-configs/api-entrypoint.sh/ /etc/entrypoint.d/
+COPY --chmod=755 docker-configs/99-api-entrypoint.sh/ /etc/entrypoint.d/
 
 # Copy source code to the created directory
 COPY . /var/www/html
