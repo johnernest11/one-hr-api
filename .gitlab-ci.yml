@@ -4,6 +4,7 @@ stages:
     - prepare-db
     - deploy
 
+# Test
 variables:
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
   IMAGE_API_NAME: jegramos/webkit-api
