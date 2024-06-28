@@ -67,6 +67,7 @@ migrations-and-seeders:
     - cp $WEBKIT_DEVELOPMENT_INIT_DB_ENV .env
     - composer install --no-dev 
   script:
+    - php artisan config:clear
     # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
     - php artisan migrate --seed --force
 
