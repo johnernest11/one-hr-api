@@ -87,6 +87,5 @@ docker-compose:
         cd $CONFIG_DIR_NAME &&
         docker-compose --profile app down &&
         docker-compose --profile app pull &&
-        docker-compose --profile app build &&
-        docker-compose --profile app up -d
+        docker-compose --profile app up -d --force-recreate
       "
