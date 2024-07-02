@@ -22,8 +22,8 @@ phpunit:
   before_script:
     - cp $WEBKIT_TESTING_ENV .env
     - cp $WEBKIT_TESTING_ENV .env.testing
-    - echo AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_ID >> .env.testing && echo AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_ID >> .env
-    - echo AWS_SECRET_ACCESS_KEY:AWS_SECRET_ACCESS_KEY >> .env.testing && echo AWS_SECRET_ACCESS_KEY:AWS_SECRET_ACCESS_KEY >> .env
+    - echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID >> .env.testing && echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID >> .env
+    - echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY >> .env.testing && echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY >> .env
     - echo "Printing .env.testing"
     - cat .env.testing
     - echo "Printing .env"
