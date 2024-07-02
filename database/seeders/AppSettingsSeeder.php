@@ -5,10 +5,9 @@ namespace Database\Seeders;
 use App\Enums\AppTheme;
 use App\Models\AppSettings;
 use App\Services\AppSettingsManager;
-use Illuminate\Database\Seeder;
 use Throwable;
 
-class AppSettingsSeeder extends Seeder
+class AppSettingsSeeder extends CiCdCompliantSeeder
 {
     /**
      * Run the database seeds.
@@ -26,5 +25,17 @@ class AppSettingsSeeder extends Seeder
         ];
 
         $settingsManager->setSettings($default);
+    }
+
+    /** {@inheritDoc} */
+    public function shouldRun(): bool
+    {
+        return $this->tableIsEmpty();
+    }
+
+    /** {@inheritDoc} */
+    protected function tableName(): string
+    {
+        return app(AppSettings::class)->getTable();
     }
 }

@@ -4,9 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Address\Region;
 use Carbon\Carbon;
-use Illuminate\Database\Seeder;
 
-class RegionsSeeder extends Seeder
+class RegionsSeeder extends CiCdCompliantSeeder
 {
     /**
      * Run the database seeds.
@@ -31,5 +30,16 @@ class RegionsSeeder extends Seeder
         }
 
         Region::insert($regions);
+    }
+
+    protected function tableName(): string
+    {
+        return app(Region::class)->getTable();
+    }
+
+    /** {@inheritDoc} */
+    public function shouldRun(): bool
+    {
+        return $this->tableIsEmpty();
     }
 }

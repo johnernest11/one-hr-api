@@ -30,7 +30,6 @@
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
-        "neronmoon/scriptsdev": "^0.1.9",
         "nunomaduro/collision": "^7.0",
         "phpro/grumphp": "^1.13",
         "phpunit/phpunit": "^10.0",
@@ -66,14 +65,6 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        },
-        "scripts-dev": {
-            "post-install-cmd": [
-                "./vendor/bin/grumphp run"
-            ],
-            "post-update-cmd": [
-                "./vendor/bin/grumphp run"
-            ]
         }
     },
     "config": {
@@ -82,7 +73,6 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "neronmoon/scriptsdev": true,
             "phpro/grumphp": true
         }
     },

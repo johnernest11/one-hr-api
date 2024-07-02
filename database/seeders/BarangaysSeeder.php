@@ -5,9 +5,8 @@ namespace Database\Seeders;
 use App\Enums\BarangayClassification;
 use App\Models\Address\Barangay;
 use Carbon\Carbon;
-use Illuminate\Database\Seeder;
 
-class BarangaysSeeder extends Seeder
+class BarangaysSeeder extends CiCdCompliantSeeder
 {
     /**
      * Run the database seeds.
@@ -45,5 +44,17 @@ class BarangaysSeeder extends Seeder
         }
 
         Barangay::insert($barangays);
+    }
+
+    /** {@inheritDoc} */
+    protected function tableName(): string
+    {
+        return app(Barangay::class)->getTable();
+    }
+
+    /** {@inheritDoc} */
+    public function shouldRun(): bool
+    {
+        return $this->tableIsEmpty();
     }
 }
