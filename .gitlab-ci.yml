@@ -145,6 +145,7 @@ docker-compose-uat:
   stage: deploy
   only:
     - /^release\/.*/  # Matches any branch starting with release/
+  when: manual # We do manual deployment for the UAT server
   variables:
     CONFIG_DIR_NAME: app-config
   before_script:
