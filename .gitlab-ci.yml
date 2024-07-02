@@ -22,6 +22,7 @@ phpunit:
   before_script:
     - cp $WEBKIT_TESTING_ENV .env
     - cp $WEBKIT_TESTING_ENV .env.testing
+    - cat .env.testing
     # Gitlab blocks AWS keys when the branch is protected, so we populate the env files dynamically
     - echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_NON_PROD >> .env.testing && echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_NON_PROD >> .env
     - echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_NON_PROD >> .env.testing && echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_NON_PROD >> .env
