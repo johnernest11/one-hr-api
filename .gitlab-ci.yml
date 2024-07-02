@@ -24,7 +24,6 @@ phpunit:
     - cp $WEBKIT_TESTING_ENV .env.testing
     - composer install
   script:
-    # Run feature and unit tests
     - php artisan test
 
 code-security-checker:
