@@ -11,9 +11,6 @@ variables:
 phpunit:
   image: $IMAGE_BASE_NAME
   stage: test
-  only:
-    - develop
-    - /^release\/.*/  # Matches any branch starting with release/
   services:
     - mysql:8.1.0
   variables:
