@@ -53,14 +53,15 @@ docker-build-develop:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+    TAG_NAME: development
   before_script:
     - cp $WEBKIT_DEVELOPMENT_ENV .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:develop -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:develop
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $IMAGE_API_NAME:$TAG_NAME
 
 docker-build-uat:
   image: docker:26.1.4-cli
