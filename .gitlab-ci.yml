@@ -22,7 +22,6 @@ phpunit:
   before_script:
     - cp $WEBKIT_TESTING_ENV .env
     - cp $WEBKIT_TESTING_ENV .env.testing
-    - cat .env.testing
     - composer install
   script:
     - php artisan test
