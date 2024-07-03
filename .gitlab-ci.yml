@@ -1,12 +1,39 @@
 stages:
+  - preparation
   - test
   - build
   - prepare-db
   - deploy
 
+services:
+  - name: docker:26.1.4-dind
+    alias: docker-daemon
+
 variables:
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
   IMAGE_API_NAME: jegramos/webkit-api
+  # Tell docker CLI how to talk to Docker daemon; see
+  # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
+  DOCKER_HOST: tcp://docker-daemon:2375/
+  # Use the overlays driver for improved performance:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+pull_env_files:
+  image: docker:26.1.4-cli
+  stage: preparation
+  only:
+    - develop
+    - /^release\/.*/  # Matches any branch starting with release/
+  before_script:
+    - docker run --rm amazon/aws-cli --version
+  script:
+    - echo "Pulling ENVs from AWS Secret Manager"
+    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-env-testing --query SecretString --output text > ./secret.testing.env
+  artifacts:
+    paths:
+      - secret.testing.env
+    expire_in: 1 day
 
 phpunit:
   image: $IMAGE_BASE_NAME
@@ -20,12 +47,8 @@ phpunit:
     MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
     MYSQL_ROOT_PASSWORD: $WEBKIT_TESTING_DB_PASSWORD
   before_script:
-    - cp $WEBKIT_TESTING_ENV .env
-    - cp $WEBKIT_TESTING_ENV .env.testing
-    # Gitlab blocks AWS keys when the branch is protected, so we populate the env files dynamically
-    - echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_NON_PROD >> .env.testing && echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_NON_PROD >> .env
-    - echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_NON_PROD >> .env.testing && echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_NON_PROD >> .env
-    - cat .env.testing
+    - cat secret.testing.env > .env
+    - cat secret.testing.env > .env.testing
     - composer install
   script:
     - php artisan test
@@ -47,16 +70,7 @@ docker-build-develop:
   stage: build
   only:
     - develop
-  services:
-    - name: docker:26.1.4-dind
-      alias: docker-daemon
   variables:
-    # Tell docker CLI how to talk to Docker daemon; see
-    # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
-    DOCKER_HOST: tcp://docker-daemon:2375/
-    # Use the overlays driver for improved performance:
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
     TAG_NAME: development
   before_script:
     - cp $WEBKIT_DEVELOPMENT_ENV .env
