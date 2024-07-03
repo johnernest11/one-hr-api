@@ -20,11 +20,11 @@ variables:
   DOCKER_TLS_CERTDIR: ""
 
 pull_env_files:
-  image: amazon/aws-cli:2.17.7
   stage: preparation
   before_script:
     - docker run --rm amazon/aws-cli --version
   script:
+    - echo "Pulling ENVs from AWS Secret Manager"
     - docker run --rm aws secretsmanager get-secret-value --secret-id webkit-api-env-testing --query SecretString --output text > ./secret.testing.env
   artifacts:
     paths:
