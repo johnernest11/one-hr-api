@@ -10,6 +10,7 @@ services:
     alias: docker-daemon
 
 variables:
+  # test
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
   IMAGE_API_NAME: jegramos/webkit-api
   # Tell docker CLI how to talk to Docker daemon; see
