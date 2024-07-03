@@ -20,6 +20,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
 
 pull_env_files:
+  # test
   image: docker:26.1.4-cli
   stage: preparation
   only:
