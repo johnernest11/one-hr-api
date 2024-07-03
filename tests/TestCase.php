@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Routing\Middleware\ThrottleRequests;
+use Storage;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -21,6 +22,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
         $this->withoutMiddleware(ThrottleRequests::class);
+        Storage::fake('s3');
     }
 
     /**
