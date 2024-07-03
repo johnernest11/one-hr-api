@@ -1,4 +1,5 @@
 stages:
+  - preparation
   - test
   - build
   - prepare-db
@@ -8,24 +9,30 @@ variables:
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
   IMAGE_API_NAME: jegramos/webkit-api
 
+pull_env_files:
+  image: amazon/aws-cli:2.17.7
+  stage: preparation
+  script:
+    - aws secretsmanager get-secret-value --secret-id webkit-api-env-testing --query SecretString --output text > ./secret.testing.env
+  artifacts:
+    paths:
+      - secret.testing.env
+    expire_in: 1 day
+
 phpunit:
   image: $IMAGE_BASE_NAME
   stage: test
-  only:
-    - develop
-    - /^release\/.*/  # Matches any branch starting with release/
+  # only:
+    # - develop
+    # - /^release\/.*/  # Matches any branch starting with release/
   services:
     - mysql:8.1.0
   variables:
     MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
     MYSQL_ROOT_PASSWORD: $WEBKIT_TESTING_DB_PASSWORD
   before_script:
-    - cp $WEBKIT_TESTING_ENV .env
-    - cp $WEBKIT_TESTING_ENV .env.testing
-    # Gitlab blocks AWS keys when the branch is protected, so we populate the env files dynamically
-    - echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_NON_PROD >> .env.testing && echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_NON_PROD >> .env
-    - echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_NON_PROD >> .env.testing && echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_NON_PROD >> .env
-    - cat .env.testing
+    - echo "Printing artifact"
+    - cat secret.testing.env
     - composer install
   script:
     - php artisan test
