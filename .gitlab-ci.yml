@@ -44,7 +44,7 @@ phpunit:
     MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
     MYSQL_ROOT_PASSWORD: $WEBKIT_TESTING_DB_PASSWORD
   before_script:
-    - cat secret.testing.env > .env .env.testing
+    - cat secret.testing.env > .env
     - cat secret.testing.env > .env.testing
     - composer install
   script:
