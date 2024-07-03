@@ -45,6 +45,7 @@ phpunit:
   before_script:
     - echo "Printing artifact"
     - cat secret.testing.env
+    - echo secret.testing.env > .env && echo secret.testing.env > .env.testing
     - composer install
   script:
     - php artisan test
