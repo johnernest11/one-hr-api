@@ -12,6 +12,8 @@ variables:
 pull_env_files:
   image: amazon/aws-cli:2.17.7
   stage: preparation
+  before_script:
+    - aws --version
   script:
     - aws secretsmanager get-secret-value --secret-id webkit-api-env-testing --query SecretString --output text > ./secret.testing.env
   artifacts:
