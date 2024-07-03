@@ -20,7 +20,6 @@ variables:
   DOCKER_TLS_CERTDIR: ""
 
 pull_env_files:
-  # test
   image: docker:26.1.4-cli
   stage: preparation
   only:
@@ -28,9 +27,9 @@ pull_env_files:
     - /^release\/.*/  # Matches any branch starting with release/
     - main
   before_script:
+    - echo "Pulling ENV secrets for '$CI_COMMIT_BRANCH'"
     - docker run --rm amazon/aws-cli --version
   script:
-    - echo "Pulling ENVs from AWS Secret Manager"
     - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-env --query SecretString --output text > ./secret.development.env
     - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-init-db-env --query SecretString --output text > ./secret.development.init-db.env
     - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-uat-env --query SecretString --output text > ./secret.uat.env
