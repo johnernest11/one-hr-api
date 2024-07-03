@@ -10,6 +10,7 @@ variables:
   IMAGE_API_NAME: jegramos/webkit-api
 
 pull_env_files:
+  image: docker:26.1.4-cli
   stage: preparation
   services:
     - name: docker:26.1.4-dind
