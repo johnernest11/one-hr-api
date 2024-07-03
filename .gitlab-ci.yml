@@ -10,7 +10,6 @@ services:
     alias: docker-daemon
 
 variables:
-  # test
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
   IMAGE_API_NAME: jegramos/webkit-api
   # Tell docker CLI how to talk to Docker daemon; see
@@ -23,6 +22,9 @@ variables:
 pull_env_files:
   image: docker:26.1.4-cli
   stage: preparation
+  only:
+    - develop
+    - /^release\/.*/  # Matches any branch starting with release/
   before_script:
     - docker run --rm amazon/aws-cli --version
   script:
@@ -36,9 +38,9 @@ pull_env_files:
 phpunit:
   image: $IMAGE_BASE_NAME
   stage: test
-  # only:
-    # - develop
-    # - /^release\/.*/  # Matches any branch starting with release/
+  only:
+    - develop
+    - /^release\/.*/  # Matches any branch starting with release/
   services:
     - mysql:8.1.0
   variables:
