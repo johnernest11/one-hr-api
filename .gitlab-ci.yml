@@ -5,24 +5,23 @@ stages:
   - prepare-db
   - deploy
 
+services:
+  - name: docker:26.1.4-dind
+    alias: docker-daemon
+
 variables:
   IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
   IMAGE_API_NAME: jegramos/webkit-api
+  # Tell docker CLI how to talk to Docker daemon; see
+  # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
+  DOCKER_HOST: tcp://docker-daemon:2375/
+  # Use the overlays driver for improved performance:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
 
 pull_env_files:
-  # test
   image: docker:26.1.4-cli
   stage: preparation
-  services:
-    - name: docker:26.1.4-dind
-      alias: docker-daemon
-  variables:
-    # Tell docker CLI how to talk to Docker daemon; see
-    # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
-    DOCKER_HOST: tcp://docker-daemon:2375/
-    # Use the overlays driver for improved performance:
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
   before_script:
     - docker run --rm amazon/aws-cli --version
   script:
@@ -45,11 +44,8 @@ phpunit:
     MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
     MYSQL_ROOT_PASSWORD: $WEBKIT_TESTING_DB_PASSWORD
   before_script:
-    - echo "Printing artifact"
-    - cat secret.testing.env
-    - cat secret.testing.env >(.env .env.testing)
-    - echo "Printing ENV"
-    - cat .env.testing
+    - cat secret.testing.env > .env .env.testing
+    - cat secret.testing.env > .env.testing
     - composer install
   script:
     - php artisan test
@@ -71,16 +67,7 @@ docker-build-develop:
   stage: build
   only:
     - develop
-  services:
-    - name: docker:26.1.4-dind
-      alias: docker-daemon
   variables:
-    # Tell docker CLI how to talk to Docker daemon; see
-    # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
-    DOCKER_HOST: tcp://docker-daemon:2375/
-    # Use the overlays driver for improved performance:
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
     TAG_NAME: development
   before_script:
     - cp $WEBKIT_DEVELOPMENT_ENV .env
