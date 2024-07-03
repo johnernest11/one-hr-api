@@ -21,6 +21,9 @@ _ide_helper_models.php
 .env.production
 .env.testing
 
+# CI/CD Artifacts
+secret.*
+
 **.git
 .idea
 **.gitignore
