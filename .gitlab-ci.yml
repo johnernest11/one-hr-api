@@ -121,9 +121,8 @@ docker-build-uat:
 docker-build-production:
   image: docker:26.1.4-cli
   stage: build
-  rules:
-    # Runs the job only when a tag is pushed to the main branch
-    - if: $CI_COMMIT_TAG && [[ $CI_COMMIT_REF_NAME == main ]]
+  only:
+    - main
   services:
     - name: docker:26.1.4-dind
       alias: docker-daemon
@@ -134,7 +133,7 @@ docker-build-production:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    SPECIFIC_TAG_NAME: $CI_COMMIT_TAG
+    SPECIFIC_TAG_NAME: $CI_COMMIT_SHORT_SHA
   before_script:
     - cp secret.uat.env .env # We'll use the UAT env since we don't really deploy to prod right now
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
@@ -175,9 +174,8 @@ migrations-and-seeders-uat:
 migrations-and-seeders-production:
   image: $IMAGE_BASE_NAME
   stage: prepare-db
-  rules:
-    # Runs the job only when a tag is pushed to the main branch
-    - if: $CI_COMMIT_TAG && [[ $CI_COMMIT_REF_NAME == main ]]
+  only:
+    - main
   script:
     - echo "Preparing migrations and seeders for '$CI_COMMIT_BRANCH'"
     - echo "Mock deployment for production"
@@ -236,9 +234,8 @@ docker-compose-uat:
 # Sample Production Deployment
 docker-compose-production:
   stage: deploy
-  rules:
-    # Runs the job only when a tag is pushed to the main branch
-    - if: $CI_COMMIT_TAG && [[ $CI_COMMIT_REF_NAME == main ]]
+  only:
+    - main
   when: manual
   variables:
     CONFIG_DIR_NAME: app-config
