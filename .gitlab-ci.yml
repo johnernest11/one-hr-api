@@ -105,18 +105,15 @@ docker-build-uat:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+    SPECIFIC_RC_TAG: $CI_COMMIT_REF_SLUG-candidate
+    LATEST_RC_TAG: latest-rc
   before_script:
     - cp secret.uat.env .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH'"
-    # Set tag for release branches as v<version>-rc
-    - if [[ $CI_COMMIT_REF_NAME =~ ^release/(.+)$ ]]; then
-      VERSION=${BASH_REMATCH[1]}
-      SPECIFIC_RC_TAG=$VERSION-rc
-      LATEST_RC_TAG=rc-latest
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api -f app.Dockerfile --secret id=_env,source=.env .
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$LATEST_RC_TAG -t jegramos/webkit-api:$SPECIFIC_RC_TAG -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # We have a specific RC tag
     - docker push $IMAGE_API_NAME:$LATEST_RC_TAG # We also have a `latest-rc` tag
 
@@ -136,14 +133,15 @@ docker-build-production:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+    SPECIFIC_TAG_NAME: $CI_COMMIT_SHORT_SHA
   before_script:
     - cp secret.uat.env .env # We'll use the UAT env since we don't really deploy to prod right now
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$TAG_NAME
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$SPECIFIC_TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME
     - docker push $IMAGE_API_NAME:latest
 
 migrations-and-seeders-develop:
@@ -211,7 +209,7 @@ docker-compose-uat:
   stage: deploy
   only:
     - /^release\/.*/  # Matches any branch starting with release/
-  when: manual # We do manual deployment for the UAT server
+  when: manual
   variables:
     CONFIG_DIR_NAME: app-config
   before_script:
@@ -237,8 +235,8 @@ docker-compose-uat:
 docker-compose-production:
   stage: deploy
   only:
-    - main  # Matches any branch starting with release/
-  when: manual # We do manual deployment for the UAT server
+    - main
+  when: manual
   variables:
     CONFIG_DIR_NAME: app-config
   script:
