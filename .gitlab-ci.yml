@@ -77,6 +77,8 @@ code-security-checker:
 docker-build-develop:
   image: docker:26.1.4-cli
   stage: build
+  environment:
+    name: development
   only:
     - develop
   variables:
@@ -93,6 +95,8 @@ docker-build-develop:
 docker-build-uat:
   image: docker:26.1.4-cli
   stage: build
+  environment:
+    name: uat
   only:
     - /^release\/.*/  # Matches any branch starting with release/
   services:
@@ -114,8 +118,8 @@ docker-build-uat:
     - echo "Building Image for '$CI_COMMIT_BRANCH'"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
     - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$LATEST_RC_TAG -t jegramos/webkit-api:$SPECIFIC_RC_TAG -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # We have a specific RC tag
-    - docker push $IMAGE_API_NAME:$LATEST_RC_TAG # We also have a `latest-rc` tag
+    - docker push $IMAGE_API_NAME:$LATEST_RC_TAG
+    - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # If you don't need a specific tag, remove to save cost for repository storage
 
 # Sample Production Image Build Job
 docker-build-production:
@@ -133,7 +137,7 @@ docker-build-production:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    SPECIFIC_TAG_NAME: $CI_COMMIT_SHORT_SHA
+    SPECIFIC_TAG_NAME: main-$CI_COMMIT_SHORT_SHA
   before_script:
     - cp secret.uat.env .env # We'll use the UAT env since we don't really deploy to prod right now
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
@@ -141,12 +145,14 @@ docker-build-production:
     - echo "Building Image for '$CI_COMMIT_BRANCH"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
     - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$SPECIFIC_TAG_NAME -t jegramos/webkit-api:latest -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME
     - docker push $IMAGE_API_NAME:latest
+    - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME # If you don't need a specific tag, remove to save cost for repository storage
 
 migrations-and-seeders-develop:
   image: $IMAGE_BASE_NAME
   stage: prepare-db
+  environment:
+    name: development
   only:
     - develop
   before_script:
@@ -160,6 +166,8 @@ migrations-and-seeders-develop:
 migrations-and-seeders-uat:
   image: $IMAGE_BASE_NAME
   stage: prepare-db
+  environment:
+    name: uat
   only:
     - /^release\/.*/  # Matches any branch starting with release/
   before_script:
@@ -182,6 +190,8 @@ migrations-and-seeders-production:
 
 docker-compose-develop:
   stage: deploy
+  environment:
+    name: development
   only:
     - develop
   variables:
@@ -207,6 +217,8 @@ docker-compose-develop:
 
 docker-compose-uat:
   stage: deploy
+  environment:
+    name: uat
   only:
     - /^release\/.*/  # Matches any branch starting with release/
   when: manual
