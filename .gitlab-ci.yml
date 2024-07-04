@@ -105,16 +105,17 @@ docker-build-uat:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    RC_TAG_NAME: $CI_COMMIT_REF_SLUG-candidate
+    SPECIFIC_RC_TAG: $CI_COMMIT_REF_SLUG-candidate
+    LATEST_RC_TAG: latest-rc
   before_script:
     - cp secret.uat.env .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH'"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api -f app.Dockerfile --secret id=_env,source=.env .
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$LATEST_RC -t jegramos/webkit-api:$SPECIFIC_RC_TAG -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $IMAGE_API_NAME:$RC_TAG_NAME # We have a specific RC tag
-    - docker push $IMAGE_API_NAME:latest-rc # We also have a `latest-rc` tag
+    - docker push $IMAGE_API_NAME:$LATEST_RC # We also have a `latest-rc` tag
 
 # Sample Production Image Build Job
 docker-build-production:
