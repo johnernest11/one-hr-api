@@ -140,7 +140,7 @@ docker-build-production:
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$SPECIFIC_TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$SPECIFIC_TAG_NAME -t jegramos/webkit-api:latest -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME
     - docker push $IMAGE_API_NAME:latest
 
