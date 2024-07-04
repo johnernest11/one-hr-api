@@ -122,7 +122,8 @@ docker-build-production:
   image: docker:26.1.4-cli
   stage: build
   only:
-    - tags
+    refs:
+      - tags
   rules:
     # Runs the job only when a tag is pushed to the main branch
     - if: $CI_COMMIT_TAG && [[ $CI_COMMIT_REF_NAME == main ]]
@@ -178,7 +179,11 @@ migrations-and-seeders-production:
   image: $IMAGE_BASE_NAME
   stage: prepare-db
   only:
-    - main
+    refs:
+      - tags
+  rules:
+    # Runs the job only when a tag is pushed to the main branch
+    - if: $CI_COMMIT_TAG && [[ $CI_COMMIT_REF_NAME == main ]]
   script:
     - echo "Preparing migrations and seeders for '$CI_COMMIT_BRANCH'"
     - echo "Mock deployment for production"
@@ -212,7 +217,7 @@ docker-compose-uat:
   stage: deploy
   only:
     - /^release\/.*/  # Matches any branch starting with release/
-  when: manual # We do manual deployment for the UAT server
+  when: manual
   variables:
     CONFIG_DIR_NAME: app-config
   before_script:
@@ -238,8 +243,12 @@ docker-compose-uat:
 docker-compose-production:
   stage: deploy
   only:
-    - main  # Matches any branch starting with release/
-  when: manual # We do manual deployment for the UAT server
+    refs:
+      - tags
+  rules:
+    # Runs the job only when a tag is pushed to the main branch
+    - if: $CI_COMMIT_TAG && [[ $CI_COMMIT_REF_NAME == main ]]
+  when: manual
   variables:
     CONFIG_DIR_NAME: app-config
   script:
