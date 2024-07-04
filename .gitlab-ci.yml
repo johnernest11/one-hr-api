@@ -47,7 +47,7 @@ phpunit:
   stage: test
   only:
     - develop
-    # - /^release\/.*/  # Matches any branch starting with release/
+    - /^release\/.*/  # Matches any branch starting with release/
     - main
   services:
     - mysql:8.1.0
@@ -66,7 +66,7 @@ code-security-checker:
   stage: test
   only:
     - develop
-    # - /^release\/.*/  # Matches any branch starting with release/
+    - /^release\/.*/  # Matches any branch starting with release/
     - main
   before_script:
     - cp $WEBKIT_TESTING_ENV .env
@@ -122,7 +122,10 @@ docker-build-production:
   image: docker:26.1.4-cli
   stage: build
   only:
-    - main
+    - tags
+  rules:
+    # Runs the job only when a tag is pushed to the main branch
+    - if: $CI_COMMIT_TAG && [[ $CI_COMMIT_REF_NAME == main ]]
   services:
     - name: docker:26.1.4-dind
       alias: docker-daemon
@@ -133,14 +136,15 @@ docker-build-production:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+    SPECIFIC_TAG_NAME: $CI_COMMIT_TAG
   before_script:
     - cp secret.uat.env .env # We'll use the UAT env since we don't really deploy to prod right now
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$TAG_NAME
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$SPECIFIC_TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME
     - docker push $IMAGE_API_NAME:latest
 
 migrations-and-seeders-develop:
