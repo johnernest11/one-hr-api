@@ -47,7 +47,7 @@ phpunit:
   stage: test
   only:
     - develop
-    - /^release\/.*/  # Matches any branch starting with release/
+    # - /^release\/.*/  # Matches any branch starting with release/
     - main
   services:
     - mysql:8.1.0
@@ -66,7 +66,7 @@ code-security-checker:
   stage: test
   only:
     - develop
-    - /^release\/.*/  # Matches any branch starting with release/
+    # - /^release\/.*/  # Matches any branch starting with release/
     - main
   before_script:
     - cp $WEBKIT_TESTING_ENV .env
@@ -110,10 +110,11 @@ docker-build-uat:
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH'"
-    # Set tag for release branches as v<version>-rc
+    # Set tag for release branches as <version>-rc
     - if [[ $CI_COMMIT_REF_NAME =~ ^release/(.+)$ ]]; then
         VERSION=${BASH_REMATCH[1]}
         SPECIFIC_RC_TAG=$VERSION-rc
+      fi
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
     - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # We have a specific RC tag
