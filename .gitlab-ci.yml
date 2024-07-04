@@ -113,9 +113,9 @@ docker-build-uat:
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH'"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$LATEST_RC -t jegramos/webkit-api:$SPECIFIC_RC_TAG -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$RC_TAG_NAME # We have a specific RC tag
-    - docker push $IMAGE_API_NAME:$LATEST_RC # We also have a `latest-rc` tag
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$LATEST_RC_TAG -t jegramos/webkit-api:$SPECIFIC_RC_TAG -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # We have a specific RC tag
+    - docker push $IMAGE_API_NAME:$LATEST_RC_TAG # We also have a `latest-rc` tag
 
 # Sample Production Image Build Job
 docker-build-production:
