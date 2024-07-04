@@ -111,10 +111,11 @@ docker-build-uat:
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH'"
     # Set tag for release branches as <version>-rc
-    - if [[ $CI_COMMIT_REF_NAME =~ ^release/(.+)$ ]]; then
-        VERSION=${BASH_REMATCH[1]}
-        SPECIFIC_RC_TAG=$VERSION-rc
-      fi
+    - |-
+        if [[ $CI_COMMIT_REF_NAME =~ ^release/(.+)$ ]]; then
+          VERSION=${BASH_REMATCH[1]}
+          SPECIFIC_RC_TAG=$VERSION-rc
+        fi
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
     - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # We have a specific RC tag
