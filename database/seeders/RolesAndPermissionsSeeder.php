@@ -6,12 +6,11 @@ use App\Enums\Permission as PermissionEnum;
 use App\Enums\Role as RoleEnum;
 use App\Enums\WebhookPermission;
 use ConversionHelper;
-use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
-class RolesAndPermissionsSeeder extends Seeder
+class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
 {
     /**
      * Run the database seeds.
@@ -73,5 +72,16 @@ class RolesAndPermissionsSeeder extends Seeder
          * @see https://spatie.be/docs/laravel-permission/v6/advanced-usage/seeding
          */
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
+    }
+
+    protected function tableName(): string
+    {
+        return app(Role::class)->getTable();
+    }
+
+    /** {@inheritDoc} */
+    public function shouldRun(): bool
+    {
+        return $this->tableIsEmpty();
     }
 }

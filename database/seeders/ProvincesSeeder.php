@@ -4,9 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Address\Province;
 use Carbon\Carbon;
-use Illuminate\Database\Seeder;
 
-class ProvincesSeeder extends Seeder
+class ProvincesSeeder extends CiCdCompliantSeeder
 {
     /**
      * Run the database seeds.
@@ -33,5 +32,17 @@ class ProvincesSeeder extends Seeder
         }
 
         Province::insert($provinces);
+    }
+
+    /** {@inheritDoc} */
+    protected function tableName(): string
+    {
+        return app(Province::class)->getTable();
+    }
+
+    /** {@inheritDoc} */
+    public function shouldRun(): bool
+    {
+        return $this->tableIsEmpty();
     }
 }

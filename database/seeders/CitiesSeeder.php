@@ -5,9 +5,8 @@ namespace Database\Seeders;
 use App\Enums\MunicipalClassification;
 use App\Models\Address\City;
 use Carbon\Carbon;
-use Illuminate\Database\Seeder;
 
-class CitiesSeeder extends Seeder
+class CitiesSeeder extends CiCdCompliantSeeder
 {
     /**
      * Run the database seeds.
@@ -36,5 +35,19 @@ class CitiesSeeder extends Seeder
         }
 
         City::insert($cities);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function tableName(): string
+    {
+        return app(City::class)->getTable();
+    }
+
+    /** {@inheritDoc} */
+    public function shouldRun(): bool
+    {
+        return $this->tableIsEmpty();
     }
 }

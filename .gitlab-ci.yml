@@ -1,0 +1,243 @@
+stages:
+  - preparation
+  - test
+  - build
+  - prepare-db
+  - deploy
+
+services:
+  - name: docker:26.1.4-dind
+    alias: docker-daemon
+
+variables:
+  IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
+  IMAGE_API_NAME: jegramos/webkit-api
+  # Tell docker CLI how to talk to Docker daemon; see
+  # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
+  DOCKER_HOST: tcp://docker-daemon:2375/
+  # Use the overlays driver for improved performance:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+pull_env_files:
+  image: docker:26.1.4-cli
+  stage: preparation
+  only:
+    - develop
+    - /^release\/.*/  # Matches any branch starting with release/
+    - main
+  before_script:
+    - echo "Pulling ENV secrets for '$CI_COMMIT_BRANCH'"
+    - docker run --rm amazon/aws-cli --version
+  script:
+    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-env --query SecretString --output text > ./secret.development.env
+    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-init-db-env --query SecretString --output text > ./secret.development.init-db.env
+    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-uat-env --query SecretString --output text > ./secret.uat.env
+    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-uat-init-db-env --query SecretString --output text > ./secret.uat.init-db.env
+  artifacts:
+    paths:
+      - secret.development.env
+      - secret.development.init-db.env
+      - secret.uat.env
+      - secret.uat.init-db.env
+    expire_in: 1 day
+
+phpunit:
+  image: $IMAGE_BASE_NAME
+  stage: test
+  only:
+    - develop
+    - /^release\/.*/  # Matches any branch starting with release/
+    - main
+  services:
+    - mysql:8.1.0
+  variables:
+    MYSQL_DATABASE: $WEBKIT_TESTING_DB_NAME
+    MYSQL_ROOT_PASSWORD: $WEBKIT_TESTING_DB_PASSWORD
+  before_script:
+    - cp $WEBKIT_TESTING_ENV .env
+    - cp $WEBKIT_TESTING_ENV .env.testing
+    - composer install
+  script:
+    - php artisan test
+
+code-security-checker:
+  image: $IMAGE_BASE_NAME
+  stage: test
+  only:
+    - develop
+    - /^release\/.*/  # Matches any branch starting with release/
+    - main
+  before_script:
+    - cp $WEBKIT_TESTING_ENV .env
+    - composer install
+  script:
+    - php vendor/bin/security-checker security:check ./composer.lock
+
+docker-build-develop:
+  image: docker:26.1.4-cli
+  stage: build
+  only:
+    - develop
+  variables:
+    TAG_NAME: development
+  before_script:
+    - cp secret.development.env .env
+    - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
+  script:
+    - echo "Building Image for '$CI_COMMIT_BRANCH"
+    # Build the image using Docker BuildKit and securely inject secrets from the .env file
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $IMAGE_API_NAME:$TAG_NAME
+
+docker-build-uat:
+  image: docker:26.1.4-cli
+  stage: build
+  only:
+    - /^release\/.*/  # Matches any branch starting with release/
+  services:
+    - name: docker:26.1.4-dind
+      alias: docker-daemon
+  variables:
+    # Tell docker CLI how to talk to Docker daemon; see
+    # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
+    DOCKER_HOST: tcp://docker-daemon:2375/
+    # Use the overlays driver for improved performance:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    SPECIFIC_RC_TAG: $CI_COMMIT_REF_SLUG-candidate
+    LATEST_RC_TAG: latest-rc
+  before_script:
+    - cp secret.uat.env .env
+    - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
+  script:
+    - echo "Building Image for '$CI_COMMIT_BRANCH'"
+    # Build the image using Docker BuildKit and securely inject secrets from the .env file
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$LATEST_RC_TAG -t jegramos/webkit-api:$SPECIFIC_RC_TAG -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # We have a specific RC tag
+    - docker push $IMAGE_API_NAME:$LATEST_RC_TAG # We also have a `latest-rc` tag
+
+# Sample Production Image Build Job
+docker-build-production:
+  image: docker:26.1.4-cli
+  stage: build
+  only:
+    - main
+  services:
+    - name: docker:26.1.4-dind
+      alias: docker-daemon
+  variables:
+    # Tell docker CLI how to talk to Docker daemon; see
+    # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
+    DOCKER_HOST: tcp://docker-daemon:2375/
+    # Use the overlays driver for improved performance:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    SPECIFIC_TAG_NAME: $CI_COMMIT_SHORT_SHA
+  before_script:
+    - cp secret.uat.env .env # We'll use the UAT env since we don't really deploy to prod right now
+    - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
+  script:
+    - echo "Building Image for '$CI_COMMIT_BRANCH"
+    # Build the image using Docker BuildKit and securely inject secrets from the .env file
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$SPECIFIC_TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME
+    - docker push $IMAGE_API_NAME:latest
+
+migrations-and-seeders-develop:
+  image: $IMAGE_BASE_NAME
+  stage: prepare-db
+  only:
+    - develop
+  before_script:
+    - cp secret.development.init-db.env .env
+    - composer install --no-dev
+  script:
+    - echo "Preparing migrations and seeders for '$CI_COMMIT_BRANCH'"
+    # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
+    - php artisan migrate --seed --force
+
+migrations-and-seeders-uat:
+  image: $IMAGE_BASE_NAME
+  stage: prepare-db
+  only:
+    - /^release\/.*/  # Matches any branch starting with release/
+  before_script:
+    - cp secret.uat.init-db.env .env
+    - composer install --no-dev
+  script:
+    - echo "Preparing migrations and seeders for '$CI_COMMIT_BRANCH'"
+    # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
+    - php artisan migrate --seed --force
+
+# Sample Production Migration & Seeding Job
+migrations-and-seeders-production:
+  image: $IMAGE_BASE_NAME
+  stage: prepare-db
+  only:
+    - main
+  script:
+    - echo "Preparing migrations and seeders for '$CI_COMMIT_BRANCH'"
+    - echo "Mock deployment for production"
+
+docker-compose-develop:
+  stage: deploy
+  only:
+    - develop
+  variables:
+    CONFIG_DIR_NAME: app-config
+  before_script:
+    - chmod 400 $WEBKIT_API_PEM_KEY
+    - cp secret.development.env .env
+    # Create the directory where the docker-compose.yml and .env will reside  
+    - ssh -o StrictHostKeyChecking=no -i $WEBKIT_API_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "mkdir -p '$CONFIG_DIR_NAME'/docker-configs"
+    # Copy configuration files and entrypoint script
+    - scp -o StrictHostKeyChecking=no -i $WEBKIT_API_PEM_KEY docker-compose.yml .env ./docker-configs/99-api-entrypoint.sh ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP:~/$CONFIG_DIR_NAME/
+  script:
+    - echo "Deploying for '$CI_COMMIT_BRANCH'"
+    # SSH to the server and build the app containers via docker compose
+    - ssh -o StrictHostKeyChecking=no -i $WEBKIT_API_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "
+      docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
+      cd $CONFIG_DIR_NAME &&
+      docker-compose --profile app down &&
+      docker-compose --profile app pull &&
+      docker-compose --profile app build &&
+      docker-compose --profile app up -d
+      "
+
+docker-compose-uat:
+  stage: deploy
+  only:
+    - /^release\/.*/  # Matches any branch starting with release/
+  when: manual
+  variables:
+    CONFIG_DIR_NAME: app-config
+  before_script:
+    - chmod 400 $WEBKIT_API_PEM_KEY
+    - cp secret.uat.env .env
+    # Create the directory where the docker-compose.yml and .env will reside
+    - ssh -o StrictHostKeyChecking=no -i $WEBKIT_API_PEM_KEY ec2-user@$WEBKIT_UAT_SERVER_IP "mkdir -p '$CONFIG_DIR_NAME'/docker-configs"
+    # Copy configuration files and entrypoint script
+    - scp -o StrictHostKeyChecking=no -i $WEBKIT_API_PEM_KEY docker-compose.yml .env ./docker-configs/99-api-entrypoint.sh ec2-user@$WEBKIT_UAT_SERVER_IP:~/$CONFIG_DIR_NAME/
+  script:
+    - echo "Deploying for '$CI_COMMIT_BRANCH'"
+    # SSH to the server and build the app containers via docker compose
+    - ssh -o StrictHostKeyChecking=no -i $WEBKIT_API_PEM_KEY ec2-user@$WEBKIT_UAT_SERVER_IP "
+      docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
+      cd $CONFIG_DIR_NAME &&
+      docker-compose --profile app down &&
+      docker-compose --profile app pull &&
+      docker-compose --profile app build &&
+      docker-compose --profile app up -d
+      "
+
+# Sample Production Deployment
+docker-compose-production:
+  stage: deploy
+  only:
+    - main
+  when: manual
+  variables:
+    CONFIG_DIR_NAME: app-config
+  script:
+    - echo "Mocked Production Deployment complete!"

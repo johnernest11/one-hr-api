@@ -29,6 +29,7 @@ WebAppKit API is a Laravel 10 RESTFul starter kit for SPA and mobile clients. Th
   - App key generation
   - DB migrations
   - DB Seeders
+- To check if everything is working as expected, run: `php artisan test`
 
 ## Tools ready for you
 Runs a [code styler](https://laravel.com/docs/9.x/pint) for consistency and generate [IDE helper PHP Docs](https://github.com/barryvdh/laravel-ide-helper). See the command at `app/Console/Commands/StyleFixer.php`
@@ -56,7 +57,7 @@ Delete expired MFA attempt records in the database (is also scheduled to run eve
 php artisan mfa:prune-expired-attempts
 ```
 \
-Running `composer install`, `composer update`, `git commit` will trigger automated tasks specified in `grumphp.yml`
+Running `git commit` will trigger automated tasks specified in `grumphp.yml`
 - PSR-compliant code formatting
 - Package security checks
 - Unit and feature tests
@@ -81,6 +82,7 @@ Running `composer install`, `composer update`, `git commit` will trigger automat
 
 ## Note
 - The default timezone set for dates and timestamps is `Asia/Manila`. You can change this in `config/app.php`
+- Extend the Database\Seeders\CiCdCompliantSeeder class when making a seeder that will be called in database/seeders/DatabaseSeeder.php
 
 ## Authors
 - Jego Carlo Ramos
