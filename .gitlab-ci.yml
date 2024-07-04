@@ -118,8 +118,8 @@ docker-build-uat:
     - echo "Building Image for '$CI_COMMIT_BRANCH'"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
     - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$LATEST_RC_TAG -t jegramos/webkit-api:$SPECIFIC_RC_TAG -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # We have a specific RC tag
-    - docker push $IMAGE_API_NAME:$LATEST_RC_TAG # We also have a `latest-rc` tag
+    - docker push $IMAGE_API_NAME:$LATEST_RC_TAG
+    - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # If you don't need a specific tag, remove to save cost for repository storage
 
 # Sample Production Image Build Job
 docker-build-production:
@@ -137,7 +137,7 @@ docker-build-production:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    SPECIFIC_TAG_NAME: $CI_COMMIT_SHORT_SHA
+    SPECIFIC_TAG_NAME: main-$CI_COMMIT_SHORT_SHA
   before_script:
     - cp secret.uat.env .env # We'll use the UAT env since we don't really deploy to prod right now
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
@@ -145,8 +145,8 @@ docker-build-production:
     - echo "Building Image for '$CI_COMMIT_BRANCH"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
     - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$SPECIFIC_TAG_NAME -t jegramos/webkit-api:latest -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME
     - docker push $IMAGE_API_NAME:latest
+    - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME # If you don't need a specific tag, remove to save cost for repository storage
 
 migrations-and-seeders-develop:
   image: $IMAGE_BASE_NAME
