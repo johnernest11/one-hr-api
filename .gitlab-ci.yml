@@ -10,8 +10,9 @@ services:
     alias: docker-daemon
 
 variables:
-  IMAGE_BASE_NAME: jegramos/webkit-php:v1.1
-  IMAGE_API_NAME: jegramos/webkit-api
+  BASE_PHP_IMAGE: public.ecr.aws/o9u3y1h2/php8.2-fpm-nginx:latest
+  # BASE_PHP_IMAGE: jegramos/php8.2-fpm-nginx:latest      you can use mine on DockerHub as well
+  WEBKIT_API_IMAGE: $AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/webkit-api
   # Tell docker CLI how to talk to Docker daemon; see
   # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
   DOCKER_HOST: tcp://docker-daemon:2375/
@@ -43,7 +44,7 @@ pull_env_files:
     expire_in: 1 day
 
 phpunit:
-  image: $IMAGE_BASE_NAME
+  image: $BASE_PHP_IMAGE
   stage: test
   only:
     - develop
@@ -62,7 +63,7 @@ phpunit:
     - php artisan test
 
 code-security-checker:
-  image: $IMAGE_BASE_NAME
+  image: $BASE_PHP_IMAGE
   stage: test
   only:
     - develop
@@ -86,11 +87,12 @@ docker-build-develop:
   before_script:
     - cp secret.development.env .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
+    - docker run --rm amazon/aws-cli ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$TAG_NAME
+    - DOCKER_BUILDKIT=1 docker build -t $WEBKIT_API_IMAGE:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $WEBKIT_API_IMAGE:$TAG_NAME
 
 docker-build-uat:
   image: docker:26.1.4-cli
@@ -109,17 +111,15 @@ docker-build-uat:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    SPECIFIC_RC_TAG: $CI_COMMIT_REF_SLUG-candidate
-    LATEST_RC_TAG: latest-rc
+    TAG_NAME: latest-rc
   before_script:
     - cp secret.uat.env .env
-    - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
+    - docker run --rm amazon/aws-cli ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH'"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$LATEST_RC_TAG -t jegramos/webkit-api:$SPECIFIC_RC_TAG -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$LATEST_RC_TAG
-    - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # If you don't need a specific tag, remove to save cost for repository storage
+    - DOCKER_BUILDKIT=1 docker build -t $WEBKIT_API_IMAGE:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $WEBKIT_API_IMAGE:$TAG_NAME
 
 # Sample Production Image Build Job
 docker-build-production:
@@ -137,19 +137,18 @@ docker-build-production:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    SPECIFIC_TAG_NAME: main-$CI_COMMIT_SHORT_SHA
+    TAG_NAME: latest
   before_script:
     - cp secret.uat.env .env # We'll use the UAT env since we don't really deploy to prod right now
-    - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
+    - docker run --rm amazon/aws-cli ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$SPECIFIC_TAG_NAME -t jegramos/webkit-api:latest -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:latest
-    - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME # If you don't need a specific tag, remove to save cost for repository storage
+    - DOCKER_BUILDKIT=1 docker build -t $WEBKIT_API_IMAGE:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $WEBKIT_API_IMAGE:$TAG_NAME
 
 migrations-and-seeders-develop:
-  image: $IMAGE_BASE_NAME
+  image: $BASE_PHP_IMAGE
   stage: prepare-db
   environment:
     name: development
@@ -164,7 +163,7 @@ migrations-and-seeders-develop:
     - php artisan migrate --seed --force
 
 migrations-and-seeders-uat:
-  image: $IMAGE_BASE_NAME
+  image: $BASE_PHP_IMAGE
   stage: prepare-db
   environment:
     name: uat
@@ -180,7 +179,7 @@ migrations-and-seeders-uat:
 
 # Sample Production Migration & Seeding Job
 migrations-and-seeders-production:
-  image: $IMAGE_BASE_NAME
+  image: $BASE_PHP_IMAGE
   stage: prepare-db
   only:
     - main
@@ -207,7 +206,7 @@ docker-compose-develop:
     - echo "Deploying for '$CI_COMMIT_BRANCH'"
     # SSH to the server and build the app containers via docker compose
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_API_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "
-      docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
+      aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin '$AWS_ACCOUNT_ID'.dkr.ecr.ap-southeast-1.amazonaws.com &&
       cd $CONFIG_DIR_NAME &&
       docker-compose --profile app down &&
       docker-compose --profile app pull &&
@@ -235,7 +234,7 @@ docker-compose-uat:
     - echo "Deploying for '$CI_COMMIT_BRANCH'"
     # SSH to the server and build the app containers via docker compose
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_API_PEM_KEY ec2-user@$WEBKIT_UAT_SERVER_IP "
-      docker login -u '$IMAGE_REGISTRY_USER' -p '$IMAGE_REGISTRY_PASSWORD' &&
+      aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin '$AWS_ACCOUNT_ID'.dkr.ecr.ap-southeast-1.amazonaws.com &&
       cd $CONFIG_DIR_NAME &&
       docker-compose --profile app down &&
       docker-compose --profile app pull &&
