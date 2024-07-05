@@ -149,9 +149,9 @@ migrations-and-seeders-develop:
   image: $WEBKIT_API_IMAGE:base
   stage: prepare-db
   environment:
-    name: main
+    name: development
   only:
-    - develop
+    - main
   before_script:
     - cp secret.development.init-db.env .env
     - composer install --no-dev
