@@ -19,8 +19,32 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
 
+#pull_env_files:
+#  image: docker:26.1.4-cli
+#  stage: preparation
+#  only:
+#    - develop
+#    - /^release\/.*/  # Matches any branch starting with release/
+#    - main
+#  before_script:
+#    - echo "Pulling ENV secrets for '$CI_COMMIT_BRANCH'"
+#    - docker run --rm amazon/aws-cli --version
+#  script:
+#    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-env --query SecretString --output text > ./secret.development.env
+#    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-init-db-env --query SecretString --output text > ./secret.development.init-db.env
+#    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-uat-env --query SecretString --output text > ./secret.uat.env
+#    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-uat-init-db-env --query SecretString --output text > ./secret.uat.init-db.env
+#  artifacts:
+#    paths:
+#      - secret.development.env
+#      - secret.development.init-db.env
+#      - secret.uat.env
+#      - secret.uat.init-db.env
+#    expire_in: 1 day
+
 pull_env_files:
-  image: docker:26.1.4-cli
+  # This is an image from Gitlab that has the AWS CLI installed
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
   stage: preparation
   only:
     - develop
@@ -30,10 +54,10 @@ pull_env_files:
     - echo "Pulling ENV secrets for '$CI_COMMIT_BRANCH'"
     - docker run --rm amazon/aws-cli --version
   script:
-    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-env --query SecretString --output text > ./secret.development.env
-    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-init-db-env --query SecretString --output text > ./secret.development.init-db.env
-    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-uat-env --query SecretString --output text > ./secret.uat.env
-    - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-uat-init-db-env --query SecretString --output text > ./secret.uat.init-db.env
+    - aws secretsmanager get-secret-value --secret-id webkit-api-development-env --query SecretString --output text > ./secret.development.env
+    - aws secretsmanager get-secret-value --secret-id webkit-api-development-init-db-env --query SecretString --output text > ./secret.development.init-db.env
+    - aws secretsmanager get-secret-value --secret-id webkit-api-uat-env --query SecretString --output text > ./secret.uat.env
+    - aws secretsmanager get-secret-value --secret-id webkit-api-uat-init-db-env --query SecretString --output text > ./secret.uat.init-db.env
   artifacts:
     paths:
       - secret.development.env
@@ -109,17 +133,15 @@ docker-build-uat:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    SPECIFIC_RC_TAG: $CI_COMMIT_REF_SLUG-candidate
-    LATEST_RC_TAG: latest-rc
+    TAG_NAME: latest-rc
   before_script:
     - cp secret.uat.env .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH'"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$LATEST_RC_TAG -t jegramos/webkit-api:$SPECIFIC_RC_TAG -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:$LATEST_RC_TAG
-    - docker push $IMAGE_API_NAME:$SPECIFIC_RC_TAG # If you don't need a specific tag, remove to save cost for repository storage
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $IMAGE_API_NAME:$TAG_NAME
 
 # Sample Production Image Build Job
 docker-build-production:
@@ -137,16 +159,15 @@ docker-build-production:
     # Use the overlays driver for improved performance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    SPECIFIC_TAG_NAME: main-$CI_COMMIT_SHORT_SHA
+    TAG_NAME: latest
   before_script:
     - cp secret.uat.env .env # We'll use the UAT env since we don't really deploy to prod right now
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
   script:
     - echo "Building Image for '$CI_COMMIT_BRANCH"
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
-    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$SPECIFIC_TAG_NAME -t jegramos/webkit-api:latest -f app.Dockerfile --secret id=_env,source=.env .
-    - docker push $IMAGE_API_NAME:latest
-    - docker push $IMAGE_API_NAME:$SPECIFIC_TAG_NAME # If you don't need a specific tag, remove to save cost for repository storage
+    - DOCKER_BUILDKIT=1 docker build -t jegramos/webkit-api:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
+    - docker push $IMAGE_API_NAME:$TAG_NAME
 
 migrations-and-seeders-develop:
   image: $IMAGE_BASE_NAME
