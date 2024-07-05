@@ -45,7 +45,7 @@ phpunit:
   image: $WEBKIT_API_IMAGE:base
   stage: test
   only:
-    - develop
+    # - develop
     - /^release\/.*/  # Matches any branch starting with release/
     - main
   services:
@@ -64,7 +64,7 @@ code-security-checker:
   image: $WEBKIT_API_IMAGE:base
   stage: test
   only:
-    - develop
+    # - develop
     - /^release\/.*/  # Matches any branch starting with release/
     - main
   before_script:
@@ -78,8 +78,8 @@ docker-build-develop:
   stage: build
   environment:
     name: development
-  only:
-    - develop
+  #only:
+  #  - develop
   variables:
     TAG_NAME: development
   before_script:
@@ -204,7 +204,6 @@ docker-compose-develop:
     - echo "Deploying for '$CI_COMMIT_BRANCH'"
     # SSH to the server and build the app containers via docker compose
     - ssh -o StrictHostKeyChecking=no -i $WEBKIT_API_PEM_KEY ec2-user@$WEBKIT_DEVELOPMENT_SERVER_IP "
-      aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin '$AWS_ACCOUNT_ID'.dkr.ecr.ap-southeast-1.amazonaws.com &&
       cd $CONFIG_DIR_NAME &&
       docker-compose --profile app down &&
       docker-compose --profile app pull &&
