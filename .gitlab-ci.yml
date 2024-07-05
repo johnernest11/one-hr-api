@@ -44,7 +44,8 @@ pull_env_files:
     expire_in: 1 day
 
 phpunit:
-  image: $BASE_PHP_IMAGE
+  #image: $BASE_PHP_IMAGE
+  image: $WEBKIT_API_IMAGE:base
   stage: test
   only:
     - develop
@@ -63,7 +64,8 @@ phpunit:
     - php artisan test
 
 code-security-checker:
-  image: $BASE_PHP_IMAGE
+  #image: $BASE_PHP_IMAGE
+  image: $WEBKIT_API_IMAGE:base
   stage: test
   only:
     - develop
@@ -148,7 +150,8 @@ docker-build-production:
     - docker push $WEBKIT_API_IMAGE:$TAG_NAME
 
 migrations-and-seeders-develop:
-  image: $BASE_PHP_IMAGE
+  # image: $BASE_PHP_IMAGE
+  image: $WEBKIT_API_IMAGE:base
   stage: prepare-db
   environment:
     name: development
@@ -163,7 +166,8 @@ migrations-and-seeders-develop:
     - php artisan migrate --seed --force
 
 migrations-and-seeders-uat:
-  image: $BASE_PHP_IMAGE
+  # image: $BASE_PHP_IMAGE
+  image: $WEBKIT_API_IMAGE:base
   stage: prepare-db
   environment:
     name: uat
@@ -179,7 +183,8 @@ migrations-and-seeders-uat:
 
 # Sample Production Migration & Seeding Job
 migrations-and-seeders-production:
-  image: $BASE_PHP_IMAGE
+  # image: $BASE_PHP_IMAGE
+  image: $WEBKIT_API_IMAGE:base
   stage: prepare-db
   only:
     - main
