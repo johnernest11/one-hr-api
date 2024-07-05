@@ -10,6 +10,7 @@ services:
     alias: docker-daemon
 
 variables:
+  BASE_PHP_IMAGE: public.ecr.aws/o9u3y1h2/php8.2-fpm-nginx:latest
   WEBKIT_API_IMAGE: $AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/webkit-api
   # Tell docker CLI how to talk to Docker daemon; see
   # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-executor
@@ -42,7 +43,7 @@ pull_env_files:
     expire_in: 1 day
 
 phpunit:
-  image: $WEBKIT_API_IMAGE
+  image: $BASE_PHP_IMAGE
   stage: test
   only:
     - develop
@@ -61,7 +62,7 @@ phpunit:
     - php artisan test
 
 code-security-checker:
-  image: $WEBKIT_API_IMAGE:base
+  image: $BASE_PHP_IMAGE
   stage: test
   only:
     - develop
@@ -146,7 +147,7 @@ docker-build-production:
     - docker push $WEBKIT_API_IMAGE:$TAG_NAME
 
 migrations-and-seeders-develop:
-  image: $WEBKIT_API_IMAGE:base
+  image: $BASE_PHP_IMAGE
   stage: prepare-db
   environment:
     name: development
@@ -161,7 +162,7 @@ migrations-and-seeders-develop:
     - php artisan migrate --seed --force
 
 migrations-and-seeders-uat:
-  image: $WEBKIT_API_IMAGE:base
+  image: $BASE_PHP_IMAGE
   stage: prepare-db
   environment:
     name: uat
@@ -177,7 +178,7 @@ migrations-and-seeders-uat:
 
 # Sample Production Migration & Seeding Job
 migrations-and-seeders-production:
-  image: $WEBKIT_API_IMAGE:base
+  image: $BASE_PHP_IMAGE
   stage: prepare-db
   only:
     - main
