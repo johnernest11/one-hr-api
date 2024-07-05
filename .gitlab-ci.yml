@@ -79,7 +79,7 @@ docker-build-develop:
   environment:
     name: development
   only:
-    - develop
+    - main
   variables:
     TAG_NAME: development
   before_script:
