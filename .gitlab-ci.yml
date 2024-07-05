@@ -45,7 +45,7 @@ phpunit:
   image: $WEBKIT_API_IMAGE:base
   stage: test
   only:
-    # - develop
+    - develop
     - /^release\/.*/  # Matches any branch starting with release/
     - main
   services:
@@ -64,7 +64,7 @@ code-security-checker:
   image: $WEBKIT_API_IMAGE:base
   stage: test
   only:
-    # - develop
+    - develop
     - /^release\/.*/  # Matches any branch starting with release/
     - main
   before_script:
@@ -79,7 +79,7 @@ docker-build-develop:
   environment:
     name: development
   only:
-    - main
+    - develop
   variables:
     TAG_NAME: development
   before_script:
@@ -151,7 +151,7 @@ migrations-and-seeders-develop:
   environment:
     name: development
   only:
-    - main
+    - develop
   before_script:
     - cp secret.development.init-db.env .env
     - composer install --no-dev
