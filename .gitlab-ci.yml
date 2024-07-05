@@ -78,8 +78,8 @@ docker-build-develop:
   stage: build
   environment:
     name: development
-  #only:
-  #  - develop
+  only:
+    - develop
   variables:
     TAG_NAME: development
   before_script:
