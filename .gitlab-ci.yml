@@ -27,7 +27,7 @@ pull_env_files:
     - main
   before_script:
     - echo "Pulling ENV secrets for '$CI_COMMIT_BRANCH'"
-    - apk add --update curl && rm -rf /var/cache/apk/* # Add CURL so we can post to Slack later
+    - apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image
     - docker run --rm amazon/aws-cli --version
   script:
     - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-env --query SecretString --output text > ./secret.development.env
@@ -36,8 +36,8 @@ pull_env_files:
     - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-uat-init-db-env --query SecretString --output text > ./secret.uat.init-db.env
   # Send a Slack notification regarding the job status
   after_script:
-    - >
-      curl -X POST -H 'Content-type: application/json' --data "$SLACK_WEBHOOK_DATA" $SLACK_WEBHOOK_URL;
+    - > 
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
   artifacts:
     paths:
       - secret.development.env
@@ -67,7 +67,7 @@ phpunit:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "$SLACK_WEBHOOK_DATA" $SLACK_WEBHOOK_URL;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 code-security-checker:
   image: $WEBKIT_API_IMAGE:base
@@ -84,7 +84,7 @@ code-security-checker:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "$SLACK_WEBHOOK_DATA" $SLACK_WEBHOOK_URL;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 docker-build-develop:
   image: docker:26.1.4-cli
@@ -94,6 +94,7 @@ docker-build-develop:
   variables:
     TAG_NAME: development
   before_script:
+    - apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image
     - cp secret.development.env .env
     - docker login -u $IMAGE_REGISTRY_USER -p $IMAGE_REGISTRY_PASSWORD
     - docker run --rm amazon/aws-cli ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com
@@ -102,6 +103,10 @@ docker-build-develop:
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
     - DOCKER_BUILDKIT=1 docker build -t $WEBKIT_API_IMAGE:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $WEBKIT_API_IMAGE:$TAG_NAME
+  # Send a Slack notification regarding the job status
+  after_script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 docker-build-uat:
   image: docker:26.1.4-cli
@@ -120,6 +125,7 @@ docker-build-uat:
     DOCKER_TLS_CERTDIR: ""
     TAG_NAME: latest-rc
   before_script:
+    - apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image
     - cp secret.uat.env .env
     - docker run --rm amazon/aws-cli ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com
   script:
@@ -127,6 +133,10 @@ docker-build-uat:
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
     - DOCKER_BUILDKIT=1 docker build -t $WEBKIT_API_IMAGE:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $WEBKIT_API_IMAGE:$TAG_NAME
+  # Send a Slack notification regarding the job status
+  after_script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 # Sample Production Image Build Job
 docker-build-production:
@@ -146,6 +156,7 @@ docker-build-production:
     DOCKER_TLS_CERTDIR: ""
     TAG_NAME: latest
   before_script:
+    - apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image
     - cp secret.uat.env .env # We'll use the UAT env since we don't really deploy to prod right now
     - docker run --rm amazon/aws-cli ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com
   script:
@@ -153,6 +164,10 @@ docker-build-production:
     # Build the image using Docker BuildKit and securely inject secrets from the .env file
     - DOCKER_BUILDKIT=1 docker build -t $WEBKIT_API_IMAGE:$TAG_NAME -f app.Dockerfile --secret id=_env,source=.env .
     - docker push $WEBKIT_API_IMAGE:$TAG_NAME
+  # Send a Slack notification regarding the job status
+  after_script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 migrations-and-seeders-develop:
   image: $WEBKIT_API_IMAGE:base
@@ -166,6 +181,10 @@ migrations-and-seeders-develop:
     - echo "Preparing migrations and seeders for '$CI_COMMIT_BRANCH'"
     # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
     - php artisan migrate --seed --force
+  # Send a Slack notification regarding the job status
+  after_script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 migrations-and-seeders-uat:
   image: $WEBKIT_API_IMAGE:base
@@ -179,6 +198,10 @@ migrations-and-seeders-uat:
     - echo "Preparing migrations and seeders for '$CI_COMMIT_BRANCH'"
     # Migration and seeders are Idempotent (meaning we can run them multiple times without side-effects)
     - php artisan migrate --seed --force
+  # Send a Slack notification regarding the job status
+  after_script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 # Sample Production Migration & Seeding Job
 migrations-and-seeders-production:
@@ -189,6 +212,10 @@ migrations-and-seeders-production:
   script:
     - echo "Preparing migrations and seeders for '$CI_COMMIT_BRANCH'"
     - echo "Mock deployment for production"
+  # Send a Slack notification regarding the job status
+  after_script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 docker-compose-develop:
   stage: deploy
@@ -216,6 +243,10 @@ docker-compose-develop:
       docker-compose --profile app build &&
       docker-compose --profile app up -d
       "
+    # Send a Slack notification regarding the job status
+  after_script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 docker-compose-uat:
   stage: deploy
@@ -244,6 +275,10 @@ docker-compose-uat:
       docker-compose --profile app build &&
       docker-compose --profile app up -d
       "
+  # Send a Slack notification regarding the job status
+  after_script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 # Sample Production Deployment
 docker-compose-production:
@@ -255,3 +290,7 @@ docker-compose-production:
     CONFIG_DIR_NAME: app-config
   script:
     - echo "Mocked Production Deployment complete!"
+  # Send a Slack notification regarding the job status
+  after_script:
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
