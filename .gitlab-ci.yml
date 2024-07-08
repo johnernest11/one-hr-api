@@ -36,7 +36,7 @@ pull_env_files:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image &&
+      apk add --update curl && rm -rf /var/cache/apk/* &&
       curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
   artifacts:
     paths:
@@ -105,7 +105,7 @@ docker-build-develop:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image &&
+      apk add --update curl && rm -rf /var/cache/apk/* &&
       curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 docker-build-uat:
@@ -135,7 +135,7 @@ docker-build-uat:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image &&
+      apk add --update curl && rm -rf /var/cache/apk/* &&
       curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 # Sample Production Image Build Job
@@ -166,7 +166,7 @@ docker-build-production:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image &&
+      apk add --update curl && rm -rf /var/cache/apk/* &&
       curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 migrations-and-seeders-develop:
