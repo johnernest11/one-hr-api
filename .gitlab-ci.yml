@@ -37,7 +37,7 @@ pull_env_files:
   after_script:
     - >
       apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image &&
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
   artifacts:
     paths:
       - secret.development.env
@@ -67,7 +67,7 @@ phpunit:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 code-security-checker:
   image: $WEBKIT_API_IMAGE:base
@@ -84,7 +84,7 @@ code-security-checker:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 docker-build-develop:
   image: docker:26.1.4-cli
@@ -106,7 +106,7 @@ docker-build-develop:
   after_script:
     - >
       apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image &&
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 docker-build-uat:
   image: docker:26.1.4-cli
@@ -136,7 +136,7 @@ docker-build-uat:
   after_script:
     - >
       apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image &&
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 # Sample Production Image Build Job
 docker-build-production:
@@ -167,7 +167,7 @@ docker-build-production:
   after_script:
     - >
       apk add --update curl && rm -rf /var/cache/apk/* # Add CURL in the image &&
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 migrations-and-seeders-develop:
   image: $WEBKIT_API_IMAGE:base
@@ -184,7 +184,7 @@ migrations-and-seeders-develop:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 migrations-and-seeders-uat:
   image: $WEBKIT_API_IMAGE:base
@@ -201,7 +201,7 @@ migrations-and-seeders-uat:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 # Sample Production Migration & Seeding Job
 migrations-and-seeders-production:
@@ -215,7 +215,7 @@ migrations-and-seeders-production:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 docker-compose-develop:
   stage: deploy
@@ -246,7 +246,7 @@ docker-compose-develop:
     # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 docker-compose-uat:
   stage: deploy
@@ -278,7 +278,7 @@ docker-compose-uat:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
 
 # Sample Production Deployment
 docker-compose-production:
@@ -293,4 +293,4 @@ docker-compose-production:
   # Send a Slack notification regarding the job status
   after_script:
     - >
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Executor*: Gitlab CI/CD\n*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
