@@ -27,6 +27,7 @@ pull_env_files:
     - main
   before_script:
     - echo "Pulling ENV secrets for '$CI_COMMIT_BRANCH'"
+    - apk add --update curl && rm -rf /var/cache/apk/* # Add CURL so we can post to Slack later
     - docker run --rm amazon/aws-cli --version
   script:
     - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-development-env --query SecretString --output text > ./secret.development.env
