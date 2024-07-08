@@ -76,8 +76,6 @@ code-security-checker:
 docker-build-develop:
   image: docker:26.1.4-cli
   stage: build
-  environment:
-    name: development
   only:
     - develop
   variables:
@@ -95,8 +93,6 @@ docker-build-develop:
 docker-build-uat:
   image: docker:26.1.4-cli
   stage: build
-  environment:
-    name: uat
   only:
     - /^release\/.*/  # Matches any branch starting with release/
   services:
@@ -148,8 +144,6 @@ docker-build-production:
 migrations-and-seeders-develop:
   image: $WEBKIT_API_IMAGE:base
   stage: prepare-db
-  environment:
-    name: development
   only:
     - develop
   before_script:
@@ -163,8 +157,6 @@ migrations-and-seeders-develop:
 migrations-and-seeders-uat:
   image: $WEBKIT_API_IMAGE:base
   stage: prepare-db
-  environment:
-    name: uat
   only:
     - /^release\/.*/  # Matches any branch starting with release/
   before_script:
