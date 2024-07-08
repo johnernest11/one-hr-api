@@ -36,8 +36,8 @@ pull_env_files:
     - docker run --rm amazon/aws-cli secretsmanager get-secret-value --secret-id webkit-api-uat-init-db-env --query SecretString --output text > ./secret.uat.init-db.env
   # Send a Slack notification regarding the job status
   after_script:
-    - > 
-      curl -X POST -H 'Content-type: application/json' --data "{\"text\": \"*Project:* $CI_PROJECT_NAME\n*Job:* $CI_JOB_NAME\n*Stage:* $CI_JOB_STAGE\n*Status:* $CI_JOB_STATUS_UPPER\n\",\"mrkdwn\": true}" $SLACK_WEBHOOK;
+    - >
+      curl -X POST -H 'Content-type: application/json' --data "$SLACK_WEBHOOK_DATA" $SLACK_WEBHOOK_URL;
   artifacts:
     paths:
       - secret.development.env
