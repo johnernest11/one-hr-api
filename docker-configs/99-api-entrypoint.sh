@@ -5,6 +5,9 @@ commands=(
   "view:clear"
   "events:clear"
   "config:cache"
+  "route:cache",
+  "view:cache",
+  "events:cache"
 )
 
 for command in "${commands[@]}"; do
