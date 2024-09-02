@@ -5,8 +5,8 @@ commands=(
   "view:clear"
   "event:clear"
   "config:cache"
-  "route:cache",
-  "view:cache",
+  "route:cache"
+  "view:cache"
   "event:cache"
 )
 
