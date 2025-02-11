@@ -15,6 +15,7 @@
         "laravel/slack-notification-channel": "^2.4",
         "laravel/tinker": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.0",
+        "phpoffice/phpword": "dev-master",
         "pragmarx/google2fa": "^8.0",
         "predis/predis": "^2.0",
         "propaganistas/laravel-phone": "^5.0.3",

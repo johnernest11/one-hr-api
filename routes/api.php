@@ -12,6 +12,9 @@ Route::middleware(['throttle:api-users'])->group(function () {
     /** V1 Auth Routes */
     Route::prefix('/v1/profile')->group(base_path('routes/api/profile.routes.php'));
 
+    /** V1 AR Routes */
+    Route::prefix('/v1/accomplishment-report')->group(base_path('routes/api/accomplishment-report.routes.php'));
+
     /** V1 Availability Routes */
     Route::prefix('/v1/availability')->group(base_path('routes/api/availability.routes.php'));
 

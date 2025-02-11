@@ -110,6 +110,49 @@ class UserProfile extends Model
         return $this->hasOne(Address::class);
     }
 
+    public function accomplishmentReport(): HasMany
+    {
+        return $this->hasMany(AccomplishmentReport::class);
+    }
+
+    /**
+     * @Appended
+     * Create middle_initial attribute
+     */
+    protected function middleInitial(): Attribute
+    {
+        return Attribute::get(function () {
+            $middleName = $this->middle_name;
+            $middleInitial = ! empty($middleName) ? strtoupper(substr(trim($middleName), 0, 1)).'.' : '';
+
+            return trim($middleInitial);
+        });
+    }
+
+    /**
+     * @Appended
+     * Create full_name_initial attribute
+     */
+    protected function fullNameInitial(): Attribute
+    {
+        return Attribute::get(function () {
+            $firstName = $this->first_name;
+            $lastName = $this->last_name;
+            $middleInitial = $this->middle_initial;
+            $extName = $this->ext_name;
+
+            if ($middleInitial) {
+                $fullName = "$firstName $middleInitial $lastName $extName";
+
+                return trim($fullName);
+            }
+
+            $fullName = "$firstName $lastName $extName";
+
+            return trim($fullName);
+        });
+    }
+
     /**
      * @Appended
      * Create full_name attribute
