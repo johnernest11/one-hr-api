@@ -6,7 +6,9 @@ namespace App\Providers;
 use App\Auth\ApiKeyGuard;
 use App\Auth\ApiKeyProvider;
 use App\Auth\MultiTokenGuard;
+use App\Models\AccomplishmentReport;
 use App\Models\User;
+use App\Policies\AccomplishmentReportPolicy;
 use App\Policies\UserPolicy;
 use App\Services\ApiKeyManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
@@ -28,6 +30,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         User::class => UserPolicy::class,
+        AccomplishmentReport::class => AccomplishmentReportPolicy::class,
     ];
 
     public function register(): void

@@ -50,6 +50,7 @@ class AccomplishmentReportController extends ApiController
      */
     public function show(AccomplishmentReport $accomplishmentReport)
     {
+        $this->authorize('view', $accomplishmentReport);
         $report = $this->accomplishmentReportManager->read($accomplishmentReport);
 
         return $this->success(['data' => $report], Response::HTTP_CREATED);
@@ -60,6 +61,7 @@ class AccomplishmentReportController extends ApiController
      */
     public function update(AccomplishmentReportRequest $request, AccomplishmentReport $accomplishmentReport)
     {
+        $this->authorize('update', $accomplishmentReport);
         $updatedReport = $this->accomplishmentReportManager->update($accomplishmentReport, $request->validated());
 
         return $this->success(['data' => $updatedReport], Response::HTTP_OK);

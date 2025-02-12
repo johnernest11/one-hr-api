@@ -8,14 +8,11 @@ use App\Models\AccomplishmentReport;
 use App\Models\ARRows;
 use App\Models\User;
 use App\Traits\Services\CanBuildPagination;
-use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpWord\TemplateProcessor;
-
-use function Laravel\Prompts\error;
 
 class AccomplishmentReportManager
 {
@@ -35,8 +32,6 @@ class AccomplishmentReportManager
 
     /**
      * {@inheritDoc}
-     *
-     *  @todo LOGIC CAN BE BETTER
      */
     public function create(User $user, array $arInfo): AccomplishmentReport
     {
@@ -48,13 +43,9 @@ class AccomplishmentReportManager
             // initialize values then create record
             $ar = AccomplishmentReport::create(Arr::except($arInfo, $exemptedAttributes));
 
-            // @todo Improved check:
+            // rows has to be array and not empty
             if (isset($arInfo['rows']) && is_array($arInfo['rows']) && ! empty($arInfo['rows'])) {
                 $ar->rows()->createMany($arInfo['rows']);
-            } elseif (isset($arInfo['rows']) && ! is_array($arInfo['rows'])) {
-                // Handle the error, e.g., log it or throw an exception
-                dd('Rows data is not an array.  Data received: '.print_r($arInfo['rows'], true));
-                throw new \Exception('Invalid rows data. Rows must be an array.'); // Or a custom exception
             }
 
             return $ar;
