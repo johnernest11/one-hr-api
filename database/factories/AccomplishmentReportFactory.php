@@ -2,12 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Enums\ARStatus;
 use App\Models\AccomplishmentReport;
 use App\Models\ARRows;
+use App\Models\User;
 use App\Models\UserProfile;
 use Carbon\Carbon;
-use ConversionHelper;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -34,8 +33,6 @@ class AccomplishmentReportFactory extends Factory
         return [
             'period' => "$periodDates $monthStr $year",
             'supervisor_notes' => fake()->sentence(),
-            //'status'=>fake()->randomElement(ConversionHelper::enumToArray(ARStatus::class)),
-            //'user_profile_id' => UserProfile::factory(),
         ];
     }
 
@@ -62,10 +59,10 @@ class AccomplishmentReportFactory extends Factory
     /**
      * @State
      */
-    public function hasProfile(): Factory
+    public function hasProfile(?User $user = null): Factory
     {
-        return $this->state(function () {
-            return ['user_profile_id' => UserProfile::factory()];
+        return $this->state(function () use ($user) {
+            return ['user_profile_id' => isset($user) ? $user->id : UserProfile::factory()];
         });
     }
 

@@ -5,17 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AccomplishmentReportRequest;
 use App\Models\AccomplishmentReport;
 use App\Models\User;
-use App\Services\AccomplishmentReport\AccomplishmentReportManager;
+use App\Services\AccomplishmentReport\AccomplishmentReportService;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class AccomplishmentReportController extends ApiController
 {
-    private AccomplishmentReportManager $accomplishmentReportManager;
+    private AccomplishmentReportService $accomplishmentReportService;
 
-    public function __construct(AccomplishmentReportManager $arManager)
+    public function __construct(AccomplishmentReportService $aRService)
     {
-        $this->accomplishmentReportManager = $arManager;
+        $this->accomplishmentReportService = $aRService;
     }
 
     /**
@@ -23,7 +23,7 @@ class AccomplishmentReportController extends ApiController
      */
     public function index()
     {
-        $reports = $this->accomplishmentReportManager->all();
+        $reports = $this->accomplishmentReportService->all();
         $formatted = PaginationHelper::formatPagination($reports);
 
         return $this->success($formatted, Response::HTTP_OK);
@@ -37,9 +37,7 @@ class AccomplishmentReportController extends ApiController
     {
         // Create Accomplishment Report
         $user = User::find(auth()->user()->id);
-        $report = $this->accomplishmentReportManager->create($user, $request->validated());
-        // @todo create event
-        //PersonnelMembershipCreated::dispatch($membership);
+        $report = $this->accomplishmentReportService->create($user, $request->validated());
 
         return $this->success(['data' => $report], Response::HTTP_CREATED);
 
@@ -51,9 +49,9 @@ class AccomplishmentReportController extends ApiController
     public function show(AccomplishmentReport $accomplishmentReport)
     {
         $this->authorize('view', $accomplishmentReport);
-        $report = $this->accomplishmentReportManager->read($accomplishmentReport);
+        $report = $this->accomplishmentReportService->read($accomplishmentReport);
 
-        return $this->success(['data' => $report], Response::HTTP_CREATED);
+        return $this->success(['data' => $report], Response::HTTP_OK);
     }
 
     /**
@@ -62,7 +60,7 @@ class AccomplishmentReportController extends ApiController
     public function update(AccomplishmentReportRequest $request, AccomplishmentReport $accomplishmentReport)
     {
         $this->authorize('update', $accomplishmentReport);
-        $updatedReport = $this->accomplishmentReportManager->update($accomplishmentReport, $request->validated());
+        $updatedReport = $this->accomplishmentReportService->update($accomplishmentReport, $request->validated());
 
         return $this->success(['data' => $updatedReport], Response::HTTP_OK);
 
@@ -78,8 +76,11 @@ class AccomplishmentReportController extends ApiController
 
     public function generateAccomplishmentReport(AccomplishmentReport $accomplishmentReport)
     {
-        $response = $this->accomplishmentReportManager->generate($accomplishmentReport);
+        $response = $this->accomplishmentReportService->generate($accomplishmentReport);
 
-        return $response; //@todo update response
+        return response($response['fileContent'], 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => 'attachment; filename="'.$response['fileName'].'"',
+        ]);
     }
 }

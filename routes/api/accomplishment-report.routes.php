@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\AccomplishmentReportController;
 
-Route::middleware(['auth:token', 'verified.api'])->controller(AccomplishmentReportController::class)->name('accomplishment-report.')->group(function () {
+Route::controller(AccomplishmentReportController::class)->name('accomplishment-report.')->group(function () {
     /** @uses AccomplishmentReportController::generateAccomplishmentReport */
-    Route::get('generate/{accomplishmentReport}', 'generateAccomplishmentReport')->name('generateAR');
+    Route::get('{accomplishmentReport}/generate', 'generateAccomplishmentReport')->name('generateAR');
 
     /** @uses AccomplishmentReportController::index */
     Route::get('', 'index')->name('index');
@@ -12,9 +12,9 @@ Route::middleware(['auth:token', 'verified.api'])->controller(AccomplishmentRepo
     /** @uses AccomplishmentReportController::show */
     Route::get('{accomplishmentReport}', 'show')->name('show');
 
-    /** @uses AccomplishmentReportController::update */
-    Route::patch('{accomplishmentReport}', 'update')->name('update');
-
     /** @uses AccomplishmentReportController::store */
     Route::post('', 'store')->name('store');
+
+    /** @uses AccomplishmentReportController::update */
+    Route::patch('{accomplishmentReport}', 'update')->name('update');
 });

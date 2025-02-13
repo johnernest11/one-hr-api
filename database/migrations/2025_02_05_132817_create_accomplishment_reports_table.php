@@ -14,8 +14,8 @@ return new class extends Migration
     {
         Schema::create('accomplishment_reports', function (Blueprint $table) {
             $table->id();
-            $table->string('period')->nullable(); //temp
-            $table->longText('supervisor_notes')->nullable(); //temp
+            $table->string('period')->nullable();
+            $table->longText('supervisor_notes')->nullable();
             $table->enum('status', ConversionHelper::enumToArray(ARStatus::class))->index();
 
             $table->foreignId('user_profile_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();

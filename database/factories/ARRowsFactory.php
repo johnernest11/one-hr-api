@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Enums\WeekNumber;
-use App\Models\AccomplishmentReport;
 use Carbon\Carbon;
 use ConversionHelper;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -27,7 +26,6 @@ class ARRowsFactory extends Factory
         $monthStr = Carbon::createFromFormat('m', $month)->format('F');
 
         return [
-            //'accomplishment_report_id' => AccomplishmentReport::factory(),
             'week_num' => fake()->randomElement(ConversionHelper::enumToArray(WeekNumber::class)),
             'dates_in_week' => $this->generateDatesInWeek($month, $monthStr, $year),
             'specific_activity' => fake()->paragraph(6),

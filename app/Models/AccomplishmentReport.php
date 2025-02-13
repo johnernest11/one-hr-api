@@ -24,8 +24,6 @@ class AccomplishmentReport extends Model
         'supervisor_notes',
         'status',
         'user_profile_id',
-        //'position_id', hidden for now.
-        //'odsu_id', hidden for now.
     ];
 
     /**
@@ -35,7 +33,7 @@ class AccomplishmentReport extends Model
     public function scopeFiltered(Builder $builder): Builder
     {
         return app(Pipeline::class)
-            ->send($builder->with('rows'))
+            ->send($builder->where('user_profile_id', '=', auth()->user()->id)->with('rows'))
             ->through([
                 StatusFilter::class,
             ])

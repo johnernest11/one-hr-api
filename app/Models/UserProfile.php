@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -131,9 +132,9 @@ class UserProfile extends Model
 
     /**
      * @Appended
-     * Create full_name_initial attribute
+     * Create full_name_w_middle_initial attribute
      */
-    protected function fullNameInitial(): Attribute
+    protected function fullNameWMiddleInitial(): Attribute
     {
         return Attribute::get(function () {
             $firstName = $this->first_name;
@@ -150,6 +151,32 @@ class UserProfile extends Model
             $fullName = "$firstName $lastName $extName";
 
             return trim($fullName);
+        });
+    }
+
+    public function getInitials($name)
+    {
+        return $name ? strtoupper(substr($name, 0, 1)) : ''; // Handle nulls
+    }
+
+    /**
+     * @Appended
+     * Create initials attribute
+     */
+    protected function initials(): Attribute
+    {
+        return Attribute::get(function () {
+            //function getInitials($name){
+            //return strtoupper(substr($name,0,1));
+            //}
+
+            $firstNameInitial = $this->getInitials($this->first_name);
+            $lastNameInitial = $this->getInitials($this->last_name);
+            $middleNameInitial = $this->getInitials($this->middle_name);
+
+            $initials = "$firstNameInitial$middleNameInitial$lastNameInitial";
+
+            return trim($initials);
         });
     }
 

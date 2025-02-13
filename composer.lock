@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dc02d111c8dfaf76189b8a0ff55388ff",
+    "content-hash": "d359716b31f4d97dc1e08239a5b16706",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -3259,45 +3259,45 @@
         },
         {
             "name": "phpoffice/phpword",
-            "version": "dev-master",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPWord.git",
-                "reference": "1be7a807f2a89c48ddac833e2de01dc29d6c0afb"
+                "reference": "8392134ce4b5dba65130ba956231a1602b848b7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/1be7a807f2a89c48ddac833e2de01dc29d6c0afb",
-                "reference": "1be7a807f2a89c48ddac833e2de01dc29d6c0afb",
+                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/8392134ce4b5dba65130ba956231a1602b848b7f",
+                "reference": "8392134ce4b5dba65130ba956231a1602b848b7f",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
-                "ext-gd": "*",
                 "ext-json": "*",
                 "ext-xml": "*",
-                "ext-zip": "*",
                 "php": "^7.1|^8.0",
                 "phpoffice/math": "^0.2"
             },
             "require-dev": {
-                "dompdf/dompdf": "^2.0 || ^3.0",
+                "dompdf/dompdf": "^2.0",
+                "ext-gd": "*",
                 "ext-libxml": "*",
+                "ext-zip": "*",
                 "friendsofphp/php-cs-fixer": "^3.3",
-                "mpdf/mpdf": "^7.0 || ^8.0",
+                "mpdf/mpdf": "^8.1",
                 "phpmd/phpmd": "^2.13",
-                "phpstan/phpstan": "^0.12.88 || ^1.0.0",
-                "phpstan/phpstan-phpunit": "^1.0 || ^2.0",
+                "phpstan/phpstan-phpunit": "@stable",
                 "phpunit/phpunit": ">=7.0",
                 "symfony/process": "^4.4 || ^5.0",
                 "tecnickcom/tcpdf": "^6.5"
             },
             "suggest": {
                 "dompdf/dompdf": "Allows writing PDF",
+                "ext-gd2": "Allows adding images",
                 "ext-xmlwriter": "Allows writing OOXML and ODF",
-                "ext-xsl": "Allows applying XSL style sheet to headers, to main document part, and to footers of an OOXML template"
+                "ext-xsl": "Allows applying XSL style sheet to headers, to main document part, and to footers of an OOXML template",
+                "ext-zip": "Allows writing OOXML and ODF"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -3306,7 +3306,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL-3.0-only"
+                "LGPL-3.0"
             ],
             "authors": [
                 {
@@ -3362,9 +3362,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PHPWord/issues",
-                "source": "https://github.com/PHPOffice/PHPWord/tree/master"
+                "source": "https://github.com/PHPOffice/PHPWord/tree/1.3.0"
             },
-            "time": "2025-02-03T08:13:23+00:00"
+            "time": "2024-08-30T18:03:42+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -11885,9 +11885,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phpoffice/phpword": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

@@ -16,9 +16,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('accomplishment_report_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->enum('week_num', ConversionHelper::enumToArray(WeekNumber::class))->index();
-            $table->string('dates_in_week')->nullable(); //temp
-            $table->longText('specific_activity')->nullable(); //temp
-            $table->longText('highlights')->nullable(); //temp
+            $table->string('dates_in_week')->nullable();
+            $table->longText('specific_activity')->nullable();
+            $table->longText('highlights')->nullable();
+
+            $table->fullText(['highlights']);
+            $table->fullText(['specific_activity']);
 
             $table->timestamps();
         });
