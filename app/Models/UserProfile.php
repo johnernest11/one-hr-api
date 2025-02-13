@@ -166,9 +166,6 @@ class UserProfile extends Model
     protected function initials(): Attribute
     {
         return Attribute::get(function () {
-            //function getInitials($name){
-            //return strtoupper(substr($name,0,1));
-            //}
 
             $firstNameInitial = $this->getInitials($this->first_name);
             $lastNameInitial = $this->getInitials($this->last_name);

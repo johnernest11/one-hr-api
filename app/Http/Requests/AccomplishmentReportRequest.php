@@ -42,7 +42,7 @@ class AccomplishmentReportRequest extends FormRequest
     public function getStoreUpdateAccomplishmentReportRule(): array
     {
         return [
-            'period' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'period' => ['required', 'string', new DbVarcharMaxLength()],
             'supervisor_notes' => ['nullable', 'string', new DbVarcharMaxLength()],
             'status' => [new Enum(ARStatus::class)],
             'rows' => ['required', 'array'], // a row has to be present to be able to save

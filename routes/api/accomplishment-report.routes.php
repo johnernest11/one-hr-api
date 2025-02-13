@@ -16,5 +16,5 @@ Route::middleware(['auth:token', 'verified.api'])->controller(AccomplishmentRepo
     Route::post('', 'store')->name('store');
 
     /** @uses AccomplishmentReportController::update */
-    Route::patch('{accomplishmentReport}', 'update')->name('update');
+    Route::put('{accomplishmentReport}', 'update')->name('update');
 });

@@ -165,6 +165,7 @@ class AccomplishmentReportFeatureTest extends TestCase
         $firstRow = ARRows::where('accomplishment_report_id', '=', $firstAR->id)->first();
 
         $updatedData = [
+            'period' => '1-15 January 2025',
             'rows' => [
                 [
                     'id' => $firstRow->id,
@@ -174,7 +175,7 @@ class AccomplishmentReportFeatureTest extends TestCase
             'status' => 'done',
         ];
 
-        $response = $this->withToken($this->authToken)->patchJson("$this->baseUri/$firstAR->id", $updatedData);
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstAR->id", $updatedData);
         $response->assertStatus(403); // should result in unauthorize
     }
 
@@ -185,6 +186,7 @@ class AccomplishmentReportFeatureTest extends TestCase
         $firstRow = ARRows::where('accomplishment_report_id', '=', $firstAR->id)->first();
 
         $updatedData = [
+            'period' => '1-15 January 2025',
             'rows' => [
                 [
                     'id' => $firstRow->id,
@@ -194,7 +196,7 @@ class AccomplishmentReportFeatureTest extends TestCase
             'status' => 'done',
         ]; // update status to done
 
-        $response = $this->withToken($this->authToken)->patchJson("$this->baseUri/$firstAR->id", $updatedData);
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstAR->id", $updatedData);
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson()['data'];
