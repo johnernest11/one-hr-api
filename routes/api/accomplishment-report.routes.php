@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AccomplishmentReportController;
 
-Route::controller(AccomplishmentReportController::class)->name('accomplishment-report.')->group(function () {
+Route::middleware(['auth:token', 'verified.api'])->controller(AccomplishmentReportController::class)->name('accomplishment-report.')->group(function () {
     /** @uses AccomplishmentReportController::generateAccomplishmentReport */
     Route::get('{accomplishmentReport}/generate', 'generateAccomplishmentReport')->name('generateAR');
 
