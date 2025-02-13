@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -108,6 +109,72 @@ class UserProfile extends Model
     public function address(): HasOne
     {
         return $this->hasOne(Address::class);
+    }
+
+    public function accomplishmentReport(): HasMany
+    {
+        return $this->hasMany(AccomplishmentReport::class);
+    }
+
+    /**
+     * @Appended
+     * Create middle_initial attribute
+     */
+    protected function middleInitial(): Attribute
+    {
+        return Attribute::get(function () {
+            $middleName = $this->middle_name;
+            $middleInitial = ! empty($middleName) ? strtoupper(substr(trim($middleName), 0, 1)).'.' : '';
+
+            return trim($middleInitial);
+        });
+    }
+
+    /**
+     * @Appended
+     * Create full_name_w_middle_initial attribute
+     */
+    protected function fullNameWMiddleInitial(): Attribute
+    {
+        return Attribute::get(function () {
+            $firstName = $this->first_name;
+            $lastName = $this->last_name;
+            $middleInitial = $this->middle_initial;
+            $extName = $this->ext_name;
+
+            if ($middleInitial) {
+                $fullName = "$firstName $middleInitial $lastName $extName";
+
+                return trim($fullName);
+            }
+
+            $fullName = "$firstName $lastName $extName";
+
+            return trim($fullName);
+        });
+    }
+
+    public function getInitials($name)
+    {
+        return $name ? strtoupper(substr($name, 0, 1)) : ''; // Handle nulls
+    }
+
+    /**
+     * @Appended
+     * Create initials attribute
+     */
+    protected function initials(): Attribute
+    {
+        return Attribute::get(function () {
+
+            $firstNameInitial = $this->getInitials($this->first_name);
+            $lastNameInitial = $this->getInitials($this->last_name);
+            $middleNameInitial = $this->getInitials($this->middle_name);
+
+            $initials = "$firstNameInitial$middleNameInitial$lastNameInitial";
+
+            return trim($initials);
+        });
     }
 
     /**
