@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpWord\TemplateProcessor;
+use Storage;
 
 class AccomplishmentReportService implements AccomplishmentReportManager
 {
@@ -53,7 +54,8 @@ class AccomplishmentReportService implements AccomplishmentReportManager
 
     public function generate(AccomplishmentReport $accomplishmentReport): array
     {
-        $templateProcessor = new TemplateProcessor(storage_path('assets\TEMPLATE - Accomplishment-Report.docx'));
+        $templatePath = Storage::disk('assets')->path('TEMPLATE - Accomplishment-Report.docx');
+        $templateProcessor = new TemplateProcessor($templatePath);
 
         // Process report data
         $userInfo = $accomplishmentReport->userProfile;
