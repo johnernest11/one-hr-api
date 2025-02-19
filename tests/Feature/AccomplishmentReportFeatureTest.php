@@ -205,6 +205,144 @@ class AccomplishmentReportFeatureTest extends TestCase
 
     }
 
+    public function test_it_can_update_existing_rows(): void
+    {
+        $testARs = AccomplishmentReport::factory(2)->hasProfile($this->user)->isDraft()->create(); // creates 2 AR with 3 rows each
+        $firstAR = $testARs->first();
+        $firstARRowsCollection = ARRows::where('accomplishment_report_id', '=', $firstAR->id)->get();
+        $rowsArray = $firstARRowsCollection->pluck('id')->toArray();
+
+        $newRowData = [
+            'period' => '1-15 January 2025',
+            'rows' => [
+                [
+                    'id' => $rowsArray[0], // update the first row on the AR
+                    'week_num' => 'Week 1',
+                    'dates_in_week' => '(1-3 January 2025)',
+                    'specific_activity' => 'sample activity',
+                    'highlights' => 'sample highlights',
+                ],
+                [
+                    'id' => $rowsArray[1], // update the second row on the AR
+                    'week_num' => 'Week 2',
+                    'dates_in_week' => '(6-10 January 2025)',
+                    'specific_activity' => 'sample activity 2',
+                    'highlights' => 'sample highlights 2',
+                ],
+            ],
+        ];
+
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstAR->id", $newRowData);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('a_r_rows', $newRowData['rows'][0]); // assert that the newly updated row exists in the database
+        $this->assertDatabaseHas('a_r_rows', $newRowData['rows'][1]); // assert that the newly updated row exists in the database
+    }
+
+    public function test_it_can_create_new_rows(): void
+    {
+        $testARs = AccomplishmentReport::factory(2)->hasProfile($this->user)->isDraft()->create(); // creates 2 AR with 3 rows each
+        $firstAR = $testARs->first();
+
+        $newRowData = [
+            'period' => '1-15 January 2025',
+            'rows' => [
+                [
+                    'week_num' => 'Week 1',
+                ],
+            ],
+        ];
+
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstAR->id", $newRowData);
+        $response->assertStatus(200);
+
+        $decodedResponse = $response->decodeResponseJson();
+
+        $createdRowId = $decodedResponse['data']['rows'][3]['id']; // get the fourth row since there are 3 existing before the new one is created
+
+        $this->assertDatabaseHas('a_r_rows', ['id' => $createdRowId]); // assert that the newly created row exists in the database
+    }
+
+    public function test_it_can_update_existing_rows_and_create_new_rows(): void
+    {
+        $testARs = AccomplishmentReport::factory(2)->hasProfile($this->user)->isDraft()->create(); // creates 2 AR with 3 rows each
+        $firstAR = $testARs->first();
+        $firstARRowsCollection = ARRows::where('accomplishment_report_id', '=', $firstAR->id)->get();
+        $rowsArray = $firstARRowsCollection->pluck('id')->toArray();
+
+        $newRowData = [
+            'period' => '1-15 January 2025',
+            'rows' => [
+                [
+                    'id' => $rowsArray[0], // update the first row on the AR
+                    'week_num' => 'Week 1',
+                    'dates_in_week' => '(1-3 January 2025)',
+                    'specific_activity' => 'sample activity',
+                    'highlights' => 'sample highlights',
+                ],
+                [
+                    'id' => $rowsArray[1], // update the second row on the AR
+                    'week_num' => 'Week 2',
+                    'dates_in_week' => '(6-10 January 2025)',
+                    'specific_activity' => 'sample activity 2',
+                    'highlights' => 'sample highlights 2',
+                ],
+                [
+                    'week_num' => 'Week 3',
+                ],
+            ],
+        ];
+
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstAR->id", $newRowData);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('a_r_rows', $newRowData['rows'][0]); // assert that the newly updated row exists in the database
+        $this->assertDatabaseHas('a_r_rows', $newRowData['rows'][1]); // assert that the newly updated row exists in the database
+
+        $decodedResponse = $response->decodeResponseJson();
+
+        $createdRowId = $decodedResponse['data']['rows'][3]['id']; // get the fourth row since there are 3 existing before the new one is created
+        $this->assertDatabaseHas('a_r_rows', ['id' => $createdRowId]); // assert that the newly created row exists in the database
+    }
+
+    public function test_it_cannot_update_rows_that_does_not_belong_to_the_accomplishment_report(): void
+    {
+        $testARs = AccomplishmentReport::factory(2)->hasProfile($this->user)->isDraft()->create(); // creates 2 AR with 3 rows each
+        $firstAR = $testARs->first();
+        $secondAR = $testARs->get(1);
+        $secondARRowsCollection = ARRows::where('accomplishment_report_id', '=', $secondAR->id)->get(); // get the rows of the second AR
+        $rowsArray = $secondARRowsCollection->pluck('id')->toArray(); // save the ids as array
+
+        $newRowData = [
+            'period' => '1-15 January 2025',
+            'rows' => [
+                [
+                    'id' => $rowsArray[0], // attempt to update a row that does not belong to the first AR
+                    'week_num' => 'Week 1',
+                    'dates_in_week' => '(1-3 January 2025)',
+                    'specific_activity' => 'sample activity',
+                    'highlights' => 'sample highlights',
+                ],
+            ],
+            'supervisor_notes' => 'sample notes',
+        ];
+
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstAR->id", $newRowData); // pass the id of the first AR but the row is in the second AR
+        $response->assertStatus(422); // should return a response status code of 422
+        $response->assertJsonFragment([
+            'message' => 'A validation error has occurred',
+            'error_code' => 'VALIDATION_ERROR',
+            'errors' => [
+                [
+                    'field' => 'rows.0.id',
+                    'messages' => [
+                        'The rows.0.id does not belong to the accomplishment report.',
+                    ],
+                ],
+            ],
+        ]);
+    }
+
     public function test_it_can_generate_docx(): void
     {
         $ownAR = AccomplishmentReport::factory()->hasProfile($this->user)->isDraft()->create(); // creates an AR with current user, and is draft
