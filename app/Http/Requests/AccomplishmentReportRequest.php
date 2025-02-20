@@ -55,9 +55,9 @@ class AccomplishmentReportRequest extends FormRequest
                 }),
                 'int'],
             'rows.*.week_num' => ['required_without:rows.*.id', new Enum(WeekNumber::class)], // 'week_num' has to be present in rows to be able to save AR
-            'rows.*.dates_in_week' => ['nullable', 'string', new DbVarcharMaxLength()],
-            'rows.*.specific_activity' => ['nullable', 'string', new DbTextMaxLength()],
-            'rows.*.highlights' => ['nullable', 'string', new DbTextMaxLength()],
+            'rows.*.dates_in_week' => ['required_if:status,done', 'string', new DbVarcharMaxLength()],
+            'rows.*.specific_activity' => ['required_if:status,done', 'string', new DbTextMaxLength()],
+            'rows.*.highlights' => ['required_if:status,done', 'string', new DbTextMaxLength()],
         ];
     }
 

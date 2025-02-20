@@ -170,6 +170,9 @@ class AccomplishmentReportFeatureTest extends TestCase
                 [
                     'id' => $firstRow->id,
                     'week_num' => 'Week 1',
+                    'dates_in_week' => '(1-3 January 2025)',
+                    'specific_activity' => 'sample activity',
+                    'highlights' => 'sample highlights',
                 ],
             ],
             'status' => 'done',
@@ -191,6 +194,9 @@ class AccomplishmentReportFeatureTest extends TestCase
                 [
                     'id' => $firstRow->id,
                     'week_num' => $firstRow->week_num,
+                    'dates_in_week' => '(1-3 January 2025)',
+                    'specific_activity' => 'sample activity',
+                    'highlights' => 'sample highlights',
                 ],
             ],
             'status' => 'done',
