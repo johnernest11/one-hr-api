@@ -138,14 +138,22 @@ class AccomplishmentReportService implements AccomplishmentReportManager
 
             if (array_key_exists('rows', $newReportInfo)) {
                 foreach ($newReportInfo['rows'] as $newRowInfo) {
-                    $row = ARRows::where('accomplishment_report_id', '=', $accomplishmentReport->id)->find($newRowInfo['id']);
-                    if ($row) {
-                        $row->update(Arr::except($newRowInfo, ['id']));
+                    // Check if id exists.
+                    if (isset($newRowInfo['id'])) {
+                        $row = ARRows::where('accomplishment_report_id', '=', $accomplishmentReport->id)->find($newRowInfo['id']);
+                        if ($row) {
+                            $row->update(Arr::except($newRowInfo, ['id']));
+                        }
                     }
+                    // If not, create new row
+                    else {
+                        $createNewRow = new ARRows($newRowInfo);
+                        $createNewRow->accomplishment_report_id = $accomplishmentReport->id;
+                        $createNewRow->save();
+                    }
+
                 }
             }
-
-            //@todo handle new rows here
 
             return $accomplishmentReport->fresh('rows');
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
