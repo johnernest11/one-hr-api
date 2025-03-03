@@ -81,6 +81,6 @@ class AccomplishmentReportController extends ApiController
         return response($response['fileContent'], 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'Content-Disposition' => 'attachment; filename="'.$response['fileName'].'"',
-        ]);
+        ])->header('Access-Control-Expose-Headers', 'Content-Disposition'); // Expose Content-Disposition header since it is not exposed by default to get the filename
     }
 }
