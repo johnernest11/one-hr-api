@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
         CitiesSeeder::class,
         BarangaysSeeder::class,
         AppSettingsSeeder::class,
+        PositionsSeeder::class,
     ];
 
     /**
