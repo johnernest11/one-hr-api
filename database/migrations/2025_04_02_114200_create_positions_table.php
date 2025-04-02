@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('parenthetical_title')->nullable();
             $table->integer('level')->nullable();
 
+            $table->fullText(['title']);
+            $table->fullText(['parenthetical_title']);
+
             $table->timestamps();
         });
     }

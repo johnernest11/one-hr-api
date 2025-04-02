@@ -14,4 +14,5 @@ enum Permission: string
     case VIEW_USER_ROLES = 'view_user_roles';
     case VIEW_PERMISSIONS = 'view_permissions';
     case UPDATE_APP_SETTINGS = 'update_app_settings';
+    case VIEW_POSITIONS = 'view_positions';
 }

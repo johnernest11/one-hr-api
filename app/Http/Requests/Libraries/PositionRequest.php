@@ -25,6 +25,7 @@ class PositionRequest extends FormRequest
 
         return match ($routeName) {
             'positions.index' => $this->getFetchPositionsRules(),
+            'positions.search' => $this->getSearchPositionsRules(),
             default => [],
         };
     }
@@ -36,6 +37,16 @@ class PositionRequest extends FormRequest
     {
         return [
             'level' => ['integer', 'nullable', 'min:1', 'max:3'],
+        ];
+    }
+
+    /**
+     * Positions search rules
+     */
+    private function getSearchPositionsRules(): array
+    {
+        return [
+            'query' => ['required', 'string'],
         ];
     }
 
