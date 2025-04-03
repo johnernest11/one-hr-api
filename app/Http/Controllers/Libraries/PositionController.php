@@ -6,6 +6,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\Libraries\PositionRequest;
 use App\Models\Libraries\Position;
 use Illuminate\Http\JsonResponse;
+use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class PositionController extends ApiController
@@ -15,9 +16,12 @@ class PositionController extends ApiController
      */
     public function fetch(PositionRequest $request): JsonResponse
     {
-        $positions = Position::filtered()->orderBy('title')->get();
+        // Paginate 9 per page
+        $positions = Position::filtered()->orderBy('title')->paginate(9)->toArray();
 
-        return $this->success(['data' => $positions], Response::HTTP_OK);
+        $positions_formatted = PaginationHelper::formatLengthAwarePagination($positions);
+
+        return $this->success($positions_formatted, Response::HTTP_OK);
     }
 
     /**
@@ -26,8 +30,11 @@ class PositionController extends ApiController
     public function search(PositionRequest $request): JsonResponse
     {
         $q = $request->validated(['query']);
-        $positions = Position::where('title', 'like', "%$q%")->orWhere('parenthetical_title', 'like', "%$q%")->get();
+        // Paginate 9 per page
+        $positions = Position::where('title', 'like', "%$q%")->orWhere('parenthetical_title', 'like', "%$q%")->paginate(9)->toArray();
 
-        return $this->success(['data' => $positions], Response::HTTP_OK);
+        $positions_formatted = PaginationHelper::formatLengthAwarePagination($positions);
+
+        return $this->success($positions_formatted, Response::HTTP_OK);
     }
 }

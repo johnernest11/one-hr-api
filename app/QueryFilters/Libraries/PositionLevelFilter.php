@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PositionLevelFilter extends Filter
 {
-    private const FILTER_NAME = 'position-level';
+    private const FILTER_NAME = 'level';
 
     /**
      * {@inheritDoc}

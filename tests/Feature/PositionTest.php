@@ -42,14 +42,14 @@ class PositionTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_it_can_filter_regions_via_level(): void
+    public function test_it_can_filter_positions_via_level(): void
     {
-        $response = $this->withToken($this->authToken)->getJson($this->baseUri.'?position-level=1');
+        $response = $this->withToken($this->authToken)->getJson($this->baseUri.'?level=1');
         $response = $response->json('data');
 
         // All levels should be 1
         foreach ($response as $item) {
-            $this->assertEquals('1', $item['level']);
+            $this->assertEquals(1, $item['level']);
         }
     }
 
