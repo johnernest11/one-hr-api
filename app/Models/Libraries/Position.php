@@ -2,10 +2,12 @@
 
 namespace App\Models\Libraries;
 
+use App\Models\Item;
 use App\QueryFilters\Libraries\PositionLevelFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Pipeline\Pipeline;
 
 class Position extends Model
@@ -40,4 +42,8 @@ class Position extends Model
 
     // @todo ADD RELATIONSHIP TO ITEMS ONCE IT IS CREATED
 
+    public function items(): HasMany
+    {
+        return $this->hasMany(Item::class);
+    }
 }
