@@ -12,11 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ItemController extends ApiController
 {
-    private ItemManager $itemManager;
+    private ItemManager $itemService;
 
-    public function __construct(ItemManager $itemManager)
+    public function __construct(ItemManager $itemService)
     {
-        $this->itemManager = $itemManager;
+        $this->itemService = $itemService;
     }
 
     /**
@@ -24,7 +24,7 @@ class ItemController extends ApiController
      */
     public function index(): JsonResponse
     {
-        $items = $this->itemManager->all();
+        $items = $this->itemService->all();
         $formatted = PaginationHelper::formatPagination($items);
 
         return $this->success($formatted, Response::HTTP_OK);
@@ -37,7 +37,7 @@ class ItemController extends ApiController
     public function store(ItemRequest $request): JsonResponse
     {
 
-        $item = $this->itemManager->create($request->validated());
+        $item = $this->itemService->create($request->validated());
 
         return $this->success(['data' => $item], Response::HTTP_CREATED);
 
@@ -48,7 +48,7 @@ class ItemController extends ApiController
      */
     public function show(Item $item): JsonResponse
     {
-        $item = $this->itemManager->read($item);
+        $item = $this->itemService->read($item);
 
         return $this->success(['data' => $item], Response::HTTP_OK);
     }
@@ -59,7 +59,7 @@ class ItemController extends ApiController
     public function update(ItemRequest $request, Item $item): JsonResponse
     {
 
-        $updatedItem = $this->itemManager->update($item, $request->validated());
+        $updatedItem = $this->itemService->update($item, $request->validated());
 
         return $this->success(['data' => $updatedItem], Response::HTTP_OK);
 
@@ -70,7 +70,7 @@ class ItemController extends ApiController
      */
     public function search(ItemRequest $request): JsonResponse
     {
-        $items = $this->itemManager->search($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $items = $this->itemService->search($request->validated('query'), PaginationType::LENGTH_AWARE);
         $formatted = PaginationHelper::formatPagination($items);
 
         return $this->success($formatted, Response::HTTP_OK);

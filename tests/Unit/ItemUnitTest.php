@@ -29,7 +29,8 @@ class ItemUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->itemService = new ItemService();
+        $itemModel = new Item();
+        $this->itemService = new ItemService($itemModel);
         $this->user = $this->produceUsers();
         $this->testInput = [
             'number' => fake()->regexify('[A-Z]{3}-[A-Z]{3}-[A-Z]{3}-\d{6}'), // Simulate number format from the provided database

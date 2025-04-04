@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\AppEnvironment;
+use App\Models\Item;
 use App\Services\AppSettingsManager;
 use App\Services\Item\ItemManager;
 use App\Services\Item\ItemService;
@@ -42,7 +43,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(ItemManager::class, function () {
-            return new ItemService();
+            $itemModel = $this->app->make(Item::class);
+
+            return new ItemService($itemModel);
         });
     }
 

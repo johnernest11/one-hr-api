@@ -18,11 +18,19 @@ class ItemService implements ItemManager
 
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
+    private Item $model;
+
+    public function __construct(Item $model)
+    {
+        $this->model = $model;
+
+    }
+
     /** {@inheritDoc} */
     public function all(): LengthAwarePaginator
     {
         /** @var Builder $item */
-        $query = Item::filtered();
+        $query = $this->model->filtered();
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
     }
@@ -33,7 +41,7 @@ class ItemService implements ItemManager
     public function create(array $itemInfo): Item
     {
         return DB::transaction(function () use ($itemInfo) {
-            $item = Item::create($itemInfo);
+            $item = $this->model->create($itemInfo);
 
             return $item;
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
@@ -44,9 +52,9 @@ class ItemService implements ItemManager
     {
         // check if Item or int
         if ($item instanceof Item) {
-            $item = Item::find($item->id);
+            $item = $this->model->findOrFail($item->id);
         } else {
-            $item = Item::find($item);
+            $item = $this->model->findOrFail($item);
         }
 
         return $item;
@@ -72,7 +80,7 @@ class ItemService implements ItemManager
         string $term,
         ?PaginationType $pagination = null
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
-        $items = Item::query()->where('number', 'like', "%$term%");
+        $items = $this->model->query()->where('number', 'like', "%$term%");
 
         return $this->buildPagination($pagination, $items);
     }
