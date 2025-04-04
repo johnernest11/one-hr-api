@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Enums\AppEnvironment;
 use App\Services\AppSettingsManager;
+use App\Services\Item\ItemManager;
+use App\Services\Item\ItemService;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use App\Services\User\UserManager;
@@ -37,6 +39,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(AppSettingsManager::class, function () {
             return new AppSettingsManager();
+        });
+
+        $this->app->bind(ItemManager::class, function () {
+            return new ItemService();
         });
     }
 

@@ -99,7 +99,7 @@ class ItemUnitTest extends TestCase
         $this->assertDatabaseCount('items', 1);
 
         // Update Number for easier search
-        $newInfo = ['number' => 'FO1-COS-CP III-000999'];
+        $newInfo = ['number' => 'FO1-COS-CPIII-000999'];
         $updatedItem = $this->itemService->update($initialItem, $newInfo);
 
         $q = 'CP III';

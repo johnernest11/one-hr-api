@@ -42,17 +42,14 @@ class ItemService implements ItemManager
     /** {@inheritDoc} */
     public function read(Item|int $item): Item
     {
-        return DB::transaction(function () use ($item) {
-            // check if Item or int
-            if ($item instanceof Item) {
-                $item = Item::find($item->id);
-            } else {
-                $item = Item::find($item);
-            }
+        // check if Item or int
+        if ($item instanceof Item) {
+            $item = Item::find($item->id);
+        } else {
+            $item = Item::find($item);
+        }
 
-            return $item;
-        }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
-
+        return $item;
     }
 
     /**

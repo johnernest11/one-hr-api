@@ -5,18 +5,18 @@ namespace App\Http\Controllers;
 use App\Enums\PaginationType;
 use App\Http\Requests\ItemRequest;
 use App\Models\Item;
-use App\Services\Item\ItemService;
+use App\Services\Item\ItemManager;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class ItemController extends ApiController
 {
-    private ItemService $itemService;
+    private ItemManager $itemManager;
 
-    public function __construct(ItemService $itemService)
+    public function __construct(ItemManager $itemManager)
     {
-        $this->itemService = $itemService;
+        $this->itemManager = $itemManager;
     }
 
     /**
@@ -24,7 +24,7 @@ class ItemController extends ApiController
      */
     public function index(): JsonResponse
     {
-        $items = $this->itemService->all();
+        $items = $this->itemManager->all();
         $formatted = PaginationHelper::formatPagination($items);
 
         return $this->success($formatted, Response::HTTP_OK);
@@ -37,7 +37,7 @@ class ItemController extends ApiController
     public function store(ItemRequest $request): JsonResponse
     {
 
-        $item = $this->itemService->create($request->validated());
+        $item = $this->itemManager->create($request->validated());
 
         return $this->success(['data' => $item], Response::HTTP_CREATED);
 
@@ -48,7 +48,7 @@ class ItemController extends ApiController
      */
     public function show(Item $item): JsonResponse
     {
-        $item = $this->itemService->read($item);
+        $item = $this->itemManager->read($item);
 
         return $this->success(['data' => $item], Response::HTTP_OK);
     }
@@ -59,7 +59,7 @@ class ItemController extends ApiController
     public function update(ItemRequest $request, Item $item): JsonResponse
     {
 
-        $updatedItem = $this->itemService->update($item, $request->validated());
+        $updatedItem = $this->itemManager->update($item, $request->validated());
 
         return $this->success(['data' => $updatedItem], Response::HTTP_OK);
 
@@ -70,7 +70,7 @@ class ItemController extends ApiController
      */
     public function search(ItemRequest $request): JsonResponse
     {
-        $items = $this->itemService->search($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $items = $this->itemManager->search($request->validated('query'), PaginationType::LENGTH_AWARE);
         $formatted = PaginationHelper::formatPagination($items);
 
         return $this->success($formatted, Response::HTTP_OK);

@@ -52,7 +52,7 @@ class ItemFeatureTest extends TestCase
     public static function validCreateItemInputs(): array
     {
         $requiredFieldsOnly = [
-            'number' => '001-203294',
+            'number' => 'FO1-COS-CPIII-000999',
             'date_of_creation' => '2025-04-03',
             'status' => 'Unfilled',
             'employment_status' => 'Contract of Service',
@@ -60,7 +60,7 @@ class ItemFeatureTest extends TestCase
         ];
 
         $allFields = [
-            'number' => '001-203294',
+            'number' => 'FO1-COS-CPIII-000999',
             'date_of_creation' => '2025-04-03',
             'status' => 'Unfilled',
             'date_filled_up' => '2025-04-03',
@@ -151,7 +151,7 @@ class ItemFeatureTest extends TestCase
 
         // Update the number for easier search
         $updatedData = [
-            'number' => '001-999999',
+            'number' => 'FO1-COS-CPIII-000999',
             'date_of_creation' => '2025-04-03',
             'status' => 'Filled',
             'date_filled_up' => '2025-04-03',
@@ -163,7 +163,7 @@ class ItemFeatureTest extends TestCase
         $response->assertStatus(200);
 
         // Search by number
-        $q = '001';
+        $q = 'CPIII';
         $response = $this->withToken($this->authTokenAdmin)->getJson("$this->baseUri/search?query=$q");
         $response->assertStatus(200);
 
