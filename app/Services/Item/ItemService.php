@@ -6,7 +6,10 @@ use App\Enums\PaginationType;
 use App\Models\Item;
 use App\Traits\Services\CanBuildPagination;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Facades\DB;
 
 class ItemService implements ItemManager
@@ -37,9 +40,19 @@ class ItemService implements ItemManager
     }
 
     /** {@inheritDoc} */
-    public function read(Item $item): Item
+    public function read(Item|int $item): Item
     {
-        return $item;
+        return DB::transaction(function () use ($item) {
+            // check if Item or int
+            if ($item instanceof Item) {
+                $item = Item::find($item->id);
+            } else {
+                $item = Item::find($item);
+            }
+
+            return $item;
+        }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
+
     }
 
     /**
@@ -53,5 +66,17 @@ class ItemService implements ItemManager
 
             return $item->fresh();
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function search(
+        string $term,
+        ?PaginationType $pagination = null
+    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
+        $items = Item::query()->where('number', 'like', "%$term%");
+
+        return $this->buildPagination($pagination, $items);
     }
 }

@@ -31,6 +31,7 @@ class ItemRequest extends FormRequest
         return match ($routeName) {
             'item.store' => $this->getStoreUpdateItemRule(),
             'item.update' => $this->getStoreUpdateItemRule(),
+            'item.search' => $this->getSearchItemRule(),
             default => [],
         };
 
@@ -48,6 +49,13 @@ class ItemRequest extends FormRequest
             'date_filled_up' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
             'employment_status' => ['required', new Enum(EmploymentStatus::class)],
             'position_id' => ['required', 'integer', Rule::exists('positions', 'id')],
+        ];
+    }
+
+    public function getSearchItemRule(): array
+    {
+        return [
+            'query' => ['required', 'string'],
         ];
     }
 

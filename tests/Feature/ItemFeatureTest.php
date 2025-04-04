@@ -2,15 +2,17 @@
 
 namespace Tests\Feature;
 
+use App\Enums\EmploymentStatus;
 use App\Enums\Role as RoleEnum;
 use App\Models\Item;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
 use Tests\TestCase;
 
-class ItemTest extends TestCase
+class ItemFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -125,11 +127,11 @@ class ItemTest extends TestCase
         $firstItem = $items->first();
 
         $updatedData = [
-            'number' => '001-999999',
-            'date_of_creation' => '2025-04-03',
+            'number' => fake()->regexify('[A-Z]{3}-[A-Z]{3}-[A-Z]{3}-\d{6}'), // Simulate number format from the provided database
+            'date_of_creation' => fake()->date(),
             'status' => 'Filled',
-            'date_filled_up' => '2025-04-03',
-            'employment_status' => 'Contract of Service',
+            'date_filled_up' => fake()->date(),
+            'employment_status' => fake()->randomElement(ConversionHelper::enumToArray(EmploymentStatus::class)),
             'position_id' => 1,
         ]; // update status to done
 
@@ -142,7 +144,43 @@ class ItemTest extends TestCase
 
     }
 
-    public function test_it_cannot_access_view_endpoint(): void
+    public function test_it_can_search_item(): void
+    {
+        $items = Item::factory(5)->create();
+        $firstItem = $items->first();
+
+        // Update the number for easier search
+        $updatedData = [
+            'number' => '001-999999',
+            'date_of_creation' => '2025-04-03',
+            'status' => 'Filled',
+            'date_filled_up' => '2025-04-03',
+            'employment_status' => 'Contract of Service',
+            'position_id' => 1,
+        ];
+
+        $response = $this->withToken($this->authTokenAdmin)->putJson("$this->baseUri/$firstItem->id", $updatedData);
+        $response->assertStatus(200);
+
+        // Search by number
+        $q = '001';
+        $response = $this->withToken($this->authTokenAdmin)->getJson("$this->baseUri/search?query=$q");
+        $response->assertStatus(200);
+
+        $responseData = $response->decodeResponseJson()['data'];
+
+        // Check if the search returned any results
+        $this->assertNotEmpty($responseData, 'Search returned no results.');
+
+        // Access the first item in the search results
+        $firstSearchResult = $responseData[0];
+
+        // Assert that the result should have the query
+        $this->assertStringContainsString($q, $firstSearchResult['number']);
+
+    }
+
+    public function test_standard_user_cannot_access_view_endpoint(): void
     {
         $items = Item::factory(5)->create();
 
@@ -150,7 +188,7 @@ class ItemTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_it_cannot_access_create_endpoint(): void
+    public function test_standard_user_cannot_access_create_endpoint(): void
     {
 
         $testInput = [
@@ -166,7 +204,7 @@ class ItemTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_it_cannot_access_update_endpoint(): void
+    public function test_standard_user_cannot_access_update_endpoint(): void
     {
         $items = Item::factory(5)->create();
         $firstItem = $items->first();

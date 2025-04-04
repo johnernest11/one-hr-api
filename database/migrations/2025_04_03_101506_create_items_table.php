@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
 
-            $table->string('number');
+            $table->string('number')->unique();
+            $table->fullText('number');
+
             $table->date('date_of_creation');
             $table->enum('status', ConversionHelper::enumToArray(ItemStatus::class))->index();
             $table->date('date_filled_up')->nullable();

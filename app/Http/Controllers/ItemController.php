@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaginationType;
 use App\Http\Requests\ItemRequest;
 use App\Models\Item;
 use App\Services\Item\ItemService;
+use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,7 +22,7 @@ class ItemController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $items = $this->itemService->all();
         $formatted = PaginationHelper::formatPagination($items);
@@ -32,7 +34,7 @@ class ItemController extends ApiController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ItemRequest $request)
+    public function store(ItemRequest $request): JsonResponse
     {
 
         $item = $this->itemService->create($request->validated());
@@ -44,7 +46,7 @@ class ItemController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(Item $item)
+    public function show(Item $item): JsonResponse
     {
         $item = $this->itemService->read($item);
 
@@ -54,7 +56,7 @@ class ItemController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(ItemRequest $request, Item $item)
+    public function update(ItemRequest $request, Item $item): JsonResponse
     {
 
         $updatedItem = $this->itemService->update($item, $request->validated());
@@ -64,10 +66,14 @@ class ItemController extends ApiController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Search for a resource in storage.
      */
-    public function destroy(string $id)
+    public function search(ItemRequest $request): JsonResponse
     {
-        //
+        $items = $this->itemService->search($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $formatted = PaginationHelper::formatPagination($items);
+
+        return $this->success($formatted, Response::HTTP_OK);
+
     }
 }

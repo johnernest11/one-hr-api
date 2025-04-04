@@ -7,6 +7,9 @@ Route::middleware(['auth:token', 'verified.api'])->controller(ItemController::cl
     /** @uses ItemController::index */
     Route::middleware(['permission:'.Permission::VIEW_ITEMS->value])->get('', 'index')->name('index');
 
+    /** @uses ItemController::search */
+    Route::middleware(['permission:'.Permission::VIEW_ITEMS->value])->get('/search', 'search')->name('search');
+
     /** @uses ItemController::show */
     Route::middleware(['permission:'.Permission::VIEW_ITEMS->value])->get('{item}', 'show')->name('show');
 
