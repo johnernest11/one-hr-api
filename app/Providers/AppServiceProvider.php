@@ -43,9 +43,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(ItemManager::class, function () {
-            $itemModel = $this->app->make(Item::class);
-
-            return new ItemService($itemModel);
+            return new ItemService(new Item());
         });
     }
 
