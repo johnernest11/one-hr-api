@@ -49,6 +49,7 @@ class ItemRequest extends FormRequest
             'date_filled_up' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
             'employment_status' => ['required', new Enum(EmploymentStatus::class)],
             'position_id' => ['required', 'integer', Rule::exists('positions', 'id')],
+            'fund_source_id' => ['required', 'integer', Rule::exists('fund_sources', 'id')],
         ];
     }
 
@@ -66,6 +67,7 @@ class ItemRequest extends FormRequest
     {
         return [
             'position_id.exists' => 'The selected position ID does not exist.',
+            'fund_source_id.exists' => 'The selected fund source ID does not exist.',
         ];
     }
 }

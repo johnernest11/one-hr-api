@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
         BarangaysSeeder::class,
         AppSettingsSeeder::class,
         PositionsSeeder::class,
+        FundSourceSeeder::class,
     ];
 
     /**

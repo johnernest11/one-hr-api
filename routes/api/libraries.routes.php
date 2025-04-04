@@ -1,16 +1,29 @@
 <?php
 
 use App\Enums\Permission;
+use App\Http\Controllers\Libraries\FundSourceController;
 use App\Http\Controllers\Libraries\PositionController;
 
 // Positions
-Route::controller(PositionController::class)->group(function () {
+Route::prefix('positions')->controller(PositionController::class)->name('positions.')->group(function () {
     /** @uses PositionController::fetch */
     Route::middleware(['permission:'.Permission::VIEW_POSITIONS->value])
-        ->get('positions', 'fetch')->name('positions.index');
+        ->get('', 'fetch')->name('index');
 
     /** @uses UserController::search */
     Route::middleware(['permission:'.Permission::VIEW_POSITIONS->value])
-        ->get('/positions/search', 'search')
-        ->name('positions.search');
+        ->get('/search', 'search')
+        ->name('search');
+});
+
+// Fund Sources
+Route::prefix('fund-sources')->controller(FundSourceController::class)->name('fund-sources.')->group(function () {
+    /** @uses PositionController::fetch */
+    Route::middleware(['permission:'.Permission::VIEW_FUNDS->value])
+        ->get('', 'fetch')->name('index');
+
+    /** @uses UserController::search */
+    Route::middleware(['permission:'.Permission::VIEW_FUNDS->value])
+        ->get('/search', 'search')
+        ->name('search');
 });

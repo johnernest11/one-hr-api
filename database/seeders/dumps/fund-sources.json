@@ -1,0 +1,122 @@
+[
+    {
+        "id": 1,
+        "name": "DIRECT RELEASE"
+    },
+    {
+        "id": 2,
+        "name": "SOCIAL PENSION PROGRAM"
+    },
+    {
+        "id": 3,
+        "name": "NHTS-PR"
+    },
+    {
+        "id": 4,
+        "name": "REGULAR FUND"
+    },
+    {
+        "id": 5,
+        "name": "4Ps FUND"
+    },
+    {
+        "id": 6,
+        "name": "SLP FUND / DR"
+    },
+    {
+        "id": 7,
+        "name": "CENTER FUND"
+    },
+    {
+        "id": 8,
+        "name": "DRRP"
+    },
+    {
+        "id": 9,
+        "name": "PSP FUND"
+    },
+    {
+        "id": 10,
+        "name": "COMMUNITY PROGRAMS AND SERVICES FUND"
+    },
+    {
+        "id": 11,
+        "name": "TARA FUND"
+    },
+    {
+        "id": 12,
+        "name": "ICTMS FUND"
+    },
+    {
+        "id": 13,
+        "name": "CENTRALLY MANAGED FUND - SOCIAL TECHNOLOGY BUREAU"
+    },
+    {
+        "id": 14,
+        "name": "BFIRST PMU"
+    },
+    {
+        "id": 15,
+        "name": "RRPTP FUND"
+    },
+    {
+        "id": 16,
+        "name": "SFP FUND"
+    },
+    {
+        "id": 17,
+        "name": "COMMUNITY BASED FUND"
+    },
+    {
+        "id": 18,
+        "name": "PSIF-AICS 2025 FUND"
+    },
+    {
+        "id": 19,
+        "name": "SLP FUND / CMF"
+    },
+    {
+        "id": 20,
+        "name": "SLP FUND / DR SAVINGS"
+    },
+    {
+        "id": 21,
+        "name": "EPAHP FUND"
+    },
+    {
+        "id": 22,
+        "name": "KKB -CDD FUND"
+    },
+    {
+        "id": 23,
+        "name": "PAMANA FUND"
+    },
+    {
+        "id": 24,
+        "name": "KKB FUND"
+    },
+    {
+        "id": 25,
+        "name": "KKB-CDD-CFW-SUC"
+    },
+    {
+        "id": 26,
+        "name": "KKB-CDD-CFW-PWD"
+    },
+    {
+        "id": 27,
+        "name": "CENTRALLY MANAGED FUND"
+    },
+    {
+        "id": 28,
+        "name": "PAG-ABOT FUND"
+    },
+    {
+        "id": 29,
+        "name": "PSIF FUND"
+    },
+    {
+        "id": 30,
+        "name": "CCAM FUND"
+    }
+]
