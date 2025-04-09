@@ -29,7 +29,7 @@ class FundSourceController extends ApiController
      */
     public function search(FundSourceRequest $request): JsonResponse
     {
-        $q = $request->validated(['query']);
+        $q = $request->validated()['query'];
         // Paginate 9 per page
         $funds = FundSource::where('name', 'like', "%$q%")->paginate(9)->toArray();
 

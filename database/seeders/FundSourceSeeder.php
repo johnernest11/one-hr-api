@@ -13,19 +13,19 @@ class FundSourceSeeder extends CiCdCompliantSeeder
     public function run(): void
     {
         $rawData = file_get_contents(base_path('database/seeders/dumps/fund-sources.json'));
-        $positionsJson = json_decode($rawData, true);
+        $fundsJson = json_decode($rawData, true);
 
-        $positions = [];
-        foreach ($positionsJson as $position) {
-            $positions[] = [
-                'id' => $position['id'],
-                'name' => $position['name'],
+        $funds = [];
+        foreach ($fundsJson as $fund) {
+            $funds[] = [
+                'id' => $fund['id'],
+                'name' => $fund['name'],
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];
         }
 
-        FundSource::insert($positions);
+        FundSource::insert($funds);
     }
 
     protected function tableName(): string
