@@ -46,6 +46,7 @@ class PositionRequest extends FormRequest
     private function getSearchPositionsRules(): array
     {
         return [
+            'per-page' => ['nullable', 'int'],
             'query' => ['required', 'string'],
         ];
     }

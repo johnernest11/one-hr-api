@@ -24,7 +24,7 @@ class FundSourceRequest extends FormRequest
         $routeName = $this->route()->getName();
 
         return match ($routeName) {
-            'fund-sources.search' => $this->getFundSourcesRules(),
+            'fund-sources.search' => $this->getSearchFundSourcesRules(),
             default => [],
         };
     }
@@ -32,9 +32,10 @@ class FundSourceRequest extends FormRequest
     /**
      * Fund Sources search rules
      */
-    private function getFundSourcesRules(): array
+    private function getSearchFundSourcesRules(): array
     {
         return [
+            'per-page' => ['nullable', 'int'],
             'query' => ['required', 'string'],
         ];
     }
