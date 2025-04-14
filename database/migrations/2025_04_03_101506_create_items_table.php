@@ -25,7 +25,7 @@ return new class extends Migration
             $table->enum('employment_status', ConversionHelper::enumToArray(EmploymentStatus::class))->index();
 
             $table->foreignId('position_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            //@todo add foreign id for fund sources once added.
+            $table->foreignId('fund_source_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();

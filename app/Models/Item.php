@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EmploymentStatus;
 use App\Enums\ItemStatus;
+use App\Models\Libraries\FundSource;
 use App\Models\Libraries\Position;
 use App\QueryFilters\Item\EmploymentStatusFilter;
 use App\QueryFilters\Item\StatusFilter;
@@ -31,6 +32,7 @@ class Item extends Model
         'date_filled_up',
         'employment_status',
         'position_id',
+        'fund_source_id',
     ];
 
     /**
@@ -60,10 +62,13 @@ class Item extends Model
             ->thenReturn();
     }
 
-    // @todo Add relationship fund sources
-
     public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class);
+    }
+
+    public function fundSource(): BelongsTo
+    {
+        return $this->belongsTo(FundSource::class);
     }
 }

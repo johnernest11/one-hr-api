@@ -30,8 +30,9 @@ class PositionController extends ApiController
     public function search(PositionRequest $request): JsonResponse
     {
         $q = $request->validated(['query']);
-        // Paginate 9 per page
-        $positions = Position::where('title', 'like', "%$q%")->orWhere('parenthetical_title', 'like', "%$q%")->paginate(9)->toArray();
+        $limit = $request->validated('limit', 9);
+
+        $positions = Position::where('title', 'like', "%$q%")->orWhere('parenthetical_title', 'like', "%$q%")->paginate($limit)->toArray();
 
         $positions_formatted = PaginationHelper::formatLengthAwarePagination($positions);
 

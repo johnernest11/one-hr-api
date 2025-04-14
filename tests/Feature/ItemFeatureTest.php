@@ -57,6 +57,7 @@ class ItemFeatureTest extends TestCase
             'status' => 'Unfilled',
             'employment_status' => 'Contract of Service',
             'position_id' => 1,
+            'fund_source_id' => 12,
         ];
 
         $allFields = [
@@ -66,6 +67,7 @@ class ItemFeatureTest extends TestCase
             'date_filled_up' => '2025-04-03',
             'employment_status' => 'Contract of Service',
             'position_id' => 1,
+            'fund_source_id' => 12,
 
         ];
 
@@ -133,6 +135,7 @@ class ItemFeatureTest extends TestCase
             'date_filled_up' => fake()->date(),
             'employment_status' => fake()->randomElement(ConversionHelper::enumToArray(EmploymentStatus::class)),
             'position_id' => 1,
+            'fund_source_id' => 12,
         ]; // update status to done
 
         $response = $this->withToken($this->authTokenAdmin)->putJson("$this->baseUri/$firstItem->id", $updatedData);
@@ -157,6 +160,7 @@ class ItemFeatureTest extends TestCase
             'date_filled_up' => '2025-04-03',
             'employment_status' => 'Contract of Service',
             'position_id' => 1,
+            'fund_source_id' => 12,
         ];
 
         $response = $this->withToken($this->authTokenAdmin)->putJson("$this->baseUri/$firstItem->id", $updatedData);
@@ -198,6 +202,7 @@ class ItemFeatureTest extends TestCase
             'date_filled_up' => '2025-04-03',
             'employment_status' => 'Contract of Service',
             'position_id' => 1,
+            'fund_source_id' => 12,
         ];
 
         $response = $this->withToken($this->authTokenStandard)->postJson($this->baseUri, $testInput);
@@ -216,6 +221,7 @@ class ItemFeatureTest extends TestCase
             'date_filled_up' => '2025-04-03',
             'employment_status' => 'Contract of Service',
             'position_id' => 1,
+            'fund_source_id' => 12,
         ]; // update status to done
 
         $response = $this->withToken($this->authTokenStandard)->putJson("$this->baseUri/$firstItem->id", $updatedData);

@@ -15,6 +15,7 @@ enum Permission: string
     case VIEW_PERMISSIONS = 'view_permissions';
     case UPDATE_APP_SETTINGS = 'update_app_settings';
     case VIEW_POSITIONS = 'view_positions';
+    case VIEW_FUNDS = 'view_funds';
     case VIEW_ITEMS = 'view_items';
     case CREATE_ITEMS = 'create_items';
     case UPDATE_ITEMS = 'update_items';

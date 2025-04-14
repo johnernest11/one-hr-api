@@ -38,6 +38,7 @@ class ItemUnitTest extends TestCase
             'date_filled_up' => fake()->date(),
             'employment_status' => fake()->randomElement(ConversionHelper::enumToArray(EmploymentStatus::class)),
             'position_id' => 1,
+            'fund_source_id' => 12,
         ];
     }
 
