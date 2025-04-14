@@ -33,6 +33,14 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         $standardRole = Role::create(['name' => RoleEnum::STANDARD_USER, 'guard_name' => 'token']);
         $standardRole->givePermissionTo(Permission::all());
 
+        /** @var Role $sectionHeadRole */
+        $sectionHeadRole = Role::create(['name' => RoleEnum::SECTION_HEAD, 'guard_name' => 'token']);
+        $sectionHeadRole->givePermissionTo(Permission::all());
+
+        /** @var Role $divisionHeadRole */
+        $divisionHeadRole = Role::create(['name' => RoleEnum::DIVISION_HEAD, 'guard_name' => 'token']);
+        $divisionHeadRole->givePermissionTo(Permission::all());
+
         // Admin Permissions
         Permission::create(['name' => PermissionEnum::CREATE_USERS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::UPDATE_USERS, 'guard_name' => 'token']);
