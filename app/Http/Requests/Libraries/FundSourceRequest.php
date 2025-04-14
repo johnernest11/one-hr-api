@@ -35,7 +35,7 @@ class FundSourceRequest extends FormRequest
     private function getSearchFundSourcesRules(): array
     {
         return [
-            'per-page' => ['nullable', 'int'],
+            'limit' => ['nullable', 'int'],
             'query' => ['required', 'string'],
         ];
     }
