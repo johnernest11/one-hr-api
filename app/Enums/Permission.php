@@ -6,6 +6,10 @@ enum Permission: string
 {
     case VIEW_PROFILE = 'view_profile';
     case UPDATE_PROFILE = 'update_profile';
+    case CREATE_EMPLOYEE_PDS = 'create_employee_pds';
+    case VIEW_EMPLOYEE_PDS = 'view_employee_pds';
+    case UPDATE_EMPLOYEE_PDS = 'update_employee_pds';
+    case DELETE_EMPLOYEE_PDS = 'delete_employee_pds';
     case CREATE_USERS = 'create_users';
     case VIEW_USERS = 'view_users';
     case UPDATE_USERS = 'update_users';

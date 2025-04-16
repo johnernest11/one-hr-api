@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\SexualCategory;
 use App\Models\Address\Address;
+use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Services\CloudStorageServices\CloudStorageManager;
 use DateTimeHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -109,6 +110,14 @@ class UserProfile extends Model
     public function address(): HasOne
     {
         return $this->hasOne(Address::class);
+    }
+
+    /**
+     * A user belongs to one individual basic detail
+     */
+    public function individualBasicDetail(): BelongsTo
+    {
+        return $this->belongsTo(IndividualBasicDetail::class);
     }
 
     public function accomplishmentReport(): HasMany
