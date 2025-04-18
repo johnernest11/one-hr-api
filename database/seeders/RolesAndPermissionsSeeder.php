@@ -29,6 +29,9 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         Permission::create(['name' => PermissionEnum::UPDATE_PROFILE, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_POSITIONS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_FUNDS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_OFFICES, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_DIVISIONS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_SECTION_OR_UNITS, 'guard_name' => 'token']);
 
         // Employee permissions
         Permission::create(['name' => PermissionEnum::CREATE_EMPLOYEE_PDS, 'guard_name' => 'token']);

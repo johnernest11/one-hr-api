@@ -20,6 +20,9 @@ enum Permission: string
     case UPDATE_APP_SETTINGS = 'update_app_settings';
     case VIEW_POSITIONS = 'view_positions';
     case VIEW_FUNDS = 'view_funds';
+    case VIEW_OFFICES = 'view_offices';
+    case VIEW_DIVISIONS = 'view_divisions';
+    case VIEW_SECTION_OR_UNITS = 'view_section_or_units';
     case VIEW_ITEMS = 'view_items';
     case CREATE_ITEMS = 'create_items';
     case UPDATE_ITEMS = 'update_items';

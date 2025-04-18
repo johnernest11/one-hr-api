@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Http\Controllers\Libraries;
+
+use App\Http\Controllers\ApiController;
+use App\Http\Requests\Libraries\DivisionRequest;
+use App\Models\Libraries\Division;
+use Illuminate\Http\JsonResponse;
+use PaginationHelper;
+use Symfony\Component\HttpFoundation\Response;
+
+class DivisionController extends ApiController
+{
+    /**
+     * Retrieve all divisions
+     */
+    public function fetch(DivisionRequest $request): JsonResponse
+    {
+        $divisions = Division::orderBy('name')->paginate(9)->toArray();
+
+        $divisions_formatted = PaginationHelper::formatLengthAwarePagination($divisions);
+
+        return $this->success($divisions_formatted, Response::HTTP_OK);
+
+    }
+
+    /**
+     * Search for a division via name
+     */
+    public function search(DivisionRequest $request): JsonResponse
+    {
+        $q = $request->validated()['query'];
+        $limit = $request->validated('limit', 9);
+
+        $divisions = Division::where('name', 'like', "%$q%")->paginate($limit)->toArray();
+
+        $divisions_formatted = PaginationHelper::formatLengthAwarePagination($divisions);
+
+        return $this->success($divisions_formatted, Response::HTTP_OK);
+    }
+}
