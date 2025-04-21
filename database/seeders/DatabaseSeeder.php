@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
         OfficesSeeder::class,
         DivisionsSeeder::class,
         SectionOrUnitsSeeder::class,
+        CountriesSeeder::class,
     ];
 
     /**

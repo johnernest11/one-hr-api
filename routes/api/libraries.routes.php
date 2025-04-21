@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Permission;
+use App\Http\Controllers\Libraries\CountryController;
 use App\Http\Controllers\Libraries\DivisionController;
 use App\Http\Controllers\Libraries\FundSourceController;
 use App\Http\Controllers\Libraries\OfficeController;
@@ -65,4 +66,17 @@ Route::prefix('section-or-units')->controller(SectionOrUnitController::class)->n
     Route::middleware(['permission:'.Permission::VIEW_SECTION_OR_UNITS->value])
         ->get('/search', 'search')
         ->name('search');
+});
+
+// Countries
+Route::prefix('countries')->controller(CountryController::class)->name('countries.')->group(function () {
+    /** @uses CountryController::fetch */
+    Route::middleware(['permission:'.Permission::VIEW_COUNTRIES->value])
+        ->get('', 'fetch')->name('index');
+
+    /** @uses CountryController::search */
+    Route::middleware(['permission:'.Permission::VIEW_COUNTRIES->value])
+        ->get('/search', 'search')
+        ->name('search');
+
 });
