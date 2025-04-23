@@ -3,8 +3,11 @@
 namespace App\Providers;
 
 use App\Enums\AppEnvironment;
+use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\Item;
 use App\Services\AppSettingsManager;
+use App\Services\ComprehensiveRecords\IndividualBasicDetailManager;
+use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
 use App\Services\Item\ItemManager;
 use App\Services\Item\ItemService;
 use App\Services\User\UserAccountManager;
@@ -45,6 +48,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ItemManager::class, function () {
             return new ItemService(new Item());
         });
+        $this->app->bind(IndividualBasicDetailManager::class, function () {
+            return new IndividualBasicDetailService(new IndividualBasicDetail());
+        });
+
     }
 
     /**

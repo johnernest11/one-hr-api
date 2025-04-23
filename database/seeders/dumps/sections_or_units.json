@@ -1,0 +1,287 @@
+[
+    {
+        "id": 1,
+        "name": "ACCOUNTING SECTION",
+        "division_id": 3
+    },
+    {
+        "id": 2,
+        "name": "ANTI-RED TAPE UNIT",
+        "division_id": 7
+    },
+    {
+        "id": 3,
+        "name": "BUDGET SECTION",
+        "division_id": 3
+    },
+    {
+        "id": 4,
+        "name": "BUILDINGS AND GROUNDS MANAGEMENT SECTION",
+        "division_id": 1
+    },
+    {
+        "id": 5,
+        "name": "CASH SECTION",
+        "division_id": 3
+    },
+    {
+        "id": 6,
+        "name": "CENTER-BASED SERVICES SECTION",
+        "division_id": 10
+    },
+    {
+        "id": 7,
+        "name": "COMMUNITY-BASED SERVICES SECTION",
+        "division_id": 10
+    },
+    {
+        "id": 8,
+        "name": "COMMUNITY-BASED SERVICES SECTION - REGIONAL INTER-AGENCY COMMITTEE AGAINST TRAFFICKING AND VIOLENCE AGAINST WOMEN AND THEIR CHILDREN (RIACAT-VAWC)",
+        "division_id": 10
+    },
+    {
+        "id": 9,
+        "name": "COMMUNITY-BASED SERVICES SECTION - SPECIAL CONCERNS UNIT",
+        "division_id": 10
+    },
+    {
+        "id": 10,
+        "name": "CRISIS INTERVENTION SECTION",
+        "division_id": 10
+    },
+    {
+        "id": 11,
+        "name": "DISASTER RESPONSE AND REHABILITATION SECTION",
+        "division_id": 2
+    },
+    {
+        "id": 12,
+        "name": "DISASTER RESPONSE INFORMATION MANAGEMENT SECTION",
+        "division_id": 2
+    },
+    {
+        "id": 13,
+        "name": "FINANCE AND MANAGEMENT DIVISION",
+        "division_id": 3
+    },
+    {
+        "id": 14,
+        "name": "GENERAL SERVICES SECTION",
+        "division_id": 1
+    },
+    {
+        "id": 15,
+        "name": "HUMAN RESOURCE PLANNING AND PERFORMANCE MANAGEMENT SECTION",
+        "division_id": 4
+    },
+    {
+        "id": 16,
+        "name": "HUMAN RESOURCE WELFARE SECTION",
+        "division_id": 4
+    },
+    {
+        "id": 17,
+        "name": "INTER-AGENCY COUNCIL AGAINST CHILD PORNOGRAPHY (IACACP) LED - SECRETARIAT",
+        "division_id": 10
+    },
+    {
+        "id": 18,
+        "name": "INTERNAL AUDIT UNIT",
+        "division_id": 7
+    },
+    {
+        "id": 19,
+        "name": "LEARNING AND DEVELOPMENT SECTION",
+        "division_id": 4
+    },
+    {
+        "id": 20,
+        "name": "LEGAL UNIT",
+        "division_id": 7
+    },
+    {
+        "id": 21,
+        "name": "NATIONAL HOUSEHOLD TARGETING SECTION",
+        "division_id": 8
+    },
+    {
+        "id": 22,
+        "name": "OFFICE OF THE ARD FOR OPERATIONS",
+        "division_id": 7
+    },
+    {
+        "id": 23,
+        "name": "OFFICE OF THE CONCURRENT-OIC ARD FOR ADMINISTRATION / OFFICE OF THE DIVISION CHIEF",
+        "division_id": 7
+    },
+    {
+        "id": 24,
+        "name": "OFFICE OF THE DIVISION CHIEF",
+        "division_id": 1
+    },
+    {
+        "id": 25,
+        "name": "OFFICE OF THE DIVISION CHIEF",
+        "division_id": 2
+    },
+    {
+        "id": 26,
+        "name": "OFFICE OF THE DIVISION CHIEF",
+        "division_id": 4
+    },
+    {
+        "id": 27,
+        "name": "OFFICE OF THE DIVISION CHIEF",
+        "division_id": 8
+    },
+    {
+        "id": 28,
+        "name": "OFFICE OF THE DIVISION CHIEF",
+        "division_id": 10
+    },
+    {
+        "id": 29,
+        "name": "OFFICE OF THE OIC-ARD FOR ADMINISTRATION",
+        "division_id": 7
+    },
+    {
+        "id": 30,
+        "name": "OFFICE OF THE OIC-ARD FOR OPERATIONS",
+        "division_id": 7
+    },
+    {
+        "id": 31,
+        "name": "OFFICE OF THE OIC-DIVISION CHIEF",
+        "division_id": 1
+    },
+    {
+        "id": 32,
+        "name": "OFFICE OF THE OIC-DIVISION CHIEF",
+        "division_id": 3
+    },
+    {
+        "id": 33,
+        "name": "OFFICE OF THE OIC-DIVISION CHIEF / CONCURRENT OIC-INNOVATIONS DIVISION",
+        "division_id": 8
+    },
+    {
+        "id": 34,
+        "name": "OFFICE OF THE OIC-HRMDD / HUMAN RESOURCE PLANNING AND PERFORMANCE MANAGEMENT SECTION",
+        "division_id": 4
+    },
+    {
+        "id": 35,
+        "name": "OFFICE OF THE REGIONAL DIRECTOR",
+        "division_id": 7
+    },
+    {
+        "id": 36,
+        "name": "OFFICE OF THE RESIDENT AUDITOR",
+        "division_id": 3
+    },
+    {
+        "id": 37,
+        "name": "PAG-ABOT PROGRAM",
+        "division_id": 5
+    },
+    {
+        "id": 38,
+        "name": "PERSONNEL ADMINISTRATION SECTION",
+        "division_id": 4
+    },
+    {
+        "id": 39,
+        "name": "POLICY DEVELOPMENT AND PLANNING SECTION",
+        "division_id": 8
+    },
+    {
+        "id": 40,
+        "name": "POLICY DEVELOPMENT AND PLANNING SECTION - PLANNING AND MONITORING UNIT",
+        "division_id": 8
+    },
+    {
+        "id": 41,
+        "name": "POLICY DEVELOPMENT AND PLANNING SECTION - RESEARCH, EVALUATION, AND GOVERNANCE UNIT",
+        "division_id": 8
+    },
+    {
+        "id": 42,
+        "name": "PROCUREMENT SECTION",
+        "division_id": 1
+    },
+    {
+        "id": 43,
+        "name": "PROPERTY AND SUPPLY SECTION",
+        "division_id": 1
+    },
+    {
+        "id": 44,
+        "name": "RECORDS AND ARCHIVES MANAGEMENT SECTION",
+        "division_id": 1
+    },
+    {
+        "id": 45,
+        "name": "RECOVERY AND REINTEGRATION PROGRAM FOR TRAFFICKED PERSONS (RRPTP)",
+        "division_id": 10
+    },
+    {
+        "id": 46,
+        "name": "REGIONAL INFORMATION AND COMMUNICATIONS TECHNOLOGY MANAGEMENT SECTION",
+        "division_id": 8
+    },
+    {
+        "id": 47,
+        "name": "REGIONAL RESOURCE OPERATIONS SECTION",
+        "division_id": 2
+    },
+    {
+        "id": 48,
+        "name": "SOCIAL MARKETING UNIT",
+        "division_id": 7
+    },
+    {
+        "id": 49,
+        "name": "SOCIAL PENSION PROGRAM MANAGEMENT OFFICE",
+        "division_id": 10
+    },
+    {
+        "id": 50,
+        "name": "SOCIAL TECHNOLOGY SECTION",
+        "division_id": 5
+    },
+    {
+        "id": 51,
+        "name": "SOCIAL WELFARE AND DEVELOPMENT (SWAD) - LA UNION",
+        "division_id": 6
+    },
+    {
+        "id": 52,
+        "name": "SOCIAL WELFARE INSTITUTIONAL DEVELOPMENT SECTION",
+        "division_id": 8
+    },
+    {
+        "id": 53,
+        "name": "SOCIAL WELFARE INSTITUTIONAL DEVELOPMENT SECTION - TECHNICAL ASSISTANCE AND RESOURCE AUGMENTATION UNIT",
+        "division_id": 8
+    },
+    {
+        "id": 54,
+        "name": "STANDARDS SECTION",
+        "division_id": 8
+    },
+    {
+        "id": 55,
+        "name": "SUPPLEMENTARY FEEDING PROGRAM MANAGEMENT OFFICE",
+        "division_id": 10
+    },
+    {
+        "id": 56,
+        "name": "SUSTAINABLE LIVELIHOOD PROGRAM",
+        "division_id": 9
+    },
+    {
+        "id": 57,
+        "name": "TARA, BASA! TUTORING PROGRAM",
+        "division_id": 5
+    }
+]

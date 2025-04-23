@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
         AppSettingsSeeder::class,
         PositionsSeeder::class,
         FundSourceSeeder::class,
+        OfficesSeeder::class,
+        DivisionsSeeder::class,
+        SectionOrUnitsSeeder::class,
+        CountriesSeeder::class,
     ];
 
     /**

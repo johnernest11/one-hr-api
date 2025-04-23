@@ -1,0 +1,52 @@
+[
+    {
+        "id": 1,
+        "name": "ADMINISTRATIVE DIVISION",
+        "office_location_id": 1
+    },
+    {
+        "id": 2,
+        "name": "DISASTER RESPONSE MANAGEMENT DIVISION",
+        "office_location_id": 1
+    },
+    {
+        "id": 3,
+        "name": "FINANCE AND MANAGEMENT DIVISION",
+        "office_location_id": 1
+    },
+    {
+        "id": 4,
+        "name": "HUMAN RESOURCE MANAGEMENT AND DEVELOPMENT DIVISION",
+        "office_location_id": 1
+    },
+    {
+        "id": 5,
+        "name": "INNOVATIONS DIVISION",
+        "office_location_id": 1
+    },
+    {
+        "id": 6,
+        "name": "OFFICE OF THE ASSISTANT REGIONAL DIRECTOR FOR OPERATIONS",
+        "office_location_id": 1
+    },
+    {
+        "id": 7,
+        "name": "OFFICE OF THE REGIONAL DIRECTOR",
+        "office_location_id": 1
+    },
+    {
+        "id": 8,
+        "name": "POLICY AND PLANS DIVISION",
+        "office_location_id": 1
+    },
+    {
+        "id": 9,
+        "name": "SPECIALIZED PROGRAMS DIVISION",
+        "office_location_id": 1
+    },
+    {
+        "id": 10,
+        "name": "STATUTORY PROGRAMS DIVISION",
+        "office_location_id": 1
+    }
+]
