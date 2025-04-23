@@ -93,18 +93,18 @@ class IndividualBasicDetailRequest extends FormRequest
             'employee.*.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
 
             // IndividualAddress
-            'individualAddress' => ['array'],
-            'individualAddress.*.residential_brgy_id' => ['required', 'exists:barangays,id'],
-            'individualAddress.*.residential_citymun_id' => ['required', 'exists:cities,id'],
-            'individualAddress.*.residential_province_id' => ['required', 'exists:provinces,id'],
-            'individualAddress.*.residential_region_id' => ['required', 'exists:regions,id'],
-            'individualAddress.*.residential_zip_code' => ['required', 'digits:4'],
-            'individualAddress.*.permanent_brgy_id' => ['required', 'exists:barangays,id'],
-            'individualAddress.*.permanent_citymun_id' => ['required', 'exists:cities,id'],
-            'individualAddress.*.permanent_province_id' => ['required', 'exists:provinces,id'],
-            'individualAddress.*.permanent_region_id' => ['required', 'exists:regions,id'],
-            'individualAddress.*.permanent_zip_code' => ['required', 'digits:4'],
-            'individualAddress.*.id' => [
+            'individual_address' => ['array'],
+            'individual_address.*.residential_brgy_id' => ['required', 'exists:barangays,id'],
+            'individual_address.*.residential_citymun_id' => ['required', 'exists:cities,id'],
+            'individual_address.*.residential_province_id' => ['required', 'exists:provinces,id'],
+            'individual_address.*.residential_region_id' => ['required', 'exists:regions,id'],
+            'individual_address.*.residential_zip_code' => ['required', 'digits:4'],
+            'individual_address.*.permanent_brgy_id' => ['required', 'exists:barangays,id'],
+            'individual_address.*.permanent_citymun_id' => ['required', 'exists:cities,id'],
+            'individual_address.*.permanent_province_id' => ['required', 'exists:provinces,id'],
+            'individual_address.*.permanent_region_id' => ['required', 'exists:regions,id'],
+            'individual_address.*.permanent_zip_code' => ['required', 'digits:4'],
+            'individual_address.*.id' => [
                 'nullable',
                 'int',
                 Rule::exists('individual_addresses', 'id')->where(function ($query) use ($individualId) {
@@ -113,28 +113,28 @@ class IndividualBasicDetailRequest extends FormRequest
                     }
                 }),
             ],
-            'individualAddress.*.residential_house_block_lot_no' => ['nullable', 'string', new DbTextMaxLength()],
-            'individualAddress.*.residential_street' => ['nullable', 'string', new DbTextMaxLength()],
-            'individualAddress.*.residential_subdivision_village' => ['nullable', 'string', new DbTextMaxLength()],
-            'individualAddress.*.permanent_house_block_lot_no' => ['nullable', 'string', new DbTextMaxLength()],
-            'individualAddress.*.permanent_street' => ['nullable', 'string', new DbTextMaxLength()],
-            'individualAddress.*.permanent_subdivision_village' => ['nullable', 'string', new DbTextMaxLength()],
+            'individual_address.*.residential_house_block_lot_no' => ['nullable', 'string', new DbTextMaxLength()],
+            'individual_address.*.residential_street' => ['nullable', 'string', new DbTextMaxLength()],
+            'individual_address.*.residential_subdivision_village' => ['nullable', 'string', new DbTextMaxLength()],
+            'individual_address.*.permanent_house_block_lot_no' => ['nullable', 'string', new DbTextMaxLength()],
+            'individual_address.*.permanent_street' => ['nullable', 'string', new DbTextMaxLength()],
+            'individual_address.*.permanent_subdivision_village' => ['nullable', 'string', new DbTextMaxLength()],
 
             // IndividualContactInfo
-            'individualContactInfo' => ['array'],
-            'individualContactInfo.*.mobile_no' => [
+            'individual_contact_info' => ['array'],
+            'individual_contact_info.*.mobile_no' => [
                 'required',
                 Rule::unique('user_profiles', 'mobile_number')->ignore(auth()->id(), 'user_id'),
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],
-            'individualContactInfo.*.email_address' => [
+            'individual_contact_info.*.email_address' => [
                 'required',
                 'email',
                 Rule::unique('individual_contact_infos', 'email_address')
-                    ->ignore($individualId ? optional($individualBasicDetail->individualContactInfo)->id : null),
+                    ->ignore($individualId ? optional($individualBasicDetail->individual_contact_info)->id : null),
             ],
-            'individualContactInfo.*.id' => [
+            'individual_contact_info.*.id' => [
                 'nullable',
                 'int',
                 Rule::exists('individual_contact_infos', 'id')->where(function ($query) use ($individualId) {
@@ -143,12 +143,12 @@ class IndividualBasicDetailRequest extends FormRequest
                     }
                 }),
             ],
-            'individualContactInfo.*.tel_no' => [
+            'individual_contact_info.*.tel_no' => [
                 'nullable',
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->fixedLine(),
             ],
-            'individualContactInfo.*._delete' => ['nullable', 'boolean'], // @todo Test model deletion; Remove later
+            'individual_contact_info.*._delete' => ['nullable', 'boolean'], // @todo Test model deletion; Remove later
         ];
     }
 

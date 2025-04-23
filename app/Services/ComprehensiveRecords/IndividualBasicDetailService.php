@@ -10,6 +10,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class IndividualBasicDetailService implements IndividualBasicDetailManager
 {
@@ -83,6 +84,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
             ];
 
             foreach ($request as $relationshipName => $inputData) {
+                $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
                 if (in_array($relationshipName, $forUpdateRel)) {
                     continue; // Skip excluded relations.
                 }
@@ -125,6 +127,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
             // For every model,
             // Loop Through the Key and update
             foreach ($request as $relationshipName => $inputData) {
+                $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
                 if (in_array($relationshipName, $excludedRel)) {
                     continue; // Skip excluded relations.
                 }

@@ -82,7 +82,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 ],
             ],
 
-            'individualAddress' => [
+            'individual_address' => [
                 [
                     'residential_house_block_lot_no' => '#001 House',
                     'residential_street' => 'Sunshine Street',
@@ -104,7 +104,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 ],
             ],
 
-            'individualContactInfo' => [
+            'individual_contact_info' => [
                 [
                     'tel_no' => '',
                     'mobile_no' => '+639123456789',
@@ -143,7 +143,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 ],
             ],
 
-            'individualAddress' => [
+            'individual_address' => [
                 [
                     'residential_house_block_lot_no' => '#001 House',
                     'residential_street' => 'Sunshine Street',
@@ -165,7 +165,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 ],
             ],
 
-            'individualContactInfo' => [
+            'individual_contact_info' => [
                 [
                     'tel_no' => '+63725551212',
                     'mobile_no' => '+639123456789',
@@ -264,8 +264,8 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $updatedData = [
             'individual' => $updateIndividual,
             'employee' => [$updateEmployee],
-            'individualAddress' => [$updateAddress],
-            'individualContactInfo' => [$updateContactInfo],
+            'individual_address' => [$updateAddress],
+            'individual_contact_nfo' => [$updateContactInfo],
         ];
 
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updatedData);

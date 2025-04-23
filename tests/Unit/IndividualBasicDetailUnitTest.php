@@ -41,8 +41,8 @@ class IndividualBasicDetailUnitTest extends TestCase
         $requestData = [
             'individual' => $testIndividual,
             'employee' => [$testEmployee],
-            'individualAddress' => [$testAddress],
-            'individualContactInfo' => [$testContactInfo],
+            'individual_address' => [$testAddress],
+            'individual_contact_info' => [$testContactInfo],
         ];
 
         return $requestData;
@@ -68,8 +68,8 @@ class IndividualBasicDetailUnitTest extends TestCase
         $newInfo = $this->generate_test_data();
         // Add ids
         $newInfo['employee'][0]['id'] = $individual->employee->id;
-        $newInfo['individualAddress'][0]['id'] = $individual->individualAddress->id;
-        $newInfo['individualContactInfo'][0]['id'] = $individual->individualContactInfo->id;
+        $newInfo['individual_address'][0]['id'] = $individual->individualAddress->id;
+        $newInfo['individual_contact_info'][0]['id'] = $individual->individualContactInfo->id;
         $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
         $this->assertDatabaseHas('individual_basic_details', $newInfo['individual']);
     }
