@@ -2,7 +2,6 @@
 
 namespace Database\Factories\ComprehensiveRecords;
 
-use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\Item;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,7 +18,6 @@ class EmployeeFactory extends Factory
     public function definition(): array
     {
         return [
-            'individual_basic_detail_id' => IndividualBasicDetail::factory(),
             'id_number' => (string) fake()->randomNumber(9),
             'item_id' => Item::factory(),
             'agency_employee_no' => (string) fake()->randomNumber(9),

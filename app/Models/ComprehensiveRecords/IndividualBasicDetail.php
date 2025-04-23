@@ -6,6 +6,7 @@ use App\Enums\BloodType;
 use App\Enums\Citizenship;
 use App\Enums\CitizenshipAcquisition;
 use App\Enums\CivilStatus;
+use App\Enums\ExtensionNameCategory;
 use App\Enums\SexualCategory;
 use App\Models\UserProfile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,7 +34,6 @@ class IndividualBasicDetail extends Model
         'telephone_number',
         'sex',
         'email',
-
         'place_of_birth',
         'civil_status',
         'height',
@@ -54,6 +54,7 @@ class IndividualBasicDetail extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'ext_name' => ExtensionNameCategory::class, // Laravel 9 enum casting. @see https://laravel.com/docs/9.x/releases
         'civil_status' => CivilStatus::class, // Laravel 9 enum casting. @see https://laravel.com/docs/9.x/releases
         'blood_type' => BloodType::class, // Laravel 9 enum casting. @see https://laravel.com/docs/9.x/releases
         'birthday' => 'date:Y-m-d',

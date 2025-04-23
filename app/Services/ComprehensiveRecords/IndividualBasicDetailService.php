@@ -7,14 +7,12 @@ use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Traits\Services\CanBuildPagination;
 use App\Traits\Services\CanResolveModelFromId;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
-class IndividualBasicDetailService
+class IndividualBasicDetailService implements IndividualBasicDetailManager
 {
-    // @todo: Add Manager
     use CanBuildPagination;
     use CanResolveModelFromId;
 
@@ -49,21 +47,25 @@ class IndividualBasicDetailService
     //CRUD for WES
     //imports & exports
 
-    public function all(): LengthAwarePaginator
+    public function all(?int $limit = null): LengthAwarePaginator
     {
-        /** @var Builder $item */
         $query = $this->model->with(array_merge($this->comprehensive_records, ['employee']));
 
-        return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
+        return $this->buildPagination(PaginationType::LENGTH_AWARE, $query, $limit);
     }
 
     /**
      * Fetch the consolidated data of the personnel for PDS
      *{@inheritDoc}
      */
-    public function viewConsolidatedData(IndividualBasicDetail $individualBasicDetail): IndividualBasicDetail
+    public function viewConsolidatedData(IndividualBasicDetail|int $individualBasicDetail): IndividualBasicDetail
     {
-        $individualId = $individualBasicDetail->id;
+        // check if IndividualBasicDetail or int
+        if ($individualBasicDetail instanceof IndividualBasicDetail) {
+            $individualId = $individualBasicDetail->id;
+        } else {
+            $individualId = $individualBasicDetail;
+        }
 
         $individualData = $this->model->with(array_merge($this->comprehensive_records, ['employee']))->where('id', $individualId)->first();
 
@@ -71,7 +73,7 @@ class IndividualBasicDetailService
 
     }
 
-    public function store(array $request)
+    public function store(array $request): IndividualBasicDetail
     {
         return DB::transaction(function () use ($request) {
             $individualData = $this->model->create($request['individual']);
@@ -82,7 +84,7 @@ class IndividualBasicDetailService
 
             foreach ($request as $relationshipName => $inputData) {
                 if (in_array($relationshipName, $forUpdateRel)) {
-                    continue; // Skip excluded relations. They need to be updated.
+                    continue; // Skip excluded relations.
                 }
 
                 if ($individualData->{$relationshipName}() instanceof Relation && is_array($inputData) && ! empty($inputData)) {
@@ -99,7 +101,7 @@ class IndividualBasicDetailService
 
     }
 
-    public function update(IndividualBasicDetail $individualBasicDetail, array $request)
+    public function update(IndividualBasicDetail $individualBasicDetail, array $request): IndividualBasicDetail
     {
         // Pass data
         // Update data per module

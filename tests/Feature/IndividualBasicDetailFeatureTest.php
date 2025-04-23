@@ -118,7 +118,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 'first_name' => 'ppms',
                 'last_name' => 'ppms',
                 'middle_name' => 'test',
-                'ext_name' => 'Jr.',
+                'ext_name' => 'I',
                 'birthday' => '2000-01-01',
                 'sex' => 'male',
 

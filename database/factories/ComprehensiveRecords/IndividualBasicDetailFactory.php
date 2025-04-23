@@ -6,6 +6,7 @@ use App\Enums\BloodType;
 use App\Enums\Citizenship;
 use App\Enums\CitizenshipAcquisition;
 use App\Enums\CivilStatus;
+use App\Enums\ExtensionNameCategory;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
@@ -29,7 +30,7 @@ class IndividualBasicDetailFactory extends Factory
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'middle_name' => fake()->name(),
-            'ext_name' => fake()->randomElement(['Jr.', 'Sr.', 'III', 'IV']),
+            'ext_name' => fake()->randomElement(ConversionHelper::enumToArray(ExtensionNameCategory::class)),
             'birthday' => fake()->date(),
             'sex' => fake()->randomElement(['male', 'female']),
 

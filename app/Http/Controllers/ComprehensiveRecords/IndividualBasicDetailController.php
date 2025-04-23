@@ -5,17 +5,17 @@ namespace App\Http\Controllers\ComprehensiveRecords;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\ComprehensiveRecords\IndividualBasicDetailRequest;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
-use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
+use App\Services\ComprehensiveRecords\IndividualBasicDetailManager;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class IndividualBasicDetailController extends ApiController
 {
-    private IndividualBasicDetailService $individualBasicDetailService;
+    private IndividualBasicDetailManager $individualBasicDetailService;
 
     public function __construct(
-        IndividualBasicDetailService $individualBasicDetailService,
+        IndividualBasicDetailManager $individualBasicDetailService,
     ) {
         $this->individualBasicDetailService = $individualBasicDetailService;
     }
@@ -23,9 +23,11 @@ class IndividualBasicDetailController extends ApiController
     /**
      * View all Individual Data
      */
-    public function viewAllIndividuals(): JsonResponse
+    public function viewAllIndividuals(IndividualBasicDetailRequest $request): JsonResponse
     {
-        $individualData = $this->individualBasicDetailService->all();
+        $limit = $request->validated('limit', 9);
+
+        $individualData = $this->individualBasicDetailService->all($limit);
         $formatted = PaginationHelper::formatPagination($individualData);
 
         return $this->success($formatted, Response::HTTP_OK);
