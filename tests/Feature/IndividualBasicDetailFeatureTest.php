@@ -10,10 +10,11 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\Item;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use DB;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class IndividualBasicDetailFeatureTest extends TestCase
@@ -47,6 +48,56 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $this->tokenManager = resolve(PersistentAuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
         $this->authToken = $this->tokenManager->generateToken($user, $authTokenExpiration, 'mock_token');
+
+    }
+
+    /**
+     * This function is for truncating all tables in the test database.
+     *
+     * The problem that this aims to solve:
+     * During the test for fulltext search, we have to commit the changes to the database for the fulltext to work properly.
+     * After all of the assertions, we have to cleanup the database.
+     *
+     * We need to truncate every record that was commited to ensure that the succeeding tests will proceed as expected.
+     */
+    public function truncate_test_db(): void
+    {
+        DB::statement('SET foreign_key_checks=0'); // Temporarily remove foreign key constraint to truncate tables without running into errors.
+        $databaseName = DB::getDatabaseName();
+        $tables = DB::select("SELECT * FROM information_schema.tables WHERE table_schema = '$databaseName'");
+        foreach ($tables as $table) {
+            $name = $table->TABLE_NAME;
+            DB::table($name)->truncate();
+        }
+        DB::statement('SET foreign_key_checks=1'); // Reenable foreign key constraint.
+    }
+
+    public function test_it_can_search_for_individual_data(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create(); // Create a test record
+
+        // Problem: Fulltext does not work in tests: https://dev.mysql.com/doc/refman/en/innodb-fulltext-index.html#innodb-fulltext-index-transaction
+        // To resolve this, we need to commit the transaction first and clean the database later.
+        // Reference for the solution:
+        // https://laracasts.com/discuss/channels/testing/issue-with-data-persistenceeloquent-query-when-running-tests?page=1&replyId=926176
+        DB::commit(); // Commit the changes so that the fulltext search will work.
+
+        $q = $individual->first_name;
+        $response = $this->withToken($this->authToken)->getJson("$this->baseUri/search?query=$q");
+        $response->assertStatus(200);
+
+        $responseData = $response->decodeResponseJson()['data'];
+        $this->assertNotEmpty($responseData, 'Search returned no results.');
+
+        $firstSearchResult = $responseData[0];
+        $this->assertStringContainsString($q, $firstSearchResult['first_name']);
+
+        // Assertions done, cleanup the database.
+        $this->truncate_test_db();
+
+        // Check if the database has been successfully truncated. Testing for one table only.
+        $initialCount = DB::table('employees')->count();
+        $this->assertEquals(0, $initialCount, 'Database table should be empty after cleanup.');
 
     }
 

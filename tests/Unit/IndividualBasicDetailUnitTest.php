@@ -8,6 +8,7 @@ use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\User;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
+use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -26,6 +27,59 @@ class IndividualBasicDetailUnitTest extends TestCase
         $this->artisan('db:seed');
         $this->individualBasicDetailService = new IndividualBasicDetailService(new IndividualBasicDetail());
         $this->user = $this->produceUsers();
+
+    }
+
+    /**
+     * This function is for truncating all tables in the test database.
+     *
+     * The problem that this aims to solve:
+     * During the test for fulltext search, we have to commit the changes to the database for the fulltext to work properly.
+     * After all of the assertions, we have to cleanup the database.
+     *
+     * We need to truncate every record that was commited to ensure that the succeeding tests will proceed as expected.
+     */
+    public function truncate_test_db(): void
+    {
+        DB::statement('SET foreign_key_checks=0'); // Temporarily remove foreign key constraint to truncate tables without running into errors.
+        $databaseName = DB::getDatabaseName();
+        $tables = DB::select("SELECT * FROM information_schema.tables WHERE table_schema = '$databaseName'");
+        foreach ($tables as $table) {
+            $name = $table->TABLE_NAME;
+            DB::table($name)->truncate();
+        }
+        DB::statement('SET foreign_key_checks=1'); // Reenable foreign key constraint.
+    }
+
+    /**
+     * Test if an IndividualBasicDetail can be searched via its name.
+     */
+    public function test_can_search_individual_data_by_name(): void
+    {
+        $testData = $this->generate_test_data();
+        $testData['individual']['first_name'] = 'TestFirstName';
+
+        $individual = $this->individualBasicDetailService->store($testData);
+        $this->assertDatabaseCount('individual_basic_details', 1);
+
+        // Problem: Fulltext does not work in tests: https://dev.mysql.com/doc/refman/en/innodb-fulltext-index.html#innodb-fulltext-index-transaction
+        // To resolve this, we need to commit the transaction first and clean the database later.
+        // Reference for the solution:
+        // https://laracasts.com/discuss/channels/testing/issue-with-data-persistenceeloquent-query-when-running-tests?page=1&replyId=926176
+        DB::commit(); // Commit the changes so that the fulltext search will work.
+
+        $q = 'TestFirstName';
+        $searchResult = $this->individualBasicDetailService->search($q);
+
+        $this->assertCount(1, $searchResult);
+        $this->assertEquals($q, $searchResult->first()->first_name);
+
+        // Assertions done, cleanup the database.
+        $this->truncate_test_db();
+
+        // Check if the database has been successfully truncated. Testing for one table only.
+        $initialCount = DB::table('employees')->count();
+        $this->assertEquals(0, $initialCount, 'Database table should be empty after refresh.');
 
     }
 

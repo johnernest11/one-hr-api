@@ -5,6 +5,10 @@ use App\Http\Controllers\ComprehensiveRecords\IndividualBasicDetailController;
 
 Route::middleware(['auth:token', 'verified.api'])->controller(IndividualBasicDetailController::class)->name('individual.')->group(function () {
     Route::middleware(['permission:'.Permission::VIEW_EMPLOYEE_PDS->value])
+        ->get('/search', 'search')
+        ->name('search');
+
+    Route::middleware(['permission:'.Permission::VIEW_EMPLOYEE_PDS->value])
         ->get('', 'viewAllIndividuals')
         ->name('viewAllIndividuals');
 

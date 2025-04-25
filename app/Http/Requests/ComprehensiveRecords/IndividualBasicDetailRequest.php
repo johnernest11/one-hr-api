@@ -39,6 +39,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.viewAllIndividuals' => $this->getViewIndividualRules(),
             'individual.store' => $this->getStoreUpdateIndividualRules(),
             'individual.update' => $this->getStoreUpdateIndividualRules(),
+            'individual.search' => $this->getSearchIndividualRules(),
             default => [],
         };
     }
@@ -149,6 +150,14 @@ class IndividualBasicDetailRequest extends FormRequest
                 (new PhoneRule())->country('PH')->fixedLine(),
             ],
             'individual_contact_info.*._delete' => ['nullable', 'boolean'], // @todo Test model deletion; Remove later
+        ];
+    }
+
+    public function getSearchIndividualRules(): array
+    {
+        return [
+            'query' => ['required', 'string'],
+            'limit' => ['nullable', 'int'],
         ];
     }
 

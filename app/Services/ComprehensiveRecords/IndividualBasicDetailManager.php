@@ -2,8 +2,12 @@
 
 namespace App\Services\ComprehensiveRecords;
 
+use App\Enums\PaginationType;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\CursorPaginator;
 
 interface IndividualBasicDetailManager
 {
@@ -26,4 +30,13 @@ interface IndividualBasicDetailManager
      * Update an IndividualBasicDetail
      */
     public function update(IndividualBasicDetail $individualBasicDetail, array $request): IndividualBasicDetail;
+
+    /**
+     * Search for IndividualBasicDetail
+     */
+    public function search(
+        string $term,
+        ?PaginationType $pagination = null,
+        ?int $limit = null
+    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
 }
