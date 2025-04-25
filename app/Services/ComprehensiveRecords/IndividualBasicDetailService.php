@@ -7,7 +7,10 @@ use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Traits\Services\CanBuildPagination;
 use App\Traits\Services\CanResolveModelFromId;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -165,5 +168,24 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
             return $fetchedIndividualData;
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
+    }
+
+    /**
+     * Search individual via last_name, first_name, and middle_name
+     */
+    public function search(
+        string $term,
+        ?PaginationType $pagination = null,
+        ?int $limit = null
+    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
+
+        $individual = IndividualBasicDetail::query()
+            ->with(array_merge($this->comprehensive_records, ['employee']))
+           // Do a full match search for the names as they have a fullText index in our migrations
+            ->whereFullText('first_name', $term)
+            ->orWhereFullText('last_name', $term)
+            ->orWhereFullText('middle_name', $term);
+
+        return $this->buildPagination($pagination, $individual, $limit);
     }
 }

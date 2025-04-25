@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ComprehensiveRecords;
 
+use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\ComprehensiveRecords\IndividualBasicDetailRequest;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
@@ -56,6 +57,18 @@ class IndividualBasicDetailController extends ApiController
         $individualData = $this->individualBasicDetailService->update($individualBasicDetail, $request->validated());
 
         return $this->success(['data' => $individualData], Response::HTTP_OK);
+
+    }
+
+    public function search(IndividualBasicDetailRequest $request): JsonResponse
+    {
+        $q = $request->validated()['query'];
+        $limit = $request->validated('limit', 9);
+
+        $individualData = $this->individualBasicDetailService->search($q, PaginationType::LENGTH_AWARE, $limit);
+        $formatted = PaginationHelper::formatPagination($individualData);
+
+        return $this->success($formatted, Response::HTTP_OK);
 
     }
 }
