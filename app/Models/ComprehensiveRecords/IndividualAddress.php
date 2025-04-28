@@ -52,7 +52,7 @@ class IndividualAddress extends Model
     ];
 
     /**
-     * An Personnel address belongs to a PDS
+     * An address belongs to an individual
      */
     public function individualBasicDetail(): BelongsTo
     {

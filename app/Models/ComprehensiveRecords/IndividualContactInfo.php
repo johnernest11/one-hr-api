@@ -25,7 +25,7 @@ class IndividualContactInfo extends Model
     ];
 
     /**
-     * A Personnel Contact Information belongs to exactly one individual
+     * A contact info belongs to exactly one individual
      */
     public function individualBasicDetail(): BelongsTo
     {

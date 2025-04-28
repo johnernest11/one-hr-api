@@ -7,6 +7,7 @@ use App\Enums\Citizenship;
 use App\Enums\CitizenshipAcquisition;
 use App\Enums\CivilStatus;
 use App\Enums\ExtensionNameCategory;
+use App\Enums\FamilyMemberCategory;
 use App\Enums\SexualCategory;
 use App\Rules\DbTextMaxLength;
 use App\Rules\DbVarcharMaxLength;
@@ -129,12 +130,7 @@ class IndividualBasicDetailRequest extends FormRequest
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],
-            'individual_contact_info.*.email_address' => [
-                'required',
-                'email',
-                Rule::unique('individual_contact_infos', 'email_address')
-                    ->ignore($individualId ? optional($individualBasicDetail->individual_contact_info)->id : null),
-            ],
+            'individual_contact_info.*.email_address' => ['nullable', 'email', 'unique:individual_contact_infos,email_address,'.request('individual_contact_info.0.id')], // Get the first record on the array since this is a has one relationship anyway. Ignore uniqueness when id is given.
             'individual_contact_info.*.id' => [
                 'nullable',
                 'int',
@@ -149,7 +145,33 @@ class IndividualBasicDetailRequest extends FormRequest
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->fixedLine(),
             ],
-            'individual_contact_info.*._delete' => ['nullable', 'boolean'], // @todo Test model deletion; Remove later
+
+            // IndividualFamily
+            'individual_family' => ['array'],
+            'individual_family.*.first_name' => ['string', 'required', new DbVarcharMaxLength()],
+            'individual_family.*.last_name' => ['string', 'required', new DbVarcharMaxLength()],
+            'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
+            'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_family.*.id' => [
+                'nullable',
+                'int',
+                Rule::exists('individual_families', 'id')->where(function ($query) use ($individualId) {
+                    if ($individualId) {
+                        $query->where('individual_basic_detail_id', $individualId);
+                    }
+                }),
+            ],
+            'individual_family.*.middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_family.*.ext_name' => ['nullable', new Enum(ExtensionNameCategory::class)],
+            'individual_family.*.occupation' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_family.*.employers_business_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_family.*.business_address' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_family.*.telephone_no' => [
+                'nullable',
+                new InternationalPhoneNumberFormat(),
+                (new PhoneRule())->country('PH')->mobile(),
+            ],
+            'individual_family.*._delete' => ['nullable', 'boolean'], // Can delete family members.
         ];
     }
 

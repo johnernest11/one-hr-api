@@ -7,6 +7,7 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
+use App\Models\ComprehensiveRecords\IndividualFamily;
 use App\Models\Item;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
@@ -33,6 +34,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         'employee',
         'individualAddress',
         'individualContactInfo',
+        'individualFamily',
     ];
 
     public function setUp(): void
@@ -107,8 +109,6 @@ class IndividualBasicDetailFeatureTest extends TestCase
             'individual' => [
                 'first_name' => 'ppms',
                 'last_name' => 'ppms',
-                'middle_name' => '',
-                'ext_name' => '',
                 'birthday' => '2000-01-01',
                 'sex' => 'male',
 
@@ -117,7 +117,6 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 'height' => '2.0',
                 'weight' => '70',
                 'blood_type' => 'AB-',
-                'gsis_no' => '',
                 'pag_ibig_no' => '09234886',
                 'philhealth_no' => '09234886',
                 'sss_no' => '09234886',
@@ -126,26 +125,15 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 'citizenship_acquisition' => 'By Birth',
             ],
 
-            'employee' => [
-                [
-                    'id_number' => '',
-                    'agency_employee_no' => '',
-                ],
-            ],
-
             'individual_address' => [
                 [
                     'residential_house_block_lot_no' => '#001 House',
                     'residential_street' => 'Sunshine Street',
-                    'residential_subdivision_village' => '',
                     'residential_brgy_id' => 1,
                     'residential_citymun_id' => 3,
                     'residential_province_id' => 3,
                     'residential_region_id' => 2,
                     'residential_zip_code' => '3000',
-                    'permanent_house_block_lot_no' => '',
-                    'permanent_street' => '',
-                    'permanent_subdivision_village' => '',
                     'permanent_brgy_id' => 1,
                     'permanent_citymun_id' => 3,
                     'permanent_province_id' => 3,
@@ -157,9 +145,15 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
             'individual_contact_info' => [
                 [
-                    'tel_no' => '',
                     'mobile_no' => '+639123456789',
                     'email_address' => 'ppms.admin@test.com',
+                ],
+            ],
+            'individual_family' => [
+                [
+                    'first_name' => 'Father',
+                    'last_name' => 'Father',
+                    'class' => 'Father',
                 ],
             ],
         ];
@@ -221,6 +215,20 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'tel_no' => '+63725551212',
                     'mobile_no' => '+639123456789',
                     'email_address' => 'ppms.admin@test.com',
+                ],
+            ],
+            'individual_family' => [
+                [
+                    'first_name' => 'Father',
+                    'last_name' => 'Father',
+                    'middle_name' => 'Father',
+                    'ext_name' => 'I',
+                    'occupation' => 'Gardener',
+                    'employers_business_name' => 'Test Business',
+                    'business_address' => 'Test Address',
+                    'telephone_no' => '+639123456789',
+                    'class' => 'Father',
+                    'date_of_birth' => '1979-01-01',
                 ],
             ],
         ];
@@ -299,24 +307,30 @@ class IndividualBasicDetailFeatureTest extends TestCase
     {
         $individuals = IndividualBasicDetail::factory(5)->create();
         $firstIndividual = $individuals->first();
+        // Get first record in hasMany relationship.
+        // @todo: Update as we add new models.
+        $firstFamily = $firstIndividual->individualFamily()->first();
 
         // Generate updated data
         $updateIndividual = IndividualBasicDetail::factory()->make()->toArray();
         $updateEmployee = Employee::factory()->make()->toArray();
         $updateAddress = IndividualAddress::factory()->make()->toArray();
         $updateContactInfo = IndividualContactInfo::factory()->make()->toArray();
+        $updateFamily = IndividualFamily::factory()->make()->toArray();
 
         // Add the correct id on request body.
         $updateEmployee['id'] = $firstIndividual->employee->id;
         $updateAddress['id'] = $firstIndividual->individualAddress->id;
         $updateContactInfo['id'] = $firstIndividual->individualContactInfo->id;
+        $updateFamily['id'] = $firstFamily->id;
 
         // Combine data and structure it so that it is similar to the request body
         $updatedData = [
             'individual' => $updateIndividual,
             'employee' => [$updateEmployee],
             'individual_address' => [$updateAddress],
-            'individual_contact_nfo' => [$updateContactInfo],
+            'individual_contact_info' => [$updateContactInfo],
+            'individual_family' => [$updateFamily],
         ];
 
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updatedData);

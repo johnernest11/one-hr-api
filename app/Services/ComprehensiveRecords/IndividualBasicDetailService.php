@@ -26,12 +26,14 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
     private $comprehensive_records = [
         'individualAddress',
         'individualContactInfo',
+        'individualFamily',
     ];
 
     // @todo Update this array until all C1 models are added
     private $c1_records = [
         'individualAddress',
         'individualContactInfo',
+        'individualFamily',
     ];
 
     private IndividualBasicDetail $model;

@@ -11,6 +11,7 @@ use App\Enums\SexualCategory;
 use App\Models\UserProfile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -93,5 +94,13 @@ class IndividualBasicDetail extends Model
     public function individualContactInfo(): HasOne
     {
         return $this->hasOne(IndividualContactInfo::class);
+    }
+
+    /**
+     * An individual has many family members
+     */
+    public function individualFamily(): HasMany
+    {
+        return $this->hasMany(IndividualFamily::class);
     }
 }
