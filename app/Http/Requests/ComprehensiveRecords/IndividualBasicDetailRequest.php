@@ -148,10 +148,6 @@ class IndividualBasicDetailRequest extends FormRequest
 
             // IndividualFamily
             'individual_family' => ['array'],
-            'individual_family.*.first_name' => ['string', 'required', new DbVarcharMaxLength()],
-            'individual_family.*.last_name' => ['string', 'required', new DbVarcharMaxLength()],
-            'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
-            'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
             'individual_family.*.id' => [
                 'nullable',
                 'int',
@@ -172,6 +168,10 @@ class IndividualBasicDetailRequest extends FormRequest
                 (new PhoneRule())->country('PH')->mobile(),
             ],
             'individual_family.*._delete' => ['nullable', 'boolean'], // Can delete family members.
+            'individual_family.*.first_name' => ['string', 'required', new DbVarcharMaxLength()],
+            'individual_family.*.last_name' => ['string', 'required', new DbVarcharMaxLength()],
+            'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
+            'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
         ];
     }
 
