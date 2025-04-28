@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\ComprehensiveRecords;
 
+use App\Enums\AcademicLevel;
 use App\Enums\BloodType;
 use App\Enums\Citizenship;
 use App\Enums\CitizenshipAcquisition;
@@ -172,6 +173,27 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_family.*.last_name' => ['string', 'required', new DbVarcharMaxLength()],
             'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
             'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+
+            // IndividualEducationalBackground
+            'individual_educational_background' => ['array'],
+            'individual_educational_background.*.level' => ['required', new Enum(AcademicLevel::class)],
+            'individual_educational_background.*.id' => [
+                'nullable',
+                'int',
+                Rule::exists('individual_educational_backgrounds', 'id')->where(function ($query) use ($individualId) {
+                    if ($individualId) {
+                        $query->where('individual_basic_detail_id', $individualId);
+                    }
+                }),
+            ],
+            'individual_educational_background.*.schools_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_educational_background.*.education_description' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_educational_background.*.period_of_attendance_from' => ['date_format:Y', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
+            'individual_educational_background.*.period_of_attendance_to' => ['date_format:Y', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
+            'individual_educational_background.*.highest_level_units_earned' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_educational_background.*.year_graduated' => ['date_format:Y', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
+            'individual_educational_background.*.scholarship_academic_honors_received' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_educational_background.*._delete' => ['nullable', 'boolean'], // Can delete educational backgrounds.
         ];
     }
 

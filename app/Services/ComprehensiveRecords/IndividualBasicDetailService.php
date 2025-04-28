@@ -27,6 +27,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualAddress',
         'individualContactInfo',
         'individualFamily',
+        'individualEducationalBackground',
     ];
 
     // @todo Update this array until all C1 models are added
@@ -34,6 +35,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualAddress',
         'individualContactInfo',
         'individualFamily',
+        'individualEducationalBackground',
     ];
 
     private IndividualBasicDetail $model;
