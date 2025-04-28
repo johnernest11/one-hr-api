@@ -11,6 +11,7 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
+use App\Models\ComprehensiveRecords\IndividualFamily;
 use ConversionHelper;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -52,10 +53,12 @@ class IndividualBasicDetailFactory extends Factory
     public function configure()
     {
         // Upon creating IndividualBasicDetail, the following relationships should also be created.
+        // @todo: Update this as we add new related models.
         return $this->afterCreating(function (IndividualBasicDetail $individualBasicDetail) {
             Employee::factory()->for($individualBasicDetail)->create();
             IndividualAddress::factory()->for($individualBasicDetail)->create();
             IndividualContactInfo::factory()->for($individualBasicDetail)->create();
+            IndividualFamily::factory()->for($individualBasicDetail)->create();
         });
     }
 }
