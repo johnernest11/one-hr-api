@@ -103,4 +103,12 @@ class IndividualBasicDetail extends Model
     {
         return $this->hasMany(IndividualFamily::class);
     }
+
+    /**
+     * An individual has many educational background
+     */
+    public function individualEducationalBackground(): HasMany
+    {
+        return $this->hasMany(IndividualEducationalBackground::class);
+    }
 }

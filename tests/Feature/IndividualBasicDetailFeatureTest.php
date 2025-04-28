@@ -7,6 +7,7 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
+use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualFamily;
 use App\Models\Item;
 use App\Models\User;
@@ -30,11 +31,13 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
     private PersistentAuthTokenManager $tokenManager;
 
+    // @todo update when there's new records
     private array $comprehensive_records_rel = [
         'employee',
         'individualAddress',
         'individualContactInfo',
         'individualFamily',
+        'individualEducationalBackground',
     ];
 
     public function setUp(): void
@@ -156,6 +159,12 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'class' => 'Father',
                 ],
             ],
+            'individual_educational_background' => [
+                [
+                    'level' => 'Elementary',
+                ],
+            ],
+
         ];
 
         $allFields = [
@@ -229,6 +238,18 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'telephone_no' => '+639123456789',
                     'class' => 'Father',
                     'date_of_birth' => '1979-01-01',
+                ],
+            ],
+            'individual_educational_background' => [
+                [
+                    'schools_name' => 'School Test 1',
+                    'education_description' => 'Elementary',
+                    'level' => 'Elementary',
+                    'period_of_attendance_from' => '2000',
+                    'period_of_attendance_to' => '2010',
+                    'highest_level_units_earned' => 'Graduate',
+                    'year_graduated' => '2010',
+                    'scholarship_academic_honors_received' => null,
                 ],
             ],
         ];
@@ -310,6 +331,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
         $firstFamily = $firstIndividual->individualFamily()->first();
+        $firstEducation = $firstIndividual->individualEducationalBackground()->first();
 
         // Generate updated data
         $updateIndividual = IndividualBasicDetail::factory()->make()->toArray();
@@ -317,12 +339,14 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $updateAddress = IndividualAddress::factory()->make()->toArray();
         $updateContactInfo = IndividualContactInfo::factory()->make()->toArray();
         $updateFamily = IndividualFamily::factory()->make()->toArray();
+        $updateEducation = IndividualEducationalBackground::factory()->make()->toArray();
 
         // Add the correct id on request body.
         $updateEmployee['id'] = $firstIndividual->employee->id;
         $updateAddress['id'] = $firstIndividual->individualAddress->id;
         $updateContactInfo['id'] = $firstIndividual->individualContactInfo->id;
         $updateFamily['id'] = $firstFamily->id;
+        $updateEducation['id'] = $firstEducation->id;
 
         // Combine data and structure it so that it is similar to the request body
         $updatedData = [
@@ -331,6 +355,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
             'individual_address' => [$updateAddress],
             'individual_contact_info' => [$updateContactInfo],
             'individual_family' => [$updateFamily],
+            'individual_educational_background' => [$updateEducation],
         ];
 
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updatedData);

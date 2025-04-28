@@ -6,6 +6,7 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
+use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualFamily;
 use App\Models\User;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
@@ -93,6 +94,7 @@ class IndividualBasicDetailUnitTest extends TestCase
         $testAddress = IndividualAddress::factory()->make()->toArray();
         $testContactInfo = IndividualContactInfo::factory()->make()->toArray();
         $testFamily = IndividualFamily::factory()->make()->toArray();
+        $testEducation = IndividualEducationalBackground::factory()->make()->toArray();
 
         // Combine data and structure it so that it is similar to the request body
         $requestData = [
@@ -101,6 +103,7 @@ class IndividualBasicDetailUnitTest extends TestCase
             'individual_address' => [$testAddress],
             'individual_contact_info' => [$testContactInfo],
             'individual_family' => [$testFamily],
+            'individual_educational_background' => [$testEducation],
         ];
 
         return $requestData;
@@ -126,6 +129,7 @@ class IndividualBasicDetailUnitTest extends TestCase
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
         $firstFamily = $individual->individualFamily()->first();
+        $firstEducation = $individual->individualEducationalBackground()->first();
 
         $newInfo = $this->generate_test_data();
         // Add ids
@@ -133,6 +137,7 @@ class IndividualBasicDetailUnitTest extends TestCase
         $newInfo['individual_address'][0]['id'] = $individual->individualAddress->id;
         $newInfo['individual_contact_info'][0]['id'] = $individual->individualContactInfo->id;
         $newInfo['individual_family'][0]['id'] = $firstFamily->id;
+        $newInfo['individual_educational_background'][0]['id'] = $firstEducation->id;
         $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
         $this->assertDatabaseHas('individual_basic_details', $newInfo['individual']);
     }
