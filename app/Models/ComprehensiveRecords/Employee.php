@@ -2,6 +2,7 @@
 
 namespace App\Models\ComprehensiveRecords;
 
+use App\Models\Libraries\Program;
 use App\Models\Libraries\SalaryGrade;
 use App\Models\Libraries\SectionOrUnit;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +26,7 @@ class Employee extends Model
         'id_number',
         'item_id',
         'salary_grade_id',
+        'program_id',
         'section_or_unit_id',
         'agency_employee_no',
     ];
@@ -51,5 +53,13 @@ class Employee extends Model
     public function sectionOrUnit(): HasOne
     {
         return $this->hasOne(SectionOrUnit::class);
+    }
+
+    /**
+     * An employee has one program
+     */
+    public function program(): HasOne
+    {
+        return $this->hasOne(Program::class);
     }
 }

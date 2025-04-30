@@ -201,6 +201,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 [
                     'id_number' => '01111',
                     'salary_grade_id' => 1,
+                    'program_id' => 1,
                     'section_or_unit_id' => 1,
                     'agency_employee_no' => '01111',
                 ],

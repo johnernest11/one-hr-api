@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
         SectionOrUnitsSeeder::class,
         CountriesSeeder::class,
         SalaryGradesSeeder::class,
+        ProgramsSeeder::class,
     ];
 
     /**

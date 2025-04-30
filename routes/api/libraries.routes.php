@@ -6,6 +6,7 @@ use App\Http\Controllers\Libraries\DivisionController;
 use App\Http\Controllers\Libraries\FundSourceController;
 use App\Http\Controllers\Libraries\OfficeController;
 use App\Http\Controllers\Libraries\PositionController;
+use App\Http\Controllers\Libraries\ProgramController;
 use App\Http\Controllers\Libraries\SalaryGradeController;
 use App\Http\Controllers\Libraries\SectionOrUnitController;
 
@@ -90,6 +91,19 @@ Route::prefix('salary-grades')->controller(SalaryGradeController::class)->name('
 
     /** @uses SalaryGradeController::search */
     Route::middleware(['permission:'.Permission::VIEW_SALARY_GRADES->value])
+        ->get('/search', 'search')
+        ->name('search');
+
+});
+
+// Programs
+Route::prefix('programs')->controller(ProgramController::class)->name('programs.')->group(function () {
+    /** @uses ProgramController::fetch */
+    Route::middleware(['permission:'.Permission::VIEW_PROGRAMS->value])
+        ->get('', 'fetch')->name('index');
+
+    /** @uses ProgramController::search */
+    Route::middleware(['permission:'.Permission::VIEW_PROGRAMS->value])
         ->get('/search', 'search')
         ->name('search');
 

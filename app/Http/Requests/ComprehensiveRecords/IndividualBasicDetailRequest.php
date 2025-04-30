@@ -84,6 +84,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'employee' => ['array'],
             'employee.*.item_id' => ['required', 'int'],
             'employee.*.salary_grade_id' => ['required', 'int'],
+            'employee.*.program_id' => ['nullable', 'int'],
             'employee.*.section_or_unit_id' => ['required', 'int'],
             'employee.*.id' => [
                 'nullable',
