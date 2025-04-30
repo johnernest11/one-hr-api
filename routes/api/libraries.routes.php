@@ -6,6 +6,7 @@ use App\Http\Controllers\Libraries\DivisionController;
 use App\Http\Controllers\Libraries\FundSourceController;
 use App\Http\Controllers\Libraries\OfficeController;
 use App\Http\Controllers\Libraries\PositionController;
+use App\Http\Controllers\Libraries\SalaryGradeController;
 use App\Http\Controllers\Libraries\SectionOrUnitController;
 
 // Positions
@@ -76,6 +77,19 @@ Route::prefix('countries')->controller(CountryController::class)->name('countrie
 
     /** @uses CountryController::search */
     Route::middleware(['permission:'.Permission::VIEW_COUNTRIES->value])
+        ->get('/search', 'search')
+        ->name('search');
+
+});
+
+// Salary Grades
+Route::prefix('salary-grades')->controller(SalaryGradeController::class)->name('salary-grades.')->group(function () {
+    /** @uses SalaryGradeController::fetch */
+    Route::middleware(['permission:'.Permission::VIEW_SALARY_GRADES->value])
+        ->get('', 'fetch')->name('index');
+
+    /** @uses SalaryGradeController::search */
+    Route::middleware(['permission:'.Permission::VIEW_SALARY_GRADES->value])
         ->get('/search', 'search')
         ->name('search');
 

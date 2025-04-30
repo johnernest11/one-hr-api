@@ -1,0 +1,4646 @@
+[
+    {
+        "id": 1,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 1,
+        "step": 1,
+        "amount": 13000
+    },
+    {
+        "id": 2,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 1,
+        "step": 2,
+        "amount": 13109
+    },
+    {
+        "id": 3,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 1,
+        "step": 3,
+        "amount": 13219
+    },
+    {
+        "id": 4,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 1,
+        "step": 4,
+        "amount": 13329
+    },
+    {
+        "id": 5,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 1,
+        "step": 5,
+        "amount": 13441
+    },
+    {
+        "id": 6,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 1,
+        "step": 6,
+        "amount": 13553
+    },
+    {
+        "id": 7,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 1,
+        "step": 7,
+        "amount": 13666
+    },
+    {
+        "id": 8,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 1,
+        "step": 8,
+        "amount": 13780
+    },
+    {
+        "id": 9,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 2,
+        "step": 1,
+        "amount": 13819
+    },
+    {
+        "id": 10,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 2,
+        "step": 2,
+        "amount": 13925
+    },
+    {
+        "id": 11,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 2,
+        "step": 3,
+        "amount": 14032
+    },
+    {
+        "id": 12,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 2,
+        "step": 4,
+        "amount": 14140
+    },
+    {
+        "id": 13,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 2,
+        "step": 5,
+        "amount": 14248
+    },
+    {
+        "id": 14,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 2,
+        "step": 6,
+        "amount": 14357
+    },
+    {
+        "id": 15,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 2,
+        "step": 7,
+        "amount": 14468
+    },
+    {
+        "id": 16,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 2,
+        "step": 8,
+        "amount": 14578
+    },
+    {
+        "id": 17,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 3,
+        "step": 1,
+        "amount": 14678
+    },
+    {
+        "id": 18,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 3,
+        "step": 2,
+        "amount": 14792
+    },
+    {
+        "id": 19,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 3,
+        "step": 3,
+        "amount": 14905
+    },
+    {
+        "id": 20,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 3,
+        "step": 4,
+        "amount": 15020
+    },
+    {
+        "id": 21,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 3,
+        "step": 5,
+        "amount": 15136
+    },
+    {
+        "id": 22,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 3,
+        "step": 6,
+        "amount": 15251
+    },
+    {
+        "id": 23,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 3,
+        "step": 7,
+        "amount": 15369
+    },
+    {
+        "id": 24,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 3,
+        "step": 8,
+        "amount": 15486
+    },
+    {
+        "id": 25,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 4,
+        "step": 1,
+        "amount": 15586
+    },
+    {
+        "id": 26,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 4,
+        "step": 2,
+        "amount": 15706
+    },
+    {
+        "id": 27,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 4,
+        "step": 3,
+        "amount": 15827
+    },
+    {
+        "id": 28,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 4,
+        "step": 4,
+        "amount": 15948
+    },
+    {
+        "id": 29,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 4,
+        "step": 5,
+        "amount": 16071
+    },
+    {
+        "id": 30,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 4,
+        "step": 6,
+        "amount": 16193
+    },
+    {
+        "id": 31,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 4,
+        "step": 7,
+        "amount": 16318
+    },
+    {
+        "id": 32,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 4,
+        "step": 8,
+        "amount": 16443
+    },
+    {
+        "id": 33,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 5,
+        "step": 1,
+        "amount": 16543
+    },
+    {
+        "id": 34,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 5,
+        "step": 2,
+        "amount": 16671
+    },
+    {
+        "id": 35,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 5,
+        "step": 3,
+        "amount": 16799
+    },
+    {
+        "id": 36,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 5,
+        "step": 4,
+        "amount": 16928
+    },
+    {
+        "id": 37,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 5,
+        "step": 5,
+        "amount": 17057
+    },
+    {
+        "id": 38,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 5,
+        "step": 6,
+        "amount": 17189
+    },
+    {
+        "id": 39,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 5,
+        "step": 7,
+        "amount": 17321
+    },
+    {
+        "id": 40,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 5,
+        "step": 8,
+        "amount": 17453
+    },
+    {
+        "id": 41,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 6,
+        "step": 1,
+        "amount": 17553
+    },
+    {
+        "id": 42,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 6,
+        "step": 2,
+        "amount": 17688
+    },
+    {
+        "id": 43,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 6,
+        "step": 3,
+        "amount": 17824
+    },
+    {
+        "id": 44,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 6,
+        "step": 4,
+        "amount": 17962
+    },
+    {
+        "id": 45,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 6,
+        "step": 5,
+        "amount": 18100
+    },
+    {
+        "id": 46,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 6,
+        "step": 6,
+        "amount": 18238
+    },
+    {
+        "id": 47,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 6,
+        "step": 7,
+        "amount": 18379
+    },
+    {
+        "id": 48,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 6,
+        "step": 8,
+        "amount": 18520
+    },
+    {
+        "id": 49,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 7,
+        "step": 1,
+        "amount": 18620
+    },
+    {
+        "id": 50,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 7,
+        "step": 2,
+        "amount": 18763
+    },
+    {
+        "id": 51,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 7,
+        "step": 3,
+        "amount": 18907
+    },
+    {
+        "id": 52,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 7,
+        "step": 4,
+        "amount": 19053
+    },
+    {
+        "id": 53,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 7,
+        "step": 5,
+        "amount": 19189
+    },
+    {
+        "id": 54,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 7,
+        "step": 6,
+        "amount": 19346
+    },
+    {
+        "id": 55,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 7,
+        "step": 7,
+        "amount": 19494
+    },
+    {
+        "id": 56,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 7,
+        "step": 8,
+        "amount": 19644
+    },
+    {
+        "id": 57,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 8,
+        "step": 1,
+        "amount": 19744
+    },
+    {
+        "id": 58,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 8,
+        "step": 2,
+        "amount": 19923
+    },
+    {
+        "id": 59,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 8,
+        "step": 3,
+        "amount": 20104
+    },
+    {
+        "id": 60,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 8,
+        "step": 4,
+        "amount": 20285
+    },
+    {
+        "id": 61,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 8,
+        "step": 5,
+        "amount": 20486
+    },
+    {
+        "id": 62,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 8,
+        "step": 6,
+        "amount": 20653
+    },
+    {
+        "id": 63,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 8,
+        "step": 7,
+        "amount": 20840
+    },
+    {
+        "id": 64,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 8,
+        "step": 8,
+        "amount": 21029
+    },
+    {
+        "id": 65,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 9,
+        "step": 1,
+        "amount": 21211
+    },
+    {
+        "id": 66,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 9,
+        "step": 2,
+        "amount": 21388
+    },
+    {
+        "id": 67,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 9,
+        "step": 3,
+        "amount": 21567
+    },
+    {
+        "id": 68,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 9,
+        "step": 4,
+        "amount": 21747
+    },
+    {
+        "id": 69,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 9,
+        "step": 5,
+        "amount": 21929
+    },
+    {
+        "id": 70,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 9,
+        "step": 6,
+        "amount": 22112
+    },
+    {
+        "id": 71,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 9,
+        "step": 7,
+        "amount": 22297
+    },
+    {
+        "id": 72,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 9,
+        "step": 8,
+        "amount": 22483
+    },
+    {
+        "id": 73,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 10,
+        "step": 1,
+        "amount": 23176
+    },
+    {
+        "id": 74,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 10,
+        "step": 2,
+        "amount": 23370
+    },
+    {
+        "id": 75,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 10,
+        "step": 3,
+        "amount": 23565
+    },
+    {
+        "id": 76,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 10,
+        "step": 4,
+        "amount": 23762
+    },
+    {
+        "id": 77,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 10,
+        "step": 5,
+        "amount": 23961
+    },
+    {
+        "id": 78,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 10,
+        "step": 6,
+        "amount": 24161
+    },
+    {
+        "id": 79,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 10,
+        "step": 7,
+        "amount": 24363
+    },
+    {
+        "id": 80,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 10,
+        "step": 8,
+        "amount": 24567
+    },
+    {
+        "id": 81,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 11,
+        "step": 1,
+        "amount": 27000
+    },
+    {
+        "id": 82,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 11,
+        "step": 2,
+        "amount": 27284
+    },
+    {
+        "id": 83,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 11,
+        "step": 3,
+        "amount": 27573
+    },
+    {
+        "id": 84,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 11,
+        "step": 4,
+        "amount": 27865
+    },
+    {
+        "id": 85,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 11,
+        "step": 5,
+        "amount": 28161
+    },
+    {
+        "id": 86,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 11,
+        "step": 6,
+        "amount": 28462
+    },
+    {
+        "id": 87,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 11,
+        "step": 7,
+        "amount": 28766
+    },
+    {
+        "id": 88,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 11,
+        "step": 8,
+        "amount": 29075
+    },
+    {
+        "id": 89,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 12,
+        "step": 1,
+        "amount": 29165
+    },
+    {
+        "id": 90,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 12,
+        "step": 2,
+        "amount": 29449
+    },
+    {
+        "id": 91,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 12,
+        "step": 3,
+        "amount": 29737
+    },
+    {
+        "id": 92,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 12,
+        "step": 4,
+        "amount": 30028
+    },
+    {
+        "id": 93,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 12,
+        "step": 5,
+        "amount": 30323
+    },
+    {
+        "id": 94,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 12,
+        "step": 6,
+        "amount": 30622
+    },
+    {
+        "id": 95,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 12,
+        "step": 7,
+        "amount": 30924
+    },
+    {
+        "id": 96,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 12,
+        "step": 8,
+        "amount": 31230
+    },
+    {
+        "id": 97,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 13,
+        "step": 1,
+        "amount": 31320
+    },
+    {
+        "id": 98,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 13,
+        "step": 2,
+        "amount": 31633
+    },
+    {
+        "id": 99,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 13,
+        "step": 3,
+        "amount": 31949
+    },
+    {
+        "id": 100,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 13,
+        "step": 4,
+        "amount": 32269
+    },
+    {
+        "id": 101,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 13,
+        "step": 5,
+        "amount": 32594
+    },
+    {
+        "id": 102,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 13,
+        "step": 6,
+        "amount": 32922
+    },
+    {
+        "id": 103,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 13,
+        "step": 7,
+        "amount": 33254
+    },
+    {
+        "id": 104,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 13,
+        "step": 8,
+        "amount": 33591
+    },
+    {
+        "id": 105,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 14,
+        "step": 1,
+        "amount": 33843
+    },
+    {
+        "id": 106,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 14,
+        "step": 2,
+        "amount": 34187
+    },
+    {
+        "id": 107,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 14,
+        "step": 3,
+        "amount": 34535
+    },
+    {
+        "id": 108,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 14,
+        "step": 4,
+        "amount": 34888
+    },
+    {
+        "id": 109,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 14,
+        "step": 5,
+        "amount": 35244
+    },
+    {
+        "id": 110,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 14,
+        "step": 6,
+        "amount": 35605
+    },
+    {
+        "id": 111,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 14,
+        "step": 7,
+        "amount": 36971
+    },
+    {
+        "id": 112,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 14,
+        "step": 8,
+        "amount": 36341
+    },
+    {
+        "id": 113,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 15,
+        "step": 1,
+        "amount": 36619
+    },
+    {
+        "id": 114,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 15,
+        "step": 2,
+        "amount": 36997
+    },
+    {
+        "id": 115,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 15,
+        "step": 3,
+        "amount": 37380
+    },
+    {
+        "id": 116,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 15,
+        "step": 4,
+        "amount": 37768
+    },
+    {
+        "id": 117,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 15,
+        "step": 5,
+        "amount": 38160
+    },
+    {
+        "id": 118,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 15,
+        "step": 6,
+        "amount": 38557
+    },
+    {
+        "id": 119,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 15,
+        "step": 7,
+        "amount": 38959
+    },
+    {
+        "id": 120,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 15,
+        "step": 8,
+        "amount": 39367
+    },
+    {
+        "id": 121,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 16,
+        "step": 1,
+        "amount": 39672
+    },
+    {
+        "id": 122,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 16,
+        "step": 2,
+        "amount": 40088
+    },
+    {
+        "id": 123,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 16,
+        "step": 3,
+        "amount": 40509
+    },
+    {
+        "id": 124,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 16,
+        "step": 4,
+        "amount": 40935
+    },
+    {
+        "id": 125,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 16,
+        "step": 5,
+        "amount": 41367
+    },
+    {
+        "id": 126,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 16,
+        "step": 6,
+        "amount": 41804
+    },
+    {
+        "id": 127,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 16,
+        "step": 7,
+        "amount": 42247
+    },
+    {
+        "id": 128,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 16,
+        "step": 8,
+        "amount": 42694
+    },
+    {
+        "id": 129,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 17,
+        "step": 1,
+        "amount": 43030
+    },
+    {
+        "id": 130,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 17,
+        "step": 2,
+        "amount": 43488
+    },
+    {
+        "id": 131,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 17,
+        "step": 3,
+        "amount": 43951
+    },
+    {
+        "id": 132,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 17,
+        "step": 4,
+        "amount": 44420
+    },
+    {
+        "id": 133,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 17,
+        "step": 5,
+        "amount": 44895
+    },
+    {
+        "id": 134,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 17,
+        "step": 6,
+        "amount": 45376
+    },
+    {
+        "id": 135,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 17,
+        "step": 7,
+        "amount": 45862
+    },
+    {
+        "id": 136,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 17,
+        "step": 8,
+        "amount": 46355
+    },
+    {
+        "id": 137,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 18,
+        "step": 1,
+        "amount": 46725
+    },
+    {
+        "id": 138,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 18,
+        "step": 2,
+        "amount": 47228
+    },
+    {
+        "id": 139,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 18,
+        "step": 3,
+        "amount": 47738
+    },
+    {
+        "id": 140,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 18,
+        "step": 4,
+        "amount": 48253
+    },
+    {
+        "id": 141,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 18,
+        "step": 5,
+        "amount": 48776
+    },
+    {
+        "id": 142,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 18,
+        "step": 6,
+        "amount": 49305
+    },
+    {
+        "id": 143,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 18,
+        "step": 7,
+        "amount": 49840
+    },
+    {
+        "id": 144,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 18,
+        "step": 8,
+        "amount": 50382
+    },
+    {
+        "id": 145,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 19,
+        "step": 1,
+        "amount": 51357
+    },
+    {
+        "id": 146,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 19,
+        "step": 2,
+        "amount": 52096
+    },
+    {
+        "id": 147,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 19,
+        "step": 3,
+        "amount": 52847
+    },
+    {
+        "id": 148,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 19,
+        "step": 4,
+        "amount": 53610
+    },
+    {
+        "id": 149,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 19,
+        "step": 5,
+        "amount": 54386
+    },
+    {
+        "id": 150,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 19,
+        "step": 6,
+        "amount": 55174
+    },
+    {
+        "id": 151,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 19,
+        "step": 7,
+        "amount": 55976
+    },
+    {
+        "id": 152,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 19,
+        "step": 8,
+        "amount": 56790
+    },
+    {
+        "id": 153,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 20,
+        "step": 1,
+        "amount": 57347
+    },
+    {
+        "id": 154,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 20,
+        "step": 2,
+        "amount": 58181
+    },
+    {
+        "id": 155,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 20,
+        "step": 3,
+        "amount": 59030
+    },
+    {
+        "id": 156,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 20,
+        "step": 4,
+        "amount": 59892
+    },
+    {
+        "id": 157,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 20,
+        "step": 5,
+        "amount": 60769
+    },
+    {
+        "id": 158,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 20,
+        "step": 6,
+        "amount": 61660
+    },
+    {
+        "id": 159,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 20,
+        "step": 7,
+        "amount": 62565
+    },
+    {
+        "id": 160,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 20,
+        "step": 8,
+        "amount": 63485
+    },
+    {
+        "id": 161,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 21,
+        "step": 1,
+        "amount": 63997
+    },
+    {
+        "id": 162,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 21,
+        "step": 2,
+        "amount": 64940
+    },
+    {
+        "id": 163,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 21,
+        "step": 3,
+        "amount": 65899
+    },
+    {
+        "id": 164,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 21,
+        "step": 4,
+        "amount": 66873
+    },
+    {
+        "id": 165,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 21,
+        "step": 5,
+        "amount": 67864
+    },
+    {
+        "id": 166,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 21,
+        "step": 6,
+        "amount": 68870
+    },
+    {
+        "id": 167,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 21,
+        "step": 7,
+        "amount": 69893
+    },
+    {
+        "id": 168,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 21,
+        "step": 8,
+        "amount": 70933
+    },
+    {
+        "id": 169,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 22,
+        "step": 1,
+        "amount": 71511
+    },
+    {
+        "id": 170,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 22,
+        "step": 2,
+        "amount": 72577
+    },
+    {
+        "id": 171,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 22,
+        "step": 3,
+        "amount": 73661
+    },
+    {
+        "id": 172,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 22,
+        "step": 4,
+        "amount": 74762
+    },
+    {
+        "id": 173,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 22,
+        "step": 5,
+        "amount": 75881
+    },
+    {
+        "id": 174,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 22,
+        "step": 6,
+        "amount": 77019
+    },
+    {
+        "id": 175,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 22,
+        "step": 7,
+        "amount": 78175
+    },
+    {
+        "id": 176,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 22,
+        "step": 8,
+        "amount": 79349
+    },
+    {
+        "id": 177,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 23,
+        "step": 1,
+        "amount": 80003
+    },
+    {
+        "id": 178,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 23,
+        "step": 2,
+        "amount": 81207
+    },
+    {
+        "id": 179,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 23,
+        "step": 3,
+        "amount": 82432
+    },
+    {
+        "id": 180,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 23,
+        "step": 4,
+        "amount": 83683
+    },
+    {
+        "id": 181,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 23,
+        "step": 5,
+        "amount": 85049
+    },
+    {
+        "id": 182,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 23,
+        "step": 6,
+        "amount": 86437
+    },
+    {
+        "id": 183,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 23,
+        "step": 7,
+        "amount": 87847
+    },
+    {
+        "id": 184,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 23,
+        "step": 8,
+        "amount": 89281
+    },
+    {
+        "id": 185,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 24,
+        "step": 1,
+        "amount": 90078
+    },
+    {
+        "id": 186,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 24,
+        "step": 2,
+        "amount": 91548
+    },
+    {
+        "id": 187,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 24,
+        "step": 3,
+        "amount": 93043
+    },
+    {
+        "id": 188,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 24,
+        "step": 4,
+        "amount": 94562
+    },
+    {
+        "id": 189,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 24,
+        "step": 5,
+        "amount": 96105
+    },
+    {
+        "id": 190,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 24,
+        "step": 6,
+        "amount": 97674
+    },
+    {
+        "id": 191,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 24,
+        "step": 7,
+        "amount": 99268
+    },
+    {
+        "id": 192,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 24,
+        "step": 8,
+        "amount": 100888
+    },
+    {
+        "id": 193,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 25,
+        "step": 1,
+        "amount": 102690
+    },
+    {
+        "id": 194,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 25,
+        "step": 2,
+        "amount": 104366
+    },
+    {
+        "id": 195,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 25,
+        "step": 3,
+        "amount": 106069
+    },
+    {
+        "id": 196,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 25,
+        "step": 4,
+        "amount": 107800
+    },
+    {
+        "id": 197,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 25,
+        "step": 5,
+        "amount": 109560
+    },
+    {
+        "id": 198,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 25,
+        "step": 6,
+        "amount": 111348
+    },
+    {
+        "id": 199,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 25,
+        "step": 7,
+        "amount": 113166
+    },
+    {
+        "id": 200,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 25,
+        "step": 8,
+        "amount": 115012
+    },
+    {
+        "id": 201,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 26,
+        "step": 1,
+        "amount": 116040
+    },
+    {
+        "id": 202,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 26,
+        "step": 2,
+        "amount": 117933
+    },
+    {
+        "id": 203,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 26,
+        "step": 3,
+        "amount": 119858
+    },
+    {
+        "id": 204,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 26,
+        "step": 4,
+        "amount": 121814
+    },
+    {
+        "id": 205,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 26,
+        "step": 5,
+        "amount": 123803
+    },
+    {
+        "id": 206,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 26,
+        "step": 6,
+        "amount": 125823
+    },
+    {
+        "id": 207,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 26,
+        "step": 7,
+        "amount": 127876
+    },
+    {
+        "id": 208,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 26,
+        "step": 8,
+        "amount": 129964
+    },
+    {
+        "id": 209,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 27,
+        "step": 1,
+        "amount": 131124
+    },
+    {
+        "id": 210,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 27,
+        "step": 2,
+        "amount": 133264
+    },
+    {
+        "id": 211,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 27,
+        "step": 3,
+        "amount": 135440
+    },
+    {
+        "id": 212,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 27,
+        "step": 4,
+        "amount": 137650
+    },
+    {
+        "id": 213,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 27,
+        "step": 5,
+        "amount": 139897
+    },
+    {
+        "id": 214,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 27,
+        "step": 6,
+        "amount": 142180
+    },
+    {
+        "id": 215,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 27,
+        "step": 7,
+        "amount": 144501
+    },
+    {
+        "id": 216,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 27,
+        "step": 8,
+        "amount": 146859
+    },
+    {
+        "id": 217,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 28,
+        "step": 1,
+        "amount": 148171
+    },
+    {
+        "id": 218,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 28,
+        "step": 2,
+        "amount": 150589
+    },
+    {
+        "id": 219,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 28,
+        "step": 3,
+        "amount": 153047
+    },
+    {
+        "id": 220,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 28,
+        "step": 4,
+        "amount": 155545
+    },
+    {
+        "id": 221,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 28,
+        "step": 5,
+        "amount": 158083
+    },
+    {
+        "id": 222,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 28,
+        "step": 6,
+        "amount": 160664
+    },
+    {
+        "id": 223,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 28,
+        "step": 7,
+        "amount": 163286
+    },
+    {
+        "id": 224,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 28,
+        "step": 8,
+        "amount": 165951
+    },
+    {
+        "id": 225,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 29,
+        "step": 1,
+        "amount": 167432
+    },
+    {
+        "id": 226,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 29,
+        "step": 2,
+        "amount": 170166
+    },
+    {
+        "id": 227,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 29,
+        "step": 3,
+        "amount": 172943
+    },
+    {
+        "id": 228,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 29,
+        "step": 4,
+        "amount": 175766
+    },
+    {
+        "id": 229,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 29,
+        "step": 5,
+        "amount": 178634
+    },
+    {
+        "id": 230,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 29,
+        "step": 6,
+        "amount": 181550
+    },
+    {
+        "id": 231,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 29,
+        "step": 7,
+        "amount": 184513
+    },
+    {
+        "id": 232,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 29,
+        "step": 8,
+        "amount": 187525
+    },
+    {
+        "id": 233,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 30,
+        "step": 1,
+        "amount": 189199
+    },
+    {
+        "id": 234,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 30,
+        "step": 2,
+        "amount": 192286
+    },
+    {
+        "id": 235,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 30,
+        "step": 3,
+        "amount": 195425
+    },
+    {
+        "id": 236,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 30,
+        "step": 4,
+        "amount": 198615
+    },
+    {
+        "id": 237,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 30,
+        "step": 5,
+        "amount": 201856
+    },
+    {
+        "id": 238,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 30,
+        "step": 6,
+        "amount": 205151
+    },
+    {
+        "id": 239,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 30,
+        "step": 7,
+        "amount": 208499
+    },
+    {
+        "id": 240,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 30,
+        "step": 8,
+        "amount": 211902
+    },
+    {
+        "id": 241,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 31,
+        "step": 1,
+        "amount": 278434
+    },
+    {
+        "id": 242,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 31,
+        "step": 2,
+        "amount": 283872
+    },
+    {
+        "id": 243,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 31,
+        "step": 3,
+        "amount": 289416
+    },
+    {
+        "id": 244,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 31,
+        "step": 4,
+        "amount": 295069
+    },
+    {
+        "id": 245,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 31,
+        "step": 5,
+        "amount": 300833
+    },
+    {
+        "id": 246,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 31,
+        "step": 6,
+        "amount": 306708
+    },
+    {
+        "id": 247,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 31,
+        "step": 7,
+        "amount": 312699
+    },
+    {
+        "id": 248,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 31,
+        "step": 8,
+        "amount": 318806
+    },
+    {
+        "id": 249,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 32,
+        "step": 1,
+        "amount": 331954
+    },
+    {
+        "id": 250,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 32,
+        "step": 2,
+        "amount": 338649
+    },
+    {
+        "id": 251,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 32,
+        "step": 3,
+        "amount": 345478
+    },
+    {
+        "id": 252,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 32,
+        "step": 4,
+        "amount": 352445
+    },
+    {
+        "id": 253,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 32,
+        "step": 5,
+        "amount": 359553
+    },
+    {
+        "id": 254,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 32,
+        "step": 6,
+        "amount": 366804
+    },
+    {
+        "id": 255,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 32,
+        "step": 7,
+        "amount": 374202
+    },
+    {
+        "id": 256,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 32,
+        "step": 8,
+        "amount": 381748
+    },
+    {
+        "id": 257,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 33,
+        "step": 1,
+        "amount": 419144
+    },
+    {
+        "id": 258,
+        "nbc_no": 591,
+        "effective_date": "2023-01-01",
+        "tranche": 4,
+        "salary_grade": 33,
+        "step": 2,
+        "amount": 431718
+    },
+    {
+        "id": 259,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 1,
+        "step": 1,
+        "amount": 14061
+    },
+    {
+        "id": 260,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 1,
+        "step": 2,
+        "amount": 14164
+    },
+    {
+        "id": 261,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 1,
+        "step": 3,
+        "amount": 14278
+    },
+    {
+        "id": 262,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 1,
+        "step": 4,
+        "amount": 14393
+    },
+    {
+        "id": 263,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 1,
+        "step": 5,
+        "amount": 14509
+    },
+    {
+        "id": 264,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 1,
+        "step": 6,
+        "amount": 14626
+    },
+    {
+        "id": 265,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 1,
+        "step": 7,
+        "amount": 14743
+    },
+    {
+        "id": 266,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 1,
+        "step": 8,
+        "amount": 14862
+    },
+    {
+        "id": 267,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 2,
+        "step": 1,
+        "amount": 14925
+    },
+    {
+        "id": 268,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 2,
+        "step": 2,
+        "amount": 15035
+    },
+    {
+        "id": 269,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 2,
+        "step": 3,
+        "amount": 15146
+    },
+    {
+        "id": 270,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 2,
+        "step": 4,
+        "amount": 15258
+    },
+    {
+        "id": 271,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 2,
+        "step": 5,
+        "amount": 15371
+    },
+    {
+        "id": 272,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 2,
+        "step": 6,
+        "amount": 15484
+    },
+    {
+        "id": 273,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 2,
+        "step": 7,
+        "amount": 15599
+    },
+    {
+        "id": 274,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 2,
+        "step": 8,
+        "amount": 15714
+    },
+    {
+        "id": 275,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 3,
+        "step": 1,
+        "amount": 15852
+    },
+    {
+        "id": 276,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 3,
+        "step": 2,
+        "amount": 15971
+    },
+    {
+        "id": 277,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 3,
+        "step": 3,
+        "amount": 16088
+    },
+    {
+        "id": 278,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 3,
+        "step": 4,
+        "amount": 16208
+    },
+    {
+        "id": 279,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 3,
+        "step": 5,
+        "amount": 16329
+    },
+    {
+        "id": 280,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 3,
+        "step": 6,
+        "amount": 16448
+    },
+    {
+        "id": 281,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 3,
+        "step": 7,
+        "amount": 16571
+    },
+    {
+        "id": 282,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 3,
+        "step": 8,
+        "amount": 16693
+    },
+    {
+        "id": 283,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 4,
+        "step": 1,
+        "amount": 16833
+    },
+    {
+        "id": 284,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 4,
+        "step": 2,
+        "amount": 16958
+    },
+    {
+        "id": 285,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 4,
+        "step": 3,
+        "amount": 17084
+    },
+    {
+        "id": 286,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 4,
+        "step": 4,
+        "amount": 17209
+    },
+    {
+        "id": 287,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 4,
+        "step": 5,
+        "amount": 17337
+    },
+    {
+        "id": 288,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 4,
+        "step": 6,
+        "amount": 17464
+    },
+    {
+        "id": 289,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 4,
+        "step": 7,
+        "amount": 17594
+    },
+    {
+        "id": 290,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 4,
+        "step": 8,
+        "amount": 17724
+    },
+    {
+        "id": 291,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 5,
+        "step": 1,
+        "amount": 17866
+    },
+    {
+        "id": 292,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 5,
+        "step": 2,
+        "amount": 18000
+    },
+    {
+        "id": 293,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 5,
+        "step": 3,
+        "amount": 18133
+    },
+    {
+        "id": 294,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 5,
+        "step": 4,
+        "amount": 18267
+    },
+    {
+        "id": 295,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 5,
+        "step": 5,
+        "amount": 18401
+    },
+    {
+        "id": 296,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 5,
+        "step": 6,
+        "amount": 18538
+    },
+    {
+        "id": 297,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 5,
+        "step": 7,
+        "amount": 18676
+    },
+    {
+        "id": 298,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 5,
+        "step": 8,
+        "amount": 18813
+    },
+    {
+        "id": 299,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 6,
+        "step": 1,
+        "amount": 18957
+    },
+    {
+        "id": 300,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 6,
+        "step": 2,
+        "amount": 19098
+    },
+    {
+        "id": 301,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 6,
+        "step": 3,
+        "amount": 19239
+    },
+    {
+        "id": 302,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 6,
+        "step": 4,
+        "amount": 19383
+    },
+    {
+        "id": 303,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 6,
+        "step": 5,
+        "amount": 19526
+    },
+    {
+        "id": 304,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 6,
+        "step": 6,
+        "amount": 19670
+    },
+    {
+        "id": 305,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 6,
+        "step": 7,
+        "amount": 19816
+    },
+    {
+        "id": 306,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 6,
+        "step": 8,
+        "amount": 19963
+    },
+    {
+        "id": 307,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 7,
+        "step": 1,
+        "amount": 20110
+    },
+    {
+        "id": 308,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 7,
+        "step": 2,
+        "amount": 20258
+    },
+    {
+        "id": 309,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 7,
+        "step": 3,
+        "amount": 20408
+    },
+    {
+        "id": 310,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 7,
+        "step": 4,
+        "amount": 20560
+    },
+    {
+        "id": 311,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 7,
+        "step": 5,
+        "amount": 20711
+    },
+    {
+        "id": 312,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 7,
+        "step": 6,
+        "amount": 20865
+    },
+    {
+        "id": 313,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 7,
+        "step": 7,
+        "amount": 21019
+    },
+    {
+        "id": 314,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 7,
+        "step": 8,
+        "amount": 21175
+    },
+    {
+        "id": 315,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 8,
+        "step": 1,
+        "amount": 21448
+    },
+    {
+        "id": 316,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 8,
+        "step": 2,
+        "amount": 21642
+    },
+    {
+        "id": 317,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 8,
+        "step": 3,
+        "amount": 21839
+    },
+    {
+        "id": 318,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 8,
+        "step": 4,
+        "amount": 22035
+    },
+    {
+        "id": 319,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 8,
+        "step": 5,
+        "amount": 22234
+    },
+    {
+        "id": 320,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 8,
+        "step": 6,
+        "amount": 22435
+    },
+    {
+        "id": 321,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 8,
+        "step": 7,
+        "amount": 22638
+    },
+    {
+        "id": 322,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 8,
+        "step": 8,
+        "amount": 22843
+    },
+    {
+        "id": 323,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 9,
+        "step": 1,
+        "amount": 23226
+    },
+    {
+        "id": 324,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 9,
+        "step": 2,
+        "amount": 23411
+    },
+    {
+        "id": 325,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 9,
+        "step": 3,
+        "amount": 23599
+    },
+    {
+        "id": 326,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 9,
+        "step": 4,
+        "amount": 23788
+    },
+    {
+        "id": 327,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 9,
+        "step": 5,
+        "amount": 23978
+    },
+    {
+        "id": 328,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 9,
+        "step": 6,
+        "amount": 24170
+    },
+    {
+        "id": 329,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 9,
+        "step": 7,
+        "amount": 24364
+    },
+    {
+        "id": 330,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 9,
+        "step": 8,
+        "amount": 24558
+    },
+    {
+        "id": 331,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 10,
+        "step": 1,
+        "amount": 25586
+    },
+    {
+        "id": 332,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 10,
+        "step": 2,
+        "amount": 25790
+    },
+    {
+        "id": 333,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 10,
+        "step": 3,
+        "amount": 25996
+    },
+    {
+        "id": 334,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 10,
+        "step": 4,
+        "amount": 26203
+    },
+    {
+        "id": 335,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 10,
+        "step": 5,
+        "amount": 26412
+    },
+    {
+        "id": 336,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 10,
+        "step": 6,
+        "amount": 26623
+    },
+    {
+        "id": 337,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 10,
+        "step": 7,
+        "amount": 26835
+    },
+    {
+        "id": 338,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 10,
+        "step": 8,
+        "amount": 27050
+    },
+    {
+        "id": 339,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 11,
+        "step": 1,
+        "amount": 30024
+    },
+    {
+        "id": 340,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 11,
+        "step": 2,
+        "amount": 30308
+    },
+    {
+        "id": 341,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 11,
+        "step": 3,
+        "amount": 30597
+    },
+    {
+        "id": 342,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 11,
+        "step": 4,
+        "amount": 30889
+    },
+    {
+        "id": 343,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 11,
+        "step": 5,
+        "amount": 31185
+    },
+    {
+        "id": 344,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 11,
+        "step": 6,
+        "amount": 31486
+    },
+    {
+        "id": 345,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 11,
+        "step": 7,
+        "amount": 31790
+    },
+    {
+        "id": 346,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 11,
+        "step": 8,
+        "amount": 32099
+    },
+    {
+        "id": 347,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 12,
+        "step": 1,
+        "amount": 32245
+    },
+    {
+        "id": 348,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 12,
+        "step": 2,
+        "amount": 32529
+    },
+    {
+        "id": 349,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 12,
+        "step": 3,
+        "amount": 32817
+    },
+    {
+        "id": 350,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 12,
+        "step": 4,
+        "amount": 33108
+    },
+    {
+        "id": 351,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 12,
+        "step": 5,
+        "amount": 33403
+    },
+    {
+        "id": 352,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 12,
+        "step": 6,
+        "amount": 33702
+    },
+    {
+        "id": 353,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 12,
+        "step": 7,
+        "amount": 34004
+    },
+    {
+        "id": 354,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 12,
+        "step": 8,
+        "amount": 34310
+    },
+    {
+        "id": 355,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 13,
+        "step": 1,
+        "amount": 34421
+    },
+    {
+        "id": 356,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 13,
+        "step": 2,
+        "amount": 34733
+    },
+    {
+        "id": 357,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 13,
+        "step": 3,
+        "amount": 35049
+    },
+    {
+        "id": 358,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 13,
+        "step": 4,
+        "amount": 35369
+    },
+    {
+        "id": 359,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 13,
+        "step": 5,
+        "amount": 35694
+    },
+    {
+        "id": 360,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 13,
+        "step": 6,
+        "amount": 36022
+    },
+    {
+        "id": 361,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 13,
+        "step": 7,
+        "amount": 36354
+    },
+    {
+        "id": 362,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 13,
+        "step": 8,
+        "amount": 36691
+    },
+    {
+        "id": 363,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 14,
+        "step": 1,
+        "amount": 37024
+    },
+    {
+        "id": 364,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 14,
+        "step": 2,
+        "amount": 37384
+    },
+    {
+        "id": 365,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 14,
+        "step": 3,
+        "amount": 37749
+    },
+    {
+        "id": 366,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 14,
+        "step": 4,
+        "amount": 38118
+    },
+    {
+        "id": 367,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 14,
+        "step": 5,
+        "amount": 38491
+    },
+    {
+        "id": 368,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 14,
+        "step": 6,
+        "amount": 38869
+    },
+    {
+        "id": 369,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 14,
+        "step": 7,
+        "amount": 39252
+    },
+    {
+        "id": 370,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 14,
+        "step": 8,
+        "amount": 39640
+    },
+    {
+        "id": 371,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 15,
+        "step": 1,
+        "amount": 40208
+    },
+    {
+        "id": 372,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 15,
+        "step": 2,
+        "amount": 40604
+    },
+    {
+        "id": 373,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 15,
+        "step": 3,
+        "amount": 41006
+    },
+    {
+        "id": 374,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 15,
+        "step": 4,
+        "amount": 41413
+    },
+    {
+        "id": 375,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 15,
+        "step": 5,
+        "amount": 41824
+    },
+    {
+        "id": 376,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 15,
+        "step": 6,
+        "amount": 42241
+    },
+    {
+        "id": 377,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 15,
+        "step": 7,
+        "amount": 42662
+    },
+    {
+        "id": 378,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 15,
+        "step": 8,
+        "amount": 43090
+    },
+    {
+        "id": 379,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 16,
+        "step": 1,
+        "amount": 43560
+    },
+    {
+        "id": 380,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 16,
+        "step": 2,
+        "amount": 43996
+    },
+    {
+        "id": 381,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 16,
+        "step": 3,
+        "amount": 44438
+    },
+    {
+        "id": 382,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 16,
+        "step": 4,
+        "amount": 44885
+    },
+    {
+        "id": 383,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 16,
+        "step": 5,
+        "amount": 45338
+    },
+    {
+        "id": 384,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 16,
+        "step": 6,
+        "amount": 45796
+    },
+    {
+        "id": 385,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 16,
+        "step": 7,
+        "amount": 46261
+    },
+    {
+        "id": 386,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 16,
+        "step": 8,
+        "amount": 46730
+    },
+    {
+        "id": 387,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 17,
+        "step": 1,
+        "amount": 47247
+    },
+    {
+        "id": 388,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 17,
+        "step": 2,
+        "amount": 47727
+    },
+    {
+        "id": 389,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 17,
+        "step": 3,
+        "amount": 48213
+    },
+    {
+        "id": 390,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 17,
+        "step": 4,
+        "amount": 48705
+    },
+    {
+        "id": 391,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 17,
+        "step": 5,
+        "amount": 49203
+    },
+    {
+        "id": 392,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 17,
+        "step": 6,
+        "amount": 49708
+    },
+    {
+        "id": 393,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 17,
+        "step": 7,
+        "amount": 50218
+    },
+    {
+        "id": 394,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 17,
+        "step": 8,
+        "amount": 50735
+    },
+    {
+        "id": 395,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 18,
+        "step": 1,
+        "amount": 51304
+    },
+    {
+        "id": 396,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 18,
+        "step": 2,
+        "amount": 51832
+    },
+    {
+        "id": 397,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 18,
+        "step": 3,
+        "amount": 52367
+    },
+    {
+        "id": 398,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 18,
+        "step": 4,
+        "amount": 52907
+    },
+    {
+        "id": 399,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 18,
+        "step": 5,
+        "amount": 53456
+    },
+    {
+        "id": 400,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 18,
+        "step": 6,
+        "amount": 54010
+    },
+    {
+        "id": 401,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 18,
+        "step": 7,
+        "amount": 54572
+    },
+    {
+        "id": 402,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 18,
+        "step": 8,
+        "amount": 55140
+    },
+    {
+        "id": 403,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 19,
+        "step": 1,
+        "amount": 56390
+    },
+    {
+        "id": 404,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 19,
+        "step": 2,
+        "amount": 57165
+    },
+    {
+        "id": 405,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 19,
+        "step": 3,
+        "amount": 57953
+    },
+    {
+        "id": 406,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 19,
+        "step": 4,
+        "amount": 58753
+    },
+    {
+        "id": 407,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 19,
+        "step": 5,
+        "amount": 59567
+    },
+    {
+        "id": 408,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 19,
+        "step": 6,
+        "amount": 60394
+    },
+    {
+        "id": 409,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 19,
+        "step": 7,
+        "amount": 61235
+    },
+    {
+        "id": 410,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 19,
+        "step": 8,
+        "amount": 62089
+    },
+    {
+        "id": 411,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 20,
+        "step": 1,
+        "amount": 62967
+    },
+    {
+        "id": 412,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 20,
+        "step": 2,
+        "amount": 63842
+    },
+    {
+        "id": 413,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 20,
+        "step": 3,
+        "amount": 64732
+    },
+    {
+        "id": 414,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 20,
+        "step": 4,
+        "amount": 65637
+    },
+    {
+        "id": 415,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 20,
+        "step": 5,
+        "amount": 66557
+    },
+    {
+        "id": 416,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 20,
+        "step": 6,
+        "amount": 67479
+    },
+    {
+        "id": 417,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 20,
+        "step": 7,
+        "amount": 68409
+    },
+    {
+        "id": 418,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 20,
+        "step": 8,
+        "amount": 69342
+    },
+    {
+        "id": 419,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 21,
+        "step": 1,
+        "amount": 70013
+    },
+    {
+        "id": 420,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 21,
+        "step": 2,
+        "amount": 71000
+    },
+    {
+        "id": 421,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 21,
+        "step": 3,
+        "amount": 72004
+    },
+    {
+        "id": 422,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 21,
+        "step": 4,
+        "amount": 73024
+    },
+    {
+        "id": 423,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 21,
+        "step": 5,
+        "amount": 74061
+    },
+    {
+        "id": 424,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 21,
+        "step": 6,
+        "amount": 75115
+    },
+    {
+        "id": 425,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 21,
+        "step": 7,
+        "amount": 76151
+    },
+    {
+        "id": 426,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 21,
+        "step": 8,
+        "amount": 77239
+    },
+    {
+        "id": 427,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 22,
+        "step": 1,
+        "amount": 78162
+    },
+    {
+        "id": 428,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 22,
+        "step": 2,
+        "amount": 79277
+    },
+    {
+        "id": 429,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 22,
+        "step": 3,
+        "amount": 80411
+    },
+    {
+        "id": 430,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 22,
+        "step": 4,
+        "amount": 81564
+    },
+    {
+        "id": 431,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 22,
+        "step": 5,
+        "amount": 82735
+    },
+    {
+        "id": 432,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 22,
+        "step": 6,
+        "amount": 83887
+    },
+    {
+        "id": 433,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 22,
+        "step": 7,
+        "amount": 85096
+    },
+    {
+        "id": 434,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 22,
+        "step": 8,
+        "amount": 86324
+    },
+    {
+        "id": 435,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 23,
+        "step": 1,
+        "amount": 87315
+    },
+    {
+        "id": 436,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 23,
+        "step": 2,
+        "amount": 88574
+    },
+    {
+        "id": 437,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 23,
+        "step": 3,
+        "amount": 89855
+    },
+    {
+        "id": 438,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 23,
+        "step": 4,
+        "amount": 91163
+    },
+    {
+        "id": 439,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 23,
+        "step": 5,
+        "amount": 92592
+    },
+    {
+        "id": 440,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 23,
+        "step": 6,
+        "amount": 94043
+    },
+    {
+        "id": 441,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 23,
+        "step": 7,
+        "amount": 95518
+    },
+    {
+        "id": 442,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 23,
+        "step": 8,
+        "amount": 96955
+    },
+    {
+        "id": 443,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 24,
+        "step": 1,
+        "amount": 98185
+    },
+    {
+        "id": 444,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 24,
+        "step": 2,
+        "amount": 99721
+    },
+    {
+        "id": 445,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 24,
+        "step": 3,
+        "amount": 101283
+    },
+    {
+        "id": 446,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 24,
+        "step": 4,
+        "amount": 102871
+    },
+    {
+        "id": 447,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 24,
+        "step": 5,
+        "amount": 104483
+    },
+    {
+        "id": 448,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 24,
+        "step": 6,
+        "amount": 106123
+    },
+    {
+        "id": 449,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 24,
+        "step": 7,
+        "amount": 107739
+    },
+    {
+        "id": 450,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 24,
+        "step": 8,
+        "amount": 109431
+    },
+    {
+        "id": 451,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 25,
+        "step": 1,
+        "amount": 111727
+    },
+    {
+        "id": 452,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 25,
+        "step": 2,
+        "amount": 113476
+    },
+    {
+        "id": 453,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 25,
+        "step": 3,
+        "amount": 115254
+    },
+    {
+        "id": 454,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 25,
+        "step": 4,
+        "amount": 117062
+    },
+    {
+        "id": 455,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 25,
+        "step": 5,
+        "amount": 118899
+    },
+    {
+        "id": 456,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 25,
+        "step": 6,
+        "amount": 120766
+    },
+    {
+        "id": 457,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 25,
+        "step": 7,
+        "amount": 122664
+    },
+    {
+        "id": 458,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 25,
+        "step": 8,
+        "amount": 124591
+    },
+    {
+        "id": 459,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 26,
+        "step": 1,
+        "amount": 126252
+    },
+    {
+        "id": 460,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 26,
+        "step": 2,
+        "amount": 128228
+    },
+    {
+        "id": 461,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 26,
+        "step": 3,
+        "amount": 130238
+    },
+    {
+        "id": 462,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 26,
+        "step": 4,
+        "amount": 132280
+    },
+    {
+        "id": 463,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 26,
+        "step": 5,
+        "amount": 134356
+    },
+    {
+        "id": 464,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 26,
+        "step": 6,
+        "amount": 136465
+    },
+    {
+        "id": 465,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 26,
+        "step": 7,
+        "amount": 138608
+    },
+    {
+        "id": 466,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 26,
+        "step": 8,
+        "amount": 140788
+    },
+    {
+        "id": 467,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 27,
+        "step": 1,
+        "amount": 142663
+    },
+    {
+        "id": 468,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 27,
+        "step": 2,
+        "amount": 144897
+    },
+    {
+        "id": 469,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 27,
+        "step": 3,
+        "amount": 147169
+    },
+    {
+        "id": 470,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 27,
+        "step": 4,
+        "amount": 149407
+    },
+    {
+        "id": 471,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 27,
+        "step": 5,
+        "amount": 151752
+    },
+    {
+        "id": 472,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 27,
+        "step": 6,
+        "amount": 153850
+    },
+    {
+        "id": 473,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 27,
+        "step": 7,
+        "amount": 156267
+    },
+    {
+        "id": 474,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 27,
+        "step": 8,
+        "amount": 158723
+    },
+    {
+        "id": 475,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 28,
+        "step": 1,
+        "amount": 160469
+    },
+    {
+        "id": 476,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 28,
+        "step": 2,
+        "amount": 162988
+    },
+    {
+        "id": 477,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 28,
+        "step": 3,
+        "amount": 165548
+    },
+    {
+        "id": 478,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 28,
+        "step": 4,
+        "amount": 167994
+    },
+    {
+        "id": 479,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 28,
+        "step": 5,
+        "amount": 170634
+    },
+    {
+        "id": 480,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 28,
+        "step": 6,
+        "amount": 173320
+    },
+    {
+        "id": 481,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 28,
+        "step": 7,
+        "amount": 175803
+    },
+    {
+        "id": 482,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 28,
+        "step": 8,
+        "amount": 178572
+    },
+    {
+        "id": 483,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 29,
+        "step": 1,
+        "amount": 180492
+    },
+    {
+        "id": 484,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 29,
+        "step": 2,
+        "amount": 183332
+    },
+    {
+        "id": 485,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 29,
+        "step": 3,
+        "amount": 186218
+    },
+    {
+        "id": 486,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 29,
+        "step": 4,
+        "amount": 189151
+    },
+    {
+        "id": 487,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 29,
+        "step": 5,
+        "amount": 192131
+    },
+    {
+        "id": 488,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 29,
+        "step": 6,
+        "amount": 194797
+    },
+    {
+        "id": 489,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 29,
+        "step": 7,
+        "amount": 197870
+    },
+    {
+        "id": 490,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 29,
+        "step": 8,
+        "amount": 200993
+    },
+    {
+        "id": 491,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 30,
+        "step": 1,
+        "amount": 203200
+    },
+    {
+        "id": 492,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 30,
+        "step": 2,
+        "amount": 206401
+    },
+    {
+        "id": 493,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 30,
+        "step": 3,
+        "amount": 209558
+    },
+    {
+        "id": 494,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 30,
+        "step": 4,
+        "amount": 212766
+    },
+    {
+        "id": 495,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 30,
+        "step": 5,
+        "amount": 216022
+    },
+    {
+        "id": 496,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 30,
+        "step": 6,
+        "amount": 219434
+    },
+    {
+        "id": 497,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 30,
+        "step": 7,
+        "amount": 222797
+    },
+    {
+        "id": 498,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 30,
+        "step": 8,
+        "amount": 226319
+    },
+    {
+        "id": 499,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 31,
+        "step": 1,
+        "amount": 293191
+    },
+    {
+        "id": 500,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 31,
+        "step": 2,
+        "amount": 298773
+    },
+    {
+        "id": 501,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 31,
+        "step": 3,
+        "amount": 304464
+    },
+    {
+        "id": 502,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 31,
+        "step": 4,
+        "amount": 310119
+    },
+    {
+        "id": 503,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 31,
+        "step": 5,
+        "amount": 315883
+    },
+    {
+        "id": 504,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 31,
+        "step": 6,
+        "amount": 321846
+    },
+    {
+        "id": 505,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 31,
+        "step": 7,
+        "amount": 327895
+    },
+    {
+        "id": 506,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 31,
+        "step": 8,
+        "amount": 334059
+    },
+    {
+        "id": 507,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 32,
+        "step": 1,
+        "amount": 347888
+    },
+    {
+        "id": 508,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 32,
+        "step": 2,
+        "amount": 354743
+    },
+    {
+        "id": 509,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 32,
+        "step": 3,
+        "amount": 361736
+    },
+    {
+        "id": 510,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 32,
+        "step": 4,
+        "amount": 368694
+    },
+    {
+        "id": 511,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 32,
+        "step": 5,
+        "amount": 375969
+    },
+    {
+        "id": 512,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 32,
+        "step": 6,
+        "amount": 383391
+    },
+    {
+        "id": 513,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 32,
+        "step": 7,
+        "amount": 390963
+    },
+    {
+        "id": 514,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 32,
+        "step": 8,
+        "amount": 398686
+    },
+    {
+        "id": 515,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 33,
+        "step": 1,
+        "amount": 438844
+    },
+    {
+        "id": 516,
+        "nbc_no": 597,
+        "effective_date": "2025-01-01",
+        "tranche": 2,
+        "salary_grade": 33,
+        "step": 2,
+        "amount": 451713
+    }
+]

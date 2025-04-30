@@ -128,6 +128,13 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 'citizenship_acquisition' => 'By Birth',
             ],
 
+            'employee' => [
+                [
+                    'salary_grade_id' => 1,
+                    'section_or_unit_id' => 1,
+                ],
+            ],
+
             'individual_address' => [
                 [
                     'residential_house_block_lot_no' => '#001 House',
@@ -193,6 +200,8 @@ class IndividualBasicDetailFeatureTest extends TestCase
             'employee' => [
                 [
                     'id_number' => '01111',
+                    'salary_grade_id' => 1,
+                    'section_or_unit_id' => 1,
                     'agency_employee_no' => '01111',
                 ],
             ],
