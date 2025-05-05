@@ -84,13 +84,13 @@ class IndividualBasicDetailRequest extends FormRequest
 
             // Employee
             'employee' => ['array', $this->requiredIfUserIsPPMSAdmin()],
-            'employee.*.item_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
-            'employee.*.salary_grade_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
-            'employee.*.program_id' => ['nullable', 'int'],
-            'employee.*.office_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
-            'employee.*.division_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
-            'employee.*.section_or_unit_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
-            'employee.*.id' => [
+            'employee.item_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.salary_grade_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.program_id' => ['nullable', 'int'],
+            'employee.office_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.division_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.section_or_unit_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.id' => [
                 'nullable',
                 'int',
                 Rule::exists('employees', 'id')->where(function ($query) use ($individualId) {
@@ -99,8 +99,8 @@ class IndividualBasicDetailRequest extends FormRequest
                     }
                 }),
             ],
-            'employee.*.id_number' => ['nullable', 'string', new DbVarcharMaxLength()],
-            'employee.*.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
+            'employee.id_number' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'employee.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
 
             // IndividualAddress
             'individual_address' => ['array'],
