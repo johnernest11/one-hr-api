@@ -26,6 +26,6 @@ class SectionOrUnit extends Model
 
     public function divisions(): BelongsTo
     {
-        return $this->belongsTo(Division::class);
+        return $this->belongsTo(Division::class, 'division_id');
     }
 }

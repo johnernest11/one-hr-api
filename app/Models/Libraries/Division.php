@@ -19,7 +19,6 @@ class Division extends Model
     protected $fillable = [
         'id',
         'name',
-        'office_id',
         'head_user_id',
         'added_by_user_id',
         'last_modified_by_user_id',

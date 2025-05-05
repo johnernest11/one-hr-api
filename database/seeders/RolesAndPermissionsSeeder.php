@@ -37,7 +37,6 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         Permission::create(['name' => PermissionEnum::VIEW_PROGRAMS, 'guard_name' => 'token']);
 
         // Employee permissions
-        Permission::create(['name' => PermissionEnum::CREATE_EMPLOYEE_PDS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_EMPLOYEE_PDS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::UPDATE_EMPLOYEE_PDS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::DELETE_EMPLOYEE_PDS, 'guard_name' => 'token']);
@@ -62,9 +61,6 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         Permission::create(['name' => PermissionEnum::VIEW_USER_ROLES, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_PERMISSIONS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::UPDATE_APP_SETTINGS, 'guard_name' => 'token']);
-        /** @var Role $adminRole */
-        $adminRole = Role::create(['name' => RoleEnum::ADMIN, 'guard_name' => 'token']);
-        $adminRole->givePermissionTo(Permission::all());
 
         /** @var Role $hrPasAdminRole */
         $hrPasAdminRole = Role::create(['name' => RoleEnum::HR_PAS_ADMIN, 'guard_name' => 'token']);
@@ -73,9 +69,14 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         Permission::create(['name' => PermissionEnum::CREATE_ITEMS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::UPDATE_ITEMS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_ITEMS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::CREATE_EMPLOYEE_PDS, 'guard_name' => 'token']);
         /** @var Role $hrPpmsAdminRole */
         $hrPpmsAdminRole = Role::create(['name' => RoleEnum::HR_PPMS_ADMIN, 'guard_name' => 'token']);
         $hrPpmsAdminRole->givePermissionTo(Permission::all());
+
+        /** @var Role $adminRole */
+        $adminRole = Role::create(['name' => RoleEnum::ADMIN, 'guard_name' => 'token']);
+        $adminRole->givePermissionTo(Permission::all());
 
         // System Support Permissions
         $notification_per = Permission::create(['name' => PermissionEnum::RECEIVE_SYSTEM_ALERTS, 'guard_name' => 'token']);

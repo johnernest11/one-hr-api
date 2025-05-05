@@ -3,9 +3,10 @@
 namespace Database\Factories\ComprehensiveRecords;
 
 use App\Models\Item;
+use App\Models\Libraries\Division;
+use App\Models\Libraries\Office;
 use App\Models\Libraries\Program;
 use App\Models\Libraries\SalaryGrade;
-use App\Models\Libraries\SectionOrUnit;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,12 +21,17 @@ class EmployeeFactory extends Factory
      */
     public function definition(): array
     {
+        $division = Division::first();
+        $section = $division->sectionOrUnits()->first();
+
         return [
             'id_number' => (string) fake()->randomNumber(9),
             'item_id' => Item::factory(),
             'salary_grade_id' => SalaryGrade::first()->id,
             'program_id' => Program::first()->id,
-            'section_or_unit_id' => SectionOrUnit::first()->id,
+            'office_id' => Office::first()->id,
+            'division_id' => $division->id,
+            'section_or_unit_id' => $section->id,
             'agency_employee_no' => (string) fake()->randomNumber(9),
         ];
     }

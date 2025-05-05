@@ -20,7 +20,6 @@ class DivisionsSeeder extends CiCdCompliantSeeder
             $divisions[] = [
                 'id' => $division['id'],
                 'name' => $division['name'],
-                'office_id' => $division['office_location_id'],
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];

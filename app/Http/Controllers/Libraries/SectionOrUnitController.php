@@ -16,7 +16,7 @@ class SectionOrUnitController extends ApiController
      */
     public function fetch(SectionOrUnitRequest $request): JsonResponse
     {
-        $section_units = SectionOrUnit::orderBy('name')->paginate(9)->toArray();
+        $section_units = SectionOrUnit::orderBy('name')->with('divisions')->paginate(9)->toArray();
 
         $section_units_formatted = PaginationHelper::formatLengthAwarePagination($section_units);
 
@@ -32,7 +32,7 @@ class SectionOrUnitController extends ApiController
         $q = $request->validated()['query'];
         $limit = $request->validated('limit', 9);
 
-        $section_units = SectionOrUnit::where('name', 'like', "%$q%")->paginate($limit)->toArray();
+        $section_units = SectionOrUnit::where('name', 'like', "%$q%")->with('divisions')->paginate($limit)->toArray();
 
         $section_units_formatted = PaginationHelper::formatLengthAwarePagination($section_units);
 

@@ -2,6 +2,8 @@
 
 namespace App\Models\ComprehensiveRecords;
 
+use App\Models\Libraries\Division;
+use App\Models\Libraries\Office;
 use App\Models\Libraries\Program;
 use App\Models\Libraries\SalaryGrade;
 use App\Models\Libraries\SectionOrUnit;
@@ -27,6 +29,8 @@ class Employee extends Model
         'item_id',
         'salary_grade_id',
         'program_id',
+        'office_id',
+        'division_id',
         'section_or_unit_id',
         'agency_employee_no',
     ];
@@ -53,6 +57,22 @@ class Employee extends Model
     public function sectionOrUnit(): HasOne
     {
         return $this->hasOne(SectionOrUnit::class);
+    }
+
+    /**
+     * An employee has one division
+     */
+    public function division(): HasOne
+    {
+        return $this->hasOne(Division::class);
+    }
+
+    /**
+     * An employee has one office
+     */
+    public function office(): HasOne
+    {
+        return $this->hasOne(Office::class);
     }
 
     /**

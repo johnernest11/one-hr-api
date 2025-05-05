@@ -16,7 +16,7 @@ class DivisionController extends ApiController
      */
     public function fetch(DivisionRequest $request): JsonResponse
     {
-        $divisions = Division::orderBy('name')->paginate(9)->toArray();
+        $divisions = Division::orderBy('name')->with('sectionOrUnits')->paginate(9)->toArray();
 
         $divisions_formatted = PaginationHelper::formatLengthAwarePagination($divisions);
 
@@ -32,7 +32,7 @@ class DivisionController extends ApiController
         $q = $request->validated()['query'];
         $limit = $request->validated('limit', 9);
 
-        $divisions = Division::where('name', 'like', "%$q%")->paginate($limit)->toArray();
+        $divisions = Division::where('name', 'like', "%$q%")->with('sectionOrUnits')->paginate($limit)->toArray();
 
         $divisions_formatted = PaginationHelper::formatLengthAwarePagination($divisions);
 

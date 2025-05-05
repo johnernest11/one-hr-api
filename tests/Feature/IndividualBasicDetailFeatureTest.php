@@ -46,7 +46,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $this->artisan('db:seed');
 
         $user = $this->produceUsers();
-        $roles = [RoleEnum::ADMIN, RoleEnum::STANDARD_USER];
+        $roles = [RoleEnum::ADMIN, RoleEnum::HR_PPMS_ADMIN];
         $user->syncRoles(fake()->randomElement($roles));
         $this->user = $user; // save random user
 
@@ -131,7 +131,9 @@ class IndividualBasicDetailFeatureTest extends TestCase
             'employee' => [
                 [
                     'salary_grade_id' => 1,
-                    'section_or_unit_id' => 1,
+                    'office_id' => 1,
+                    'division_id' => 8,
+                    'section_or_unit_id' => 46,
                 ],
             ],
 
@@ -202,7 +204,9 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'id_number' => '01111',
                     'salary_grade_id' => 1,
                     'program_id' => 1,
-                    'section_or_unit_id' => 1,
+                    'office_id' => 1,
+                    'division_id' => 8,
+                    'section_or_unit_id' => 46,
                     'agency_employee_no' => '01111',
                 ],
             ],
