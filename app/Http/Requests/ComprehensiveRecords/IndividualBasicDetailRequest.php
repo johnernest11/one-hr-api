@@ -59,8 +59,6 @@ class IndividualBasicDetailRequest extends FormRequest
     {
         $individualBasicDetail = $this->route('individualBasicDetail');
         $individualId = $individualBasicDetail ? $individualBasicDetail->id : null;
-        $user = User::find(auth()->user()->id);
-        $isPPMSAdmin = $user->hasRole([Role::HR_PPMS_ADMIN->value, Role::ADMIN->value, Role::SUPER_USER->value]);
 
         return [
             // IndividualBasicDetail
@@ -85,38 +83,21 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.gsis_no' => ['nullable', 'string', new DbTextMaxLength()],
 
             // Employee
-            'employee' => ['array', Rule::requiredIf(function () use ($isPPMSAdmin) {
-                return $isPPMSAdmin;
-            })],
-            'employee.*.item_id' => ['nullable', 'int',
-            Rule::requiredIf(function () use ($isPPMSAdmin) {
-                return $isPPMSAdmin;
-            })],
-            'employee.*.salary_grade_id' => ['nullable', 'int',
-            Rule::requiredIf(function () use ($isPPMSAdmin) {
-                return $isPPMSAdmin;
-            })],
+            'employee' => ['array', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.*.item_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.*.salary_grade_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
             'employee.*.program_id' => ['nullable', 'int'],
-            'employee.*.office_id' => ['nullable', 'int',
-            Rule::requiredIf(function () use ($isPPMSAdmin) {
-                return $isPPMSAdmin;
-            })],
-            'employee.*.division_id' => ['nullable', 'int',
-            Rule::requiredIf(function () use ($isPPMSAdmin) {
-                return $isPPMSAdmin;
-            })],
-            'employee.*.section_or_unit_id' => ['nullable', 'int',
-            Rule::requiredIf(function () use ($isPPMSAdmin) {
-                return $isPPMSAdmin;
-            })],
+            'employee.*.office_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.*.division_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.*.section_or_unit_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
             'employee.*.id' => [
-            'nullable',
-            'int',
-            Rule::exists('employees', 'id')->where(function ($query) use ($individualId) {
-                if ($individualId) {
-                    $query->where('individual_basic_detail_id', $individualId);
-                }
-            }),
+                'nullable',
+                'int',
+                Rule::exists('employees', 'id')->where(function ($query) use ($individualId) {
+                    if ($individualId) {
+                        $query->where('individual_basic_detail_id', $individualId);
+                    }
+                }),
             ],
             'employee.*.id_number' => ['nullable', 'string', new DbVarcharMaxLength()],
             'employee.*.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
@@ -134,13 +115,13 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_address.*.permanent_region_id' => ['required', 'exists:regions,id'],
             'individual_address.*.permanent_zip_code' => ['required', 'digits:4'],
             'individual_address.*.id' => [
-            'nullable',
-            'int',
-            Rule::exists('individual_addresses', 'id')->where(function ($query) use ($individualId) {
-                if ($individualId) {
-                    $query->where('individual_basic_detail_id', $individualId);
-                }
-            }),
+                'nullable',
+                'int',
+                Rule::exists('individual_addresses', 'id')->where(function ($query) use ($individualId) {
+                    if ($individualId) {
+                        $query->where('individual_basic_detail_id', $individualId);
+                    }
+                }),
             ],
             'individual_address.*.residential_house_block_lot_no' => ['nullable', 'string', new DbTextMaxLength()],
             'individual_address.*.residential_street' => ['nullable', 'string', new DbTextMaxLength()],
@@ -152,37 +133,37 @@ class IndividualBasicDetailRequest extends FormRequest
             // IndividualContactInfo
             'individual_contact_info' => ['array'],
             'individual_contact_info.*.mobile_no' => [
-            'required',
-            Rule::unique('user_profiles', 'mobile_number')->ignore(auth()->id(), 'user_id'),
-            new InternationalPhoneNumberFormat(),
-            (new PhoneRule())->country('PH')->mobile(),
+                'required',
+                Rule::unique('user_profiles', 'mobile_number')->ignore(auth()->id(), 'user_id'),
+                new InternationalPhoneNumberFormat(),
+                (new PhoneRule())->country('PH')->mobile(),
             ],
             'individual_contact_info.*.email_address' => ['nullable', 'email', 'unique:individual_contact_infos,email_address,'.request('individual_contact_info.0.id')], // Get the first record on the array since this is a has one relationship anyway. Ignore uniqueness when id is given.
             'individual_contact_info.*.id' => [
-            'nullable',
-            'int',
-            Rule::exists('individual_contact_infos', 'id')->where(function ($query) use ($individualId) {
-                if ($individualId) {
-                    $query->where('individual_basic_detail_id', $individualId);
-                }
-            }),
+                'nullable',
+                'int',
+                Rule::exists('individual_contact_infos', 'id')->where(function ($query) use ($individualId) {
+                    if ($individualId) {
+                        $query->where('individual_basic_detail_id', $individualId);
+                    }
+                }),
             ],
             'individual_contact_info.*.tel_no' => [
-            'nullable',
-            new InternationalPhoneNumberFormat(),
-            (new PhoneRule())->country('PH')->fixedLine(),
+                'nullable',
+                new InternationalPhoneNumberFormat(),
+                (new PhoneRule())->country('PH')->fixedLine(),
             ],
 
             // IndividualFamily
             'individual_family' => ['array'],
             'individual_family.*.id' => [
-            'nullable',
-            'int',
-            Rule::exists('individual_families', 'id')->where(function ($query) use ($individualId) {
-                if ($individualId) {
-                    $query->where('individual_basic_detail_id', $individualId);
-                }
-            }),
+                'nullable',
+                'int',
+                Rule::exists('individual_families', 'id')->where(function ($query) use ($individualId) {
+                    if ($individualId) {
+                        $query->where('individual_basic_detail_id', $individualId);
+                    }
+                }),
             ],
             'individual_family.*.middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'individual_family.*.ext_name' => ['nullable', new Enum(ExtensionNameCategory::class)],
@@ -190,9 +171,9 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_family.*.employers_business_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'individual_family.*.business_address' => ['string', 'nullable', new DbVarcharMaxLength()],
             'individual_family.*.telephone_no' => [
-            'nullable',
-            new InternationalPhoneNumberFormat(),
-            (new PhoneRule())->country('PH')->mobile(),
+                'nullable',
+                new InternationalPhoneNumberFormat(),
+                (new PhoneRule())->country('PH')->mobile(),
             ],
             'individual_family.*._delete' => ['nullable', 'boolean'], // Can delete family members.
             'individual_family.*.first_name' => ['string', 'required', new DbVarcharMaxLength()],
@@ -204,13 +185,13 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_educational_background' => ['array'],
             'individual_educational_background.*.level' => ['required', new Enum(AcademicLevel::class)],
             'individual_educational_background.*.id' => [
-            'nullable',
-            'int',
-            Rule::exists('individual_educational_backgrounds', 'id')->where(function ($query) use ($individualId) {
-                if ($individualId) {
-                    $query->where('individual_basic_detail_id', $individualId);
-                }
-            }),
+                'nullable',
+                'int',
+                Rule::exists('individual_educational_backgrounds', 'id')->where(function ($query) use ($individualId) {
+                    if ($individualId) {
+                        $query->where('individual_basic_detail_id', $individualId);
+                    }
+                }),
             ],
             'individual_educational_background.*.schools_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'individual_educational_background.*.education_description' => ['string', 'nullable', new DbVarcharMaxLength()],
@@ -221,6 +202,14 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_educational_background.*.scholarship_academic_honors_received' => ['string', 'nullable', new DbVarcharMaxLength()],
             'individual_educational_background.*._delete' => ['nullable', 'boolean'], // Can delete educational backgrounds.
         ];
+    }
+
+    public function requiredIfUserIsPPMSAdmin()
+    {
+        $user = User::find(auth()->user()->id);
+        $isPPMSAdmin = $user->hasRole([Role::HR_PPMS_ADMIN->value, Role::ADMIN->value, Role::SUPER_USER->value]);
+
+        return Rule::requiredIf($isPPMSAdmin);
     }
 
     public function getSearchIndividualRules(): array
