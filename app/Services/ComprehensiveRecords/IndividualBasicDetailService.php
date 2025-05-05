@@ -85,14 +85,17 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
     {
         return DB::transaction(function () use ($request) {
             $individualData = $this->model->create($request['individual']);
+            // Create employee seperately
+            $individualData->employee()->create($request['employee']);
 
-            $forUpdateRel = [
+            $toSkip = [
                 'individual',
+                'employee',
             ];
 
             foreach ($request as $relationshipName => $inputData) {
                 $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
-                if (in_array($relationshipName, $forUpdateRel)) {
+                if (in_array($relationshipName, $toSkip)) {
                     continue; // Skip excluded relations.
                 }
 
@@ -122,6 +125,9 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
             if ($request['individual']) {
                 $individualBasicDetail->update($request['individual']);
             }
+            if ($request['employee']) {
+                $individualBasicDetail->employee()->update($request['employee']);
+            }
 
             // For every model,
             // Check if array_key_exists
@@ -129,6 +135,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
             $excludedRel = [
                 'individual',
+                'employee',
             ];
 
             // For every model,

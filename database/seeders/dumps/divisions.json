@@ -1,52 +1,42 @@
 [
     {
         "id": 1,
-        "name": "ADMINISTRATIVE DIVISION",
-        "office_location_id": 1
+        "name": "ADMINISTRATIVE DIVISION"
     },
     {
         "id": 2,
-        "name": "DISASTER RESPONSE MANAGEMENT DIVISION",
-        "office_location_id": 1
+        "name": "DISASTER RESPONSE MANAGEMENT DIVISION"
     },
     {
         "id": 3,
-        "name": "FINANCE AND MANAGEMENT DIVISION",
-        "office_location_id": 1
+        "name": "FINANCE AND MANAGEMENT DIVISION"
     },
     {
         "id": 4,
-        "name": "HUMAN RESOURCE MANAGEMENT AND DEVELOPMENT DIVISION",
-        "office_location_id": 1
+        "name": "HUMAN RESOURCE MANAGEMENT AND DEVELOPMENT DIVISION"
     },
     {
         "id": 5,
-        "name": "INNOVATIONS DIVISION",
-        "office_location_id": 1
+        "name": "INNOVATIONS DIVISION"
     },
     {
         "id": 6,
-        "name": "OFFICE OF THE ASSISTANT REGIONAL DIRECTOR FOR OPERATIONS",
-        "office_location_id": 1
+        "name": "OFFICE OF THE ASSISTANT REGIONAL DIRECTOR FOR OPERATIONS"
     },
     {
         "id": 7,
-        "name": "OFFICE OF THE REGIONAL DIRECTOR",
-        "office_location_id": 1
+        "name": "OFFICE OF THE REGIONAL DIRECTOR"
     },
     {
         "id": 8,
-        "name": "POLICY AND PLANS DIVISION",
-        "office_location_id": 1
+        "name": "POLICY AND PLANS DIVISION"
     },
     {
         "id": 9,
-        "name": "SPECIALIZED PROGRAMS DIVISION",
-        "office_location_id": 1
+        "name": "SPECIALIZED PROGRAMS DIVISION"
     },
     {
         "id": 10,
-        "name": "STATUTORY PROGRAMS DIVISION",
-        "office_location_id": 1
+        "name": "STATUTORY PROGRAMS DIVISION"
     }
 ]

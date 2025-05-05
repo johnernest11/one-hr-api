@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
 
             $table->string('name');
-            $table->foreignId('office_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('head_user_id')->nullable()->constrained('user_profiles')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('added_by_user_id')->nullable()->constrained('user_profiles')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('last_modified_by_user_id')->nullable()->constrained('user_profiles')->cascadeOnUpdate()->cascadeOnDelete();

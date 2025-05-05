@@ -13,6 +13,7 @@ use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
 use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class IndividualBasicDetailUnitTest extends TestCase
@@ -93,13 +94,13 @@ class IndividualBasicDetailUnitTest extends TestCase
         $testEmployee = Employee::factory()->make()->toArray();
         $testAddress = IndividualAddress::factory()->make()->toArray();
         $testContactInfo = IndividualContactInfo::factory()->make()->toArray();
-        $testFamily = IndividualFamily::factory()->make()->toArray();
+        $testFamily = IndividualFamily::factory()->make()->setAppends([])->toArray(); // remove appended attributes for testing.
         $testEducation = IndividualEducationalBackground::factory()->make()->toArray();
 
         // Combine data and structure it so that it is similar to the request body
         $requestData = [
             'individual' => $testIndividual,
-            'employee' => [$testEmployee],
+            'employee' => $testEmployee,
             'individual_address' => [$testAddress],
             'individual_contact_info' => [$testContactInfo],
             'individual_family' => [$testFamily],
@@ -133,13 +134,28 @@ class IndividualBasicDetailUnitTest extends TestCase
 
         $newInfo = $this->generate_test_data();
         // Add ids
-        $newInfo['employee'][0]['id'] = $individual->employee->id;
+        $newInfo['employee']['id'] = $individual->employee->id;
         $newInfo['individual_address'][0]['id'] = $individual->individualAddress->id;
         $newInfo['individual_contact_info'][0]['id'] = $individual->individualContactInfo->id;
         $newInfo['individual_family'][0]['id'] = $firstFamily->id;
         $newInfo['individual_educational_background'][0]['id'] = $firstEducation->id;
         $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
+
+        // Check if the data matches the record in the database
         $this->assertDatabaseHas('individual_basic_details', $newInfo['individual']);
+        foreach ($newInfo as $key => $value) {
+            if ($key == 'individual') {
+                $this->assertDatabaseHas('individual_basic_details', $newInfo['individual']);
+
+                continue;
+            }
+            if ($key == 'employee') { // employee is not nested like the rest of the arrays hence the separate assertion
+                $this->assertDatabaseHas(Str::plural($key), $newInfo[$key]); // convert $key to plural form since it is singular to match the table name
+
+                continue;
+            }
+            $this->assertDatabaseHas(Str::plural($key), $newInfo[$key][0]); // convert $key to plural form since it is singular to match the table name
+        }
     }
 
     /**

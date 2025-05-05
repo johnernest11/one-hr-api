@@ -19,9 +19,11 @@ return new class extends Migration
 
             $table->foreignId('item_id')->constrained('items')->cascadeOnDelete()->cascadeOnUpdate();
 
-            //@todo add salary_grade_id once its completed.
-            //@todo add program_id once its completed.
-            //@todo add section_or_unit_id once its completed.
+            $table->foreignId('salary_grade_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('program_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('office_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('division_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('section_or_unit_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->string('agency_employee_no')->nullable();
 

@@ -46,7 +46,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $this->artisan('db:seed');
 
         $user = $this->produceUsers();
-        $roles = [RoleEnum::ADMIN, RoleEnum::STANDARD_USER];
+        $roles = [RoleEnum::ADMIN, RoleEnum::HR_PPMS_ADMIN];
         $user->syncRoles(fake()->randomElement($roles));
         $this->user = $user; // save random user
 
@@ -128,6 +128,13 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 'citizenship_acquisition' => 'By Birth',
             ],
 
+            'employee' => [
+                'salary_grade_id' => 1,
+                'office_id' => 1,
+                'division_id' => 8,
+                'section_or_unit_id' => 46,
+            ],
+
             'individual_address' => [
                 [
                     'residential_house_block_lot_no' => '#001 House',
@@ -191,10 +198,13 @@ class IndividualBasicDetailFeatureTest extends TestCase
             ],
 
             'employee' => [
-                [
-                    'id_number' => '01111',
-                    'agency_employee_no' => '01111',
-                ],
+                'id_number' => '01111',
+                'salary_grade_id' => 1,
+                'program_id' => 1,
+                'office_id' => 1,
+                'division_id' => 8,
+                'section_or_unit_id' => 46,
+                'agency_employee_no' => '01111',
             ],
 
             'individual_address' => [
@@ -277,7 +287,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
             // Generate Item and update array
             $generatedItem = Item::factory()->create();
 
-            $input['employee'][0]['item_id'] = $generatedItem->id;
+            $input['employee']['item_id'] = $generatedItem->id;
         }
 
         $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
@@ -324,6 +334,23 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Asserts that two arrays are equal only for the keys that exist in both.
+     *
+     * Use case: Comparing response and request payload, wherein the response will contain fields that are not in the request like created_at, updated_at, etc.
+     *
+     * @param  array  $expected  The expected array.
+     * @param  array  $actual  The actual array.
+     */
+    protected function assertArrayEqualsIntersecting(array $expected, array $actual): void
+    {
+        $intersectingKeys = array_intersect_key($expected, $actual);
+        $filteredExpected = array_intersect_key($expected, $intersectingKeys);
+        $filteredActual = array_intersect_key($actual, $intersectingKeys);
+
+        $this->assertEquals($filteredExpected, $filteredActual);
+    }
+
     public function test_it_can_update_individual_basic_profile(): void
     {
         $individuals = IndividualBasicDetail::factory(5)->create();
@@ -351,7 +378,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Combine data and structure it so that it is similar to the request body
         $updatedData = [
             'individual' => $updateIndividual,
-            'employee' => [$updateEmployee],
+            'employee' => $updateEmployee,
             'individual_address' => [$updateAddress],
             'individual_contact_info' => [$updateContactInfo],
             'individual_family' => [$updateFamily],
@@ -361,5 +388,25 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updatedData);
         $response->assertStatus(200);
 
+        // Check if the updated data matches the response result
+        $response = $response->decodeResponseJson()['data'];
+
+        foreach ($response as $key => $value) {
+            if (array_key_exists($key, $updatedData['individual'])) { //assertion for individual
+                $this->assertEquals($updatedData['individual'][$key], $value);
+            }
+
+            if (is_array($value)) {
+                // if array, match with the equivalent key & value pair in updatedData
+                if ($key == 'employee') { // employee is not nested like the rest of the arrays hence the separate assertion
+                    $this->assertArrayEqualsIntersecting($updatedData[$key], $value);
+
+                    continue;
+                }
+
+                $this->assertArrayEqualsIntersecting($updatedData[$key][0], $value);
+
+            }
+        }
     }
 }

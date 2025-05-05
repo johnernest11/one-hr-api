@@ -38,7 +38,7 @@ class IndividualBasicDetailFactory extends Factory
 
             'place_of_birth' => fake()->word(),
             'civil_status' => fake()->randomElement(ConversionHelper::enumToArray(CivilStatus::class)),
-            'height' => fake()->randomFloat(),
+            'height' => fake()->randomFloat(2), // Updated to prevent floating-point precision issue
             'weight' => fake()->randomNumber(2),
             'blood_type' => fake()->randomElement(ConversionHelper::enumToArray(BloodType::class)),
             'gsis_no' => (string) fake()->randomNumber(9),

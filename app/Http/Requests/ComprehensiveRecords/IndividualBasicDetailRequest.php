@@ -9,7 +9,9 @@ use App\Enums\CitizenshipAcquisition;
 use App\Enums\CivilStatus;
 use App\Enums\ExtensionNameCategory;
 use App\Enums\FamilyMemberCategory;
+use App\Enums\Role;
 use App\Enums\SexualCategory;
+use App\Models\User;
 use App\Rules\DbTextMaxLength;
 use App\Rules\DbVarcharMaxLength;
 use App\Rules\InternationalPhoneNumberFormat;
@@ -81,9 +83,14 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.gsis_no' => ['nullable', 'string', new DbTextMaxLength()],
 
             // Employee
-            'employee' => ['array'],
-            'employee.*.item_id' => ['required', 'int'],
-            'employee.*.id' => [
+            'employee' => ['array', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.item_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.salary_grade_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.program_id' => ['nullable', 'int'],
+            'employee.office_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.division_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.section_or_unit_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee.id' => [
                 'nullable',
                 'int',
                 Rule::exists('employees', 'id')->where(function ($query) use ($individualId) {
@@ -92,8 +99,8 @@ class IndividualBasicDetailRequest extends FormRequest
                     }
                 }),
             ],
-            'employee.*.id_number' => ['nullable', 'string', new DbVarcharMaxLength()],
-            'employee.*.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
+            'employee.id_number' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'employee.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
 
             // IndividualAddress
             'individual_address' => ['array'],
@@ -195,6 +202,14 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_educational_background.*.scholarship_academic_honors_received' => ['string', 'nullable', new DbVarcharMaxLength()],
             'individual_educational_background.*._delete' => ['nullable', 'boolean'], // Can delete educational backgrounds.
         ];
+    }
+
+    public function requiredIfUserIsPPMSAdmin()
+    {
+        $user = User::find(auth()->user()->id);
+        $isPPMSAdmin = $user->hasRole([Role::HR_PPMS_ADMIN->value, Role::ADMIN->value, Role::SUPER_USER->value]);
+
+        return Rule::requiredIf($isPPMSAdmin);
     }
 
     public function getSearchIndividualRules(): array
