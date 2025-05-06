@@ -36,6 +36,16 @@ class Item extends Model
     ];
 
     /**
+     * The attributes that should be eager-loaded
+     *
+     * @var array<int, string>
+     */
+    protected $with = [
+        'position',
+        'fundSource',
+    ];
+
+    /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
@@ -64,11 +74,11 @@ class Item extends Model
 
     public function position(): BelongsTo
     {
-        return $this->belongsTo(Position::class);
+        return $this->belongsTo(Position::class, 'position_id');
     }
 
     public function fundSource(): BelongsTo
     {
-        return $this->belongsTo(FundSource::class);
+        return $this->belongsTo(FundSource::class, 'fund_source_id');
     }
 }
