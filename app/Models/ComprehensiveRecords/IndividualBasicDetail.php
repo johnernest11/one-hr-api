@@ -111,4 +111,12 @@ class IndividualBasicDetail extends Model
     {
         return $this->hasMany(IndividualEducationalBackground::class);
     }
+
+    /**
+     * An individual has many eligibilities
+     */
+    public function individualEligibility(): HasMany
+    {
+        return $this->hasMany(IndividualEligibility::class);
+    }
 }

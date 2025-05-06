@@ -12,6 +12,7 @@ use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
+use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
 use ConversionHelper;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -61,6 +62,7 @@ class IndividualBasicDetailFactory extends Factory
             IndividualContactInfo::factory()->for($individualBasicDetail)->create();
             IndividualFamily::factory()->for($individualBasicDetail)->create();
             IndividualEducationalBackground::factory()->for($individualBasicDetail)->create();
+            IndividualEligibility::factory()->for($individualBasicDetail)->create();
         });
     }
 }

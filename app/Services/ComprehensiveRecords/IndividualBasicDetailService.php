@@ -28,14 +28,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualContactInfo',
         'individualFamily',
         'individualEducationalBackground',
-    ];
-
-    // @todo Update this array until all C1 models are added
-    private $c1_records = [
-        'individualAddress',
-        'individualContactInfo',
-        'individualFamily',
-        'individualEducationalBackground',
+        'individualEligibility',
     ];
 
     private IndividualBasicDetail $model;
@@ -122,10 +115,10 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
         return DB::transaction(function () use ($individualBasicDetail, $request) {
 
-            if ($request['individual']) {
+            if (array_key_exists('individual', $request)) {
                 $individualBasicDetail->update($request['individual']);
             }
-            if ($request['employee']) {
+            if (array_key_exists('employee', $request)) {
                 $individualBasicDetail->employee()->update($request['employee']);
             }
 
