@@ -129,15 +129,17 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
             $excludedRel = [
                 'individual',
                 'employee',
+                'form_type', // Skip since its not really a model. It is only for determining which form is currently being updated.
             ];
 
             // For every model,
             // Loop Through the Key and update
             foreach ($request as $relationshipName => $inputData) {
-                $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
                 if (in_array($relationshipName, $excludedRel)) {
                     continue; // Skip excluded relations.
                 }
+
+                $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
 
                 if ($individualBasicDetail->{$relationshipName}() instanceof Relation && is_array($inputData) && ! empty($inputData)) {
                     foreach ($inputData as $modelData) {

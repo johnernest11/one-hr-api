@@ -127,59 +127,66 @@ class IndividualBasicDetailRequest extends FormRequest
 
             // IndividualFamily
             'individual_family' => ['array'],
-            'individual_family.*.middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_family.*.middle_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_family.*.ext_name' => ['nullable', new Enum(ExtensionNameCategory::class)],
-            'individual_family.*.occupation' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_family.*.employers_business_name' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_family.*.business_address' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_family.*.occupation' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_family.*.employers_business_name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_family.*.business_address' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_family.*.telephone_no' => [
                 'nullable',
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],
             'individual_family.*._delete' => ['nullable', 'boolean'], // Can delete family members.
-            'individual_family.*.first_name' => ['string', 'required', new DbVarcharMaxLength()],
-            'individual_family.*.last_name' => ['string', 'required', new DbVarcharMaxLength()],
+            'individual_family.*.first_name' => ['required', 'string', new DbVarcharMaxLength()],
+            'individual_family.*.last_name' => ['required', 'string', new DbVarcharMaxLength()],
             'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
             'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
 
             // IndividualEducationalBackground
             'individual_educational_background' => ['array'],
             'individual_educational_background.*.level' => ['required', new Enum(AcademicLevel::class)],
-            'individual_educational_background.*.schools_name' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.education_description' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.period_of_attendance_from' => ['date_format:Y', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.period_of_attendance_to' => ['date_format:Y', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.highest_level_units_earned' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.year_graduated' => ['date_format:Y', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.scholarship_academic_honors_received' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*._delete' => ['nullable', 'boolean'], // Can delete educational backgrounds.
+            'individual_educational_background.*.schools_name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_educational_background.*.education_description' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_educational_background.*.period_of_attendance_from' => ['nullable', 'date_format:Y', 'before_or_equal:'.$this->dateToday, new DbVarcharMaxLength()],
+            'individual_educational_background.*.period_of_attendance_to' => ['nullable', 'date_format:Y', 'before_or_equal:'.$this->dateToday, new DbVarcharMaxLength()],
+            'individual_educational_background.*.highest_level_units_earned' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_educational_background.*.year_graduated' => ['nullable', 'date_format:Y', 'before_or_equal:'.$this->dateToday, new DbVarcharMaxLength()],
+            'individual_educational_background.*.scholarship_academic_honors_received' => ['nullable', 'string', new DbVarcharMaxLength()],
 
             // -----> C2 starts here <-----
             // IndividualEligibilities
             'individual_eligibility' => ['array'],
-            'individual_eligibility.*.eligibility' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.rating' => ['numeric', 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.date_of_examination_conferment' => ['date_format:Y-m-d', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.place_of_examination' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.license_number' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.license_date_of_validity' => ['date_format:Y-m-d', 'nullable', new DbVarcharMaxLength()],
+            'individual_eligibility.*.eligibility' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_eligibility.*.rating' => ['nullable', 'numeric', new DbVarcharMaxLength()],
+            'individual_eligibility.*.date_of_examination_conferment' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday, new DbVarcharMaxLength()],
+            'individual_eligibility.*.place_of_examination' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_eligibility.*.license_number' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_eligibility.*.license_date_of_validity' => ['nullable', 'date_format:Y-m-d', new DbVarcharMaxLength()],
+        ];
+    }
+
+    public function getFormTypeRules(): array
+    {
+        return [
+            'form_type' => ['required', new Enum(PDSFormType::class)],
         ];
     }
 
     public function getUpdateIndividualRules(): array
     {
+        $form_rules = $this->getFormTypeRules();
         // Get which form will be updated.
-        // Will not add the form_type to the rules since we only need it here to distinguish which form will be updated.
         $form_type = $this->input('form_type');
 
         // Check which form will be updated and return the appropriate rules.
         $rules = match ($form_type) {
             PDSFormType::C1->value => $this->getC1Rules(),
             PDSFormType::C2->value => $this->getC2Rules(),
+            default => []
         };
 
-        return $rules;
+        return array_merge($form_rules, $rules);
     }
 
     public function getC1Rules(): array
@@ -293,19 +300,19 @@ class IndividualBasicDetailRequest extends FormRequest
                     }
                 }),
             ],
-            'individual_family.*.middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_family.*.middle_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_family.*.ext_name' => ['nullable', new Enum(ExtensionNameCategory::class)],
-            'individual_family.*.occupation' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_family.*.employers_business_name' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_family.*.business_address' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_family.*.occupation' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_family.*.employers_business_name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_family.*.business_address' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_family.*.telephone_no' => [
                 'nullable',
                 new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],
             'individual_family.*._delete' => ['nullable', 'boolean'], // Can delete family members.
-            'individual_family.*.first_name' => ['string', 'required', new DbVarcharMaxLength()],
-            'individual_family.*.last_name' => ['string', 'required', new DbVarcharMaxLength()],
+            'individual_family.*.first_name' => ['required', 'string', new DbVarcharMaxLength()],
+            'individual_family.*.last_name' => ['required', 'string', new DbVarcharMaxLength()],
             'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
             'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
 
@@ -321,13 +328,13 @@ class IndividualBasicDetailRequest extends FormRequest
                     }
                 }),
             ],
-            'individual_educational_background.*.schools_name' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.education_description' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.period_of_attendance_from' => ['date_format:Y', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.period_of_attendance_to' => ['date_format:Y', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.highest_level_units_earned' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.year_graduated' => ['date_format:Y', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
-            'individual_educational_background.*.scholarship_academic_honors_received' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'individual_educational_background.*.schools_name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_educational_background.*.education_description' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_educational_background.*.period_of_attendance_from' => ['nullable', 'date_format:Y', 'before_or_equal:'.$this->dateToday, new DbVarcharMaxLength()],
+            'individual_educational_background.*.period_of_attendance_to' => ['nullable', 'date_format:Y', 'before_or_equal:'.$this->dateToday, new DbVarcharMaxLength()],
+            'individual_educational_background.*.highest_level_units_earned' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_educational_background.*.year_graduated' => ['nullable', 'date_format:Y', 'before_or_equal:'.$this->dateToday, new DbVarcharMaxLength()],
+            'individual_educational_background.*.scholarship_academic_honors_received' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_educational_background.*._delete' => ['nullable', 'boolean'], // Can delete educational backgrounds.
         ];
     }
@@ -350,13 +357,13 @@ class IndividualBasicDetailRequest extends FormRequest
                     }
                 }),
             ],
-            'individual_eligibility.*.eligibility' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.rating' => ['numeric', 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.date_of_examination_conferment' => ['date_format:Y-m-d', 'before_or_equal:'.$this->dateToday, 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.place_of_examination' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.license_number' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'individual_eligibility.*.license_date_of_validity' => ['date_format:Y-m-d', 'nullable', new DbVarcharMaxLength()],
-
+            'individual_eligibility.*.eligibility' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_eligibility.*.rating' => ['nullable', 'numeric', new DbVarcharMaxLength()],
+            'individual_eligibility.*.date_of_examination_conferment' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday, new DbVarcharMaxLength()],
+            'individual_eligibility.*.place_of_examination' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_eligibility.*.license_number' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_eligibility.*.license_date_of_validity' => ['nullable', 'date_format:Y-m-d', new DbVarcharMaxLength()],
+            'individual_eligibility.*._delete' => ['nullable', 'boolean'], // Can delete eligibilities.
         ];
     }
 
