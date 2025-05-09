@@ -2,11 +2,13 @@
 
 namespace Tests\Unit;
 
+use App\Enums\PDSFormType;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
+use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
 use App\Models\User;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
@@ -86,7 +88,12 @@ class IndividualBasicDetailUnitTest extends TestCase
 
     }
 
-    public function generate_test_data(): array
+    /**
+     * Generate test data.
+     *
+     * @param  $form_type  can be C1, C2, C3, C4 and null. Pass nothing to generate test data to all models.
+     */
+    public function generate_test_data($form_type = null): array
     {
         // Generate random data
         // @todo: Update as we add new models.
@@ -96,9 +103,11 @@ class IndividualBasicDetailUnitTest extends TestCase
         $testContactInfo = IndividualContactInfo::factory()->make()->toArray();
         $testFamily = IndividualFamily::factory()->make()->setAppends([])->toArray(); // remove appended attributes for testing.
         $testEducation = IndividualEducationalBackground::factory()->make()->toArray();
+        $testEligibility = IndividualEligibility::factory()->make()->toArray();
 
+        //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
-        $requestData = [
+        $c1_request = [
             'individual' => $testIndividual,
             'employee' => $testEmployee,
             'individual_address' => [$testAddress],
@@ -106,6 +115,18 @@ class IndividualBasicDetailUnitTest extends TestCase
             'individual_family' => [$testFamily],
             'individual_educational_background' => [$testEducation],
         ];
+
+        $c2_request = [
+            'individual_eligibility' => [$testEligibility],
+        ];
+
+        $all_request = array_merge($c1_request, $c2_request);
+
+        $requestData = match ($form_type) {
+            PDSFormType::C1->value => $c1_request,
+            PDSFormType::C2->value => $c2_request,
+            default => $all_request,
+        };
 
         return $requestData;
     }
@@ -120,9 +141,9 @@ class IndividualBasicDetailUnitTest extends TestCase
     }
 
     /**
-     * Test if an IndividualBasicDetail can be edited via the service
+     * Test if C1 can be edited via the service
      */
-    public function test_can_edit_individual_data(): void
+    public function test_can_edit_c1(): void
     {
         $individual = $this->individualBasicDetailService->store($this->generate_test_data());
         $this->assertDatabaseCount('individual_basic_details', 1);
@@ -132,7 +153,7 @@ class IndividualBasicDetailUnitTest extends TestCase
         $firstFamily = $individual->individualFamily()->first();
         $firstEducation = $individual->individualEducationalBackground()->first();
 
-        $newInfo = $this->generate_test_data();
+        $newInfo = $this->generate_test_data(PDSFormType::C1->value);
         // Add ids
         $newInfo['employee']['id'] = $individual->employee->id;
         $newInfo['individual_address'][0]['id'] = $individual->individualAddress->id;
@@ -154,6 +175,29 @@ class IndividualBasicDetailUnitTest extends TestCase
 
                 continue;
             }
+            $this->assertDatabaseHas(Str::plural($key), $newInfo[$key][0]); // convert $key to plural form since it is singular to match the table name
+        }
+    }
+
+    /**
+     * Test if C2 can be edited via the service
+     */
+    public function test_can_edit_c2(): void
+    {
+        $individual = $this->individualBasicDetailService->store($this->generate_test_data());
+        $this->assertDatabaseCount('individual_basic_details', 1);
+
+        // Get first record in hasMany relationship.
+        // @todo: Update as we add new models.
+        $firstEligibility = $individual->individualEligibility()->first();
+
+        $newInfo = $this->generate_test_data(PDSFormType::C2->value);
+        // Add ids
+        $newInfo['individual_eligibility'][0]['id'] = $firstEligibility->id;
+        $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
+
+        // Check if the data matches the record in the database
+        foreach ($newInfo as $key => $value) {
             $this->assertDatabaseHas(Str::plural($key), $newInfo[$key][0]); // convert $key to plural form since it is singular to match the table name
         }
     }

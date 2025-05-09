@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Enums\PDSFormType;
 use App\Enums\Role as RoleEnum;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
+use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
 use App\Models\Item;
 use App\Models\User;
@@ -351,7 +353,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $this->assertEquals($filteredExpected, $filteredActual);
     }
 
-    public function test_it_can_update_individual_basic_profile(): void
+    public function test_it_can_update_c1(): void
     {
         $individuals = IndividualBasicDetail::factory(5)->create();
         $firstIndividual = $individuals->first();
@@ -377,6 +379,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
         // Combine data and structure it so that it is similar to the request body
         $updatedData = [
+            'form_type' => PDSFormType::C1->value,
             'individual' => $updateIndividual,
             'employee' => $updateEmployee,
             'individual_address' => [$updateAddress],
@@ -396,7 +399,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 $this->assertEquals($updatedData['individual'][$key], $value);
             }
 
-            if (is_array($value)) {
+            if (is_array($value) and array_key_exists($key, $updatedData)) {
                 // if array, match with the equivalent key & value pair in updatedData
                 if ($key == 'employee') { // employee is not nested like the rest of the arrays hence the separate assertion
                     $this->assertArrayEqualsIntersecting($updatedData[$key], $value);
@@ -408,5 +411,40 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
             }
         }
+    }
+
+    public function test_it_can_update_c2(): void
+    {
+        $individuals = IndividualBasicDetail::factory(5)->create();
+        $firstIndividual = $individuals->first();
+        // Get first record in hasMany relationship.
+        // @todo: Update as we add new models.
+        $firstEligibility = $firstIndividual->individualEligibility()->first();
+
+        // Generate updated data
+        $updateEligibility = IndividualEligibility::factory()->make()->toArray();
+
+        // Add the correct id on request body.
+        $updateEligibility['id'] = $firstEligibility->id;
+
+        // Combine data and structure it so that it is similar to the request body
+        $updatedData = [
+            'form_type' => PDSFormType::C2->value,
+            'individual_eligibility' => [$updateEligibility],
+        ];
+
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updatedData);
+        $response->assertStatus(200);
+
+        // Check if the updated data matches the response result
+        $response = $response->decodeResponseJson()['data'];
+
+        foreach ($response as $key => $value) {
+            if (is_array($value) and array_key_exists($key, $updatedData)) {
+                // if array, match with the equivalent key & value pair in updatedData
+                $this->assertArrayEqualsIntersecting($updatedData[$key][0], $value);
+            }
+        }
+
     }
 }

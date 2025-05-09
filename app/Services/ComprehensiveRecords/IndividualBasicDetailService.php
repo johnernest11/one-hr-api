@@ -28,14 +28,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualContactInfo',
         'individualFamily',
         'individualEducationalBackground',
-    ];
-
-    // @todo Update this array until all C1 models are added
-    private $c1_records = [
-        'individualAddress',
-        'individualContactInfo',
-        'individualFamily',
-        'individualEducationalBackground',
+        'individualEligibility',
     ];
 
     private IndividualBasicDetail $model;
@@ -122,10 +115,10 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
         return DB::transaction(function () use ($individualBasicDetail, $request) {
 
-            if ($request['individual']) {
+            if (array_key_exists('individual', $request)) {
                 $individualBasicDetail->update($request['individual']);
             }
-            if ($request['employee']) {
+            if (array_key_exists('employee', $request)) {
                 $individualBasicDetail->employee()->update($request['employee']);
             }
 
@@ -136,15 +129,17 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
             $excludedRel = [
                 'individual',
                 'employee',
+                'form_type', // Skip since its not really a model. It is only for determining which form is currently being updated.
             ];
 
             // For every model,
             // Loop Through the Key and update
             foreach ($request as $relationshipName => $inputData) {
-                $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
                 if (in_array($relationshipName, $excludedRel)) {
                     continue; // Skip excluded relations.
                 }
+
+                $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
 
                 if ($individualBasicDetail->{$relationshipName}() instanceof Relation && is_array($inputData) && ! empty($inputData)) {
                     foreach ($inputData as $modelData) {
