@@ -29,6 +29,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualFamily',
         'individualEducationalBackground',
         'individualEligibility',
+        'individualWorkExperience',
     ];
 
     private IndividualBasicDetail $model;
@@ -87,13 +88,15 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
             ];
 
             foreach ($request as $relationshipName => $inputData) {
-                $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
                 if (in_array($relationshipName, $toSkip)) {
                     continue; // Skip excluded relations.
                 }
+                $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
 
                 if ($individualData->{$relationshipName}() instanceof Relation && is_array($inputData) && ! empty($inputData)) {
-                    $individualData->{$relationshipName}()->create($inputData[0]);
+                    foreach ($inputData as $modelData) {
+                        $individualData->{$relationshipName}()->create($modelData);
+                    }
                 }
             }
 

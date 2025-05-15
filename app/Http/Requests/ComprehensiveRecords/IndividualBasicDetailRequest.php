@@ -7,6 +7,7 @@ use App\Enums\BloodType;
 use App\Enums\Citizenship;
 use App\Enums\CitizenshipAcquisition;
 use App\Enums\CivilStatus;
+use App\Enums\EmploymentStatus;
 use App\Enums\ExtensionNameCategory;
 use App\Enums\FamilyMemberCategory;
 use App\Enums\PDSFormType;
@@ -163,6 +164,18 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_eligibility.*.place_of_examination' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_eligibility.*.license_number' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_eligibility.*.license_date_of_validity' => ['nullable', 'date_format:Y-m-d', new DbVarcharMaxLength()],
+
+            // IndividualWorkExperience
+            'individual_work_experience' => ['array'],
+            'individual_work_experience.*.is_current_work' => ['nullable', 'boolean'],
+            'individual_work_experience.*.inclusive_date_from' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_work_experience.*.inclusive_date_to' => ['nullable', 'date_format:Y-m-d'],
+            'individual_work_experience.*.position_title' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_work_experience.*.department_agency_office_company' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_work_experience.*.monthly_salary' => ['nullable', 'numeric'],
+            'individual_work_experience.*.salary_grade_id' => ['nullable', 'int'],
+            'individual_work_experience.*.status_of_appointment' => ['nullable', new Enum(EmploymentStatus::class)],
+            'individual_work_experience.*.is_gov_service' => ['nullable', 'boolean'],
         ];
     }
 
@@ -228,11 +241,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'employee.id' => [
                 'nullable',
                 'int',
-                Rule::exists('employees', 'id')->where(function ($query) use ($individualId) {
-                    if ($individualId) {
-                        $query->where('individual_basic_detail_id', $individualId);
-                    }
-                }),
+                $this->validateRecordID('employees'),
             ],
             'employee.id_number' => ['nullable', 'string', new DbVarcharMaxLength()],
             'employee.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
@@ -252,11 +261,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_address.*.id' => [
                 'nullable',
                 'int',
-                Rule::exists('individual_addresses', 'id')->where(function ($query) use ($individualId) {
-                    if ($individualId) {
-                        $query->where('individual_basic_detail_id', $individualId);
-                    }
-                }),
+                $this->validateRecordID('individual_addresses'),
             ],
             'individual_address.*.residential_house_block_lot_no' => ['nullable', 'string', new DbTextMaxLength()],
             'individual_address.*.residential_street' => ['nullable', 'string', new DbTextMaxLength()],
@@ -277,11 +282,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_contact_info.*.id' => [
                 'nullable',
                 'int',
-                Rule::exists('individual_contact_infos', 'id')->where(function ($query) use ($individualId) {
-                    if ($individualId) {
-                        $query->where('individual_basic_detail_id', $individualId);
-                    }
-                }),
+                $this->validateRecordID('individual_contact_infos'),
             ],
             'individual_contact_info.*.tel_no' => [
                 'nullable',
@@ -294,11 +295,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_family.*.id' => [
                 'nullable',
                 'int',
-                Rule::exists('individual_families', 'id')->where(function ($query) use ($individualId) {
-                    if ($individualId) {
-                        $query->where('individual_basic_detail_id', $individualId);
-                    }
-                }),
+                $this->validateRecordID('individual_families'),
             ],
             'individual_family.*.middle_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_family.*.ext_name' => ['nullable', new Enum(ExtensionNameCategory::class)],
@@ -322,11 +319,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_educational_background.*.id' => [
                 'nullable',
                 'int',
-                Rule::exists('individual_educational_backgrounds', 'id')->where(function ($query) use ($individualId) {
-                    if ($individualId) {
-                        $query->where('individual_basic_detail_id', $individualId);
-                    }
-                }),
+                $this->validateRecordID('individual_educational_backgrounds'),
             ],
             'individual_educational_background.*.schools_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_educational_background.*.education_description' => ['nullable', 'string', new DbVarcharMaxLength()],
@@ -351,11 +344,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_eligibility.*.id' => [
                 'nullable',
                 'int',
-                Rule::exists('individual_eligibilities', 'id')->where(function ($query) use ($individualId) {
-                    if ($individualId) {
-                        $query->where('individual_basic_detail_id', $individualId);
-                    }
-                }),
+                $this->validateRecordID('individual_eligibilities'),
             ],
             'individual_eligibility.*.eligibility' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_eligibility.*.rating' => ['nullable', 'numeric', new DbVarcharMaxLength()],
@@ -364,7 +353,37 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_eligibility.*.license_number' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_eligibility.*.license_date_of_validity' => ['nullable', 'date_format:Y-m-d', new DbVarcharMaxLength()],
             'individual_eligibility.*._delete' => ['nullable', 'boolean'], // Can delete eligibilities.
+
+            // IndividualWorkExperience
+            'individual_work_experience' => ['array'],
+            'individual_work_experience.*.id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('individual_work_experiences'),
+            ],
+            'individual_work_experience.*.is_current_work' => ['nullable', 'boolean'],
+            'individual_work_experience.*.inclusive_date_from' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_work_experience.*.inclusive_date_to' => ['nullable', 'date_format:Y-m-d'],
+            'individual_work_experience.*.position_title' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_work_experience.*.department_agency_office_company' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_work_experience.*.monthly_salary' => ['nullable', 'numeric'],
+            'individual_work_experience.*.salary_grade_id' => ['nullable', 'int'],
+            'individual_work_experience.*.status_of_appointment' => ['nullable', new Enum(EmploymentStatus::class)],
+            'individual_work_experience.*.is_gov_service' => ['nullable', 'boolean'],
+            'individual_work_experience.*._delete' => ['nullable', 'boolean'], // Can delete work experience.
         ];
+    }
+
+    public function validateRecordID($table_name)
+    {
+        $individualBasicDetail = $this->route('individualBasicDetail');
+        $individualId = $individualBasicDetail ? $individualBasicDetail->id : null;
+
+        return Rule::exists($table_name, 'id')->where(function ($query) use ($individualId) {
+            if ($individualId) {
+                $query->where('individual_basic_detail_id', $individualId);
+            }
+        });
     }
 
     public function requiredIfUserIsPPMSAdmin()
@@ -388,5 +407,33 @@ class IndividualBasicDetailRequest extends FormRequest
         return [
             '*.*.id.exists' => 'The :attribute does not belong to the individual you are trying to update.',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            // This is to throw error if there are more than one record with is_current_work = true in the request.
+            $workExperiences = $this->input('individual_work_experience', []);
+
+            $currentWorkCount = 0;
+            foreach ($workExperiences as $experience) {
+                if (isset($experience['is_current_work']) && $experience['is_current_work']) {
+                    $currentWorkCount++;
+                }
+            }
+
+            if ($currentWorkCount > 1) {
+                $validator->errors()->add(
+                    'individual_work_experience.*.is_current_work',
+                    'Only one work experience can be set as the current work.'
+                );
+            }
+        });
     }
 }

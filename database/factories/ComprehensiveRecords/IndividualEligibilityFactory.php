@@ -5,7 +5,7 @@ namespace Database\Factories\ComprehensiveRecords;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<IndividualFamilyFactory>
+ * @extends Factory<IndividualEligibilityFactory>
  */
 class IndividualEligibilityFactory extends Factory
 {

@@ -40,8 +40,6 @@ class Position extends Model
             ->thenReturn();
     }
 
-    // @todo ADD RELATIONSHIP TO ITEMS ONCE IT IS CREATED
-
     public function items(): HasMany
     {
         return $this->hasMany(Item::class);
