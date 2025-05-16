@@ -188,11 +188,6 @@ class IndividualBasicDetailRequest extends FormRequest
             /* -------------------------------------------------------------------------- */
             /* ------------------------- IndividualVoluntaryWork ------------------------ */
             'individual_voluntary_work' => ['array'],
-            'individual_voluntary_work.*.id' => [
-                'nullable',
-                'int',
-                $this->validateRecordID('individual_voluntary_works'),
-            ],
             'individual_voluntary_work.*.is_current_org' => ['nullable', 'boolean'],
             'individual_voluntary_work.*.org_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_voluntary_work.*.org_address' => ['nullable', 'string', new DbVarcharMaxLength()],
