@@ -60,7 +60,10 @@ class IndividualBasicDetailRequest extends FormRequest
     public function getStoreIndividualRules(): array
     {
         return [
-            // IndividualBasicDetail
+            /* -------------------------------------------------------------------------- */
+            /*                               C1 starts here                               */
+            /* -------------------------------------------------------------------------- */
+            /* -------------------------- IndividualBasicDetail ------------------------- */
             'individual' => ['array'],
             'individual.first_name' => ['required', 'string', new DbVarcharMaxLength()],
             'individual.last_name' => ['required', 'string', new DbVarcharMaxLength()],
@@ -81,7 +84,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.citizenship_acquisition' => ['nullable', 'string', new Enum(CitizenshipAcquisition::class)],
             'individual.gsis_no' => ['nullable', 'string', new DbTextMaxLength()],
 
-            // Employee
+            /* -------------------------------- Employee -------------------------------- */
             'employee' => ['array', $this->requiredIfUserIsPPMSAdmin()],
             'employee.item_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
             'employee.salary_grade_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
@@ -92,7 +95,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'employee.id_number' => ['nullable', 'string', new DbVarcharMaxLength()],
             'employee.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
 
-            // IndividualAddress
+            /* ---------------------------- IndividualAddress --------------------------- */
             'individual_address' => ['array'],
             'individual_address.*.residential_brgy_id' => ['required', 'exists:barangays,id'],
             'individual_address.*.residential_citymun_id' => ['required', 'exists:cities,id'],
@@ -111,7 +114,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_address.*.permanent_street' => ['nullable', 'string', new DbTextMaxLength()],
             'individual_address.*.permanent_subdivision_village' => ['nullable', 'string', new DbTextMaxLength()],
 
-            // IndividualContactInfo
+            /* -------------------------- IndividualContactInfo ------------------------- */
             'individual_contact_info' => ['array'],
             'individual_contact_info.*.mobile_no' => [
                 'required',
@@ -126,7 +129,7 @@ class IndividualBasicDetailRequest extends FormRequest
                 (new PhoneRule())->country('PH')->fixedLine(),
             ],
 
-            // IndividualFamily
+            /* ---------------------------- IndividualFamily ---------------------------- */
             'individual_family' => ['array'],
             'individual_family.*.middle_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_family.*.ext_name' => ['nullable', new Enum(ExtensionNameCategory::class)],
@@ -144,7 +147,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
             'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
 
-            // IndividualEducationalBackground
+            /* --------------------- IndividualEducationalBackground -------------------- */
             'individual_educational_background' => ['array'],
             'individual_educational_background.*.level' => ['required', new Enum(AcademicLevel::class)],
             'individual_educational_background.*.schools_name' => ['nullable', 'string', new DbVarcharMaxLength()],
@@ -155,8 +158,10 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_educational_background.*.year_graduated' => ['nullable', 'date_format:Y', 'before_or_equal:'.$this->dateToday, new DbVarcharMaxLength()],
             'individual_educational_background.*.scholarship_academic_honors_received' => ['nullable', 'string', new DbVarcharMaxLength()],
 
-            // -----> C2 starts here <-----
-            // IndividualEligibilities
+            /* -------------------------------------------------------------------------- */
+            /*                               C2 starts here                               */
+            /* -------------------------------------------------------------------------- */
+            /* ------------------------- IndividualEligibilities ------------------------ */
             'individual_eligibility' => ['array'],
             'individual_eligibility.*.eligibility' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_eligibility.*.rating' => ['nullable', 'numeric', new DbVarcharMaxLength()],
@@ -165,7 +170,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_eligibility.*.license_number' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_eligibility.*.license_date_of_validity' => ['nullable', 'date_format:Y-m-d', new DbVarcharMaxLength()],
 
-            // IndividualWorkExperience
+            /* ------------------------ IndividualWorkExperience ------------------------ */
             'individual_work_experience' => ['array'],
             'individual_work_experience.*.is_current_work' => ['nullable', 'boolean'],
             'individual_work_experience.*.inclusive_date_from' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
@@ -177,6 +182,25 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_work_experience.*.custom_salary_grade' => ['nullable', 'string', 'regex:/^\d{2}-\d{1}$/'], // For when it does not exist in the salary grade library
             'individual_work_experience.*.status_of_appointment' => ['nullable', new Enum(EmploymentStatus::class)],
             'individual_work_experience.*.is_gov_service' => ['nullable', 'boolean'],
+
+            /* -------------------------------------------------------------------------- */
+            /*                               C3 starts here                               */
+            /* -------------------------------------------------------------------------- */
+            /* ------------------------- IndividualVoluntaryWork ------------------------ */
+            'individual_voluntary_work' => ['array'],
+            'individual_voluntary_work.*.id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('individual_voluntary_works'),
+            ],
+            'individual_voluntary_work.*.is_current_org' => ['nullable', 'boolean'],
+            'individual_voluntary_work.*.org_name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_voluntary_work.*.org_address' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_voluntary_work.*.from' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_voluntary_work.*.to' => ['nullable', 'date_format:Y-m-d'],
+            'individual_voluntary_work.*.number_of_hours' => ['nullable', 'numeric'],
+            'individual_voluntary_work.*.position_nature_of_work' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_voluntary_work.*._delete' => ['nullable', 'boolean'], // Can delete voluntary work.
         ];
     }
 
@@ -197,6 +221,7 @@ class IndividualBasicDetailRequest extends FormRequest
         $rules = match ($form_type) {
             PDSFormType::C1->value => $this->getC1Rules(),
             PDSFormType::C2->value => $this->getC2Rules(),
+            PDSFormType::C3->value => $this->getC3Rules(),
             default => []
         };
 
@@ -205,12 +230,11 @@ class IndividualBasicDetailRequest extends FormRequest
 
     public function getC1Rules(): array
     {
-        $individualBasicDetail = $this->route('individualBasicDetail');
-        $individualId = $individualBasicDetail ? $individualBasicDetail->id : null;
-
         return [
-            // -----> C1 starts here <-----
-            // IndividualBasicDetail
+            /* -------------------------------------------------------------------------- */
+            /*                               C1 starts here                               */
+            /* -------------------------------------------------------------------------- */
+            /* -------------------------- IndividualBasicDetail ------------------------- */
             'individual' => ['array'],
             'individual.first_name' => ['required', 'string', new DbVarcharMaxLength()],
             'individual.last_name' => ['required', 'string', new DbVarcharMaxLength()],
@@ -231,7 +255,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.citizenship_acquisition' => ['nullable', 'string', new Enum(CitizenshipAcquisition::class)],
             'individual.gsis_no' => ['nullable', 'string', new DbTextMaxLength()],
 
-            // Employee
+            /* -------------------------------- Employee -------------------------------- */
             'employee' => ['array', $this->requiredIfUserIsPPMSAdmin()],
             'employee.item_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
             'employee.salary_grade_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
@@ -247,7 +271,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'employee.id_number' => ['nullable', 'string', new DbVarcharMaxLength()],
             'employee.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
 
-            // IndividualAddress
+            /* ---------------------------- IndividualAddress --------------------------- */
             'individual_address' => ['array'],
             'individual_address.*.residential_brgy_id' => ['required', 'exists:barangays,id'],
             'individual_address.*.residential_citymun_id' => ['required', 'exists:cities,id'],
@@ -271,7 +295,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_address.*.permanent_street' => ['nullable', 'string', new DbTextMaxLength()],
             'individual_address.*.permanent_subdivision_village' => ['nullable', 'string', new DbTextMaxLength()],
 
-            // IndividualContactInfo
+            /* -------------------------- IndividualContactInfo ------------------------- */
             'individual_contact_info' => ['array'],
             'individual_contact_info.*.mobile_no' => [
                 'required',
@@ -291,7 +315,7 @@ class IndividualBasicDetailRequest extends FormRequest
                 (new PhoneRule())->country('PH')->fixedLine(),
             ],
 
-            // IndividualFamily
+            /* ---------------------------- IndividualFamily ---------------------------- */
             'individual_family' => ['array'],
             'individual_family.*.id' => [
                 'nullable',
@@ -314,7 +338,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
             'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
 
-            // IndividualEducationalBackground
+            /* --------------------- IndividualEducationalBackground -------------------- */
             'individual_educational_background' => ['array'],
             'individual_educational_background.*.level' => ['required', new Enum(AcademicLevel::class)],
             'individual_educational_background.*.id' => [
@@ -335,12 +359,11 @@ class IndividualBasicDetailRequest extends FormRequest
 
     public function getC2Rules(): array
     {
-        $individualBasicDetail = $this->route('individualBasicDetail');
-        $individualId = $individualBasicDetail ? $individualBasicDetail->id : null;
-
         return [
-            // -----> C2 starts here <-----
-            // IndividualEligibilities
+            /* -------------------------------------------------------------------------- */
+            /*                               C2 starts here                               */
+            /* -------------------------------------------------------------------------- */
+            /* ------------------------- IndividualEligibilities ------------------------ */
             'individual_eligibility' => ['array'],
             'individual_eligibility.*.id' => [
                 'nullable',
@@ -355,7 +378,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_eligibility.*.license_date_of_validity' => ['nullable', 'date_format:Y-m-d', new DbVarcharMaxLength()],
             'individual_eligibility.*._delete' => ['nullable', 'boolean'], // Can delete eligibilities.
 
-            // IndividualWorkExperience
+            /* ------------------------ IndividualWorkExperience ------------------------ */
             'individual_work_experience' => ['array'],
             'individual_work_experience.*.id' => [
                 'nullable',
@@ -373,6 +396,31 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_work_experience.*.status_of_appointment' => ['nullable', new Enum(EmploymentStatus::class)],
             'individual_work_experience.*.is_gov_service' => ['nullable', 'boolean'],
             'individual_work_experience.*._delete' => ['nullable', 'boolean'], // Can delete work experience.
+        ];
+    }
+
+    public function getC3Rules(): array
+    {
+        return [
+            /* -------------------------------------------------------------------------- */
+            /*                               C3 starts here                               */
+            /* -------------------------------------------------------------------------- */
+            /* ------------------------- IndividualVoluntaryWork ------------------------ */
+            'individual_voluntary_work' => ['array'],
+            'individual_voluntary_work.*.id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('individual_voluntary_works'),
+            ],
+            'individual_voluntary_work.*.is_current_org' => ['nullable', 'boolean'],
+            'individual_voluntary_work.*.org_name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_voluntary_work.*.org_address' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_voluntary_work.*.from' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_voluntary_work.*.to' => ['nullable', 'date_format:Y-m-d'],
+            'individual_voluntary_work.*.number_of_hours' => ['nullable', 'numeric'],
+            'individual_voluntary_work.*.position_nature_of_work' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_voluntary_work.*._delete' => ['nullable', 'boolean'], // Can delete voluntary work.
+
         ];
     }
 

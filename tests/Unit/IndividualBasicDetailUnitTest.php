@@ -10,9 +10,11 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
+use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\User;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
+use Arr;
 use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -106,6 +108,7 @@ class IndividualBasicDetailUnitTest extends TestCase
         $testEducation = IndividualEducationalBackground::factory()->make()->toArray();
         $testEligibility = IndividualEligibility::factory()->make()->toArray();
         $testWorkExperience = IndividualWorkExperience::factory()->make()->toArray();
+        $testVoluntaryWork = IndividualVoluntaryWork::factory()->make()->toArray();
 
         //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -123,11 +126,20 @@ class IndividualBasicDetailUnitTest extends TestCase
             'individual_work_experience' => [$testWorkExperience],
         ];
 
-        $all_request = array_merge($c1_request, $c2_request);
+        $c3_request = [
+            'individual_voluntary_work' => [$testVoluntaryWork],
+        ];
+
+        $all_request = array_merge(
+            Arr::except($c1_request, 'form_type'),
+            Arr::except($c2_request, 'form_type'),
+            Arr::except($c3_request, 'form_type')
+        );
 
         $requestData = match ($form_type) {
             PDSFormType::C1->value => $c1_request,
             PDSFormType::C2->value => $c2_request,
+            PDSFormType::C3->value => $c3_request,
             default => $all_request,
         };
 
@@ -199,6 +211,29 @@ class IndividualBasicDetailUnitTest extends TestCase
         // Add ids
         $newInfo['individual_eligibility'][0]['id'] = $firstEligibility->id;
         $newInfo['individual_work_experience'][0]['id'] = $firstWorkExperience->id;
+        $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
+
+        // Check if the data matches the record in the database
+        foreach ($newInfo as $key => $value) {
+            $this->assertDatabaseHas(Str::plural($key), $newInfo[$key][0]); // convert $key to plural form since it is singular to match the table name
+        }
+    }
+
+    /**
+     * Test if C3 can be edited via the service
+     */
+    public function test_can_edit_c3(): void
+    {
+        $individual = $this->individualBasicDetailService->store($this->generate_test_data());
+        $this->assertDatabaseCount('individual_basic_details', 1);
+
+        // Get first record in hasMany relationship.
+        // @todo: Update as we add new models.
+        $firstVoluntaryWork = $individual->individualVoluntaryWork()->first();
+
+        $newInfo = $this->generate_test_data(PDSFormType::C3->value);
+        // Add ids
+        $newInfo['individual_voluntary_work'][0]['id'] = $firstVoluntaryWork->id;
         $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
 
         // Check if the data matches the record in the database

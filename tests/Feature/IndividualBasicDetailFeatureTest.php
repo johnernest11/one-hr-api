@@ -11,6 +11,7 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
+use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\Item;
 use App\Models\User;
@@ -43,6 +44,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         'individualFamily',
         'individualEducationalBackground',
         'individualWorkExperience',
+        'individualVoluntaryWork',
     ];
 
     public function setUp(): void
@@ -292,7 +294,18 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'is_gov_service' => false,
                 ],
             ],
-
+            // -----> C3 starts here <-----
+            'individual_voluntary_work' => [
+                [
+                    'is_current_org' => true,
+                    'org_name' => 'Test organization 123',
+                    'org_address' => 'Test organization address',
+                    'from' => '2020-01-01',
+                    'to' => null,
+                    'number_of_hours' => 20,
+                    'position_nature_of_work' => 'Admin work',
+                ],
+            ],
         ];
 
         $missingRequiredFields = Arr::except(
@@ -403,6 +416,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $testEducation = IndividualEducationalBackground::factory()->make()->toArray();
         $testEligibility = IndividualEligibility::factory()->make()->toArray();
         $testWorkExperience = IndividualWorkExperience::factory()->make()->toArray();
+        $testVoluntaryWork = IndividualVoluntaryWork::factory()->make()->toArray();
 
         //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -422,11 +436,20 @@ class IndividualBasicDetailFeatureTest extends TestCase
             'individual_work_experience' => [$testWorkExperience],
         ];
 
-        $all_request = array_merge(Arr::except($c1_request, 'form_type'), Arr::except($c2_request, 'form_type'));
+        $c3_request = [
+            'form_type' => PDSFormType::C3->value,
+            'individual_voluntary_work' => [$testVoluntaryWork],
+        ];
+
+        $all_request = array_merge(
+            Arr::except($c1_request, 'form_type'),
+            Arr::except($c2_request, 'form_type'),
+            Arr::except($c3_request, 'form_type'));
 
         $requestData = match ($form_type) {
             PDSFormType::C1->value => $c1_request,
             PDSFormType::C2->value => $c2_request,
+            PDSFormType::C3->value => $c3_request,
             default => $all_request,
         };
 
@@ -493,6 +516,36 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Add the correct id on request body.
         $newInfo['individual_eligibility'][0]['id'] = $firstEligibility->id;
         $newInfo['individual_work_experience'][0]['id'] = $firstWorkExperience->id;
+
+        // Update
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);
+        $response->assertStatus(200);
+
+        // Check if the updated data matches the response result
+        $response = $response->decodeResponseJson()['data'];
+
+        foreach ($response as $key => $value) {
+            if (is_array($value) and array_key_exists($key, $newInfo)) {
+                // if array, match with the equivalent key & value pair in updatedData
+                $this->assertArrayEqualsIntersecting($newInfo[$key][0], $value);
+            }
+        }
+
+    }
+
+    public function test_it_can_update_c3(): void
+    {
+        $individuals = IndividualBasicDetail::factory(5)->create();
+        $firstIndividual = $individuals->first();
+        // Get first record in hasMany relationship.
+        // @todo: Update as we add new models.
+        $firstVoluntaryWork = $firstIndividual->individualVoluntaryWork()->first();
+
+        // Generate updated data
+        $newInfo = $this->generate_test_data(PDSFormType::C2->value);
+
+        // Add the correct id on request body.
+        $newInfo['individual_voluntary_work'][0]['id'] = $firstVoluntaryWork->id;
 
         // Update
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);
