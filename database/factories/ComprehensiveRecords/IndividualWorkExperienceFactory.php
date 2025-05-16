@@ -27,6 +27,7 @@ class IndividualWorkExperienceFactory extends Factory
             'department_agency_office_company' => fake()->company(),
             'monthly_salary' => fake()->numerify('#####'),
             'salary_grade_id' => SalaryGrade::first()->id,
+            'custom_salary_grade' => fake()->numerify('##-#'),
             'status_of_appointment' => fake()->randomElement(ConversionHelper::enumToArray(EmploymentStatus::class)),
             'is_gov_service' => fake()->boolean(),
         ];

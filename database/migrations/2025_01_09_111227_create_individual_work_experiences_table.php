@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('department_agency_office_company')->nullable();
             $table->double('monthly_salary')->nullable();
             $table->foreignId('salary_grade_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('custom_salary_grade')->nullable();
             $table->enum('status_of_appointment', ConversionHelper::enumToArray(EmploymentStatus::class))->nullable();
             $table->boolean('is_gov_service')->nullable();
             $table->timestamps();

@@ -27,6 +27,7 @@ class IndividualWorkExperience extends Model
         'department_agency_office_company',
         'monthly_salary',
         'salary_grade_id',
+        'custom_salary_grade',
         'status_of_appointment',
         'is_gov_service',
     ];
