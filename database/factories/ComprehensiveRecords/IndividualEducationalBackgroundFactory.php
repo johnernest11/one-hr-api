@@ -7,7 +7,7 @@ use ConversionHelper;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<IndividualFamilyFactory>
+ * @extends Factory<IndividualEducationalBackgroundFactory>
  */
 class IndividualEducationalBackgroundFactory extends Factory
 {

@@ -10,6 +10,7 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
+use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\User;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
 use DB;
@@ -104,6 +105,7 @@ class IndividualBasicDetailUnitTest extends TestCase
         $testFamily = IndividualFamily::factory()->make()->setAppends([])->toArray(); // remove appended attributes for testing.
         $testEducation = IndividualEducationalBackground::factory()->make()->toArray();
         $testEligibility = IndividualEligibility::factory()->make()->toArray();
+        $testWorkExperience = IndividualWorkExperience::factory()->make()->toArray();
 
         //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -118,6 +120,7 @@ class IndividualBasicDetailUnitTest extends TestCase
 
         $c2_request = [
             'individual_eligibility' => [$testEligibility],
+            'individual_work_experience' => [$testWorkExperience],
         ];
 
         $all_request = array_merge($c1_request, $c2_request);
@@ -190,10 +193,12 @@ class IndividualBasicDetailUnitTest extends TestCase
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
         $firstEligibility = $individual->individualEligibility()->first();
+        $firstWorkExperience = $individual->individualWorkExperience()->first();
 
         $newInfo = $this->generate_test_data(PDSFormType::C2->value);
         // Add ids
         $newInfo['individual_eligibility'][0]['id'] = $firstEligibility->id;
+        $newInfo['individual_work_experience'][0]['id'] = $firstWorkExperience->id;
         $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
 
         // Check if the data matches the record in the database

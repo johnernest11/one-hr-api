@@ -11,6 +11,7 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
+use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\Item;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
+use Str;
 use Tests\TestCase;
 
 class IndividualBasicDetailFeatureTest extends TestCase
@@ -40,6 +42,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         'individualContactInfo',
         'individualFamily',
         'individualEducationalBackground',
+        'individualWorkExperience',
     ];
 
     public function setUp(): void
@@ -264,6 +267,32 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'scholarship_academic_honors_received' => null,
                 ],
             ],
+            // -----> C2 starts here <-----
+            'individual_eligibility' => [
+                [
+                    'eligibility' => 'Career Service Professional Examination',
+                    'rating' => 91.4,
+                    'date_of_examination_conferment' => '2024-08-11',
+                    'place_of_examination' => 'San Fernando City, La Union',
+                    'license_number' => null,
+                    'license_date_of_validity' => null,
+                ],
+            ],
+            'individual_work_experience' => [
+                [
+                    'is_current_work' => true,
+                    'inclusive_date_from' => '2025-01-01',
+                    'inclusive_date_to' => null,
+                    'position_title' => 'Web Developer II',
+                    'department_agency_office_company' => 'Test Company',
+                    'monthly_salary' => 30000,
+                    'salary_grade_id' => null,
+                    'custom_salary_grade' => '01-1',
+                    'status_of_appointment' => 'Permanent',
+                    'is_gov_service' => false,
+                ],
+            ],
+
         ];
 
         $missingRequiredFields = Arr::except(
@@ -303,7 +332,11 @@ class IndividualBasicDetailFeatureTest extends TestCase
             $this->assertNotEmpty($createdIndividual);
 
             // check if related records are created
-            foreach ($this->comprehensive_records_rel as $relationshipName) {
+            foreach (array_keys($input) as $relationshipName) {
+                $relationshipName = Str::camel($relationshipName);
+                if ($relationshipName == 'individual') {
+                    continue;
+                }
                 $related = $createdIndividual->{$relationshipName};
 
                 if ($related instanceof Model) {
@@ -353,6 +386,53 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $this->assertEquals($filteredExpected, $filteredActual);
     }
 
+    /**
+     * Generate test data.
+     *
+     * @param  $form_type  can be C1, C2, C3, C4 and null. Pass nothing to generate test data to all models.
+     */
+    public function generate_test_data($form_type = null): array
+    {
+        // Generate random data
+        // @todo: Update as we add new models.
+        $testIndividual = IndividualBasicDetail::factory()->make()->toArray();
+        $testEmployee = Employee::factory()->make()->toArray();
+        $testAddress = IndividualAddress::factory()->make()->toArray();
+        $testContactInfo = IndividualContactInfo::factory()->make()->toArray();
+        $testFamily = IndividualFamily::factory()->make()->setAppends([])->toArray(); // remove appended attributes for testing.
+        $testEducation = IndividualEducationalBackground::factory()->make()->toArray();
+        $testEligibility = IndividualEligibility::factory()->make()->toArray();
+        $testWorkExperience = IndividualWorkExperience::factory()->make()->toArray();
+
+        //@todo Update as new models are added until all forms are completed
+        // Combine data and structure it so that it is similar to the request body
+        $c1_request = [
+            'form_type' => PDSFormType::C1->value,
+            'individual' => $testIndividual,
+            'employee' => $testEmployee,
+            'individual_address' => [$testAddress],
+            'individual_contact_info' => [$testContactInfo],
+            'individual_family' => [$testFamily],
+            'individual_educational_background' => [$testEducation],
+        ];
+
+        $c2_request = [
+            'form_type' => PDSFormType::C2->value,
+            'individual_eligibility' => [$testEligibility],
+            'individual_work_experience' => [$testWorkExperience],
+        ];
+
+        $all_request = array_merge(Arr::except($c1_request, 'form_type'), Arr::except($c2_request, 'form_type'));
+
+        $requestData = match ($form_type) {
+            PDSFormType::C1->value => $c1_request,
+            PDSFormType::C2->value => $c2_request,
+            default => $all_request,
+        };
+
+        return $requestData;
+    }
+
     public function test_it_can_update_c1(): void
     {
         $individuals = IndividualBasicDetail::factory(5)->create();
@@ -363,51 +443,36 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $firstEducation = $firstIndividual->individualEducationalBackground()->first();
 
         // Generate updated data
-        $updateIndividual = IndividualBasicDetail::factory()->make()->toArray();
-        $updateEmployee = Employee::factory()->make()->toArray();
-        $updateAddress = IndividualAddress::factory()->make()->toArray();
-        $updateContactInfo = IndividualContactInfo::factory()->make()->toArray();
-        $updateFamily = IndividualFamily::factory()->make()->toArray();
-        $updateEducation = IndividualEducationalBackground::factory()->make()->toArray();
+        $newInfo = $this->generate_test_data(PDSFormType::C1->value);
 
         // Add the correct id on request body.
-        $updateEmployee['id'] = $firstIndividual->employee->id;
-        $updateAddress['id'] = $firstIndividual->individualAddress->id;
-        $updateContactInfo['id'] = $firstIndividual->individualContactInfo->id;
-        $updateFamily['id'] = $firstFamily->id;
-        $updateEducation['id'] = $firstEducation->id;
+        $newInfo['employee']['id'] = $firstIndividual->employee->id;
+        $newInfo['individual_address'][0]['id'] = $firstIndividual->individualAddress->id;
+        $newInfo['individual_contact_info'][0]['id'] = $firstIndividual->individualContactInfo->id;
+        $newInfo['individual_family'][0]['id'] = $firstFamily->id;
+        $newInfo['individual_educational_background'][0]['id'] = $firstEducation->id;
 
-        // Combine data and structure it so that it is similar to the request body
-        $updatedData = [
-            'form_type' => PDSFormType::C1->value,
-            'individual' => $updateIndividual,
-            'employee' => $updateEmployee,
-            'individual_address' => [$updateAddress],
-            'individual_contact_info' => [$updateContactInfo],
-            'individual_family' => [$updateFamily],
-            'individual_educational_background' => [$updateEducation],
-        ];
-
-        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updatedData);
+        // Update
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);
         $response->assertStatus(200);
 
         // Check if the updated data matches the response result
         $response = $response->decodeResponseJson()['data'];
 
         foreach ($response as $key => $value) {
-            if (array_key_exists($key, $updatedData['individual'])) { //assertion for individual
-                $this->assertEquals($updatedData['individual'][$key], $value);
+            if (array_key_exists($key, $newInfo['individual'])) { //assertion for individual
+                $this->assertEquals($newInfo['individual'][$key], $value);
             }
 
-            if (is_array($value) and array_key_exists($key, $updatedData)) {
+            if (is_array($value) and array_key_exists($key, $newInfo)) {
                 // if array, match with the equivalent key & value pair in updatedData
                 if ($key == 'employee') { // employee is not nested like the rest of the arrays hence the separate assertion
-                    $this->assertArrayEqualsIntersecting($updatedData[$key], $value);
+                    $this->assertArrayEqualsIntersecting($newInfo[$key], $value);
 
                     continue;
                 }
 
-                $this->assertArrayEqualsIntersecting($updatedData[$key][0], $value);
+                $this->assertArrayEqualsIntersecting($newInfo[$key][0], $value);
 
             }
         }
@@ -420,31 +485,192 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
         $firstEligibility = $firstIndividual->individualEligibility()->first();
+        $firstWorkExperience = $firstIndividual->individualWorkExperience()->first();
 
         // Generate updated data
-        $updateEligibility = IndividualEligibility::factory()->make()->toArray();
+        $newInfo = $this->generate_test_data(PDSFormType::C2->value);
 
         // Add the correct id on request body.
-        $updateEligibility['id'] = $firstEligibility->id;
+        $newInfo['individual_eligibility'][0]['id'] = $firstEligibility->id;
+        $newInfo['individual_work_experience'][0]['id'] = $firstWorkExperience->id;
 
-        // Combine data and structure it so that it is similar to the request body
-        $updatedData = [
-            'form_type' => PDSFormType::C2->value,
-            'individual_eligibility' => [$updateEligibility],
-        ];
-
-        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updatedData);
+        // Update
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);
         $response->assertStatus(200);
 
         // Check if the updated data matches the response result
         $response = $response->decodeResponseJson()['data'];
 
         foreach ($response as $key => $value) {
-            if (is_array($value) and array_key_exists($key, $updatedData)) {
+            if (is_array($value) and array_key_exists($key, $newInfo)) {
                 // if array, match with the equivalent key & value pair in updatedData
-                $this->assertArrayEqualsIntersecting($updatedData[$key][0], $value);
+                $this->assertArrayEqualsIntersecting($newInfo[$key][0], $value);
             }
         }
 
+    }
+
+    public function test_it_cannot_set_multiple_work_experience_as_current(): void
+    {
+        // -- Test create API --
+        $individualInfo = $this->generate_test_data();
+
+        // Generate Item and update array
+        $generatedItem = Item::factory()->create();
+        $individualInfo['employee']['item_id'] = $generatedItem->id;
+
+        // Update request such that the work experience should be invalid.
+        // Two work exp. with is_current_work set to true.
+        $individualInfo['individual_work_experience'] =
+        [
+            [
+                'is_current_work' => true,
+                'inclusive_date_from' => '2024-01-01',
+                'inclusive_date_to' => null,
+                'position_title' => 'Web Developer I',
+                'department_agency_office_company' => 'Test Company',
+                'monthly_salary' => 30000,
+                'salary_grade_id' => null,
+                'custom_salary_grade' => '01-1',
+                'status_of_appointment' => 'Permanent',
+                'is_gov_service' => false,
+            ],
+            [
+                'is_current_work' => true,
+                'inclusive_date_from' => '2025-01-01',
+                'inclusive_date_to' => null,
+                'position_title' => 'Web Developer II',
+                'department_agency_office_company' => 'Test Company',
+                'monthly_salary' => 30000,
+                'salary_grade_id' => null,
+                'custom_salary_grade' => '01-1',
+                'status_of_appointment' => 'Permanent',
+                'is_gov_service' => false,
+            ],
+        ];
+
+        // Create Individual and check for validation error
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $individualInfo);
+        $response->assertStatus(422); // Should throw a Validation Error
+
+        // -- Test update API --
+        $individuals = IndividualBasicDetail::factory(5)->create();
+        $firstIndividual = $individuals->first();
+        $firstWorkExperience = $firstIndividual->individualWorkExperience()->first();
+
+        // Update Work Experience
+        $updateData = $this->generate_test_data('C2');
+        unset($updateData['individual_eligibility']); // Only updating work exp.
+        $updateData['individual_work_experience'][0]['id'] = $firstWorkExperience->id;
+
+        array_push(
+            $updateData['individual_work_experience'],
+            [
+                'is_current_work' => true,
+                'inclusive_date_from' => '2025-01-01',
+                'inclusive_date_to' => null,
+                'position_title' => 'Web Developer II',
+                'department_agency_office_company' => 'Test Company',
+                'monthly_salary' => 30000,
+                'salary_grade_id' => null,
+                'custom_salary_grade' => '01-1',
+                'status_of_appointment' => 'Permanent',
+                'is_gov_service' => false,
+            ]
+        );
+
+        // Should not be able to add multiple new work exp. and set multiple as new current work.
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updateData);
+        $response->assertStatus(422);
+    }
+
+    public function test_it_can_select_a_different_work_experience_as_current_work(): void
+    {
+        $individuals = IndividualBasicDetail::factory(5)->create();
+        $firstIndividual = $individuals->first();
+
+        // Generate multiple work experiences
+        $newWorkExp = IndividualWorkExperience::factory(3)->make(['is_current_work' => false])->toArray();
+        $newWorkExpCurrent = IndividualWorkExperience::factory()->make()->toArray();
+
+        $requestBody = [
+            'form_type' => 'C2',
+            'individual_work_experience' => array_merge($newWorkExp, [$newWorkExpCurrent]),
+        ];
+
+        // Should be able to add new work exp. and set it as the new current work.
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $requestBody);
+        $response->assertStatus(200);
+
+        $curWork = IndividualWorkExperience::where('individual_basic_detail_id', '=', $firstIndividual->id)
+            ->where('is_current_work', '=', true)
+            ->first();
+
+        $workCount = IndividualWorkExperience::where('individual_basic_detail_id', '=', $firstIndividual->id)->count();
+        $this->assertEquals(5, $workCount); // 4 new + 1 already created
+
+        // Should be able to change which record is the current work.
+        // Get the first record where the is_current_work = false
+        $selectWork = IndividualWorkExperience::where('individual_basic_detail_id', '=', $firstIndividual->id)
+            ->where('is_current_work', '=', false)
+            ->first();
+
+        $requestBody = [
+            'form_type' => 'C2',
+            'individual_work_experience' => [
+                [
+                    'id' => $selectWork->id,
+                    'is_current_work' => true,
+                ],
+            ],
+        ];
+
+        // Update
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $requestBody);
+        $response->assertStatus(200);
+
+        // Should now be the new current work
+        $newCurWork = IndividualWorkExperience::find($selectWork->id);
+        $this->assertEquals(true, $newCurWork->is_current_work);
+
+        // The previous current work should now be false
+        $prevCurWork = IndividualWorkExperience::find($curWork->id);
+        $this->assertEquals(false, $prevCurWork->is_current_work);
+
+        // Should still only have one is_current_work as true on the database
+        $countTrue = IndividualWorkExperience::where('is_current_work', '=', true)
+            ->where('individual_basic_detail_id', '=', $firstIndividual->id)
+            ->count();
+        $this->assertEquals(1, $countTrue, 'Expected only one record with is_current_work = true, but found '.$countTrue);
+    }
+
+    public function test_it_can_add_new_work_experience_as_current_work(): void
+    {
+        $individuals = IndividualBasicDetail::factory(5)->create();
+        $firstIndividual = $individuals->first();
+        // Should have one work exp.
+        $workCount = IndividualWorkExperience::where('individual_basic_detail_id', '=', $firstIndividual->id)->count();
+        $this->assertEquals(1, $workCount);
+
+        // Should only have one is_current_work as true on the database
+        $countTrue = IndividualWorkExperience::where('is_current_work', '=', true)
+            ->where('individual_basic_detail_id', '=', $firstIndividual->id)
+            ->count();
+        $this->assertEquals(1, $countTrue, 'Expected only one record with is_current_work = true, but found '.$countTrue);
+
+        $updateData = $this->generate_test_data('C2');
+        unset($updateData['individual_eligibility']); // Only updating work exp.
+
+        // Should be able to add new work exp. and set it as the new current work.
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updateData);
+        $response->assertStatus(200);
+        // Should now have two work exp.
+        $workCount = IndividualWorkExperience::where('individual_basic_detail_id', '=', $firstIndividual->id)->count();
+        $this->assertEquals(2, $workCount);
+        // Should still only have one is_current_work as true on the database
+        $countTrue = IndividualWorkExperience::where('is_current_work', '=', true)
+            ->where('individual_basic_detail_id', '=', $firstIndividual->id)
+            ->count();
+        $this->assertEquals(1, $countTrue, 'Expected only one record with is_current_work = true, but found '.$countTrue);
     }
 }

@@ -119,4 +119,12 @@ class IndividualBasicDetail extends Model
     {
         return $this->hasMany(IndividualEligibility::class);
     }
+
+    /**
+     * An individual has many work experiences
+     */
+    public function individualWorkExperience(): HasMany
+    {
+        return $this->hasMany(IndividualWorkExperience::class);
+    }
 }
