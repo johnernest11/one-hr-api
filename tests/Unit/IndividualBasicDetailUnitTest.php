@@ -10,6 +10,7 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
+use App\Models\ComprehensiveRecords\IndividualLnd;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\User;
@@ -109,6 +110,7 @@ class IndividualBasicDetailUnitTest extends TestCase
         $testEligibility = IndividualEligibility::factory()->make()->toArray();
         $testWorkExperience = IndividualWorkExperience::factory()->make()->toArray();
         $testVoluntaryWork = IndividualVoluntaryWork::factory()->make()->toArray();
+        $testLnd = IndividualLnd::factory()->make()->toArray();
 
         //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -128,6 +130,7 @@ class IndividualBasicDetailUnitTest extends TestCase
 
         $c3_request = [
             'individual_voluntary_work' => [$testVoluntaryWork],
+            'individual_lnd' => [$testLnd],
         ];
 
         $all_request = array_merge(
@@ -230,10 +233,12 @@ class IndividualBasicDetailUnitTest extends TestCase
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
         $firstVoluntaryWork = $individual->individualVoluntaryWork()->first();
+        $firstLnd = $individual->individualLnd()->first();
 
         $newInfo = $this->generate_test_data(PDSFormType::C3->value);
         // Add ids
         $newInfo['individual_voluntary_work'][0]['id'] = $firstVoluntaryWork->id;
+        $newInfo['individual_lnd'][0]['id'] = $firstLnd->id;
         $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
 
         // Check if the data matches the record in the database

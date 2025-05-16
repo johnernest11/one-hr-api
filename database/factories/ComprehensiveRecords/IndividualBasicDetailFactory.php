@@ -14,6 +14,7 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
+use App\Models\ComprehensiveRecords\IndividualLnd;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use ConversionHelper;
@@ -67,6 +68,7 @@ class IndividualBasicDetailFactory extends Factory
             IndividualEligibility::factory()->for($individualBasicDetail)->create();
             IndividualWorkExperience::factory()->for($individualBasicDetail)->create();
             IndividualVoluntaryWork::factory()->for($individualBasicDetail)->create();
+            IndividualLnd::factory()->for($individualBasicDetail)->create();
         });
     }
 }

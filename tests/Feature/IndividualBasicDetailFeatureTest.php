@@ -11,6 +11,7 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
+use App\Models\ComprehensiveRecords\IndividualLnd;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\Item;
@@ -45,6 +46,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         'individualEducationalBackground',
         'individualWorkExperience',
         'individualVoluntaryWork',
+        'individualLnd',
     ];
 
     public function setUp(): void
@@ -306,6 +308,16 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'position_nature_of_work' => 'Admin work',
                 ],
             ],
+            'individual_lnd' => [
+                [
+                    'title' => 'Test LND 1',
+                    'from' => '2021-01-01',
+                    'to' => '2021-01-02',
+                    'number_of_hours' => 16,
+                    'type' => 'Technical',
+                    'conducted_sponsor' => 'DICT',
+                ],
+            ],
         ];
 
         $missingRequiredFields = Arr::except(
@@ -417,6 +429,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $testEligibility = IndividualEligibility::factory()->make()->toArray();
         $testWorkExperience = IndividualWorkExperience::factory()->make()->toArray();
         $testVoluntaryWork = IndividualVoluntaryWork::factory()->make()->toArray();
+        $testLnd = IndividualLnd::factory()->make()->toArray();
 
         //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -439,6 +452,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $c3_request = [
             'form_type' => PDSFormType::C3->value,
             'individual_voluntary_work' => [$testVoluntaryWork],
+            'individual_lnd' => [$testLnd],
         ];
 
         $all_request = array_merge(
@@ -540,12 +554,14 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
         $firstVoluntaryWork = $firstIndividual->individualVoluntaryWork()->first();
+        $firstLnd = $firstIndividual->individualLnd()->first();
 
         // Generate updated data
-        $newInfo = $this->generate_test_data(PDSFormType::C2->value);
+        $newInfo = $this->generate_test_data(PDSFormType::C3->value);
 
         // Add the correct id on request body.
         $newInfo['individual_voluntary_work'][0]['id'] = $firstVoluntaryWork->id;
+        $newInfo['individual_lnd'][0]['id'] = $firstLnd->id;
 
         // Update
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);

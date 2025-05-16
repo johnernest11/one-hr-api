@@ -152,5 +152,13 @@ class IndividualBasicDetail extends Model
         return $this->hasMany(IndividualVoluntaryWork::class);
     }
 
+    /**
+     * An individual has many learning and development programs attended
+     */
+    public function individualLnd(): HasMany
+    {
+        return $this->hasMany(IndividualLnd::class);
+    }
+
     /* -------------------------------------------------------------------------- */
 }

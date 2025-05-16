@@ -195,7 +195,16 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_voluntary_work.*.to' => ['nullable', 'date_format:Y-m-d'],
             'individual_voluntary_work.*.number_of_hours' => ['nullable', 'numeric'],
             'individual_voluntary_work.*.position_nature_of_work' => ['nullable', 'string', new DbVarcharMaxLength()],
-            'individual_voluntary_work.*._delete' => ['nullable', 'boolean'], // Can delete voluntary work.
+
+            /* ------------------------------ IndividualLnd ----------------------------- */
+            'individual_lnd' => ['array'],
+            'individual_lnd.*.title' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_lnd.*.from' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_lnd.*.to' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_lnd.*.number_of_hours' => ['nullable', 'integer'],
+            'individual_lnd.*.type' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_lnd.*.conducted_sponsor' => ['nullable', 'string', new DbVarcharMaxLength()],
+
         ];
     }
 
@@ -416,6 +425,20 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_voluntary_work.*.position_nature_of_work' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_voluntary_work.*._delete' => ['nullable', 'boolean'], // Can delete voluntary work.
 
+            /* ------------------------------ IndividualLnd ----------------------------- */
+            'individual_lnd' => ['array'],
+            'individual_lnd.*.id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('individual_lnds'),
+            ],
+            'individual_lnd.*.title' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_lnd.*.from' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_lnd.*.to' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_lnd.*.number_of_hours' => ['nullable', 'integer'],
+            'individual_lnd.*.type' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_lnd.*.conducted_sponsor' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_lnd.*._delete' => ['nullable', 'boolean'], // Can delete lnd
         ];
     }
 
