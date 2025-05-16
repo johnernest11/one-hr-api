@@ -205,6 +205,18 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_lnd.*.type' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_lnd.*.conducted_sponsor' => ['nullable', 'string', new DbVarcharMaxLength()],
 
+            /* -------------------------- IndividualSkillsHobby ------------------------- */
+            'individual_skills_hobby' => ['array'],
+            'individual_skills_hobby.*.skill_hobby' => ['nullable', 'string', new DbVarcharMaxLength()],
+
+            /* -------------------------- IndividualRecognition ------------------------- */
+            'individual_recognition' => ['array'],
+            'individual_recognition.*.recognition' => ['nullable', 'string', new DbVarcharMaxLength()],
+
+            /* -------------------------- IndividualMembership -------------------------- */
+            'individual_membership' => ['array'],
+            'individual_membership.*.association_organization' => ['nullable', 'string', new DbVarcharMaxLength()],
+
         ];
     }
 
@@ -439,6 +451,36 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_lnd.*.type' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_lnd.*.conducted_sponsor' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_lnd.*._delete' => ['nullable', 'boolean'], // Can delete lnd
+
+            /* -------------------------- IndividualSkillsHobby ------------------------- */
+            'individual_skills_hobby' => ['array'],
+            'individual_skills_hobby.*.id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('individual_skills_hobbies'),
+            ],
+            'individual_skills_hobby.*.skill_hobby' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_skills_hobby.*._delete' => ['nullable', 'boolean'], // Can delete lnd
+
+            /* -------------------------- IndividualRecognition ------------------------- */
+            'individual_recognition' => ['array'],
+            'individual_recognition.*.id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('individual_recognitions'),
+            ],
+            'individual_recognition.*.recognition' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_recognition.*._delete' => ['nullable', 'boolean'], // Can delete lnd
+
+            /* -------------------------- IndividualMembership -------------------------- */
+            'individual_membership' => ['array'],
+            'individual_membership.*.id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('individual_memberships'),
+            ],
+            'individual_membership.*.association_organization' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_membership.*._delete' => ['nullable', 'boolean'], // Can delete lnd
         ];
     }
 

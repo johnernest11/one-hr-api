@@ -11,6 +11,9 @@ use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
 use App\Models\ComprehensiveRecords\IndividualLnd;
+use App\Models\ComprehensiveRecords\IndividualMembership;
+use App\Models\ComprehensiveRecords\IndividualRecognition;
+use App\Models\ComprehensiveRecords\IndividualSkillsHobby;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\User;
@@ -111,6 +114,9 @@ class IndividualBasicDetailUnitTest extends TestCase
         $testWorkExperience = IndividualWorkExperience::factory()->make()->toArray();
         $testVoluntaryWork = IndividualVoluntaryWork::factory()->make()->toArray();
         $testLnd = IndividualLnd::factory()->make()->toArray();
+        $testSkillsHobby = IndividualSkillsHobby::factory()->make()->toArray();
+        $testRecognition = IndividualRecognition::factory()->make()->toArray();
+        $testMembership = IndividualMembership::factory()->make()->toArray();
 
         //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -131,6 +137,9 @@ class IndividualBasicDetailUnitTest extends TestCase
         $c3_request = [
             'individual_voluntary_work' => [$testVoluntaryWork],
             'individual_lnd' => [$testLnd],
+            'individual_skills_hobby' => [$testSkillsHobby],
+            'individual_recognition' => [$testRecognition],
+            'individual_membership' => [$testMembership],
         ];
 
         $all_request = array_merge(
@@ -234,11 +243,18 @@ class IndividualBasicDetailUnitTest extends TestCase
         // @todo: Update as we add new models.
         $firstVoluntaryWork = $individual->individualVoluntaryWork()->first();
         $firstLnd = $individual->individualLnd()->first();
+        $firstSkillsHobby = $individual->individualSkillsHobby()->first();
+        $firstRecognition = $individual->individualRecognition()->first();
+        $firstMembership = $individual->individualMembership()->first();
 
         $newInfo = $this->generate_test_data(PDSFormType::C3->value);
         // Add ids
         $newInfo['individual_voluntary_work'][0]['id'] = $firstVoluntaryWork->id;
         $newInfo['individual_lnd'][0]['id'] = $firstLnd->id;
+        $newInfo['individual_skills_hobby'][0]['id'] = $firstSkillsHobby->id;
+        $newInfo['individual_recognition'][0]['id'] = $firstRecognition->id;
+        $newInfo['individual_membership'][0]['id'] = $firstMembership->id;
+
         $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
 
         // Check if the data matches the record in the database

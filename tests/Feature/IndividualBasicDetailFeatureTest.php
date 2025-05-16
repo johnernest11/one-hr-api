@@ -12,6 +12,9 @@ use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
 use App\Models\ComprehensiveRecords\IndividualLnd;
+use App\Models\ComprehensiveRecords\IndividualMembership;
+use App\Models\ComprehensiveRecords\IndividualRecognition;
+use App\Models\ComprehensiveRecords\IndividualSkillsHobby;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\Item;
@@ -47,6 +50,9 @@ class IndividualBasicDetailFeatureTest extends TestCase
         'individualWorkExperience',
         'individualVoluntaryWork',
         'individualLnd',
+        'individualMembership',
+        'individualRecognition',
+        'individualSkillsHobby',
     ];
 
     public function setUp(): void
@@ -318,6 +324,33 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'conducted_sponsor' => 'DICT',
                 ],
             ],
+            'individual_skills_hobby' => [
+                [
+                    'skill_hobby' => 'Art',
+                ],
+                [
+                    'skill_hobby' => 'Music',
+                ],
+            ],
+            'individual_recognition' => [
+                [
+                    'recognition' => 'Random Award 1',
+                ],
+                [
+                    'recognition' => 'Random Award 2',
+                ],
+            ],
+            'individual_membership' => [
+                [
+                    'association_organization' => 'Organization 1',
+                ],
+                [
+                    'association_organization' => 'Organization 2',
+                ],
+                [
+                    'association_organization' => 'Organization 3',
+                ],
+            ],
         ];
 
         $missingRequiredFields = Arr::except(
@@ -430,6 +463,9 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $testWorkExperience = IndividualWorkExperience::factory()->make()->toArray();
         $testVoluntaryWork = IndividualVoluntaryWork::factory()->make()->toArray();
         $testLnd = IndividualLnd::factory()->make()->toArray();
+        $testSkillsHobby = IndividualSkillsHobby::factory()->make()->toArray();
+        $testRecognition = IndividualRecognition::factory()->make()->toArray();
+        $testMembership = IndividualMembership::factory()->make()->toArray();
 
         //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -453,6 +489,9 @@ class IndividualBasicDetailFeatureTest extends TestCase
             'form_type' => PDSFormType::C3->value,
             'individual_voluntary_work' => [$testVoluntaryWork],
             'individual_lnd' => [$testLnd],
+            'individual_skills_hobby' => [$testSkillsHobby],
+            'individual_recognition' => [$testRecognition],
+            'individual_membership' => [$testMembership],
         ];
 
         $all_request = array_merge(
@@ -555,6 +594,9 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // @todo: Update as we add new models.
         $firstVoluntaryWork = $firstIndividual->individualVoluntaryWork()->first();
         $firstLnd = $firstIndividual->individualLnd()->first();
+        $firstSkillsHobby = $firstIndividual->individualSkillsHobby()->first();
+        $firstRecognition = $firstIndividual->individualRecognition()->first();
+        $firstMembership = $firstIndividual->individualMembership()->first();
 
         // Generate updated data
         $newInfo = $this->generate_test_data(PDSFormType::C3->value);
@@ -562,6 +604,9 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Add the correct id on request body.
         $newInfo['individual_voluntary_work'][0]['id'] = $firstVoluntaryWork->id;
         $newInfo['individual_lnd'][0]['id'] = $firstLnd->id;
+        $newInfo['individual_skills_hobby'][0]['id'] = $firstSkillsHobby->id;
+        $newInfo['individual_recognition'][0]['id'] = $firstRecognition->id;
+        $newInfo['individual_membership'][0]['id'] = $firstMembership->id;
 
         // Update
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);

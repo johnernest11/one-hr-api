@@ -72,6 +72,7 @@ class IndividualBasicDetail extends Model
         return $this->hasOne(UserProfile::class);
     }
 
+    // @todo Update relations until completed
     /* -------------------------------------------------------------------------- */
     /*                               C1 Starts Here                               */
     /* -------------------------------------------------------------------------- */
@@ -158,6 +159,30 @@ class IndividualBasicDetail extends Model
     public function individualLnd(): HasMany
     {
         return $this->hasMany(IndividualLnd::class);
+    }
+
+    /**
+     * An individual has many skills and hobbies
+     */
+    public function individualSkillsHobby(): HasMany
+    {
+        return $this->hasMany(IndividualSkillsHobby::class);
+    }
+
+    /**
+     * An individual has many recognitions
+     */
+    public function individualRecognition(): HasMany
+    {
+        return $this->hasMany(IndividualRecognition::class);
+    }
+
+    /**
+     * An individual has many memberships
+     */
+    public function individualMembership(): HasMany
+    {
+        return $this->hasMany(IndividualMembership::class);
     }
 
     /* -------------------------------------------------------------------------- */
