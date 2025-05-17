@@ -145,7 +145,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_family.*.first_name' => ['required', 'string', new DbVarcharMaxLength()],
             'individual_family.*.last_name' => ['required', 'string', new DbVarcharMaxLength()],
             'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
-            'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_family.*.date_of_birth' => ['nullable', 'required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
 
             /* --------------------- IndividualEducationalBackground -------------------- */
             'individual_educational_background' => ['array'],
@@ -352,7 +352,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_family.*.first_name' => ['required', 'string', new DbVarcharMaxLength()],
             'individual_family.*.last_name' => ['required', 'string', new DbVarcharMaxLength()],
             'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
-            'individual_family.*.date_of_birth' => ['required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'individual_family.*.date_of_birth' => ['nullable', 'required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
 
             /* --------------------- IndividualEducationalBackground -------------------- */
             'individual_educational_background' => ['array'],
