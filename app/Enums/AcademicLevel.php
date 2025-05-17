@@ -5,7 +5,8 @@ namespace App\Enums;
 enum AcademicLevel: string
 {
     case ELEMENTARY = 'Elementary';
-    case HIGH_SCHOOL = 'High School';
+    case SECONDARY = 'Secondary';
+    case VOCATIONAL = 'Vocational';
     case COLLEGE = 'College';
     case GRADUATE = 'Graduate';
 }
