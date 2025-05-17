@@ -12,6 +12,7 @@ use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
 use App\Models\ComprehensiveRecords\IndividualLnd;
 use App\Models\ComprehensiveRecords\IndividualMembership;
+use App\Models\ComprehensiveRecords\IndividualQuestion;
 use App\Models\ComprehensiveRecords\IndividualRecognition;
 use App\Models\ComprehensiveRecords\IndividualSkillsHobby;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
@@ -117,6 +118,7 @@ class IndividualBasicDetailUnitTest extends TestCase
         $testSkillsHobby = IndividualSkillsHobby::factory()->make()->toArray();
         $testRecognition = IndividualRecognition::factory()->make()->toArray();
         $testMembership = IndividualMembership::factory()->make()->toArray();
+        $testQuestion = IndividualQuestion::factory()->make()->toArray();
 
         //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -142,16 +144,22 @@ class IndividualBasicDetailUnitTest extends TestCase
             'individual_membership' => [$testMembership],
         ];
 
+        $c4_request = [
+            'individual_question' => [$testQuestion],
+        ];
+
         $all_request = array_merge(
             Arr::except($c1_request, 'form_type'),
             Arr::except($c2_request, 'form_type'),
-            Arr::except($c3_request, 'form_type')
+            Arr::except($c3_request, 'form_type'),
+            Arr::except($c4_request, 'form_type')
         );
 
         $requestData = match ($form_type) {
             PDSFormType::C1->value => $c1_request,
             PDSFormType::C2->value => $c2_request,
             PDSFormType::C3->value => $c3_request,
+            PDSFormType::C4->value => $c4_request,
             default => $all_request,
         };
 
@@ -254,6 +262,26 @@ class IndividualBasicDetailUnitTest extends TestCase
         $newInfo['individual_skills_hobby'][0]['id'] = $firstSkillsHobby->id;
         $newInfo['individual_recognition'][0]['id'] = $firstRecognition->id;
         $newInfo['individual_membership'][0]['id'] = $firstMembership->id;
+
+        $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
+
+        // Check if the data matches the record in the database
+        foreach ($newInfo as $key => $value) {
+            $this->assertDatabaseHas(Str::plural($key), $newInfo[$key][0]); // convert $key to plural form since it is singular to match the table name
+        }
+    }
+
+    /**
+     * Test if C4 can be edited via the service
+     */
+    public function test_can_edit_c4(): void
+    {
+        $individual = $this->individualBasicDetailService->store($this->generate_test_data());
+        $this->assertDatabaseCount('individual_basic_details', 1);
+
+        $newInfo = $this->generate_test_data(PDSFormType::C4->value);
+        // Add ids
+        $newInfo['individual_question'][0]['id'] = $individual->individualQuestion->id;
 
         $updatedData = $this->individualBasicDetailService->update($individual, $newInfo);
 

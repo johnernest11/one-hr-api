@@ -35,6 +35,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualMembership',
         'individualRecognition',
         'individualSkillsHobby',
+        'individualQuestion',
     ];
 
     private IndividualBasicDetail $model;

@@ -186,4 +186,16 @@ class IndividualBasicDetail extends Model
     }
 
     /* -------------------------------------------------------------------------- */
+
+    /* -------------------------------------------------------------------------- */
+    /*                               C4 starts here                               */
+    /* -------------------------------------------------------------------------- */
+
+    /**
+     * A individual has one question
+     */
+    public function individualQuestion(): HasOne
+    {
+        return $this->hasOne(IndividualQuestion::class);
+    }
 }

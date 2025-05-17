@@ -217,6 +217,42 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_membership' => ['array'],
             'individual_membership.*.association_organization' => ['nullable', 'string', new DbVarcharMaxLength()],
 
+            /* -------------------------------------------------------------------------- */
+            /*                               C4 starts here                               */
+            /* -------------------------------------------------------------------------- */
+            /* --------------------------- IndividualQuestion --------------------------- */
+            'individual_question' => ['array'],
+            /* ------------------------------- Question 34 ------------------------------ */
+            'individual_question.*.q34_a' => ['nullable', 'boolean'],
+            'individual_question.*.q34_b' => ['nullable', 'boolean'],
+            'individual_question.*.q34_details' => ['nullable', 'required_if:individual_question.*.q34_a,true', 'required_if:individual_question.*.q34_b,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 35 ------------------------------ */
+            'individual_question.*.q35_a' => ['nullable', 'boolean'],
+            'individual_question.*.q35_a_details' => ['nullable', 'required_if:individual_question.*.q35_a,true', 'string', new DbVarcharMaxLength()],
+            'individual_question.*.q35_b' => ['nullable', 'boolean'],
+            'individual_question.*.q35_b_date_filed' => ['nullable', 'required_if:individual_question.*.q35_b,true', 'date_format:Y-m-d'],
+            'individual_question.*.q35_b_status' => ['nullable', 'required_if:individual_question.*.q35_b,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 36 ------------------------------ */
+            'individual_question.*.q36' => ['nullable', 'boolean'],
+            'individual_question.*.q36_details' => ['nullable', 'required_if:individual_question.*.q36,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 37 ------------------------------ */
+            'individual_question.*.q37' => ['nullable', 'boolean'],
+            'individual_question.*.q37_details' => ['nullable', 'required_if:individual_question.*.q37,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 38 ------------------------------ */
+            'individual_question.*.q38_a' => ['nullable', 'boolean'],
+            'individual_question.*.q38_a_details' => ['nullable', 'required_if:individual_question.*.q38_a,true', 'string', new DbVarcharMaxLength()],
+            'individual_question.*.q38_b' => ['nullable', 'boolean'],
+            'individual_question.*.q38_b_details' => ['nullable', 'required_if:individual_question.*.q38_b,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 39 ------------------------------ */
+            'individual_question.*.q39' => ['nullable', 'boolean'],
+            'individual_question.*.q39_details' => ['nullable', 'required_if:individual_question.*.q39,true', 'string', new DbVarcharMaxLength()], //@todo change to country_id
+            /* ------------------------------- Question 40 ------------------------------ */
+            'individual_question.*.q40_a_indigenous_group' => ['nullable', 'boolean'],
+            'individual_question.*.q40_a_details' => ['nullable', 'required_if:individual_question.*.q40_a_indigenous_group,true', 'string', new DbVarcharMaxLength()],
+            'individual_question.*.q40_b_pwd' => ['nullable', 'boolean'],
+            'individual_question.*.q40_b_details' => ['nullable', 'required_if:individual_question.*.q40_b_pwd,true', 'string', new DbVarcharMaxLength()],
+            'individual_question.*.q40_c_solo_parent' => ['nullable', 'boolean'],
+            'individual_question.*.q40_c_details' => ['nullable', 'required_if:individual_question.*.q40_c_solo_parent,true', 'string', new DbVarcharMaxLength()],
         ];
     }
 
@@ -238,6 +274,7 @@ class IndividualBasicDetailRequest extends FormRequest
             PDSFormType::C1->value => $this->getC1Rules(),
             PDSFormType::C2->value => $this->getC2Rules(),
             PDSFormType::C3->value => $this->getC3Rules(),
+            PDSFormType::C4->value => $this->getC4Rules(),
             default => []
         };
 
@@ -481,6 +518,54 @@ class IndividualBasicDetailRequest extends FormRequest
             ],
             'individual_membership.*.association_organization' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_membership.*._delete' => ['nullable', 'boolean'], // Can delete lnd
+        ];
+    }
+
+    public function getC4Rules(): array
+    {
+        return [
+            /* -------------------------------------------------------------------------- */
+            /*                               C4 starts here                               */
+            /* -------------------------------------------------------------------------- */
+            /* --------------------------- IndividualQuestion --------------------------- */
+            'individual_question' => ['array'],
+            'individual_question.*.id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('individual_questions'),
+            ],
+            /* ------------------------------- Question 34 ------------------------------ */
+            'individual_question.*.q34_a' => ['nullable', 'boolean'],
+            'individual_question.*.q34_b' => ['nullable', 'boolean'],
+            'individual_question.*.q34_details' => ['nullable', 'required_if:individual_question.*.q34_a,true', 'required_if:individual_question.*.q34_b,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 35 ------------------------------ */
+            'individual_question.*.q35_a' => ['nullable', 'boolean'],
+            'individual_question.*.q35_a_details' => ['nullable', 'required_if:individual_question.*.q35_a,true', 'string', new DbVarcharMaxLength()],
+            'individual_question.*.q35_b' => ['nullable', 'boolean'],
+            'individual_question.*.q35_b_date_filed' => ['nullable', 'required_if:individual_question.*.q35_b,true', 'date_format:Y-m-d'],
+            'individual_question.*.q35_b_status' => ['nullable', 'required_if:individual_question.*.q35_b,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 36 ------------------------------ */
+            'individual_question.*.q36' => ['nullable', 'boolean'],
+            'individual_question.*.q36_details' => ['nullable', 'required_if:individual_question.*.q36,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 37 ------------------------------ */
+            'individual_question.*.q37' => ['nullable', 'boolean'],
+            'individual_question.*.q37_details' => ['nullable', 'required_if:individual_question.*.q37,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 38 ------------------------------ */
+            'individual_question.*.q38_a' => ['nullable', 'boolean'],
+            'individual_question.*.q38_a_details' => ['nullable', 'required_if:individual_question.*.q38_a,true', 'string', new DbVarcharMaxLength()],
+            'individual_question.*.q38_b' => ['nullable', 'boolean'],
+            'individual_question.*.q38_b_details' => ['nullable', 'required_if:individual_question.*.q38_b,true', 'string', new DbVarcharMaxLength()],
+            /* ------------------------------- Question 39 ------------------------------ */
+            'individual_question.*.q39' => ['nullable', 'boolean'],
+            'individual_question.*.q39_details' => ['nullable', 'required_if:individual_question.*.q39,true', 'string', new DbVarcharMaxLength()], //@todo change to country_id
+            /* ------------------------------- Question 40 ------------------------------ */
+            'individual_question.*.q40_a_indigenous_group' => ['nullable', 'boolean'],
+            'individual_question.*.q40_a_details' => ['nullable', 'required_if:individual_question.*.q40_a_indigenous_group,true', 'string', new DbVarcharMaxLength()],
+            'individual_question.*.q40_b_pwd' => ['nullable', 'boolean'],
+            'individual_question.*.q40_b_details' => ['nullable', 'required_if:individual_question.*.q40_b_pwd,true', 'string', new DbVarcharMaxLength()],
+            'individual_question.*.q40_c_solo_parent' => ['nullable', 'boolean'],
+            'individual_question.*.q40_c_details' => ['nullable', 'required_if:individual_question.*.q40_c_solo_parent,true', 'string', new DbVarcharMaxLength()],
+
         ];
     }
 
