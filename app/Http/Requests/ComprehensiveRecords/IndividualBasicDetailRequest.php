@@ -253,6 +253,14 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_question.*.q40_b_details' => ['nullable', 'required_if:individual_question.*.q40_b_pwd,true', 'string', new DbVarcharMaxLength()],
             'individual_question.*.q40_c_solo_parent' => ['nullable', 'boolean'],
             'individual_question.*.q40_c_details' => ['nullable', 'required_if:individual_question.*.q40_c_solo_parent,true', 'string', new DbVarcharMaxLength()],
+
+            /* --------------------------- IndividualReference -------------------------- */
+            'individual_reference' => ['array', 'max:3'], // Maximum of 3 references allowed per individual
+            'individual_reference.*.name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_reference.*.address' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_reference.*.tel_no' => ['nullable',
+                new InternationalPhoneNumberFormat(),
+                (new PhoneRule())->country('PH')], // Can be either mobile or tele
         ];
     }
 
@@ -566,6 +574,19 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_question.*.q40_c_solo_parent' => ['nullable', 'boolean'],
             'individual_question.*.q40_c_details' => ['nullable', 'required_if:individual_question.*.q40_c_solo_parent,true', 'string', new DbVarcharMaxLength()],
 
+            /* --------------------------- IndividualReference -------------------------- */
+            'individual_reference' => ['array', 'max:3'], // Maximum of 3 references allowed per individual
+            'individual_reference.*.id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('individual_references'),
+            ],
+            'individual_reference.*.name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_reference.*.address' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'individual_reference.*.tel_no' => ['nullable',
+                new InternationalPhoneNumberFormat(),
+                (new PhoneRule())->country('PH')], // Can be either mobile or tele
+            'individual_reference.*._delete' => ['nullable', 'boolean'], // Can delete references
         ];
     }
 

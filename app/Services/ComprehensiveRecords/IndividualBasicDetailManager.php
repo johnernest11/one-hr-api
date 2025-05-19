@@ -32,6 +32,11 @@ interface IndividualBasicDetailManager
     public function update(IndividualBasicDetail $individualBasicDetail, array $request): IndividualBasicDetail;
 
     /**
+     * Check if an individual reaches the maximum number of references
+     */
+    public function isMaximumReferences(IndividualBasicDetail $individualBasicDetail, array $request): bool;
+
+    /**
      * Search for IndividualBasicDetail
      */
     public function search(

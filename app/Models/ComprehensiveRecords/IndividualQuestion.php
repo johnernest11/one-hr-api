@@ -74,7 +74,7 @@ class IndividualQuestion extends Model
     ];
 
     /**
-     * An eligibility belongs to an individual
+     * An question belongs to an individual
      */
     public function individualBasicDetail(): BelongsTo
     {

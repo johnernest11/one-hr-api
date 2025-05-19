@@ -36,9 +36,12 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualRecognition',
         'individualSkillsHobby',
         'individualQuestion',
+        'individualReference',
     ];
 
     private IndividualBasicDetail $model;
+
+    private $maxReferences = 3; // Maximum number of references
 
     public function __construct(IndividualBasicDetail $model)
     {
@@ -183,6 +186,27 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
             return $fetchedIndividualData;
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
+    }
+
+    public function isMaximumReferences(IndividualBasicDetail $individualBasicDetail, array $request): bool
+    {
+        $refsCount = $individualBasicDetail->individualReference()->count();
+        $incomingRefsCount = 0;
+
+        // Count number of incoming individual_reference request without ids.
+        // Request without ids will create a new record.
+        // Request with ids will not.
+        foreach ($request['individual_reference'] as $reference) {
+            if (! array_key_exists('id', $reference)) {
+                $incomingRefsCount++;
+            }
+        }
+
+        if (($refsCount + $incomingRefsCount) > $this->maxReferences) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

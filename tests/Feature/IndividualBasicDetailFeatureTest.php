@@ -15,6 +15,7 @@ use App\Models\ComprehensiveRecords\IndividualLnd;
 use App\Models\ComprehensiveRecords\IndividualMembership;
 use App\Models\ComprehensiveRecords\IndividualQuestion;
 use App\Models\ComprehensiveRecords\IndividualRecognition;
+use App\Models\ComprehensiveRecords\IndividualReference;
 use App\Models\ComprehensiveRecords\IndividualSkillsHobby;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
@@ -55,6 +56,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         'individualRecognition',
         'individualSkillsHobby',
         'individualQuestion',
+        'individualReference',
     ];
 
     public function setUp(): void
@@ -353,6 +355,8 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'association_organization' => 'Organization 3',
                 ],
             ],
+
+            // -----> C4 starts here <-----
             'individual_question' => [
                 [
                     /* ------------------------------- Question 34 ------------------------------ */
@@ -386,6 +390,13 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'q40_b_details' => fake()->word(),
                     'q40_c_solo_parent' => fake()->boolean(),
                     'q40_c_details' => fake()->word(),
+                ],
+            ],
+            'individual_reference' => [
+                [
+                    'name' => fake()->name(),
+                    'address' => fake()->address(),
+                    'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
                 ],
             ],
         ];
@@ -504,6 +515,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $testRecognition = IndividualRecognition::factory()->make()->toArray();
         $testMembership = IndividualMembership::factory()->make()->toArray();
         $testQuestion = IndividualQuestion::factory()->make()->toArray();
+        $testReference = IndividualReference::factory()->make()->toArray();
 
         //@todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -535,6 +547,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $c4_request = [
             'form_type' => PDSFormType::C4->value,
             'individual_question' => [$testQuestion],
+            'individual_reference' => [$testReference],
         ];
 
         $all_request = array_merge(
@@ -675,11 +688,16 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $individuals = IndividualBasicDetail::factory(5)->create();
         $firstIndividual = $individuals->first();
 
+        // Get first record in hasMany relationship.
+        // @todo: Update as we add new models.
+        $firstReference = $firstIndividual->individualReference()->first();
+
         // Generate updated data
         $newInfo = $this->generate_test_data(PDSFormType::C4->value);
 
         // Add the correct id on request body.
         $newInfo['individual_question'][0]['id'] = $firstIndividual->individualQuestion->id;
+        $newInfo['individual_reference'][0]['id'] = $firstReference->id;
 
         // Update
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);
@@ -695,6 +713,76 @@ class IndividualBasicDetailFeatureTest extends TestCase
             }
         }
 
+    }
+
+    public function test_it_cannot_create_more_than_3_references(): void
+    {
+        $individualInfo = $this->generate_test_data();
+
+        // Generate Item and update array
+        $generatedItem = Item::factory()->create();
+        $individualInfo['employee']['item_id'] = $generatedItem->id;
+
+        // Update request such that the references will be more than 3
+        // There will already be 1 reference in $individualInfo
+        $individualInfo['individual_reference'] =
+        [
+            [
+                'name' => fake()->name(),
+                'address' => fake()->address(),
+                'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+            ],
+            [
+                'name' => fake()->name(),
+                'address' => fake()->address(),
+                'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+            ],
+            [
+                'name' => fake()->name(),
+                'address' => fake()->address(),
+                'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+            ],
+            [
+                'name' => fake()->name(),
+                'address' => fake()->address(),
+                'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+            ],
+        ];
+
+        // Create Individual and check for validation error
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $individualInfo);
+        $response->assertStatus(422); // Should throw a Validation Error
+    }
+
+    public function test_it_can_add_new_reference_max_of_3(): void
+    {
+        $individuals = IndividualBasicDetail::factory(5)->create();
+        $firstIndividual = $individuals->first();
+        // Should have one reference
+        $refCount = IndividualReference::where('individual_basic_detail_id', '=', $firstIndividual->id)->count();
+        $this->assertEquals(1, $refCount);
+
+        $updateData = [
+            'form_type' => PDSFormType::C4->value,
+            'individual_reference' => IndividualReference::factory(3)->make()->toArray(),
+        ];
+
+        // Should throw an error when attempting to create new references since the total count of the records will be 4.
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updateData);
+        $response->assertStatus(400); //Should be a BAD_REQUEST_ERROR
+
+        $newUpdateData = [
+            'form_type' => PDSFormType::C4->value,
+            'individual_reference' => IndividualReference::factory(2)->make()->toArray(),
+        ];
+
+        // Should now proceed with creating new references since the total count of records will be 3.
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newUpdateData);
+        $response->assertStatus(200);
+
+        // Should now have 3 references
+        $newRefCount = IndividualReference::where('individual_basic_detail_id', '=', $firstIndividual->id)->count();
+        $this->assertEquals(3, $newRefCount);
     }
 
     public function test_it_cannot_set_multiple_work_experience_as_current(): void

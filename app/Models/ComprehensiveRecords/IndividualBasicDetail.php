@@ -198,4 +198,12 @@ class IndividualBasicDetail extends Model
     {
         return $this->hasOne(IndividualQuestion::class);
     }
+
+    /**
+     * An individual has many references [Max of 3]
+     */
+    public function individualReference(): HasMany
+    {
+        return $this->hasMany(IndividualReference::class);
+    }
 }
