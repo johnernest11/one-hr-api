@@ -72,6 +72,11 @@ class IndividualBasicDetail extends Model
         return $this->hasOne(UserProfile::class);
     }
 
+    // @todo Update relations until completed
+    /* -------------------------------------------------------------------------- */
+    /*                               C1 Starts Here                               */
+    /* -------------------------------------------------------------------------- */
+
     /**
      * An individual has one employee record
      */
@@ -112,6 +117,12 @@ class IndividualBasicDetail extends Model
         return $this->hasMany(IndividualEducationalBackground::class);
     }
 
+    /* -------------------------------------------------------------------------- */
+
+    /* -------------------------------------------------------------------------- */
+    /*                               C2 starts here                               */
+    /* -------------------------------------------------------------------------- */
+
     /**
      * An individual has many eligibilities
      */
@@ -127,4 +138,52 @@ class IndividualBasicDetail extends Model
     {
         return $this->hasMany(IndividualWorkExperience::class);
     }
+
+    /* -------------------------------------------------------------------------- */
+
+    /* -------------------------------------------------------------------------- */
+    /*                               C3 starts here                               */
+    /* -------------------------------------------------------------------------- */
+
+    /**
+     * An individual has many work voluntary work
+     */
+    public function individualVoluntaryWork(): HasMany
+    {
+        return $this->hasMany(IndividualVoluntaryWork::class);
+    }
+
+    /**
+     * An individual has many learning and development programs attended
+     */
+    public function individualLnd(): HasMany
+    {
+        return $this->hasMany(IndividualLnd::class);
+    }
+
+    /**
+     * An individual has many skills and hobbies
+     */
+    public function individualSkillsHobby(): HasMany
+    {
+        return $this->hasMany(IndividualSkillsHobby::class);
+    }
+
+    /**
+     * An individual has many recognitions
+     */
+    public function individualRecognition(): HasMany
+    {
+        return $this->hasMany(IndividualRecognition::class);
+    }
+
+    /**
+     * An individual has many memberships
+     */
+    public function individualMembership(): HasMany
+    {
+        return $this->hasMany(IndividualMembership::class);
+    }
+
+    /* -------------------------------------------------------------------------- */
 }

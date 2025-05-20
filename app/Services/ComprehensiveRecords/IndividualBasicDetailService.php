@@ -30,6 +30,11 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualEducationalBackground',
         'individualEligibility',
         'individualWorkExperience',
+        'individualVoluntaryWork',
+        'individualLnd',
+        'individualMembership',
+        'individualRecognition',
+        'individualSkillsHobby',
     ];
 
     private IndividualBasicDetail $model;
