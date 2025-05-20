@@ -198,27 +198,6 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
     }
 
-    public function isMaximumReferences(IndividualBasicDetail $individualBasicDetail, array $request): bool
-    {
-        $refsCount = $individualBasicDetail->individualReference()->count();
-        $incomingRefsCount = 0;
-
-        // Count number of incoming individual_reference request without ids.
-        // Request without ids will create a new record.
-        // Request with ids will not.
-        foreach ($request['individual_reference'] as $reference) {
-            if (! array_key_exists('id', $reference)) {
-                $incomingRefsCount++;
-            }
-        }
-
-        if (($refsCount + $incomingRefsCount) > $this->maxReferences) {
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * Search individual via last_name, first_name, and middle_name
      */

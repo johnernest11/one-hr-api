@@ -781,7 +781,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
         // Should throw an error when attempting to create new references since the total count of the records will be 4.
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updateData);
-        $response->assertStatus(400); //Should be a BAD_REQUEST_ERROR
+        $response->assertStatus(403); //Should be an UNAUTHORIZED_ERROR
 
         $newUpdateData = [
             'form_type' => PDSFormType::C4->value,

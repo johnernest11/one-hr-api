@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\ComprehensiveRecords;
 
-use App\Enums\ApiErrorCode;
 use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\ComprehensiveRecords\IndividualBasicDetailRequest;
@@ -57,14 +56,10 @@ class IndividualBasicDetailController extends ApiController
     {
         // Validate request.
         $validatedRequest = $request->validated();
-        // Check if IndividualReference exists on the request
-        if (array_key_exists('individual_reference', $validatedRequest)) {
-            // Check if maximum reference is reached for user.
-            // If it is, throw error.
-            if ($this->individualBasicDetailService->isMaximumReferences($individualBasicDetail, $validatedRequest)) {
-                return $this->error('Maximum number of references reached for this individual.', Response::HTTP_BAD_REQUEST, ApiErrorCode::BAD_REQUEST);
-            }
-        }
+
+        // Use policy
+        $this->authorize('update', [$individualBasicDetail, $validatedRequest]);
+
         $individualData = $this->individualBasicDetailService->update($individualBasicDetail, $validatedRequest);
 
         return $this->success(['data' => $individualData], Response::HTTP_OK);
