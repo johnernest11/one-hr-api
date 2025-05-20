@@ -105,6 +105,11 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                 if ($individualData->{$relationshipName}() instanceof Relation && is_array($inputData) && ! empty($inputData)) {
                     foreach ($inputData as $modelData) {
                         $individualData->{$relationshipName}()->create($modelData);
+
+                        // If relationship name is individualQuestion, sync the given countries_ids
+                        if ($relationshipName == 'individualQuestion' && isset($modelData['countries_ids']) && $modelData['countries_ids']) {
+                            $individualData->individualQuestion->countries()->sync($modelData['countries_ids']);
+                        }
                     }
                 }
             }
@@ -176,6 +181,11 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                         } else {
                             // Create new record if ID is not passed
                             $individualBasicDetail->{$relationshipName}()->create($modelData);
+                        }
+
+                        // If relationship name is individualQuestion, sync the given countries_ids
+                        if ($relationshipName == 'individualQuestion' && isset($modelData['countries_ids']) && $modelData['countries_ids']) {
+                            $individualBasicDetail->individualQuestion->countries()->sync($modelData['countries_ids']);
                         }
                     }
                 }

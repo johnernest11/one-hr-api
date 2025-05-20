@@ -20,6 +20,7 @@ use App\Models\ComprehensiveRecords\IndividualSkillsHobby;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\Item;
+use App\Models\Libraries\Country;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use DB;
@@ -382,7 +383,6 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'q38_b_details' => fake()->word(),
                     /* ------------------------------- Question 39 ------------------------------ */
                     'q39' => fake()->boolean(),
-                    'q39_details' => fake()->word(), //@todo change to country_id
                     /* ------------------------------- Question 40 ------------------------------ */
                     'q40_a_indigenous_group' => fake()->boolean(),
                     'q40_a_details' => fake()->word(),
@@ -425,6 +425,12 @@ class IndividualBasicDetailFeatureTest extends TestCase
             $generatedItem = Item::factory()->create();
 
             $input['employee']['item_id'] = $generatedItem->id;
+
+            // Generate random countries if individual_question is part of the input
+            if (isset($input['individual_question'])) {
+                $randomCountries = Country::inRandomOrder()->limit(mt_rand(1, 5))->pluck('id')->toArray(); // Get 1 to 5 random countries
+                $input['individual_question'][0]['countries_ids'] = $randomCountries;
+            }
         }
 
         $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
@@ -698,6 +704,12 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Add the correct id on request body.
         $newInfo['individual_question'][0]['id'] = $firstIndividual->individualQuestion->id;
         $newInfo['individual_reference'][0]['id'] = $firstReference->id;
+
+        // Generate random countries if individual_question is part of the input and q39 is true
+        if (isset($newInfo['individual_question']) and $newInfo['individual_question'][0]['q39']) {
+            $randomCountries = Country::inRandomOrder()->limit(mt_rand(1, 5))->pluck('id')->toArray(); // Get 1 to 5 random countries
+            $newInfo['individual_question'][0]['countries_ids'] = $randomCountries;
+        }
 
         // Update
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);

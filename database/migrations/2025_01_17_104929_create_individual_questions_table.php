@@ -43,8 +43,6 @@ return new class extends Migration
 
             /* ------------------------------- Question 39 ------------------------------ */
             $table->boolean('q39')->nullable();
-            $table->string('q39_details')->nullable(); // Country?
-            // @todo deal with many2many rel. with country
 
             /* ------------------------------- Question 40 ------------------------------ */
             $table->boolean('q40_a_indigenous_group')->nullable();

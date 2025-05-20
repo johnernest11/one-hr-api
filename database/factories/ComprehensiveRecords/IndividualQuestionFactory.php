@@ -2,6 +2,8 @@
 
 namespace Database\Factories\ComprehensiveRecords;
 
+use App\Models\ComprehensiveRecords\IndividualQuestion;
+use App\Models\Libraries\Country;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -39,8 +41,7 @@ class IndividualQuestionFactory extends Factory
             'q38_b' => fake()->boolean(),
             'q38_b_details' => fake()->word(),
             /* ------------------------------- Question 39 ------------------------------ */
-            'q39' => fake()->boolean(),
-            'q39_details' => fake()->word(), //@todo change to country_id
+            'q39' => fake()->boolean(100), // set to 100% true to test the countries
             /* ------------------------------- Question 40 ------------------------------ */
             'q40_a_indigenous_group' => fake()->boolean(),
             'q40_a_details' => fake()->word(),
@@ -49,5 +50,13 @@ class IndividualQuestionFactory extends Factory
             'q40_c_solo_parent' => fake()->boolean(),
             'q40_c_details' => fake()->word(),
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (IndividualQuestion $individualQuestion) {
+            $randomCountries = Country::inRandomOrder()->limit(mt_rand(1, 5))->get(); // Get 1 to 5 random countries
+            $individualQuestion->countries()->sync($randomCountries);
+        });
     }
 }

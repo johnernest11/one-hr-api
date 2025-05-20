@@ -2,9 +2,11 @@
 
 namespace App\Models\ComprehensiveRecords;
 
+use App\Models\Libraries\Country;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class IndividualQuestion extends Model
@@ -42,7 +44,6 @@ class IndividualQuestion extends Model
         'q38_b_details',
         /* ------------------------------- Question 39 ------------------------------ */
         'q39',
-        'q39_details', //@todo change to country_id
         /* ------------------------------- Question 40 ------------------------------ */
         'q40_a_indigenous_group',
         'q40_a_details',
@@ -51,6 +52,11 @@ class IndividualQuestion extends Model
         'q40_c_solo_parent',
         'q40_c_details',
     ];
+
+    /**
+     * The relationships to eager-load
+     */
+    protected $with = ['countries'];
 
     /**
      * The attributes that should be cast.
@@ -79,5 +85,13 @@ class IndividualQuestion extends Model
     public function individualBasicDetail(): BelongsTo
     {
         return $this->belongsTo(IndividualBasicDetail::class);
+    }
+
+    /**
+     * Questions belong to an many countries
+     */
+    public function countries(): BelongsToMany
+    {
+        return $this->belongsToMany(Country::class, 'country_individual_question');
     }
 }
