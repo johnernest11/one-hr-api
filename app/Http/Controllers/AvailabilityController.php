@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AvailabilityRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class AvailabilityController extends ApiController
@@ -32,14 +33,24 @@ class AvailabilityController extends ApiController
     {
         $mobileNumber = $request->get('value');
         $excludedId = $request->get('excluded_id');
-        $query = User::join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
-            ->where('user_profiles.mobile_number', '=', $mobileNumber);
 
-        if ($excludedId) {
-            $query->whereNot('users.id', $excludedId);
+        $userProfile = DB::connection('mysql')
+            ->table('user_profiles')
+            ->where('mobile_number', $mobileNumber)
+            ->first();
+
+        $isAvailable = true;
+
+        if ($userProfile) {
+            $user = DB::connection('one_account')
+                ->table('users')
+                ->where('id', $userProfile->user_id)
+                ->first();
+
+            if ($user && (! $excludedId || $user->id != $excludedId)) {
+                $isAvailable = false;
+            }
         }
-
-        $isAvailable = ! $query->first();
         $data = ['is_available' => $isAvailable];
 
         return $this->success(['data' => $data], Response::HTTP_OK);

@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Enums\Role;
 use App\Enums\SexualCategory;
 use App\Models\User;
-use App\Models\UserProfile;
 use App\Notifications\Auth\QueuedVerifyEmailNotification;
 use App\Notifications\WelcomeNotification;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
@@ -24,8 +23,6 @@ class JwtAuthTest extends TestCase
 
     private array $userCreds;
 
-    private array $userProfile;
-
     private User $user;
 
     private string $authToken;
@@ -39,16 +36,14 @@ class JwtAuthTest extends TestCase
         Notification::fake();
 
         $this->userCreds = [
-            'email' => 'jegramos-test@sample.com',
+            'email' => fake()->unique()->safeEmail(),
+            'username' => fake()->unique()->userName(),
             'password' => 'Jeg123123!',
         ];
 
-        $this->userProfile = ['mobile_number' => '+639064647295'];
-
         $this->user = User::factory($this->userCreds)
-            ->has(UserProfile::factory())
             ->create();
-        $this->user->syncRoles([Role::STANDARD_USER]);
+        $this->user->syncRoles([Role::ADMIN]);
 
         $jwtAuthService = resolve(AuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('jwt.lifetime_minutes'));
@@ -69,13 +64,11 @@ class JwtAuthTest extends TestCase
     }
 
     /** @throws Throwable */
-    public function test_user_can_request_an_access_token_via_mobile_number(): void
+    public function test_user_can_request_an_access_token_via_username(): void
     {
-        $user = User::where('email', $this->userCreds['email'])->first();
-        $user->userProfile()->update($this->userProfile);
-
         $response = $this->postJson("$this->baseUri/tokens?auth_type=jwt", [
-            'mobile_number' => $this->userProfile['mobile_number'],
+            'email' => $this->userCreds['email'],
+            'username' => $this->userCreds['username'],
             'password' => $this->userCreds['password'],
         ]);
 
@@ -114,11 +107,10 @@ class JwtAuthTest extends TestCase
     /** @throws Throwable */
     public function test_the_returned_token_has_the_user_id_in_the_payload(): void
     {
-        $user = User::where('email', $this->userCreds['email'])->first();
-        $user->userProfile()->update($this->userProfile);
 
         $response = $this->postJson("$this->baseUri/tokens?auth_type=jwt", [
-            'mobile_number' => $this->userProfile['mobile_number'],
+            'email' => $this->userCreds['email'],
+            'username' => $this->userCreds['username'],
             'password' => $this->userCreds['password'],
         ]);
 

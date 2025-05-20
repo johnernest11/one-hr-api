@@ -5,15 +5,13 @@ namespace App\Services\User;
 use App\Enums\PaginationType;
 use App\Enums\Role;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Traits\Services\CanBuildPagination;
 use App\Traits\Services\CanResolveModelFromId;
 use Carbon\Carbon;
 use Hash;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Propaganistas\LaravelPhone\PhoneNumber;
@@ -43,6 +41,13 @@ class UserManager implements UserAccountManager, UserCredentialManager
      */
     public function create(array $userInfo): User
     {
+        // Check for existing email before insertion
+        if (User::where('email', $userInfo['email'])->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => ['The email has already been taken.'],
+            ]);
+        }
+
         return DB::transaction(function () use ($userInfo) {
             $userCredentials = [
                 'email' => $userInfo['email'],
@@ -137,26 +142,31 @@ class UserManager implements UserAccountManager, UserCredentialManager
     }
 
     /**
-     * Search user via email, last_name, first_name, and middle_name
+     * {@inheritDoc}
+     *
+     * @throws Throwable
      */
     public function search(
-        string $term,
-        ?PaginationType $pagination = null
-    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
-        $users = User::query()
+        string $term, ?PaginationType $pagination = null): LengthAwarePaginator
+    {
+        $userQuery = User::on('one_account')->where('email', 'like', "$term%")->orWhere('username', 'like', "%$term%");
+        $userIdsFromEmail = $userQuery->pluck('id')->toArray();
+        $profileMatches = UserProfile::on('mysql')
+            ->where(function ($query) use ($term) {
+                $query->where('first_name', 'like', "%$term%")
+                    ->orWhere('last_name', 'like', "%$term%")
+                    ->orWhere('middle_name', 'like', "%$term%")
+                    ->orWhere('ext_name', 'like', "%$term%");
+            })
+            ->pluck('user_id')
+            ->toArray();
+        $matchingUserIds = array_unique(array_merge($userIdsFromEmail, $profileMatches));
+
+        $finalQuery = User::on('one_account')
             ->with('userProfile')
-            ->join('user_profiles', 'user_profiles.user_id', '=', 'users.id')
+            ->whereIn('id', $matchingUserIds);
 
-            // Do a prefix match for email to preserve indexing performance
-            ->where('users.email', 'like', "$term%")
-
-            // Do a full match search for the names as they have a fullText index in our migrations
-            ->orWhere('user_profiles.first_name', 'like', "%$term%")
-            ->orWhere('user_profiles.last_name', 'like', "%$term%")
-            ->orWhere('user_profiles.middle_name', 'like', "%$term%")
-            ->orWhere('user_profiles.ext_name', 'like', "%$term%");
-
-        return $this->buildPagination($pagination, $users);
+        return $finalQuery->paginate($pagination?->perPage ?? 15);
     }
 
     /** {@inheritDoc} */
@@ -189,6 +199,18 @@ class UserManager implements UserAccountManager, UserCredentialManager
     public function getUserViaEmailAndPassword(string $email, string $password): ?User
     {
         $user = User::where('email', $email)->first();
+        $hasCorrectCreds = $user && \Illuminate\Support\Facades\Hash::check($password, $user->password);
+        if (! $hasCorrectCreds) {
+            return null;
+        }
+
+        return $user;
+    }
+
+    /** {@inheritDoc} */
+    public function getUserViaUsernameAndPassword(string $username, string $password): ?User
+    {
+        $user = User::where('username', $username)->first();
         $hasCorrectCreds = $user && \Illuminate\Support\Facades\Hash::check($password, $user->password);
         if (! $hasCorrectCreds) {
             return null;

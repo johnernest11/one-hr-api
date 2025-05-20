@@ -14,6 +14,10 @@ class AccomplishmentReport extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql';
+
+    protected $table = 'accomplishment_reports';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -33,7 +37,7 @@ class AccomplishmentReport extends Model
     public function scopeFiltered(Builder $builder): Builder
     {
         return app(Pipeline::class)
-            ->send($builder->where('user_profile_id', '=', auth()->user()->id)->with('rows'))
+            ->send($builder->where('user_profile_id', '=', auth()->user()->userProfile->id)->with('rows'))
             ->through([
                 StatusFilter::class,
             ])

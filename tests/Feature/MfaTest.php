@@ -49,8 +49,8 @@ class MfaTest extends TestCase
 
         $email = fake()->email;
         $password = fake()->password;
-        $this->produceUsers(1, ['email' => $email, 'password' => $password]);
-
+        $this->user = $this->produceUsers(1, ['email' => $email, 'password' => $password]);
+        $this->user->syncRoles([Role::ADMIN]);
         $response = $this->postJson(self::BASE_API_URI.'/auth/tokens', [
             'email' => $email,
             'password' => $password,
@@ -98,11 +98,13 @@ class MfaTest extends TestCase
         $email = fake()->email;
         $password = fake()->password;
         $user = $this->produceUsers(1, ['email' => $email, 'password' => $password]);
+        $user->syncRoles([Role::ADMIN]);
 
         $this->postJson(self::BASE_API_URI.'/auth/tokens', [
             'email' => $email,
             'password' => $password,
         ]);
+
         Notification::assertSentTo($user, EmailOtpNotification::class);
     }
 

@@ -75,6 +75,11 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+        'users_one_account' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+            'connection' => 'one_account',
+        ],
         'api_keys' => [
             'driver' => 'eloquent',
             'model' => App\Models\ApiKey::class,
@@ -107,6 +112,13 @@ return [
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
+        ],
+        'users_one_account' => [
+            'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+            'connection' => 'one_account', // ✅ use one_account for password resets
         ],
     ],
 

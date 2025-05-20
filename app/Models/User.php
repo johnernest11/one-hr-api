@@ -35,6 +35,10 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     use Notifiable;
     use SoftDeletes;
 
+    protected $connection = 'one_account';
+
+    protected $table = 'users';
+
     /**
      * The attributes that are mass assignable.
      *

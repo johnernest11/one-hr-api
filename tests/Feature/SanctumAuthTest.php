@@ -38,7 +38,8 @@ class SanctumAuthTest extends TestCase
         Notification::fake();
 
         $this->userCreds = [
-            'email' => 'jegramos-test@sample.com',
+            'email' => fake()->unique()->safeEmail(),
+            'username' => fake()->unique()->userName(),
             'password' => 'Jeg123123!',
         ];
 
@@ -47,6 +48,7 @@ class SanctumAuthTest extends TestCase
         $this->user = User::factory($this->userCreds)
             ->has(UserProfile::factory())
             ->create();
+        $this->user->syncRoles([Role::ADMIN]);
 
         $this->tokenManager = resolve(PersistentAuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
@@ -62,20 +64,20 @@ class SanctumAuthTest extends TestCase
             'email' => $this->userCreds['email'],
             'password' => $this->userCreds['password'],
         ]);
-
         $result = $response->decodeResponseJson();
         $this->assertArrayHasKey('token', $result['data']);
         $response->assertStatus(200);
     }
 
     /** @throws Throwable */
-    public function test_user_can_request_an_access_token_via_mobile_number(): void
+    public function test_user_can_request_an_access_token_via_username(): void
     {
-        $user = User::where('email', $this->userCreds['email'])->first();
+        $user = User::where('username', $this->userCreds['username'])->first();
         $user->userProfile()->update($this->userProfile);
 
         $response = $this->postJson("$this->baseUri/tokens", [
-            'mobile_number' => $this->userProfile['mobile_number'],
+            'email' => $this->userCreds['email'],
+            'username' => $this->userCreds['username'],
             'password' => $this->userCreds['password'],
         ]);
 
@@ -154,7 +156,6 @@ class SanctumAuthTest extends TestCase
             'password' => $this->userCreds['password'],
             'client_name' => $clientName,
         ]);
-
         $result = $response->decodeResponseJson();
         $this->assertEquals($clientName, $result['data']['token_name']);
         $response->assertStatus(200);

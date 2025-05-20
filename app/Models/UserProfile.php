@@ -19,6 +19,10 @@ class UserProfile extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $connection = 'mysql';
+
+    protected $table = 'user_profiles';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -98,7 +102,7 @@ class UserProfile extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**

@@ -20,4 +20,6 @@ interface UserCredentialManager
      * Fetch the user with the mobile number and password credentials
      */
     public function getUserViaMobileNumberAndPassword(string $mobileNumber, string $password): ?User;
+
+    public function getUserViaUsernameAndPassword(string $username, string $password): ?User;
 }

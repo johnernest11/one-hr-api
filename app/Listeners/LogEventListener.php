@@ -50,7 +50,7 @@ class LogEventListener
             return;
         }
 
-        $users = User::permission([Permission::RECEIVE_SYSTEM_ALERTS->value])->cursor();
+        $users = User::all();
         /** @var User $user */
         foreach ($users as $user) {
             // We send email alerts to every System Support Role

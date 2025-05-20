@@ -26,7 +26,8 @@ class PruneExpiredMfaAttempts extends Command
      */
     public function handle(): void
     {
-        DB::table('mfa_attempts')
+        DB::connection('one_account')
+            ->table('mfa_attempts')
             ->where('expires_at', '<', now())
             ->delete();
     }

@@ -9,6 +9,8 @@ class AppSettings extends Model
 {
     use HasFactory;
 
+    protected $connection = 'one_account';
+
     protected $table = 'app_settings';
 
     /**
