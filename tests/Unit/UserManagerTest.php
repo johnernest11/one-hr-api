@@ -98,7 +98,7 @@ class UserManagerTest extends TestCase
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
             'postal_code' => fake()->postcode,
-            'profile_picture_path' => fake()->filePath,
+            'profile_picture_path' => 'avatars/'.fake()->uuid().'.jpg',
         ];
     }
 

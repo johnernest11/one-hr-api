@@ -7,6 +7,7 @@ use App\Notifications\Auth\QueuedResetPasswordNotification;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class PasswordTest extends TestCase
@@ -19,22 +20,15 @@ class PasswordTest extends TestCase
     {
         parent::setUp();
 
-        config(['database.default' => 'one_account']);
-
+        \DB::setDefaultConnection('one_account');
         Notification::fake();
 
         $this->userCreds = [
             'email' => fake()->unique()->safeEmail(),
-            'password' => bcrypt('Jeg123123!'),  // hash the password for realistic login
+            'password' => bcrypt('Jeg123123!'),
         ];
-
-        $this->user = User::on('one_account')->create($this->userCreds);
-
-        config([
-            'auth.providers.users.connection' => 'one_account',
-            'auth.providers.users.model' => User::class,
-            'auth.passwords.users.provider' => 'users',
-        ]);
+        $this->user = User::factory()
+            ->create($this->userCreds);
     }
 
     /** @throws Exception */
@@ -47,24 +41,36 @@ class PasswordTest extends TestCase
         Notification::assertSentTo($this->user, QueuedResetPasswordNotification::class);
     }
 
-    //     public function test_users_can_reset_their_passwords(): void
-    //     {
-    // $token = Password::broker('users_one_account')->createToken($this->user);
-    //         $token = app('auth.password.broker')->createToken($this->user);
-    //         $newPassword = 'Sample123123';
-    //         $input = [
-    //             'token' => $token,
-    //             'email' => $this->user->email,
-    //             'password' => $newPassword,
-    //             'password_confirmation' => $newPassword,
-    //         ];
+    public function test_deactivated_user_cannot_request_password_reset(): void
+    {
+        $this->user->update(['active' => false, 'email' => $this->user->email]);
+        $response = $this->postJson("$this->baseUri/forgot-password", ['email' => $this->user->email]);
 
-    //         $response = $this->postJson("$this->baseUri/reset-password", $input);
-    //         $response->assertStatus(200);
+        $response->assertStatus(403);
+    }
 
-    //         // login again
-    //         $creds = ['email' => $this->user->email, 'password' => $newPassword];
-    //         $response = $this->post("$this->baseUri/tokens", $creds);
-    //         $response->assertStatus(200);
-    //     }
+    public function test_users_can_reset_their_passwords(): void
+    {
+
+        $token = app('auth.password.broker')->createToken($this->user);
+
+        $newPassword = 'Sample123123';
+        $input = [
+            'token' => $token,
+            'email' => $this->user->email,
+            'password' => $newPassword,
+            'password_confirmation' => $newPassword,
+        ];
+
+        $response = $this->postJson("$this->baseUri/reset-password", $input);
+        $response->assertStatus(200);
+
+        // login again
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'token']);
+        $this->user->assignRole('admin');
+        $creds = ['email' => $this->user->email, 'password' => $newPassword];
+        $response = $this->post("$this->baseUri/tokens", $creds);
+
+        $response->assertStatus(200);
+    }
 }

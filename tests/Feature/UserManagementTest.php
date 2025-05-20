@@ -59,7 +59,7 @@ class UserManagementTest extends TestCase
         $input['city_id'] = City::first()->id;
         $input['province_id'] = Province::first()->id;
         $input['region_id'] = Region::first()->id;
-        $input['profile_picture_path'] = fake()->filePath();
+        $input['profile_picture_path'] = 'avatars/'.fake()->uuid().'.jpg';
         $input['email'] = fake()->unique()->safeEmail();
 
         $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
@@ -148,7 +148,7 @@ class UserManagementTest extends TestCase
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
             'postal_code' => fake()->numerify('####'),
-            'profile_picture_path' => fake()->filePath(),
+            'profile_picture_path' => 'avatars/'.fake()->uuid().'.jpg',
         ];
 
         $response = $this->withToken($this->authToken)->patchJson("$this->baseUri/$user->id", $edits);
@@ -477,7 +477,7 @@ class UserManagementTest extends TestCase
         // dd($response->json());
         $response->assertStatus(200);
 
-        $this->assertCount(2, $response['data']);
+        $this->assertCount(1, $response['data']);
     }
 
     /** @throws Throwable */

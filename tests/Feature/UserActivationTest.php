@@ -21,6 +21,7 @@ class UserActivationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        //  \DB::setDefaultConnection('one_account');
         $this->artisan('db:seed');
         /** @var User $user */
         $user = $this->produceUsers();
@@ -42,28 +43,6 @@ class UserActivationTest extends TestCase
         $response = $this->postJson(self::BASE_API_URI.'/auth/tokens', ['email' => $email, 'password' => $password]);
         $response->assertStatus(403);
     }
-
-    // public function test_deactivated_user_cannot_request_password_reset(): void
-    // {
-    //     config(['database.default' => 'one_account']);
-
-    //     $this->userCreds = [
-    //         'email' => fake()->unique()->safeEmail(),
-    //         'password' => bcrypt('Jeg123123!'),  // hash the password for realistic login
-    //     ];
-
-    //     $this->user = User::on('one_account')->create($this->userCreds);
-
-    //     config([
-    //         'auth.providers.users.connection' => 'one_account',
-    //         'auth.providers.users.model' => User::class,
-    //         'auth.passwords.users.provider' => 'users',
-    //     ]);
-    //     $this->user->update(['active' => false]);
-
-    //     $response = $this->postJson(self::BASE_API_URI.'/auth/forgot-password', ['email' => $this->user->email]);
-    //     $response->assertStatus(403);
-    // }
 
     public function test_deactivated_user_cannot_access_endpoints_that_need_auth(): void
     {

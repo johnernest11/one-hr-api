@@ -35,7 +35,8 @@ class UserProfileFactory extends Factory
             'telephone_number' => '+63271828'.fake()->randomNumber(4),
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => fake()->date(),
-            'profile_picture_path' => fake()->filePath(),
+            'profile_picture_path' => 'avatars/'.fake()->uuid().'.jpg',
+
         ];
     }
 }
