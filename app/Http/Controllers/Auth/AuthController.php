@@ -16,6 +16,7 @@ use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -148,8 +149,12 @@ abstract class AuthController extends ApiController
 
         // Validate whether the token exists
         if (! $personalAccessToken) {
+            Log::warning('Invalid SSO token (Personal Access Token not found)', [
+                'token' => $ssoToken,
+            ]);
+
             return $this->error(
-                'Invalid SSO token (Personal Access Token not found)',
+                'Your account is not allowed to access the system.',
                 Response::HTTP_UNAUTHORIZED,
                 ApiErrorCode::INVALID_CREDENTIALS
             );
