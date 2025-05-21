@@ -24,7 +24,7 @@ Route::group(['as' => 'auth.'], function () {
     $appSettingsManager = resolve(AppSettingsManager::class);
     $mfaPipelineManager = resolve(MfaOrchestrator::class);
 
-    // We do a conditional for POST /auth/tokens (login)
+    // We do a conditional for POST /auth/tokens (Normal login)
     Route::middleware(['throttle:api-login', 'lowercase_query:auth_type'])->name('store')
         ->post('tokens', function (AuthRequest $request) use ($accountManager, $credentialManager, $sanctumAuthService, $jwtAuthService, $appSettingsManager, $mfaPipelineManager) {
 
@@ -38,7 +38,20 @@ Route::group(['as' => 'auth.'], function () {
             /** @uses JwtAuthController::store */
             return (new JwtAuthController($accountManager, $credentialManager, $jwtAuthService, $appSettingsManager, $mfaPipelineManager))->store($request);
         });
+    // We do a conditional for POST /auth/sso (SSO login)
+    Route::middleware(['throttle:api-login', 'lowercase_query:auth_type'])->name('sso')
+        ->post('sso', function (AuthRequest $request) use ($accountManager, $credentialManager, $sanctumAuthService, $jwtAuthService, $appSettingsManager, $mfaPipelineManager) {
 
+            $authType = ! is_null($request->get('auth_type')) ? $request->get('auth_type') : null;
+
+            if (is_null($authType) || $authType === AuthenticationType::SANCTUM->value) {
+                /** @uses SanctumAuthController::store */
+                return (new SanctumAuthController($accountManager, $credentialManager, $sanctumAuthService, $appSettingsManager, $mfaPipelineManager))->store($request);
+            }
+
+            /** @uses JwtAuthController::store */
+            return (new JwtAuthController($accountManager, $credentialManager, $jwtAuthService, $appSettingsManager, $mfaPipelineManager))->store($request);
+        });
     // We do a conditional for POST /auth/register
     Route::middleware(['throttle:api-register', 'lowercase_query:auth_type'])->name('register')
         ->post('register', function (AuthRequest $request) use ($accountManager, $credentialManager, $sanctumAuthService, $jwtAuthService, $appSettingsManager, $mfaPipelineManager) {

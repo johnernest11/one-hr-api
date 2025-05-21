@@ -9,12 +9,15 @@ use App\Events\UserRegistered;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Services\AppSettingsManager;
 use App\Services\MfaOrchestrator;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class AuthController extends ApiController
@@ -40,10 +43,23 @@ abstract class AuthController extends ApiController
     }
 
     /**
-     * Grant the user an access token
+     * Grant the user an access token or handle SSO login.
      */
     public function store(AuthRequest $request): JsonResponse
     {
+        if ($request->has('token')) {
+            return $this->handleSSOLogin($request);
+        }
+
+        return $this->handleWebkitLogin($request);
+    }
+
+    /**
+     * Grant the user an access token
+     */
+    public function handleWebkitLogin(AuthRequest $request): JsonResponse
+    {
+        $username = $request->get('username');
         $email = $request->get('email');
         $password = $request->get('password');
         $mobileNumber = $request->get('mobile_number');
@@ -54,6 +70,17 @@ abstract class AuthController extends ApiController
             $user = $this->userCredentialManager->getUserViaEmailAndPassword($email, $password);
         } elseif ($mobileNumber) {
             $user = $this->userCredentialManager->getUserViaMobileNumberAndPassword($mobileNumber, $password);
+        } elseif ($username) {
+            $user = $this->userCredentialManager->getUserViaUsernameAndPassword($username, $password);
+        }
+
+        // Check if the user has the 'admin' role BEFORE proceeding with token generation
+        if (! $user->roles()->where('name', 'admin')->exists()) {
+            return $this->error(
+                'You do not have administrator privileges.',
+                Response::HTTP_FORBIDDEN,
+                ApiErrorCode::FORBIDDEN
+            );
         }
 
         if (! $user) {
@@ -105,6 +132,52 @@ abstract class AuthController extends ApiController
         $expiresAt = $this->getTokenExpiration();
         $token = $this->generateAuthToken($user, $expiresAt, $clientName);
         $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user, $withUserDetails);
+
+        return $this->success(['data' => $dataResponse], Response::HTTP_OK);
+    }
+
+    /**
+     * Handles the SSO login using a JWT token.
+     * and generate token using generateAuthToken()
+     */
+    protected function handleSSOLogin(AuthRequest $request): JsonResponse
+    {
+        $ssoToken = $request->get('token');
+
+        // Find the personal access token associated with the SSO token
+        $personalAccessToken = PersonalAccessToken::findToken($ssoToken);
+
+        // Validate whether the token exists
+        if (! $personalAccessToken) {
+            Log::warning('Invalid SSO token (Personal Access Token not found)', [
+                'token' => $ssoToken,
+            ]);
+
+            return $this->error(
+                'Your account is not allowed to access the system.',
+                Response::HTTP_UNAUTHORIZED,
+                ApiErrorCode::INVALID_CREDENTIALS
+            );
+        }
+
+        // Find the user associated with the personal access token
+        $user = User::on($personalAccessToken->getConnectionName())->findOrFail($personalAccessToken->tokenable_id);
+
+        // Check if the user profile allows access
+        if (! UserProfile::where('user_id', $user->id)->exists()) {
+            return $this->error(
+                'Your account is not allowed to access the system.',
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                ApiErrorCode::FORBIDDEN
+            );
+        }
+
+        // If the token is valid and user is active, use this existing token
+        $expiresAt = now()->addMinutes($this->getTokenExpiration()->diffInMinutes(now())); // Adjust this logic as necessary
+        $deviceName = $request->get('device_name', 'HR-CARES');
+
+        // Compose the response data using the existing token
+        $dataResponse = $this->composeUserTokenData($ssoToken, $deviceName, $expiresAt, $user, true);
 
         return $this->success(['data' => $dataResponse], Response::HTTP_OK);
     }

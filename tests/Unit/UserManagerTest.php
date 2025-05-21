@@ -25,6 +25,7 @@ class UserManagerTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
+        User::on('one_account')->forceDelete();
         $this->userManager = new UserManager();
     }
 
@@ -32,7 +33,7 @@ class UserManagerTest extends TestCase
     public function test_it_can_create_a_user(): void
     {
         $this->userManager->create($this->getUserDetails());
-        $this->assertDatabaseCount('users', 1);
+        $this->assertDatabaseCount('user_profiles', 1);
     }
 
     /** @throws Throwable */
@@ -48,20 +49,21 @@ class UserManagerTest extends TestCase
 
     public function test_it_can_fetch_all_users(): void
     {
-        $count = 10;
+        $count = 15;
         $this->produceUsers($count);
-
         $users = $this->userManager->all();
         $this->assertCount($count, $users);
+
     }
 
     public function test_it_can_fetch_all_users_with_pagination(): void
     {
-        $count = 10;
-        $this->produceUsers($count);
+        User::query()->delete();
+        $count = 2;
+        $this->produceUsers();
 
         $request = new Request();
-        $limit = 5;
+        $limit = 2;
         $request->replace(['limit' => $limit]);
         app()->instance('request', $request);
 
@@ -96,7 +98,7 @@ class UserManagerTest extends TestCase
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
             'postal_code' => fake()->postcode,
-            'profile_picture_path' => fake()->filePath,
+            'profile_picture_path' => 'avatars/'.fake()->uuid().'.jpg',
         ];
     }
 
@@ -110,11 +112,12 @@ class UserManagerTest extends TestCase
 
     public function test_it_can_soft_delete_a_user_via_model(): void
     {
-        $this->produceUsers(3);
-        $this->userManager->destroy(User::first());
-
+        $this->produceUsers(2);
+        $user = User::first();
+        $this->userManager->destroy($user);
         $foundUsers = User::all();
-        $this->assertCount(2, $foundUsers);
+
+        $this->assertCount(3, $foundUsers);
 
         $trashedUsers = User::onlyTrashed()->count();
         $this->assertEquals(1, $trashedUsers);
@@ -122,11 +125,11 @@ class UserManagerTest extends TestCase
 
     public function test_it_can_soft_delete_a_user_via_id(): void
     {
-        $this->produceUsers(3);
+        $this->produceUsers();
         $this->userManager->destroy(User::first()->id);
 
         $foundUsers = User::all();
-        $this->assertCount(2, $foundUsers);
+        $this->assertCount(1, $foundUsers);
 
         $trashedUsers = User::onlyTrashed()->count();
         $this->assertEquals(1, $trashedUsers);
@@ -185,14 +188,14 @@ class UserManagerTest extends TestCase
         $this->assertNotNull($user);
     }
 
-    public function test_it_can_check_mobile_and_password_creds(): void
+    public function test_it_can_check_username_and_password_creds(): void
     {
         $user = $this->produceUsers();
         $testPassword = 'test123123';
-        $testMobileNumber = $user->userProfile->mobile_number;
+        $testUsername = $user->username;
         $user->update(['password' => $testPassword]);
 
-        $user = $this->userManager->getUserViaMobileNumberAndPassword($testMobileNumber, $testPassword);
+        $user = $this->userManager->getUserViaUsernameAndPassword($testUsername, $testPassword);
         $this->assertNotNull($user);
     }
 }

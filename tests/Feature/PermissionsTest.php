@@ -8,6 +8,7 @@ use App\Enums\WebhookPermission;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 use Throwable;
 
@@ -23,7 +24,9 @@ class PermissionsTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-
+        if (! Role::where('name', 'admin')->exists()) {
+            Role::create(['name' => 'admin', 'guard_name' => 'token']);
+        }
         $user = $this->produceUsers();
         $user->syncRoles(RoleEnum::ADMIN);
 

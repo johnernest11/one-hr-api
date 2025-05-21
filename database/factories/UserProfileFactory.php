@@ -18,8 +18,15 @@ class UserProfileFactory extends Factory
      */
     public function definition(): array
     {
+        $user = (new User)->setConnection('one_account')->create([
+            'email' => fake()->unique()->safeEmail(),
+            'password' => 'Sample_Password_1',
+            'active' => true,
+            'email_verified_at' => fake()->dateTime(),
+        ]);
+
         return [
-            'user_id' => User::factory(),
+            'user_id' => $user->id,
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'middle_name' => fake()->lastName(),
@@ -28,7 +35,8 @@ class UserProfileFactory extends Factory
             'telephone_number' => '+63271828'.fake()->randomNumber(4),
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => fake()->date(),
-            'profile_picture_path' => fake()->filePath(),
+            'profile_picture_path' => 'avatars/'.fake()->uuid().'.jpg',
+
         ];
     }
 }

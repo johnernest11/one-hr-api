@@ -42,11 +42,12 @@ class PruneExpiredMfaAttemptsTest extends TestCase
             $mfaAttempts[] = $attempt;
         }
 
-        DB::table('mfa_attempts')->insert($mfaAttempts);
+        DB::connection('one_account')->table('mfa_attempts')->insert($mfaAttempts);
 
         $this->artisan('mfa:prune-expired-attempts');
 
-        $count = DB::table('mfa_attempts')->count('id');
+        $count = DB::connection('one_account')->table('mfa_attempts')->count('id');
+
         $this->assertEquals($notExpiredTotal, $count);
     }
 }

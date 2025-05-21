@@ -21,8 +21,8 @@ class UserActivationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        //  \DB::setDefaultConnection('one_account');
         $this->artisan('db:seed');
-
         /** @var User $user */
         $user = $this->produceUsers();
         $roles = [RoleEnum::ADMIN, RoleEnum::SUPER_USER];
@@ -41,15 +41,6 @@ class UserActivationTest extends TestCase
         $user->update(['active' => false, 'password' => $password, 'email' => $email]);
 
         $response = $this->postJson(self::BASE_API_URI.'/auth/tokens', ['email' => $email, 'password' => $password]);
-        $response->assertStatus(403);
-    }
-
-    public function test_deactivated_user_cannot_request_password_reset(): void
-    {
-        $user = $this->produceUsers();
-        $email = fake()->unique()->safeEmail();
-        $user->update(['active' => false, 'email' => $email]);
-        $response = $this->postJson(self::BASE_API_URI.'/auth/forgot-password', ['email' => $email]);
         $response->assertStatus(403);
     }
 

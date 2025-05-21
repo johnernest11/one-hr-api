@@ -19,7 +19,8 @@ class PasswordController extends ApiController
     public function forgotPassword(AuthRequest $request): JsonResponse
     {
         $email = $request->input('email');
-        $user = User::where('email', $email)->first();
+        $user = User::on('one_account')->where('email', $email)->first();
+
         if (! $user) {
             $data = ['message' => 'Password reset request sent', 'email' => $request->get('email')];
 
@@ -31,8 +32,7 @@ class PasswordController extends ApiController
 
             return $this->error($message, Response::HTTP_FORBIDDEN, ApiErrorCode::FORBIDDEN);
         }
-
-        $status = Password::sendResetLink(['email' => $email]);
+        $status = Password::broker('users_one_account')->sendResetLink(['email' => $email]);
         if ($status !== Password::RESET_LINK_SENT) {
             return $this->error(
                 'Unable to send password reset email',
@@ -51,7 +51,7 @@ class PasswordController extends ApiController
      */
     public function resetPassword(AuthRequest $request): JsonResponse
     {
-        $status = Password::reset(
+        $status = Password::broker('users_one_account')->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->password = $password;

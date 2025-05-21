@@ -22,6 +22,10 @@ class ApiKey extends Model implements Authenticatable
     use HasRoles;
     use SoftDeletes;
 
+    protected $connection = 'one_account';
+
+    protected $table = 'api_keys';
+
     /**
      * Spatie needs this if multiple auth guards are used
      *

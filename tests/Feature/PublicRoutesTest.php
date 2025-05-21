@@ -64,7 +64,11 @@ class PublicRoutesTest extends TestCase
     public function test_user_can_check_for_unavailable_mobile_number(): void
     {
         $mobileNumber = '+639064647290';
-        User::factory()->has(UserProfile::factory()->state(['mobile_number' => $mobileNumber]))->create();
+        $user = User::factory()->create();
+        UserProfile::factory()->create([
+            'user_id' => $user->id,
+            'mobile_number' => $mobileNumber,
+        ]);
 
         $response = $this->get(self::BASE_API_URI.'/availability/mobile_number?value='.urlencode($mobileNumber));
         $response->assertStatus(200);

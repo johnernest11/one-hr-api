@@ -40,7 +40,7 @@ class AppSettingsManagerTest extends TestCase
 
         // Theme and MFA records should be created in the database
         $this->assertCount(2, $settings);
-        $this->assertDatabaseCount('app_settings', 2);
+        $this->assertDatabaseCount('app_settings', 2, 'one_account');
     }
 
     public function test_it_can_set_theme(): void

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use ConversionHelper;
 use Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ApiKeyManagerTest extends TestCase
@@ -22,6 +23,7 @@ class ApiKeyManagerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        DB::connection('one_account')->table('api_keys')->truncate();
         $this->artisan('db:seed');
         $this->apiKeyService = new ApiKeyManager();
         $this->apiKeyPermissions = ConversionHelper::enumToArray(WebhookPermission::class);
@@ -34,7 +36,7 @@ class ApiKeyManagerTest extends TestCase
         $description = fake()->text;
         $expiresAt = Carbon::now()->endOfDay();
         $this->apiKeyService->create($name, $user->id, $description, $expiresAt, $this->apiKeyPermissions);
-        $this->assertDatabaseCount('api_keys', 1);
+        $this->assertDatabaseCount('api_keys', 1, 'one_account');
     }
 
     public function test_a_newly_created_api_key_has_the_rawKeyValue_property(): void
