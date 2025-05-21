@@ -35,9 +35,13 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualMembership',
         'individualRecognition',
         'individualSkillsHobby',
+        'individualQuestion',
+        'individualReference',
     ];
 
     private IndividualBasicDetail $model;
+
+    private $maxReferences = 3; // Maximum number of references
 
     public function __construct(IndividualBasicDetail $model)
     {
@@ -101,6 +105,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                 if ($individualData->{$relationshipName}() instanceof Relation && is_array($inputData) && ! empty($inputData)) {
                     foreach ($inputData as $modelData) {
                         $individualData->{$relationshipName}()->create($modelData);
+
                     }
                 }
             }
@@ -173,6 +178,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                             // Create new record if ID is not passed
                             $individualBasicDetail->{$relationshipName}()->create($modelData);
                         }
+
                     }
                 }
 

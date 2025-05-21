@@ -16,7 +16,9 @@ use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
 use App\Models\ComprehensiveRecords\IndividualLnd;
 use App\Models\ComprehensiveRecords\IndividualMembership;
+use App\Models\ComprehensiveRecords\IndividualQuestion;
 use App\Models\ComprehensiveRecords\IndividualRecognition;
+use App\Models\ComprehensiveRecords\IndividualReference;
 use App\Models\ComprehensiveRecords\IndividualSkillsHobby;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
@@ -75,6 +77,8 @@ class IndividualBasicDetailFactory extends Factory
             IndividualSkillsHobby::factory()->for($individualBasicDetail)->create();
             IndividualRecognition::factory()->for($individualBasicDetail)->create();
             IndividualMembership::factory()->for($individualBasicDetail)->create();
+            IndividualQuestion::factory()->for($individualBasicDetail)->create();
+            IndividualReference::factory()->for($individualBasicDetail)->create();
         });
     }
 }

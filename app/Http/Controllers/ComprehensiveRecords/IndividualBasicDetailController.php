@@ -54,7 +54,13 @@ class IndividualBasicDetailController extends ApiController
 
     public function update(IndividualBasicDetail $individualBasicDetail, IndividualBasicDetailRequest $request): JsonResponse
     {
-        $individualData = $this->individualBasicDetailService->update($individualBasicDetail, $request->validated());
+        // Validate request.
+        $validatedRequest = $request->validated();
+
+        // Use policy
+        $this->authorize('update', [$individualBasicDetail, $validatedRequest]);
+
+        $individualData = $this->individualBasicDetailService->update($individualBasicDetail, $validatedRequest);
 
         return $this->success(['data' => $individualData], Response::HTTP_OK);
 
