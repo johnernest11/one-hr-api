@@ -22,7 +22,7 @@ class ItemFactory extends Factory
             'number' => fake()->unique()->randomNumber(),
             'date_of_creation' => fake()->date(),
             'status' => 'Unfilled',
-            'date_filled_up' => fake()->date(),
+            'date_filled_up' => null,
             'employment_status' => fake()->randomElement(ConversionHelper::enumToArray(EmploymentStatus::class)),
             'position_id' => 1,
             'fund_source_id' => 12,

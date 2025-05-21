@@ -2,10 +2,13 @@
 
 namespace App\Services\ComprehensiveRecords;
 
+use App\Enums\ItemStatus;
 use App\Enums\PaginationType;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
+use App\Models\Item;
 use App\Traits\Services\CanBuildPagination;
 use App\Traits\Services\CanResolveModelFromId;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -91,6 +94,13 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
             // Create employee seperately
             $individualData->employee()->create($request['employee']);
 
+            // Update Items
+            // Update status to filled and set date_filled_up as current date
+            $individualData->employee->item->update([
+                'status' => ItemStatus::FILLED->value,
+                'date_filled_up' => Carbon::now(),
+            ]);
+
             $toSkip = [
                 'individual',
                 'employee',
@@ -132,6 +142,27 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                 $individualBasicDetail->update($request['individual']);
             }
             if (array_key_exists('employee', $request)) {
+                // Check if item_id is changed, if it is, set old item as unfilled
+                //   and set new item as filled
+                if (isset($request['employee']['item_id'])) {
+                    $oldItemId = $individualBasicDetail->employee->item_id;
+                    $newItemId = $request['employee']['item_id'];
+
+                    if ($oldItemId != $newItemId) {
+                        $oldItem = Item::find($oldItemId);
+                        $oldItem->update([
+                            'status' => ItemStatus::UNFILLED->value,
+                            'date_filled_up' => null,
+                        ]);
+
+                        $newItem = Item::find($newItemId);
+                        $newItem->update([
+                            'status' => ItemStatus::FILLED->value,
+                            'date_filled_up' => Carbon::now(),
+                        ]);
+                    }
+                }
+
                 $individualBasicDetail->employee()->update($request['employee']);
             }
 

@@ -23,6 +23,7 @@ use App\Models\Item;
 use App\Models\Libraries\Country;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -959,5 +960,59 @@ class IndividualBasicDetailFeatureTest extends TestCase
             ->where('individual_basic_detail_id', '=', $firstIndividual->id)
             ->count();
         $this->assertEquals(1, $countTrue, 'Expected only one record with is_current_work = true, but found '.$countTrue);
+    }
+
+    public function test_it_can_update_item_status(): void
+    {
+        // Test that upon creation, the item status will change to filled.
+        $individualInfo = $this->generate_test_data();
+
+        // Generate Item and update array
+        $generatedItem = Item::factory()->create();
+        $individualInfo['employee']['item_id'] = $generatedItem->id;
+        // The default status of the generated item should be unfilled and with no date_filled_up
+        $this->assertEquals('Unfilled', $generatedItem->status->value);
+        $this->assertNull($generatedItem->date_filled_up);
+
+        // Create Individual
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $individualInfo);
+        $response->assertStatus(201);
+
+        // The item should now be filled and with date_filled_up
+        $newItem = Item::find($generatedItem->id);
+        $dateFilled = Carbon::now()->toDateString();
+        $this->assertEquals('Filled', $newItem->status->value);
+        $this->assertEquals($dateFilled, $newItem->date_filled_up->toDateString());
+
+        // Test that upon update, the old item status should be unfilled + date_filled_up is null
+        // and new item status is filled + with date_filled_up as date now
+
+        // Generate updated data
+        $individualId = $response->decodeResponseJson()['data']['id'];
+        $individual = IndividualBasicDetail::find($individualId);
+        $newInfo = $this->generate_test_data(PDSFormType::C1->value);
+
+        // Change the item of the employee.
+        $updatedItem = Item::factory()->create();
+        $newInfo['employee']['id'] = $individual->employee->id;
+        $newInfo['employee']['item_id'] = $updatedItem->id;
+
+        $newInfo = Arr::only($newInfo, ['individual', 'employee', 'form_type']);
+
+        // Update
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$individual->id", $newInfo);
+        $response->assertStatus(200);
+
+        // The item of the employee should now be equal to the updatedItem
+        // with the old item reset back to unfilled and the new one to
+        // filled and with date_filled_up
+        $oldItem = Item::find($newItem->id);
+        $this->assertEquals('Unfilled', $oldItem->status->value);
+        $this->assertNull($oldItem->date_filled_up);
+
+        $newlyUpdatedItem = Item::find($updatedItem->id);
+        $this->assertEquals('Filled', $newlyUpdatedItem->status->value);
+        $this->assertEquals(Carbon::now()->toDateString(), $newlyUpdatedItem->date_filled_up->toDateString());
+
     }
 }

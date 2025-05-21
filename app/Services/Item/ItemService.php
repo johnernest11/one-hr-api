@@ -80,7 +80,9 @@ class ItemService implements ItemManager
         string $term,
         ?PaginationType $pagination = null
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
-        $items = $this->model->query()->where('number', 'like', "%$term%");
+        /** @var Builder $item */
+        $query = $this->model->filtered();
+        $items = $query->where('number', 'like', "%$term%");
 
         return $this->buildPagination($pagination, $items);
     }

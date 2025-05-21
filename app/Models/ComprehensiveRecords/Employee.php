@@ -2,6 +2,7 @@
 
 namespace App\Models\ComprehensiveRecords;
 
+use App\Models\Item;
 use App\Models\Libraries\Division;
 use App\Models\Libraries\Office;
 use App\Models\Libraries\Program;
@@ -41,6 +42,14 @@ class Employee extends Model
     public function individualBasicDetail(): BelongsTo
     {
         return $this->belongsTo(IndividualBasicDetail::class);
+    }
+
+    /**
+     * An employee belongs to exactly one item
+     */
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class);
     }
 
     /**
