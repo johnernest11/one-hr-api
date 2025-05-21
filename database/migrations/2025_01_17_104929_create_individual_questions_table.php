@@ -43,6 +43,7 @@ return new class extends Migration
 
             /* ------------------------------- Question 39 ------------------------------ */
             $table->boolean('q39')->nullable();
+            $table->foreignId('country_id')->nullable()->constrained('countries')->cascadeOnDelete()->cascadeOnUpdate();
 
             /* ------------------------------- Question 40 ------------------------------ */
             $table->boolean('q40_a_indigenous_group')->nullable();

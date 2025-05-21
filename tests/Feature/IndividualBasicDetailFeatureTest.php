@@ -426,10 +426,10 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
             $input['employee']['item_id'] = $generatedItem->id;
 
-            // Generate random countries if individual_question is part of the input
+            // Generate random country if individual_question is part of the input
             if (isset($input['individual_question'])) {
-                $randomCountries = Country::inRandomOrder()->limit(mt_rand(1, 5))->pluck('id')->toArray(); // Get 1 to 5 random countries
-                $input['individual_question'][0]['countries_ids'] = $randomCountries;
+                $randomCountry = Country::inRandomOrder()->first()->id; // Get random country
+                $input['individual_question'][0]['country_id'] = $randomCountry;
             }
         }
 
@@ -707,8 +707,8 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
         // Generate random countries if individual_question is part of the input and q39 is true
         if (isset($newInfo['individual_question']) and $newInfo['individual_question'][0]['q39']) {
-            $randomCountries = Country::inRandomOrder()->limit(mt_rand(1, 5))->pluck('id')->toArray(); // Get 1 to 5 random countries
-            $newInfo['individual_question'][0]['countries_ids'] = $randomCountries;
+            $randomCountry = Country::inRandomOrder()->first()->id; // Get random country
+            $newInfo['individual_question'][0]['country_id'] = $randomCountry;
         }
 
         // Update

@@ -6,7 +6,6 @@ use App\Models\Libraries\Country;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class IndividualQuestion extends Model
@@ -44,6 +43,7 @@ class IndividualQuestion extends Model
         'q38_b_details',
         /* ------------------------------- Question 39 ------------------------------ */
         'q39',
+        'country_id',
         /* ------------------------------- Question 40 ------------------------------ */
         'q40_a_indigenous_group',
         'q40_a_details',
@@ -56,7 +56,7 @@ class IndividualQuestion extends Model
     /**
      * The relationships to eager-load
      */
-    protected $with = ['countries'];
+    protected $with = ['country'];
 
     /**
      * The attributes that should be cast.
@@ -88,10 +88,10 @@ class IndividualQuestion extends Model
     }
 
     /**
-     * Questions belong to an many countries
+     * Questions belong to a country
      */
-    public function countries(): BelongsToMany
+    public function country(): BelongsTo
     {
-        return $this->belongsToMany(Country::class, 'country_individual_question');
+        return $this->belongsTo(Country::class);
     }
 }

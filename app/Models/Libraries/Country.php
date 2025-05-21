@@ -2,8 +2,10 @@
 
 namespace App\Models\Libraries;
 
+use App\Models\ComprehensiveRecords\IndividualQuestion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Source for JSON dump: https://github.com/mledoze/countries
@@ -36,4 +38,12 @@ class Country extends Model
         'cca3',
         'cioc',
     ];
+
+    /**
+     * Each country has many individual (possible answer to no. 39 in C4)
+     */
+    public function individualQuestion(): HasMany
+    {
+        return $this->hasMany(IndividualQuestion::class);
+    }
 }

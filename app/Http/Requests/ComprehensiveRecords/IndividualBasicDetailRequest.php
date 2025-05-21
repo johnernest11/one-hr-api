@@ -245,8 +245,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_question.*.q38_b_details' => ['nullable', 'required_if:individual_question.*.q38_b,true', 'string', new DbVarcharMaxLength()],
             /* ------------------------------- Question 39 ------------------------------ */
             'individual_question.*.q39' => ['nullable', 'boolean'],
-            'individual_question.*.countries_ids' => ['nullable', 'required_if:individual_question.*.q39,true', 'array'],
-            'individual_question.*.countries_ids.*' => ['exists:countries,id', 'int'], // for ensuring that the id is a valid country
+            'individual_question.*.country_id' => ['nullable', 'required_if:individual_question.*.q39,true', 'exists:countries,id', 'int'], // for ensuring that the id is a valid country
             /* ------------------------------- Question 40 ------------------------------ */
             'individual_question.*.q40_a_indigenous_group' => ['nullable', 'boolean'],
             'individual_question.*.q40_a_details' => ['nullable', 'required_if:individual_question.*.q40_a_indigenous_group,true', 'string', new DbVarcharMaxLength()],
@@ -566,8 +565,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_question.*.q38_b_details' => ['nullable', 'required_if:individual_question.*.q38_b,true', 'string', new DbVarcharMaxLength()],
             /* ------------------------------- Question 39 ------------------------------ */
             'individual_question.*.q39' => ['nullable', 'boolean'],
-            'individual_question.*.countries_ids' => ['nullable', 'required_if:individual_question.*.q39,true', 'array'],
-            'individual_question.*.countries_ids.*' => ['exists:countries,id', 'int'], // for ensuring that the id is a valid country
+            'individual_question.*.country_id' => ['nullable', 'required_if:individual_question.*.q39,true', 'exists:countries,id', 'int'], // for ensuring that the id is a valid country
             /* ------------------------------- Question 40 ------------------------------ */
             'individual_question.*.q40_a_indigenous_group' => ['nullable', 'boolean'],
             'individual_question.*.q40_a_details' => ['nullable', 'required_if:individual_question.*.q40_a_indigenous_group,true', 'string', new DbVarcharMaxLength()],
