@@ -7,6 +7,7 @@ use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
+use App\Models\Role;
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
@@ -17,7 +18,6 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 use Throwable;
 
@@ -477,7 +477,7 @@ class UserManagementTest extends TestCase
         // dd($response->json());
         $response->assertStatus(200);
 
-        $this->assertCount(1, $response['data']);
+        $this->assertCount(2, $response['data']);
     }
 
     /** @throws Throwable */

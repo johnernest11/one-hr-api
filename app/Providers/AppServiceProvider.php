@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Enums\AppEnvironment;
 use App\Models\Item;
+use App\Models\PersonalAccessToken;
 use App\Services\AppSettingsManager;
 use App\Services\Item\ItemManager;
 use App\Services\Item\ItemService;
@@ -13,6 +14,7 @@ use App\Services\User\UserManager;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -52,6 +54,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         if (in_array(app()->environment(), [
             AppEnvironment::PRODUCTION->value,
             AppEnvironment::UAT->value,

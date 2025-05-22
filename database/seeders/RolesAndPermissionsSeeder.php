@@ -5,9 +5,9 @@ namespace Database\Seeders;
 use App\Enums\Permission as PermissionEnum;
 use App\Enums\Role as RoleEnum;
 use App\Enums\WebhookPermission;
+use App\Models\Permission;
+use App\Models\Role;
 use ConversionHelper;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
