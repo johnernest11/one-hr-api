@@ -5,10 +5,10 @@ namespace Tests\Feature;
 use App\Enums\Permission;
 use App\Enums\Role as RoleEnum;
 use App\Enums\WebhookPermission;
+use App\Models\Role;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
 use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 use Throwable;
 

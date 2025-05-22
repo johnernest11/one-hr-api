@@ -3,11 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Http\Requests\UserRequest;
+use App\Models\Role;
 use App\Services\User\UserAccountManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Spatie\Permission\Models\Role;
 
 class CreateUser extends Command
 {

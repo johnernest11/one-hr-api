@@ -14,6 +14,8 @@ use Storage;
 
 abstract class TestCase extends BaseTestCase
 {
+    protected $connectionsToTransact = ['mysql', 'one_account'];
+
     use CreatesApplication;
 
     public const BASE_API_URI = '/api/v1';
