@@ -39,6 +39,8 @@ class IndividualBasicDetailController extends ApiController
      */
     public function viewSpecificIndividual(IndividualBasicDetail $individualBasicDetail, IndividualBasicDetailRequest $request): JsonResponse
     {
+        // Use policy
+        $this->authorize('view', [$individualBasicDetail]);
 
         $individualData = $this->individualBasicDetailService->viewConsolidatedData($individualBasicDetail);
 

@@ -6,10 +6,9 @@ use App\Enums\Role;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\User;
 
-//@todo UPDATE POLICY
 class IndividualBasicDetailPolicy
 {
-    // @todo Roles and what they can do:
+    // Roles and what they can do:
     // 1. PPMS - Create, Update and View
     // 2. PAS - Update and View
     // 3. Standard User - Update and View own record
@@ -20,11 +19,11 @@ class IndividualBasicDetailPolicy
      */
     public function view(User $user, IndividualBasicDetail $individualBasicDetail): bool
     {
-        if ($user->hasRole(Role::HR_PAS_ADMIN->value)) {
-            return true; // give permission to view records if user's role is HR admin PAS
+        if ($user->hasAnyRole([Role::HR_PPMS_ADMIN->value, Role::ADMIN->value, Role::HR_PAS_ADMIN->value])) {
+            return true;
         }
 
-        return $user->id === $individualBasicDetail->personnel_id;
+        return $user->id === $individualBasicDetail->userProfile->user_id;
     }
 
     /**
@@ -71,7 +70,6 @@ class IndividualBasicDetailPolicy
             return true; // give permission to update records if user's role is HR PPMS admin or HR PAS admin
         }
 
-        // @todo Update the policy later once the connection between user and individual basic detail is established
-        return false;
+        return $user->id === $individualBasicDetail->userProfile->user_id;
     }
 }

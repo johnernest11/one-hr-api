@@ -22,6 +22,7 @@ use App\Models\ComprehensiveRecords\IndividualReference;
 use App\Models\ComprehensiveRecords\IndividualSkillsHobby;
 use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
+use App\Models\UserProfile;
 use ConversionHelper;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -63,7 +64,6 @@ class IndividualBasicDetailFactory extends Factory
     public function configure()
     {
         // Upon creating IndividualBasicDetail, the following relationships should also be created.
-        // @todo: Update this as we add new related models.
         return $this->afterCreating(function (IndividualBasicDetail $individualBasicDetail) {
             Employee::factory()->for($individualBasicDetail)->create();
             IndividualAddress::factory()->for($individualBasicDetail)->create();
@@ -79,6 +79,21 @@ class IndividualBasicDetailFactory extends Factory
             IndividualMembership::factory()->for($individualBasicDetail)->create();
             IndividualQuestion::factory()->for($individualBasicDetail)->create();
             IndividualReference::factory()->for($individualBasicDetail)->create();
+        });
+    }
+
+    /**
+     * @State: Attach UserProfile to IndividualBasicDetail
+     */
+    public function withExistingUserProfile(?UserProfile $userProfile = null)
+    {
+        return $this->afterCreating(function (IndividualBasicDetail $individualBasicDetail) use ($userProfile) {
+            if ($userProfile) {
+                $userProfile->individual_basic_detail_id = $individualBasicDetail->id;
+                $userProfile->save();
+            } else { // Generate a UserProfile if it is not passed.
+                UserProfile::factory()->for($individualBasicDetail)->create();
+            }
         });
     }
 }

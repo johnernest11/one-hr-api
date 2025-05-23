@@ -26,6 +26,7 @@ class UserProfile extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'individual_basic_detail_id',
         'first_name',
         'last_name',
         'middle_name',
