@@ -128,6 +128,28 @@ class AccomplishmentReportUnitTest extends TestCase
         $this->assertInstanceOf(LengthAwarePaginator::class, $paginatedResults);
     }
 
+    public function test_can_search_AR(): void
+    {
+
+        $initialItem = AccomplishmentReport::factory()->hasProfile($this->user)->isDraft()->create();
+        $this->assertDatabaseCount('accomplishment_reports', 1);
+
+        // Update Number for easier search
+        $newInfo = ['period' => 'MAy 1-15 2023'];
+        $initialItem->update($newInfo);
+
+        $q = 'MAy';
+        $result = $this->aRService->search($q);
+        // Compare result to the expected types of response from the service and the new number should match with the query
+        if ($result instanceof Collection || $result instanceof Paginator || $result instanceof LengthAwarePaginator || $result instanceof CursorPaginator) {
+            $aRs = ($result instanceof Collection) ? $result : $result->items();
+
+            foreach ($aRs as $AR) {
+                $this->assertStringContainsString($q, $AR['period']);
+            }
+        }
+    }
+
     /**
      * Test if accomplishment reports can be generated into docx t via aRService
      */

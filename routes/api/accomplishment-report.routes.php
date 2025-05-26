@@ -7,6 +7,9 @@ Route::middleware(['auth:token', 'verified.api'])->controller(AccomplishmentRepo
     Route::get('{accomplishmentReport}/generate', 'generateAccomplishmentReport')->name('generateAR');
 
     /** @uses AccomplishmentReportController::index */
+    Route::get('/search', 'search')->name('search');
+
+    /** @uses AccomplishmentReportController::index */
     Route::get('', 'index')->name('index');
 
     /** @uses AccomplishmentReportController::show */

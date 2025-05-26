@@ -9,7 +9,10 @@ use App\Models\ARRows;
 use App\Models\User;
 use App\Traits\Services\CanBuildPagination;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -157,5 +160,17 @@ class AccomplishmentReportService implements AccomplishmentReportManager
 
             return $accomplishmentReport->fresh('rows');
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function search(
+        string $term,
+        ?PaginationType $pagination = null
+    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
+        $items = AccomplishmentReport::query()->where('period', 'like', "%$term%");
+
+        return $this->buildPagination($pagination, $items);
     }
 }
