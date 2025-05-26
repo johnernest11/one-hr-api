@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+// use App\Models\PersonalAccessToken as CustomPersonalAccessToken;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +35,10 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
     use HasRoles;
     use Notifiable;
     use SoftDeletes;
+
+    protected $connection = 'one_account';
+
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -121,6 +126,13 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
         return $this->hasOne(UserProfile::class);
     }
 
+    // /**
+    //  * A user can own many Token Keys
+    //  */
+    // public function tokens()
+    // {
+    //     return $this->morphMany(CustomPersonalAccessToken::class, 'tokenable');
+    // }
     /**
      * A user can own many API Keys
      */

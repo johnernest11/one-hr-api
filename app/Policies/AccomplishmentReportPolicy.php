@@ -12,7 +12,7 @@ class AccomplishmentReportPolicy
      */
     public function view(User $user, AccomplishmentReport $accomplishmentReport): bool
     {
-        return $user->id === $accomplishmentReport->user_profile_id;
+        return $user->id === $accomplishmentReport->userProfile->user_id;
     }
 
     /**
@@ -20,6 +20,6 @@ class AccomplishmentReportPolicy
      */
     public function update(User $user, AccomplishmentReport $accomplishmentReport): bool
     {
-        return $user->id === $accomplishmentReport->user_profile_id;
+        return $user->id === $accomplishmentReport->userProfile->user_id;
     }
 }

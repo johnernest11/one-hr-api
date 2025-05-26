@@ -66,7 +66,12 @@ class MfaOrchestratorTest extends TestCase
         $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($this->user, $mfaSteps);
         $success = $this->mfaOrchestrator->runSecretGeneration($mfaToken['token']);
         $this->assertTrue($success);
-        $this->assertDatabaseCount('verification_factors', 1);
+        // More precise check
+        $googleFactorCount = \App\Models\VerificationFactor::where('user_id', $this->user->id)
+            ->where('type', VerificationMethod::GOOGLE_AUTHENTICATOR)
+            ->count();
+
+        $this->assertEquals(1, $googleFactorCount);
     }
 
     /**

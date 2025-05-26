@@ -7,13 +7,13 @@ use App\Enums\PaginationType;
 use App\Enums\Role as RoleEnum;
 use App\Events\UserCreated;
 use App\Http\Requests\UserRequest;
+use App\Models\Role;
 use App\Services\CloudStorageServices\CloudStorageManager;
 use App\Services\User\UserAccountManager;
 use App\Traits\Controllers\CanMoveUploadProfilePhotoToCloud;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
-use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends ApiController

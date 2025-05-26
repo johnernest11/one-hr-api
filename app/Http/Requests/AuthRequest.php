@@ -33,6 +33,7 @@ class AuthRequest extends FormRequest
 
         return match ($routeName) {
             'auth.store' => $this->getLoginRules(),
+            'auth.sso' => $this->getSSORules(),
             'auth.revoke' => $this->getRevokeAccessRules(),
             'auth.password.forgot' => $this->getForgotPasswordRules(),
             'auth.password.reset' => $this->getResetPasswordRules(),
@@ -47,8 +48,8 @@ class AuthRequest extends FormRequest
     private function getLoginRules(): array
     {
         return [
-            'email' => ['email'],
-            'mobile_number' => ['required_without:email', new PhoneCountryFormat('PH')],
+            'username' => ['required_without:email'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
             'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'with_user' => ['nullable', 'bool'], // Send the token back with user information
@@ -57,8 +58,16 @@ class AuthRequest extends FormRequest
     }
 
     /**
-     * Get revoke access rules
+     * Get the SSO validation rules
      */
+    private function getSSORules(): array
+    {
+
+        return [
+            'token' => ['required'],
+        ];
+    }
+
     private function getRevokeAccessRules(): array
     {
         return [

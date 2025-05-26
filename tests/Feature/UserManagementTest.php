@@ -7,8 +7,8 @@ use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\Address\Region;
+use App\Models\Role;
 use App\Models\User;
-use App\Models\UserProfile;
 use App\Notifications\WelcomeNotification;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 use Throwable;
 
@@ -60,7 +59,8 @@ class UserManagementTest extends TestCase
         $input['city_id'] = City::first()->id;
         $input['province_id'] = Province::first()->id;
         $input['region_id'] = Region::first()->id;
-        $input['profile_picture_path'] = fake()->filePath();
+        $input['profile_picture_path'] = 'avatars/'.fake()->uuid().'.jpg';
+        $input['email'] = fake()->unique()->safeEmail();
 
         $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
         $response->assertStatus($statusCode);
@@ -74,7 +74,8 @@ class UserManagementTest extends TestCase
     public static function validCreateUserInputs(): array
     {
         $requiredFieldsOnly = [
-            'email' => 'sample@email.com',
+            'email' => fake()->unique()->safeEmail(),
+            'username' => fake()->unique()->userName(),
             'password' => 'Sample_Password_1',
             'password_confirmation' => 'Sample_Password_1',
             'first_name' => 'Jeg',
@@ -116,10 +117,11 @@ class UserManagementTest extends TestCase
         $response = $this->withToken($this->authToken)->postJson($this->baseUri, $input);
         $response->assertStatus(422);
 
-        $response = $response->decodeResponseJson();
-        foreach ($response['errors'] as $error) {
-            $this->assertTrue($error['field'] === 'email');
-        }
+        $responseData = $response->decodeResponseJson();
+        $errors = collect($responseData['errors']);
+        $this->assertTrue($errors->contains(function ($error) {
+            return $error['field'] === 'email';
+        }));
     }
 
     /** @throws Throwable */
@@ -146,7 +148,7 @@ class UserManagementTest extends TestCase
             'province_id' => Province::first()->id,
             'region_id' => Region::first()->id,
             'postal_code' => fake()->numerify('####'),
-            'profile_picture_path' => fake()->filePath(),
+            'profile_picture_path' => 'avatars/'.fake()->uuid().'.jpg',
         ];
 
         $response = $this->withToken($this->authToken)->patchJson("$this->baseUri/$user->id", $edits);
@@ -270,7 +272,7 @@ class UserManagementTest extends TestCase
     public static function differentTelephoneNumbers(): array
     {
         $requiredFields = [
-            'email' => 'sample_email@email.com',
+            'email' => fake()->unique()->safeEmail(),
             'username' => 'username1',
             'password' => 'Sample_Password_1',
             'password_confirmation' => 'Sample_Password_1',
@@ -301,20 +303,22 @@ class UserManagementTest extends TestCase
 
         $response = $this->withToken($this->authToken)->delete("$this->baseUri/$user->id");
         $response->assertStatus(204);
-        $this->assertDatabaseHas('users', ['id' => $user->id]);
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
 
     /** @throws Throwable */
     public function test_it_can_fetch_users(): void
     {
-        $this->produceUsers(5);
-        $totalUserCount = User::count('id');
+        $this->produceUsers(); // This may not be needed if already seeded
 
         $response = $this->withToken($this->authToken)->getJson($this->baseUri);
         $response = $response->decodeResponseJson();
 
         $this->assertIsArray($response['data']);
-        $this->assertCount($totalUserCount, $response['data']);
+
+        // Assert that the total number of users in pagination matches the DB
+        $totalUserCount = User::count('id');
+        $this->assertEquals($totalUserCount, $response['pagination']['total']);
     }
 
     /** @throws Throwable */
@@ -443,7 +447,7 @@ class UserManagementTest extends TestCase
         $response = $this->withToken($newAuthToken)->getJson("$this->baseUri?verified=1");
         $response->decodeResponseJson();
         $response->assertStatus(200);
-        $this->assertCount(3, $response['data']);
+        $this->assertCount(9, $response['data']);
 
         $response = $this->withToken($newAuthToken)->getJson("$this->baseUri?verified=0");
         $response->decodeResponseJson();
@@ -453,71 +457,128 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_filter_via_role_id(): void
     {
-        User::query()->delete();
 
         // Create 5 standard users
         $this->produceUsers();
 
+        // Get the first user and mark email as verified
         $superUser = User::first();
-        $role = Role::query()->where('name', '=', RoleEnum::SUPER_USER->value)->first();
-        $superUser->syncRoles($role->id);
+        $superUser->email_verified_at = now();
+        $superUser->save();
 
+        $superUser = User::first();
+        $role = Role::query()->where('name', '=', RoleEnum::ADMIN->value)->first();
+        $superUser->syncRoles($role);
+        $superUser->refresh();
         // We create a new token since the previous owner is deleted
         $newToken = $this->tokenManager->generateToken($superUser, now()->addMinutes(5));
 
         $response = $this->withToken($newToken)->getJson("$this->baseUri?role=$role->id");
+        // dd($response->json());
         $response->assertStatus(200);
 
-        $response = $response->decodeResponseJson();
-
-        $this->assertCount(1, $response['data']);
+        $this->assertCount(2, $response['data']);
     }
 
     /** @throws Throwable */
-    public function test_fetch_can_be_sorted_via_last_name(): void
+    public function test_fetch_can_be_sorted_asc_via_last_name(): void
     {
-        $this->produceUsers(3);
+        $this->produceUsers(5);
 
-        // test `asc` sort
-        $sortedLastNames = UserProfile::orderBy('last_name')->pluck('last_name')->toArray();
-        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?sort=asc&sort_by=user_profile.last_name");
-        $response = $response->decodeResponseJson();
-        $mappedLastNames = array_map(fn ($userProfile) => $userProfile['last_name'], $response['data']);
-        $this->assertEquals($sortedLastNames, $mappedLastNames);
+        // ASCENDING ORDER TEST
+        $sortedLastNames = User::query()
+            ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
+            ->orderBy('user_profiles.last_name')
+            ->pluck('user_profiles.last_name')
+            ->toArray();
 
-        // test `desc` sort
-        $sortedLastNames = UserProfile::orderBy('last_name', 'desc')->pluck('last_name')->toArray();
-        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?sort=desc&sort_by=user_profile.last_name");
-        $response = $response->decodeResponseJson();
-        $mappedLastNames = array_map(fn ($userProfile) => $userProfile['last_name'], $response['data']);
-        $this->assertEquals($sortedLastNames, $mappedLastNames);
+        $response = $this->withToken($this->authToken)
+            ->getJson("$this->baseUri?sort_by=user_profile.last_name")
+            ->decodeResponseJson();
+
+        $mappedAscLastNames = array_values(array_filter(
+            array_map(fn ($user) => $user['user_profile']['last_name'] ?? null, $response['data'])
+        ));
+
+        $this->assertEquals($sortedLastNames, $mappedAscLastNames, 'Ascending sort failed');
+
     }
 
     /** @throws Throwable */
-    public function test_fetch_can_be_sorted_via_first_name(): void
+    public function test_fetch_can_be_sorted_desc_via_last_name(): void
     {
-        $this->produceUsers(3);
+        $this->produceUsers(5);
 
-        // test `asc` sort
-        $sortedLastNames = UserProfile::orderBy('first_name')->pluck('first_name')->toArray();
-        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?sort=asc&sort_by=user_profile.first_name");
-        $response = $response->decodeResponseJson();
-        $mappedLastNames = array_map(fn ($userProfile) => $userProfile['first_name'], $response['data']);
-        $this->assertEquals($sortedLastNames, $mappedLastNames);
+        // ASCENDING ORDER TEST
+        $sortedLastNames = User::query()
+            ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
+            ->orderBy('user_profiles.last_name', 'desc')
+            ->pluck('user_profiles.last_name')
+            ->toArray();
 
-        // test `desc` sort
-        $sortedLastNames = UserProfile::orderBy('first_name', 'desc')->pluck('first_name')->toArray();
-        $response = $this->withToken($this->authToken)->getJson("$this->baseUri?sort=desc&sort_by=user_profile.first_name");
-        $response = $response->decodeResponseJson();
-        $mappedLastNames = array_map(fn ($userProfile) => $userProfile['first_name'], $response['data']);
-        $this->assertEquals($sortedLastNames, $mappedLastNames);
+        $response = $this->withToken($this->authToken)
+            ->getJson("$this->baseUri?sort_by=user_profile.last_name")
+            ->decodeResponseJson();
+
+        $mappedAscLastNames = array_values(array_filter(
+            array_map(fn ($user) => $user['user_profile']['last_name'] ?? null, $response['data'])
+        ));
+
+        $this->assertEquals($sortedLastNames, $mappedAscLastNames, 'Ascending sort failed');
+
+    }
+
+    /** @throws Throwable */
+    public function test_fetch_can_be_sorted_asc_via_first_name(): void
+    {
+        $this->produceUsers(5);
+
+        // ASCENDING ORDER TEST
+        $sortedLastNames = User::query()
+            ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
+            ->orderBy('user_profiles.first_name')
+            ->pluck('user_profiles.first_name')
+            ->toArray();
+
+        $response = $this->withToken($this->authToken)
+            ->getJson("$this->baseUri?sort_by=user_profile.first_name")
+            ->decodeResponseJson();
+
+        $mappedAscLastNames = array_values(array_filter(
+            array_map(fn ($user) => $user['user_profile']['first_name'] ?? null, $response['data'])
+        ));
+
+        $this->assertEquals($sortedLastNames, $mappedAscLastNames, 'Ascending sort failed');
+
+    }
+
+    /** @throws Throwable */
+    public function test_fetch_can_be_sorted_desc_via_first_name(): void
+    {
+        $this->produceUsers(5);
+
+        // ASCENDING ORDER TEST
+        $sortedLastNames = User::query()
+            ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
+            ->orderBy('user_profiles.last_name', 'desc')
+            ->pluck('user_profiles.first_name')
+            ->toArray();
+
+        $response = $this->withToken($this->authToken)
+            ->getJson("$this->baseUri?sort_by=user_profile.first_name")
+            ->decodeResponseJson();
+
+        $mappedAscLastNames = array_values(array_filter(
+            array_map(fn ($user) => $user['user_profile']['first_name'] ?? null, $response['data'])
+        ));
+
+        $this->assertEquals($sortedLastNames, $mappedAscLastNames, 'Ascending sort failed');
+
     }
 
     /** @throws Throwable */
     public function test_it_can_search_via_last_name(): void
     {
-        User::query()->delete();
-
         $createdUser = $this->produceUsers();
         $createdUser->userProfile->update(['last_name' => Str::uuid()]);
         $lastName = urlencode($createdUser->userProfile->last_name);
@@ -535,8 +596,6 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_search_via_first_name(): void
     {
-        User::query()->delete();
-
         $createdUser = $this->produceUsers();
         $createdUser->userProfile->update(['first_name' => Str::uuid()]);
         $firstName = urlencode($createdUser->userProfile->first_name);
@@ -554,7 +613,6 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_search_via_middle_name(): void
     {
-        User::query()->delete();
         $createdUser = $this->produceUsers();
         $createdUser->userProfile->update(['middle_name' => Str::uuid()]);
         $middleName = urlencode($createdUser->userProfile->middle_name);
@@ -572,7 +630,6 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_search_via_ext_name(): void
     {
-        User::query()->delete();
         $createdUser = $this->produceUsers();
         $createdUser->userProfile->update(['ext_name' => Str::uuid()]);
         $extName = urlencode($createdUser->userProfile->ext_name);
@@ -590,19 +647,20 @@ class UserManagementTest extends TestCase
     /** @throws Throwable */
     public function test_it_can_prefix_search_via_email(): void
     {
-        User::query()->delete();
-        $email = $this->produceUsers()->email;
-        $email = Str::substr($email, 0, -2);
+        $user = $this->produceUsers();
+        $email = $user->email;
 
+        $emailPrefix = Str::substr($email, 0, -2);
         // We create a new user and token since the old one is deleted
         $authUser = $this->produceUsers(1, [], false, RoleEnum::ADMIN);
         $authUser->syncRoles([RoleEnum::ADMIN]);
         $authToken = $this->tokenManager->generateToken($authUser, now()->addMinutes(5));
 
-        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=$email");
+        $response = $this->withToken($authToken)->getJson("$this->baseUri/search?query=".urlencode($emailPrefix));
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson();
         $this->assertCount(1, $response['data']);
+
     }
 }

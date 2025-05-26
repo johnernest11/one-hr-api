@@ -36,9 +36,9 @@ class AccomplishmentReportService implements AccomplishmentReportManager
     public function create(User $user, array $arInfo): AccomplishmentReport
     {
         return DB::transaction(function () use ($user, $arInfo) {
-            $arInfo['user_profile_id'] = $user->id;
+            $userProfile = $user->userProfile;
+            $arInfo['user_profile_id'] = $userProfile->id;
             $arInfo['status'] = ARStatus::DRAFT; // Set status to draft by default
-
             $exemptedAttributes = ['rows'];
             // initialize values then create record
             $ar = AccomplishmentReport::create(Arr::except($arInfo, $exemptedAttributes));

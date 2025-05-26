@@ -8,6 +8,7 @@ use App\Rules\DbVarcharMaxLength;
 use App\Rules\InternationalPhoneNumberFormat;
 use App\Rules\PhoneCountryFormat;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\Password;
 
@@ -101,8 +102,13 @@ class UserRequest extends FormRequest
      */
     private function getUpdateUserRules(): array
     {
+        $userId = request('id');
+
         return [
-            'email' => ['email', 'unique:users,email,'.request('id')],
+            'email' => [
+                'email',
+                Rule::unique('one_account.users', 'email')->ignore($userId),
+            ],
             'password' => ['string', 'confirmed', 'max:100', Password::min(8)->mixedCase()->numbers()],
             'first_name' => ['string', new DbVarcharMaxLength()],
             'last_name' => ['string', new DbVarcharMaxLength()],
@@ -110,7 +116,7 @@ class UserRequest extends FormRequest
             'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
             'mobile_number' => [
                 'nullable',
-                'unique:user_profiles,mobile_number,'.request('id').',user_id',
+                Rule::unique('mysql.user_profiles', 'mobile_number')->ignore($userId, 'user_id'),
                 new InternationalPhoneNumberFormat(),
                 new PhoneCountryFormat('PH'),
                 'phone:mobile',

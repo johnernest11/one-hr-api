@@ -10,6 +10,8 @@ class VfBackupCode extends Model
 {
     use HasFactory;
 
+    protected $connection = 'one_account';
+
     protected $table = 'vf_backup_codes';
 
     protected $fillable = [

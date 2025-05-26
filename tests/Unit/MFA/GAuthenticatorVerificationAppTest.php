@@ -41,7 +41,10 @@ class GAuthenticatorVerificationAppTest extends TestCase
     public function test_it_can_generate_secret(): void
     {
         $this->authenticator->getOrCreateSecret($this->user);
-        $this->assertDatabaseCount('verification_factors', 1);
+        $this->assertEquals(1, VerificationFactor::where('user_id', $this->user->id)
+            ->where('type', VerificationMethod::GOOGLE_AUTHENTICATOR)->count()
+        );
+
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
 use App\Models\User;
-use App\Models\UserProfile;
 use App\Notifications\Auth\QueuedResetPasswordNotification;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,34 +20,40 @@ class PasswordTest extends TestCase
     {
         parent::setUp();
 
-        $this->artisan('db:seed');
-
+        \DB::setDefaultConnection('one_account');
         Notification::fake();
 
         $this->userCreds = [
-            'email' => 'jegramos-test@sample.com',
-            'password' => 'Jeg123123!',
+            'email' => fake()->unique()->safeEmail(),
+            'password' => bcrypt('Jeg123123!'),
         ];
-
-        $this->userProfile = ['mobile_number' => '+639064647295'];
-
-        $this->user = User::factory($this->userCreds)
-            ->has(UserProfile::factory())
-            ->create();
+        $this->user = User::factory()
+            ->create($this->userCreds);
     }
 
     /** @throws Exception */
     public function test_users_can_request_a_password_reset_email(): void
     {
-        $response = $this->post("$this->baseUri/forgot-password", ['email' => $this->user->email]);
-        $response->assertStatus(200);
 
+        $response = $this->post("$this->baseUri/forgot-password", ['email' => $this->user->email]);
+
+        $response->assertStatus(200);
         Notification::assertSentTo($this->user, QueuedResetPasswordNotification::class);
+    }
+
+    public function test_deactivated_user_cannot_request_password_reset(): void
+    {
+        $this->user->update(['active' => false, 'email' => $this->user->email]);
+        $response = $this->postJson("$this->baseUri/forgot-password", ['email' => $this->user->email]);
+
+        $response->assertStatus(403);
     }
 
     public function test_users_can_reset_their_passwords(): void
     {
+
         $token = app('auth.password.broker')->createToken($this->user);
+
         $newPassword = 'Sample123123';
         $input = [
             'token' => $token,
@@ -60,8 +66,11 @@ class PasswordTest extends TestCase
         $response->assertStatus(200);
 
         // login again
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'token']);
+        $this->user->assignRole('admin');
         $creds = ['email' => $this->user->email, 'password' => $newPassword];
         $response = $this->post("$this->baseUri/tokens", $creds);
+
         $response->assertStatus(200);
     }
 }

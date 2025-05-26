@@ -62,10 +62,9 @@ class SortFilter extends Filter
      */
     private function joinRelatedTable(string $sortBy, Builder $builder): ?Builder
     {
-        // split the filter from the request
+        // Extract related table from sortBy param (e.g. 'user_profile' -> 'user_profiles')
         $tableName = $this->getNestedSortByFilterRelatedTable($sortBy);
 
-        // check if the table name exists
         $schemaService = resolve(DbSchemaInspector::class);
         $tableExists = $schemaService->checkIfTableExists($tableName);
 
@@ -79,10 +78,22 @@ class SortFilter extends Filter
             return null;
         }
 
-        $parentTableName = (clone $builder)->getModel()->getTable();
+        $parentModel = (clone $builder)->getModel();
+        $parentTableName = $parentModel->getTable();
+        $parentConnection = $parentModel->getConnectionName();
+
+        // Determine the connection for the related table
+        $relatedConnection = $this->getConnectionForTable($tableName);
+
+        // If connections differ, we cannot join across databases — return null
+        if ($parentConnection !== $relatedConnection) {
+            Log::warning("Skipping join: parent table '{$parentTableName}' is on connection '{$parentConnection}', but related table '{$tableName}' is on connection '{$relatedConnection}'");
+
+            return null;
+        }
+
         $foreignKey = $this->constructForeignKey($parentTableName);
 
-        // If the foreign key we've built is correct, it should be found on the related table
         if (! $schemaService->checkIfColumnExists($tableName, $foreignKey)) {
             Log::error('Unable to construct the foreign key', [
                 'class' => self::class,
@@ -96,6 +107,21 @@ class SortFilter extends Filter
         }
 
         return $builder->join($tableName, "$tableName.$foreignKey", '=', "$parentTableName.id");
+    }
+
+    /**
+     * Return the DB connection name for a given table
+     * You can customize this mapping based on your config/models.
+     */
+    private function getConnectionForTable(string $tableName): ?string
+    {
+        // Hardcoded example: adjust for your app
+        $tableToConnection = [
+            'users' => 'one_account',        // User model DB connection
+            'user_profiles' => 'mysql',      // UserProfile model DB connection
+        ];
+
+        return $tableToConnection[$tableName] ?? null;
     }
 
     /**

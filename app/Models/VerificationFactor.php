@@ -12,6 +12,8 @@ class VerificationFactor extends Model
 {
     use HasFactory;
 
+    protected $connection = 'one_account';
+
     /**
      * The attributes that are mass assignable.
      *
