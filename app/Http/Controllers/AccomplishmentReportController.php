@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaginationType;
 use App\Http\Requests\AccomplishmentReportRequest;
 use App\Models\AccomplishmentReport;
 use App\Models\User;
-use App\Services\AccomplishmentReport\AccomplishmentReportService;
+use App\Services\AccomplishmentReport\AccomplishmentReportManager;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class AccomplishmentReportController extends ApiController
 {
-    private AccomplishmentReportService $accomplishmentReportService;
+    private AccomplishmentReportManager $accomplishmentReportService;
 
-    public function __construct(AccomplishmentReportService $aRService)
+    public function __construct(AccomplishmentReportManager $aRService)
     {
         $this->accomplishmentReportService = $aRService;
     }
@@ -67,11 +68,15 @@ class AccomplishmentReportController extends ApiController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Search for a resource in storage.
      */
-    public function destroy(string $id)
+    public function search(AccomplishmentReportRequest $request)
     {
-        //
+        $items = $this->accomplishmentReportService->search($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $formatted = PaginationHelper::formatPagination($items);
+
+        return $this->success($formatted, Response::HTTP_OK);
+
     }
 
     public function generateAccomplishmentReport(AccomplishmentReport $accomplishmentReport)

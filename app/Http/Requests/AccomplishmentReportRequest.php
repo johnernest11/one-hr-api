@@ -32,6 +32,7 @@ class AccomplishmentReportRequest extends FormRequest
         return match ($routeName) {
             'accomplishment-report.store' => $this->getStoreUpdateAccomplishmentReportRule(),
             'accomplishment-report.update' => $this->getStoreUpdateAccomplishmentReportRule(),
+            'accomplishment-report.search' => $this->getSearchAccomplishmentReportRule(),
             default => [],
         };
 
@@ -58,6 +59,13 @@ class AccomplishmentReportRequest extends FormRequest
             'rows.*.dates_in_week' => ['required_if:status,done', 'string', new DbVarcharMaxLength()],
             'rows.*.specific_activity' => ['required_if:status,done', 'string', new DbTextMaxLength()],
             'rows.*.highlights' => ['required_if:status,done', 'string', new DbTextMaxLength()],
+        ];
+    }
+
+    public function getSearchAccomplishmentReportRule(): array
+    {
+        return [
+            'query' => ['required', 'string'],
         ];
     }
 
