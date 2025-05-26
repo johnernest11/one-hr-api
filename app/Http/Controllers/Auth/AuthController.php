@@ -74,7 +74,7 @@ abstract class AuthController extends ApiController
         }
 
         // Check if the user has the 'admin' role BEFORE proceeding with token generation
-        if (! $user->roles()->where('name', 'super_user')->exists()) {
+        if (! $user->roles()->where('name', 'super_user')->orWhere('name', operator: 'admin')->exists()) {
             return $this->error(
                 'You do not have administrator privileges.',
                 Response::HTTP_FORBIDDEN,
