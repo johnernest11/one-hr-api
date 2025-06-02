@@ -140,6 +140,7 @@ class UserRequest extends FormRequest
             'email_verified' => ['nullable', 'boolean'],
             'roles' => ['nullable', 'array', 'max:25'],
             'roles.*' => ['required', 'exists:roles,id', 'distinct'],
+            'individual_basic_detail_id' => ['nullable', 'int', 'exists:individual_basic_details,id'],
         ];
     }
 

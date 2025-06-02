@@ -23,6 +23,7 @@ use App\Models\Item;
 use App\Models\Libraries\Country;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -39,11 +40,24 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
     private User $user;
 
+    private User $userPpms;
+
+    private User $userPas;
+
+    private User $userStandard;
+
     private string $authToken;
+
+    private string $authTokenAdmin;
+
+    private string $authTokenPas;
+
+    private string $authTokenStandard;
 
     private PersistentAuthTokenManager $tokenManager;
 
-    // @todo update when there's new records
+    private PersistentAuthTokenManager $tokenManager2;
+
     private array $comprehensive_records_rel = [
         'employee',
         'individualAddress',
@@ -73,6 +87,28 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $this->tokenManager = resolve(PersistentAuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
         $this->authToken = $this->tokenManager->generateToken($user, $authTokenExpiration, 'mock_token');
+
+        // Simulate different user roles
+        $userPpms = $this->produceUsers();
+        $userPas = $this->produceUsers();
+        $userStandard = $this->produceUsers();
+        $roles = [RoleEnum::HR_PPMS_ADMIN, RoleEnum::HR_PAS_ADMIN, RoleEnum::STANDARD_USER];
+        $userPpms->syncRoles($roles[0]);
+        $userPas->syncRoles($roles[1]);
+        $userStandard->syncRoles($roles[2]);
+        $this->userPpms = $userPpms; // save ppms admin user
+        $this->userPas = $userPas; // save pas admin user
+        $this->userStandard = $userStandard; // save standard user
+
+        $this->tokenManager2 = resolve(PersistentAuthTokenManager::class);
+        $authTokenExpirationAdmin = now()->addMinutes(config('sanctum.expiration'));
+        $this->authTokenAdmin = $this->tokenManager2->generateToken($userPpms, $authTokenExpirationAdmin, 'mock_token');
+
+        $authTokenExpirationPas = now()->addMinutes(config('sanctum.expiration'));
+        $this->authTokenPas = $this->tokenManager2->generateToken($userPas, $authTokenExpirationPas, 'mock_token');
+
+        $authTokenExpirationStandard = now()->addMinutes(config('sanctum.expiration'));
+        $this->authTokenStandard = $this->tokenManager2->generateToken($userStandard, $authTokenExpirationStandard, 'mock_token');
 
     }
 
@@ -959,5 +995,225 @@ class IndividualBasicDetailFeatureTest extends TestCase
             ->where('individual_basic_detail_id', '=', $firstIndividual->id)
             ->count();
         $this->assertEquals(1, $countTrue, 'Expected only one record with is_current_work = true, but found '.$countTrue);
+    }
+
+    public function test_it_can_update_item_status(): void
+    {
+        // Test that upon creation, the item status will change to filled.
+        $individualInfo = $this->generate_test_data();
+
+        // Generate Item and update array
+        $generatedItem = Item::factory()->create();
+        $individualInfo['employee']['item_id'] = $generatedItem->id;
+        // The default status of the generated item should be unfilled and with no date_filled_up
+        $this->assertEquals('Unfilled', $generatedItem->status->value);
+        $this->assertNull($generatedItem->date_filled_up);
+
+        // Create Individual
+        $response = $this->withToken($this->authToken)->postJson($this->baseUri, $individualInfo);
+        $response->assertStatus(201);
+
+        // The item should now be filled and with date_filled_up
+        $newItem = Item::find($generatedItem->id);
+        $dateFilled = Carbon::now()->toDateString();
+        $this->assertEquals('Filled', $newItem->status->value);
+        $this->assertEquals($dateFilled, $newItem->date_filled_up->toDateString());
+
+        // Test that upon update, the old item status should be unfilled + date_filled_up is null
+        // and new item status is filled + with date_filled_up as date now
+
+        // Generate updated data
+        $individualId = $response->decodeResponseJson()['data']['id'];
+        $individual = IndividualBasicDetail::find($individualId);
+        $newInfo = $this->generate_test_data(PDSFormType::C1->value);
+
+        // Change the item of the employee.
+        $updatedItem = Item::factory()->create();
+        $newInfo['employee']['id'] = $individual->employee->id;
+        $newInfo['employee']['item_id'] = $updatedItem->id;
+
+        $newInfo = Arr::only($newInfo, ['individual', 'employee', 'form_type']);
+
+        // Update
+        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$individual->id", $newInfo);
+        $response->assertStatus(200);
+
+        // The item of the employee should now be equal to the updatedItem
+        // with the old item reset back to unfilled and the new one to
+        // filled and with date_filled_up
+        $oldItem = Item::find($newItem->id);
+        $this->assertEquals('Unfilled', $oldItem->status->value);
+        $this->assertNull($oldItem->date_filled_up);
+
+        $newlyUpdatedItem = Item::find($updatedItem->id);
+        $this->assertEquals('Filled', $newlyUpdatedItem->status->value);
+        $this->assertEquals(Carbon::now()->toDateString(), $newlyUpdatedItem->date_filled_up->toDateString());
+
+    }
+
+    public function test_ppms_admin_can_create_records(): void
+    {
+        $individualInfo = $this->generate_test_data(PDSFormType::C1->value);
+
+        $generatedItem = Item::factory()->create();
+        $individualInfo['employee']['item_id'] = $generatedItem->id;
+        unset($individualInfo['form_type']);
+
+        // Assert that PPMS admin should be able to create a record
+        $response = $this->withToken($this->authTokenAdmin)->postJson($this->baseUri, $individualInfo); // Use the generated token for ppms admin
+        $response->assertStatus(201); // Should be able to create
+        $this->assertDatabaseCount('individual_basic_details', 1);
+
+    }
+
+    public function test_ppms_admin_can_update_records(): void
+    {
+        $individuals = IndividualBasicDetail::factory(5)->create();
+        $firstIndividual = $individuals->first();
+
+        // Get first record in hasMany relationship.
+        $firstReference = $firstIndividual->individualReference()->first();
+
+        // Generate updated data
+        $newInfo = $this->generate_test_data(PDSFormType::C4->value);
+
+        // Add the correct id on request body.
+        $newInfo['individual_question'][0]['id'] = $firstIndividual->individualQuestion->id;
+        $newInfo['individual_reference'][0]['id'] = $firstReference->id;
+
+        // Generate random countries if individual_question is part of the input and q39 is true
+        if (isset($newInfo['individual_question']) and $newInfo['individual_question'][0]['q39']) {
+            $randomCountry = Country::inRandomOrder()->first()->id; // Get random country
+            $newInfo['individual_question'][0]['country_id'] = $randomCountry;
+        }
+
+        // Can Update
+        $response = $this->withToken($this->authTokenAdmin)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);
+        $response->assertStatus(200);
+    }
+
+    public function test_ppms_admin_can_view_records(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $find_individual_data = IndividualBasicDetail::find($individual->id);
+
+        $response = $this->withToken($this->authTokenAdmin)->getJson("$this->baseUri/$find_individual_data->id");
+        $response->assertStatus(200);
+
+    }
+
+    public function test_pas_admin_cannot_create_records(): void
+    {
+        $individualInfo = $this->generate_test_data(PDSFormType::C1->value);
+
+        $generatedItem = Item::factory()->create();
+        $individualInfo['employee']['item_id'] = $generatedItem->id;
+        unset($individualInfo['form_type']);
+
+        // Assert that PAS admin should not be able to create a record
+        $response = $this->withToken($this->authTokenPas)->postJson($this->baseUri, $individualInfo); // Use the generated token for PAS user
+        $response->assertStatus(403); // Should be 403 Forbidden (UNAUTHORIZED_ERROR)
+        $this->assertDatabaseCount('individual_basic_details', 0);
+    }
+
+    public function test_pas_admin_can_update_records(): void
+    {
+        $individuals = IndividualBasicDetail::factory(5)->create();
+        $firstIndividual = $individuals->first();
+
+        // Get first record in hasMany relationship.
+        $firstReference = $firstIndividual->individualReference()->first();
+
+        // Generate updated data
+        $newInfo = $this->generate_test_data(PDSFormType::C4->value);
+
+        // Add the correct id on request body.
+        $newInfo['individual_question'][0]['id'] = $firstIndividual->individualQuestion->id;
+        $newInfo['individual_reference'][0]['id'] = $firstReference->id;
+
+        // Generate random countries if individual_question is part of the input and q39 is true
+        if (isset($newInfo['individual_question']) and $newInfo['individual_question'][0]['q39']) {
+            $randomCountry = Country::inRandomOrder()->first()->id; // Get random country
+            $newInfo['individual_question'][0]['country_id'] = $randomCountry;
+        }
+
+        // Can Update
+        $response = $this->withToken($this->authTokenPas)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);
+        $response->assertStatus(200);
+    }
+
+    public function test_pas_admin_can_view_records(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $find_individual_data = IndividualBasicDetail::find($individual->id);
+
+        $response = $this->withToken($this->authTokenPas)->getJson("$this->baseUri/$find_individual_data->id");
+        $response->assertStatus(200);
+
+    }
+
+    public function test_standard_user_cannot_create_records(): void
+    {
+        $individualInfo = $this->generate_test_data(PDSFormType::C1->value);
+
+        $generatedItem = Item::factory()->create();
+        $individualInfo['employee']['item_id'] = $generatedItem->id;
+        unset($individualInfo['form_type']);
+
+        // Assert that Standard User should not be able to create a record
+        $response = $this->withToken($this->authTokenStandard)->postJson($this->baseUri, $individualInfo); // Use the generated token for standard user
+        $response->assertStatus(403); // Should be 403 Forbidden (UNAUTHORIZED_ERROR)
+        $this->assertDatabaseCount('individual_basic_details', 0);
+
+    }
+
+    public function test_standard_user_can_only_update_own_records(): void
+    {
+        // Generate a data that the current user does not own
+        $notOwnData = IndividualBasicDetail::factory()->withExistingUserProfile()->create();
+
+        // Generate updated data
+        $newInfo = $this->generate_test_data(PDSFormType::C4->value);
+
+        // Add the correct id on request body.
+        $newInfo['individual_question'][0]['id'] = $notOwnData->individualQuestion->id;
+        unset($newInfo['individual_reference']);
+
+        // Generate random countries if individual_question is part of the input and q39 is true
+        if (isset($newInfo['individual_question']) and $newInfo['individual_question'][0]['q39']) {
+            $randomCountry = Country::inRandomOrder()->first()->id; // Get random country
+            $newInfo['individual_question'][0]['country_id'] = $randomCountry;
+        }
+
+        // Should not be able to update the record
+        $response = $this->withToken($this->authTokenStandard)->putJson("$this->baseUri/$notOwnData->id", $newInfo);
+        $response->assertStatus(403);
+
+        // Generate data with the current user as the owner
+        $stndrdUserProf = $this->userStandard->userProfile;
+        $ownData = IndividualBasicDetail::factory()->withExistingUserProfile($stndrdUserProf)->create();
+        $newInfo['individual_question'][0]['id'] = $ownData->individualQuestion->id; // Update id to point to the correct data
+
+        // Should now be able to update
+        $response = $this->withToken($this->authTokenStandard)->putJson("$this->baseUri/$ownData->id", $newInfo);
+        $response->assertStatus(200);
+    }
+
+    public function test_standard_user_can_only_view_own_records(): void
+    {
+
+        $notOwnData = IndividualBasicDetail::factory()->withExistingUserProfile()->create();
+
+        // Cannot view
+        $response = $this->withToken($this->authTokenStandard)->getJson("$this->baseUri/$notOwnData->id");
+        $response->assertStatus(403);
+
+        // Generate data with the current user as the owner
+        $stndrdUserProf = $this->userStandard->userProfile;
+        $ownData = IndividualBasicDetail::factory()->withExistingUserProfile($stndrdUserProf)->create();
+
+        // Can View
+        $response = $this->withToken($this->authTokenStandard)->getJson("$this->baseUri/$ownData->id");
+        $response->assertStatus(200);
     }
 }
