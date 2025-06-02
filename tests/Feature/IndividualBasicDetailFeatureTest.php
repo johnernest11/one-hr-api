@@ -40,11 +40,11 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
     private User $user;
 
-    private User $user_ppms;
+    private User $userPpms;
 
-    private User $user_pas;
+    private User $userPas;
 
-    private User $user_standard;
+    private User $userStandard;
 
     private string $authToken;
 
@@ -89,26 +89,26 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $this->authToken = $this->tokenManager->generateToken($user, $authTokenExpiration, 'mock_token');
 
         // Simulate different user roles
-        $user_ppms = $this->produceUsers();
-        $user_pas = $this->produceUsers();
-        $user_standard = $this->produceUsers();
+        $userPpms = $this->produceUsers();
+        $userPas = $this->produceUsers();
+        $userStandard = $this->produceUsers();
         $roles = [RoleEnum::HR_PPMS_ADMIN, RoleEnum::HR_PAS_ADMIN, RoleEnum::STANDARD_USER];
-        $user_ppms->syncRoles($roles[0]);
-        $user_pas->syncRoles($roles[1]);
-        $user_standard->syncRoles($roles[2]);
-        $this->user_ppms = $user_ppms; // save ppms admin user
-        $this->user_pas = $user_pas; // save pas admin user
-        $this->user_standard = $user_standard; // save standard user
+        $userPpms->syncRoles($roles[0]);
+        $userPas->syncRoles($roles[1]);
+        $userStandard->syncRoles($roles[2]);
+        $this->userPpms = $userPpms; // save ppms admin user
+        $this->userPas = $userPas; // save pas admin user
+        $this->userStandard = $userStandard; // save standard user
 
         $this->tokenManager2 = resolve(PersistentAuthTokenManager::class);
         $authTokenExpirationAdmin = now()->addMinutes(config('sanctum.expiration'));
-        $this->authTokenAdmin = $this->tokenManager2->generateToken($user_ppms, $authTokenExpirationAdmin, 'mock_token');
+        $this->authTokenAdmin = $this->tokenManager2->generateToken($userPpms, $authTokenExpirationAdmin, 'mock_token');
 
         $authTokenExpirationPas = now()->addMinutes(config('sanctum.expiration'));
-        $this->authTokenPas = $this->tokenManager2->generateToken($user_pas, $authTokenExpirationPas, 'mock_token');
+        $this->authTokenPas = $this->tokenManager2->generateToken($userPas, $authTokenExpirationPas, 'mock_token');
 
         $authTokenExpirationStandard = now()->addMinutes(config('sanctum.expiration'));
-        $this->authTokenStandard = $this->tokenManager2->generateToken($user_standard, $authTokenExpirationStandard, 'mock_token');
+        $this->authTokenStandard = $this->tokenManager2->generateToken($userStandard, $authTokenExpirationStandard, 'mock_token');
 
     }
 
@@ -1190,7 +1190,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $response->assertStatus(403);
 
         // Generate data with the current user as the owner
-        $stndrdUserProf = $this->user_standard->userProfile;
+        $stndrdUserProf = $this->userStandard->userProfile;
         $ownData = IndividualBasicDetail::factory()->withExistingUserProfile($stndrdUserProf)->create();
         $newInfo['individual_question'][0]['id'] = $ownData->individualQuestion->id; // Update id to point to the correct data
 
@@ -1209,7 +1209,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $response->assertStatus(403);
 
         // Generate data with the current user as the owner
-        $stndrdUserProf = $this->user_standard->userProfile;
+        $stndrdUserProf = $this->userStandard->userProfile;
         $ownData = IndividualBasicDetail::factory()->withExistingUserProfile($stndrdUserProf)->create();
 
         // Can View

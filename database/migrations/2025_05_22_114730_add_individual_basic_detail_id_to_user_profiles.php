@@ -22,6 +22,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('user_profiles', function (Blueprint $table) {
+            // 1. Drop the foreign key constraint FIRST
+            $table->dropForeign(['individual_basic_detail_id']);
+            // 2. Then, drop the column
             $table->dropColumn('individual_basic_detail_id');
         });
     }
