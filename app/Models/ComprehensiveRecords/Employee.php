@@ -8,6 +8,7 @@ use App\Models\Libraries\Office;
 use App\Models\Libraries\Program;
 use App\Models\Libraries\SalaryGrade;
 use App\Models\Libraries\SectionOrUnit;
+use App\Models\QrCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -90,5 +91,13 @@ class Employee extends Model
     public function program(): HasOne
     {
         return $this->hasOne(Program::class);
+    }
+
+    /**
+     * An employee has one QR code
+     */
+    public function qrCode(): HasOne
+    {
+        return $this->hasOne(QrCode::class);
     }
 }
