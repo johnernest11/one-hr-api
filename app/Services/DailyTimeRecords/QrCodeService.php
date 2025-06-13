@@ -92,7 +92,7 @@ class QrCodeService implements QrCodeManager
         // Check if the decrypted id number exists
         // If it does, return the employee record
         $decryptedData = Crypt::decrypt($request['scanned_qr']);
-        $employee = Employee::where('id_number', '=', $decryptedData)->firstOrFail();
+        $employee = Employee::where('id_number', $decryptedData)->firstOrFail();
 
         // Ensure that the QR Code of the employee is active.
         $isActive = $this->model->whereBelongsTo($employee)->firstOrFail()->is_active;
