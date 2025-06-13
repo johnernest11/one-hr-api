@@ -1,25 +1,30 @@
 <?php
 
 use App\Enums\Permission;
-use App\Http\Controllers\ComprehensiveRecords\Pds\PersonalDataSheetController;
-use App\Models\ComprehensiveRecords\Employee;
+use App\Http\Controllers\QrCodeController;
 
-// @todo for updating
-//Route::middleware(['auth:token', 'verified.api'])->name('employee.')->group(function(){
-//Route::prefix('{employee}/personal-data-sheets/')->group(function () {
-//// PERSONAL DATA SHEET
-//Route::controller(PersonalDataSheetController::class)->name('personal-data-sheet.')->group(function(){
-//Route::middleware(['permission:'.Permission::VIEW_EMPLOYEE_PDS->value])
-//->get('', 'viewAllConsolidatedData')
-//->name('viewAllConsolidatedData');
+// Routes that requires employee id
+Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(function () {
+    Route::prefix('qr-codes')->controller(QrCodeController::class)->name('qr-codes.')->group(function () {
+        /** @uses QrCodeController::store */
+        Route::middleware(['permission:'.Permission::GENERATE_READ_UPDATE_QR_CODE->value])
+            ->post('', 'store')->name('store');
 
-//Route::middleware(['permission:'.Permission::CREATE_EMPLOYEE_PDS->value])
-//->post('', 'store')
-//->name('store');
+        /** @uses QrCodeController::read */
+        Route::middleware(['permission:'.Permission::GENERATE_READ_UPDATE_QR_CODE->value])
+            ->get('', 'read')->name('read');
 
-//Route::middleware(['permission:'.Permission::UPDATE_EMPLOYEE_PDS->value])
-//->put('', 'update')
-//->name('update');
-//});
-//});
-//});
+        /** @uses QrCodeController::update */
+        Route::middleware(['permission:'.Permission::GENERATE_READ_UPDATE_QR_CODE->value])
+            ->patch('', 'update')->name('update');
+    });
+});
+
+// @todo add routes that do not require employee id here
+Route::middleware(['auth:token', 'verified.api'])->group(function () {
+    Route::controller(QrCodeController::class)->name('qr-codes.')->group(function () {
+        /** @uses QrCodeController::verifyQr */
+        Route::middleware(['permission:'.Permission::VERIFY_QR_CODE->value])
+            ->post('/verify-qr', 'verifyQr')->name('verify-qr');
+    });
+});

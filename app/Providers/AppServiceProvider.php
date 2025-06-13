@@ -6,11 +6,14 @@ use App\Enums\AppEnvironment;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\Item;
 use App\Models\PersonalAccessToken;
+use App\Models\QrCode;
 use App\Services\AccomplishmentReport\AccomplishmentReportManager;
 use App\Services\AccomplishmentReport\AccomplishmentReportService;
 use App\Services\AppSettingsManager;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailManager;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
+use App\Services\DailyTimeRecords\QrCodeManager;
+use App\Services\DailyTimeRecords\QrCodeService;
 use App\Services\Item\ItemManager;
 use App\Services\Item\ItemService;
 use App\Services\User\UserAccountManager;
@@ -59,7 +62,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IndividualBasicDetailManager::class, function () {
             return new IndividualBasicDetailService(new IndividualBasicDetail());
         });
-
+        $this->app->bind(QrCodeManager::class, function () {
+            return new QrCodeService(new QrCode());
+        });
     }
 
     /**

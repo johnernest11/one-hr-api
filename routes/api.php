@@ -16,7 +16,7 @@ Route::middleware(['throttle:api-users'])->group(function () {
     Route::prefix('/v1/individual-basic-details')->group(base_path('routes/api/individual-basic-detail.routes.php'));
 
     /** V1 Auth Routes */
-    Route::prefix('/v1/employees')->group(base_path('routes/api/employee.routes.php')); // @todo update. Unused for now
+    Route::prefix('/v1/employees')->group(base_path('routes/api/employee.routes.php'));
 
     /** V1 AR Routes */
     Route::prefix('/v1/accomplishment-reports')->group(base_path('routes/api/accomplishment-report.routes.php'));

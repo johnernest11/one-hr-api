@@ -29,4 +29,6 @@ enum Permission: string
     case VIEW_ITEMS = 'view_items';
     case CREATE_ITEMS = 'create_items';
     case UPDATE_ITEMS = 'update_items';
+    case GENERATE_READ_UPDATE_QR_CODE = 'generate_read_update_qr_code';
+    case VERIFY_QR_CODE = 'verify_qr_code';
 }
