@@ -36,6 +36,10 @@ class Employee extends Model
         'agency_employee_no',
     ];
 
+    protected $with = [
+        'item',
+    ];
+
     /**
      * An employee belongs to exactly one individualBasicDetail
      */
