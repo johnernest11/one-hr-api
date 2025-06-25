@@ -1,0 +1,257 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Enums\Role as RoleEnum;
+use App\Models\ComprehensiveRecords\Employee;
+use App\Models\ComprehensiveRecords\IndividualBasicDetail;
+use App\Models\DailyTimeRecords\DailyTimeRecord;
+use App\Models\DailyTimeRecords\TimeLog;
+use App\Models\User;
+use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class DailyTimeRecordFeatureTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private string $baseUri = self::BASE_API_URI.'/employees';
+
+    private User $user_ppms;
+
+    private User $user_pas;
+
+    private User $standard_user;
+
+    private string $authTokenPPMS;
+
+    private string $authTokenPAS;
+
+    private string $authTokenStandard;
+
+    private PersistentAuthTokenManager $tokenManager;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->artisan('db:seed');
+
+        $user_ppms = $this->produceUsers();
+        $user_pas = $this->produceUsers();
+        $standard_user = $this->produceUsers();
+        $roles = [RoleEnum::HR_PPMS_ADMIN, RoleEnum::HR_PAS_ADMIN, RoleEnum::STANDARD_USER];
+        $user_ppms->syncRoles($roles[0]);
+        $user_pas->syncRoles($roles[1]);
+        $standard_user->syncRoles($roles[2]);
+        $this->user_ppms = $user_ppms; // save ppms admin user
+        $this->user_pas = $user_pas; // save pas user
+        $this->standard_user = $standard_user; // save standard user
+
+        $this->tokenManager = resolve(PersistentAuthTokenManager::class);
+        $authTokenExpirationPPMS = now()->addMinutes(config('sanctum.expiration'));
+        $this->authTokenPPMS = $this->tokenManager->generateToken($user_ppms, $authTokenExpirationPPMS, 'mock_token');
+
+        $authTokenExpirationPAS = now()->addMinutes(config('sanctum.expiration'));
+        $this->authTokenPAS = $this->tokenManager->generateToken($user_pas, $authTokenExpirationPAS, 'mock_token');
+
+        $authTokenExpirationStandard = now()->addMinutes(config('sanctum.expiration'));
+        $this->authTokenStandard = $this->tokenManager->generateToken($standard_user, $authTokenExpirationStandard, 'mock_token');
+
+    }
+
+    public function test_it_can_view_all_time_logs(): void
+    {
+        $timelogs = TimeLog::factory(5)->alternatingIsIn()->create();
+
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-time-logs');
+        $response->assertStatus(200);
+
+        $this->assertEquals(5, $response['pagination']['total']);
+    }
+
+    public function test_it_can_view_all_warm_bodies_today(): void
+    {
+        $dateToday = Carbon::now()->toDateString();
+        $timelogsToday = TimeLog::factory(3)->alternatingIsIn()->setDate($dateToday)->create();
+        $timelogsRandom = TimeLog::factory(5)->alternatingIsIn()->create();
+
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-warm-bodies-today');
+        $response->assertStatus(200);
+
+        $this->assertEquals(3, $response['pagination']['total']);
+    }
+
+    public function test_it_can_view_dtr_per_month(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
+
+        $startDate = Carbon::create(2025, 6, 1); // Sample Start Date
+        $numberOfDTRs = 3;
+        for ($i = 0; $i < $numberOfDTRs; $i++) {
+            $currentDate = $startDate->copy()->addDays($i)->toDateString();
+
+            $dailyTimeRecord = DailyTimeRecord::factory()->create([
+                'employee_id' => $employee->id,
+                'date' => $currentDate,
+            ]);
+
+            $timeLogs = TimeLog::factory()
+                ->forDailyTimeRecord($dailyTimeRecord) // link created DTR
+                ->alternatingIsIn()
+                ->count(2)
+                ->create([
+                    'scanned_time' => Carbon::parse($currentDate.' 08:00:00')->toTimeString(), // First log (IN)
+                ])
+                ->each(function (TimeLog $log, int $key) use ($currentDate) {
+                    // Manually adjust the second log's time to be later
+                    if ($key === 1) { // This is the second log created (index 1)
+                        $log->scanned_time = Carbon::parse($currentDate.' 17:00:00')->toTimeString();
+                        $log->save(); // Save the adjusted time
+                    }
+                });
+        }
+
+        $month = '2025-06';
+
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/'.$employee->id.'/daily-time-records/view-dtr?month='.$month);
+        $response->assertStatus(200);
+
+        $this->assertEquals(3, $response['pagination']['total']);
+    }
+
+    public function test_it_can_update_dtr(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
+
+        $date = '2025-06-01';
+        $dailyTimeRecord = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee->id,
+            'date' => $date,
+        ]);
+
+        $timeLogs = TimeLog::factory()
+            ->forDailyTimeRecord($dailyTimeRecord) // link created DTR
+            ->alternatingIsIn()
+            ->count(2)
+            ->create([
+                'scanned_time' => Carbon::parse($date.' 08:00:00')->toTimeString(), // First log (IN)
+            ])
+            ->each(function (TimeLog $log, int $key) use ($date) {
+                // Manually adjust the second log's time to be later
+                if ($key === 1) { // This is the second log created (index 1)
+                    $log->scanned_time = Carbon::parse($date.' 17:00:00')->toTimeString();
+                    $log->save(); // Save the adjusted time
+                }
+            });
+
+        $month = '2025-06';
+        $updateRemarks = 'Test Update API';
+
+        $timeLogsIds = $timeLogs->pluck('id');
+        $updatedData = [
+            'month' => $month,
+            'dtr' => [
+                [
+                    'id' => $dailyTimeRecord->id,
+                    'employee_remarks' => $updateRemarks,
+                    'time_logs' => [
+                        [
+                            'id' => $timeLogsIds[0],
+                            'is_selected' => false,
+                        ],
+                    ],
+                ],
+                [
+                    'date' => '2025-06-02',
+                    'employee_remarks' => 'On Leave',
+                ],
+            ],
+        ];
+
+        $response = $this->withToken($this->authTokenPAS)->putJson($this->baseUri.'/'.$employee->id.'/daily-time-records', $updatedData);
+        $response->assertStatus(200);
+
+        $response = $response->decodeResponseJson()['data'];
+        $this->assertEquals($updateRemarks, $response[0]['employee_remarks']); // Assert that the remarks on DTR is updated
+        $this->assertEquals(false, $response[0]['time_log'][0]['is_selected']); // Assert that the time log should also be updated
+        $this->assertEquals('On Leave', $response[1]['employee_remarks']); // Assert that the new record is also created
+
+    }
+
+    public function test_it_can_search_by_name_in_pas_dashboard(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
+
+        $date = '2025-06-01';
+        $dailyTimeRecord = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee->id,
+            'date' => $date,
+        ]);
+
+        $timeLogs = TimeLog::factory()
+            ->forDailyTimeRecord($dailyTimeRecord) // link created DTR
+            ->alternatingIsIn()
+            ->count(2)
+            ->create([
+                'scanned_time' => Carbon::parse($date.' 08:00:00')->toTimeString(), // First log (IN)
+            ])
+            ->each(function (TimeLog $log, int $key) use ($date) {
+                // Manually adjust the second log's time to be later
+                if ($key === 1) { // This is the second log created (index 1)
+                    $log->scanned_time = Carbon::parse($date.' 17:00:00')->toTimeString();
+                    $log->save(); // Save the adjusted time
+                }
+            });
+
+        $name = $individual->first_name;
+
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/search-time-logs?query=$name&is_my_profile=0");
+        $response->assertStatus(200);
+
+        $this->assertEquals($date, $response['data'][0]['dtr_date']);
+
+    }
+
+    public function test_it_can_search_by_name_in_my_profile(): void
+    {
+        $pasUserProf = $this->user_pas->userProfile;
+        $ownData = IndividualBasicDetail::factory()->withExistingUserProfile($pasUserProf)->create();
+        $employee = Employee::whereBelongsTo($ownData)->firstOrFail();
+
+        $date = Carbon::now()->toDateString();
+        $dailyTimeRecord = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee->id,
+            'date' => $date,
+        ]);
+
+        $timeLogs = TimeLog::factory()
+            ->forDailyTimeRecord($dailyTimeRecord) // link created DTR
+            ->alternatingIsIn()
+            ->count(2)
+            ->create([
+                'scanned_time' => Carbon::parse($date.' 08:00:00')->toTimeString(), // First log (IN)
+            ])
+            ->each(function (TimeLog $log, int $key) use ($date) {
+                // Manually adjust the second log's time to be later
+                if ($key === 1) { // This is the second log created (index 1)
+                    $log->scanned_time = Carbon::parse($date.' 17:00:00')->toTimeString();
+                    $log->save(); // Save the adjusted time
+                }
+            });
+
+        $name = $ownData->first_name;
+
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-time-logs');
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/search-time-logs?query=$name&is_my_profile=1");
+        $response->assertStatus(200);
+
+        $response = $response->decodeResponseJson()['data'];
+        $this->assertEquals($date, $response[0]['dtr_date']);
+
+    }
+}

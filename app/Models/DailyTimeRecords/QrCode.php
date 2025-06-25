@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\DailyTimeRecords;
 
 use App\Models\ComprehensiveRecords\Employee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

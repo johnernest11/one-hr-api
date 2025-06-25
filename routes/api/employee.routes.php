@@ -1,7 +1,9 @@
 <?php
 
 use App\Enums\Permission;
-use App\Http\Controllers\QrCodeController;
+use App\Http\Controllers\DailyTimeRecords\DailyTimeRecordController;
+use App\Http\Controllers\DailyTimeRecords\QrCodeController;
+use App\Http\Controllers\DailyTimeRecords\TimeLogController;
 
 // Routes that requires employee id
 Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(function () {
@@ -18,6 +20,16 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         Route::middleware(['permission:'.Permission::GENERATE_READ_UPDATE_QR_CODE->value])
             ->patch('', 'update')->name('update');
     });
+
+    Route::prefix('daily-time-records')->controller(DailyTimeRecordController::class)->name('daily-time-records.')->group(function () {
+        /** @uses DailyTimeRecordController::update */
+        Route::middleware(['permission:'.Permission::UPDATE_DTR->value])
+            ->put('', 'update')->name('update');
+
+        /** @uses DailyTimeRecordController::viewDtrPerMonth */
+        Route::middleware(['permission:'.Permission::VIEW_DTR->value])
+            ->get('/view-dtr', 'viewDtrPerPeriodRange')->name('view-dtr');
+    });
 });
 
 // @todo add routes that do not require employee id here
@@ -27,4 +39,26 @@ Route::middleware(['auth:token', 'verified.api'])->group(function () {
         Route::middleware(['permission:'.Permission::VERIFY_QR_CODE->value])
             ->post('/verify-qr', 'verifyQr')->name('verify-qr');
     });
+
+    Route::controller(TimeLogController::class)->name('time-logs.')->group(function () {
+        /** @uses TimeLogController::logTime */
+        Route::middleware(['permission:'.Permission::LOG_TIME->value])
+            ->post('/log-time', 'logTime')->name('log-time');
+
+    });
+
+    Route::controller(DailyTimeRecordController::class)->name('daily-time-records.')->group(function () {
+        /** @uses DailyTimeRecordController::index */
+        Route::middleware(['permission:'.Permission::VIEW_ALL_TIME_LOGS->value])
+            ->get('/view-time-logs', 'index')->name('index');
+
+        /** @uses DailyTimeRecordController::viewWarmBodiesToday */
+        Route::middleware(['permission:'.Permission::VIEW_WARM_BODIES_TODAY->value])
+            ->get('/view-warm-bodies-today', 'viewWarmBodiesToday')->name('view-warm-bodies-today');
+
+        /** @uses DailyTimeRecordController::search */
+        Route::middleware(['permission:'.Permission::SEARCH_TIME_LOGS->value])
+            ->get('/search-time-logs', 'search')->name('search-time-logs');
+    });
+
 });

@@ -1,64 +1,40 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\DailyTimeRecords;
 
 use App\Enums\ApiErrorCode;
-use App\Http\Requests\QrCodeRequest;
-use App\Models\ComprehensiveRecords\Employee;
+use App\Http\Controllers\ApiController;
+use App\Http\Requests\DailyTimeRecords\TimeLogRequest;
 use App\Services\DailyTimeRecords\QrCodeManager;
+use App\Services\DailyTimeRecords\TimeLogManager;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class QrCodeController extends ApiController
+class TimeLogController extends ApiController
 {
     private QrCodeManager $qrCodeService;
 
-    public function __construct(QrCodeManager $qrCodeService)
+    private TimeLogManager $timeLogService;
+
+    public function __construct(QrCodeManager $qrCodeService, TimeLogManager $timeLogService)
     {
         $this->qrCodeService = $qrCodeService;
-    }
-
-    /**
-     * Store a newly created generated QR Code.
-     */
-    public function store(Employee $employee): JsonResponse
-    {
-
-        $qrCode = $this->qrCodeService->create($employee);
-
-        return $this->success(['data' => $qrCode], Response::HTTP_CREATED);
-    }
-
-    /**
-     * Show the QR code of the passed employee.
-     */
-    public function read(Employee $employee): JsonResponse
-    {
-        $qrCode = $this->qrCodeService->read($employee);
-
-        return $this->success(['data' => $qrCode], Response::HTTP_OK);
-    }
-
-    /**
-     * Update the status of a QR code based on the given employee ID.
-     */
-    public function update(Employee $employee, QrCodeRequest $request): JsonResponse
-    {
-        $qrCode = $this->qrCodeService->update($employee, $request->validated());
-
-        return $this->success(['data' => $qrCode], Response::HTTP_OK);
+        $this->timeLogService = $timeLogService;
     }
 
     /**
      * Verify a scanned QR and check if it belongs to which employee.
+     * Afterwards, log time for that employee.
      */
-    public function verifyQr(QrCodeRequest $request): JsonResponse
+    public function logTime(TimeLogRequest $request): JsonResponse
     {
         try {
             $employee = $this->qrCodeService->verifyQr($request->validated());
+            $logTime = $this->timeLogService->create($employee);
+
         } catch (DecryptException $e) {
             // Catch decryption error wherein the payload is invalid, and no employee is found.
             return $this->error(
@@ -82,6 +58,6 @@ class QrCodeController extends ApiController
             );
         }
 
-        return $this->success(['data' => $employee], Response::HTTP_OK);
+        return $this->success(['data' => $logTime], Response::HTTP_OK);
     }
 }

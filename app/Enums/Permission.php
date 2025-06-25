@@ -31,4 +31,10 @@ enum Permission: string
     case UPDATE_ITEMS = 'update_items';
     case GENERATE_READ_UPDATE_QR_CODE = 'generate_read_update_qr_code';
     case VERIFY_QR_CODE = 'verify_qr_code';
+    case LOG_TIME = 'log_time';
+    case VIEW_ALL_TIME_LOGS = 'view_all_time_logs';
+    case VIEW_DTR = 'view_dtr';
+    case VIEW_WARM_BODIES_TODAY = 'view_warm_bodies_today';
+    case UPDATE_DTR = 'update_dtr';
+    case SEARCH_TIME_LOGS = 'search_time_logs';
 }

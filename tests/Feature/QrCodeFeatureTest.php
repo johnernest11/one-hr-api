@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Enums\Role as RoleEnum;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
-use App\Models\QrCode;
+use App\Models\DailyTimeRecords\QrCode;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Crypt;
