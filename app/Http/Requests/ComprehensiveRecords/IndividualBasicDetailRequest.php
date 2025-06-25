@@ -125,7 +125,6 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_contact_info.*.email_address' => ['nullable', 'email', 'unique:individual_contact_infos,email_address,'.request('individual_contact_info.0.id')], // Get the first record on the array since this is a has one relationship anyway. Ignore uniqueness when id is given.
             'individual_contact_info.*.tel_no' => [
                 'nullable',
-                new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->fixedLine(),
             ],
 
@@ -138,7 +137,6 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_family.*.business_address' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_family.*.telephone_no' => [
                 'nullable',
-                new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->mobile(),
             ],
             'individual_family.*._delete' => ['nullable', 'boolean'], // Can delete family members.
@@ -259,7 +257,6 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_reference.*.name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_reference.*.address' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_reference.*.tel_no' => ['nullable',
-                new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')], // Can be either mobile or tele
         ];
     }
@@ -372,7 +369,6 @@ class IndividualBasicDetailRequest extends FormRequest
             ],
             'individual_contact_info.*.tel_no' => [
                 'nullable',
-                new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')->fixedLine(),
             ],
 
@@ -584,7 +580,6 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_reference.*.name' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_reference.*.address' => ['nullable', 'string', new DbVarcharMaxLength()],
             'individual_reference.*.tel_no' => ['nullable',
-                new InternationalPhoneNumberFormat(),
                 (new PhoneRule())->country('PH')], // Can be either mobile or tele
             'individual_reference.*._delete' => ['nullable', 'boolean'], // Can delete references
         ];
