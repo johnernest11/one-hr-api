@@ -41,6 +41,11 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         Permission::create(['name' => PermissionEnum::UPDATE_EMPLOYEE_PDS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::DELETE_EMPLOYEE_PDS, 'guard_name' => 'token']);
 
+        Permission::create(['name' => PermissionEnum::UPDATE_DTR, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_DTR, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_WARM_BODIES_TODAY, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::SEARCH_TIME_LOGS, 'guard_name' => 'token']);
+
         /** @var Role $standardRole */
         $standardRole = Role::create(['name' => RoleEnum::STANDARD_USER, 'guard_name' => 'token']);
         $standardRole->givePermissionTo(Permission::all());
@@ -63,6 +68,8 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         Permission::create(['name' => PermissionEnum::UPDATE_APP_SETTINGS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::GENERATE_READ_UPDATE_QR_CODE, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VERIFY_QR_CODE, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::LOG_TIME, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_ALL_TIME_LOGS, 'guard_name' => 'token']);
 
         /** @var Role $hrPasAdminRole */
         $hrPasAdminRole = Role::create(['name' => RoleEnum::HR_PAS_ADMIN, 'guard_name' => 'token']);
@@ -72,9 +79,14 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         Permission::create(['name' => PermissionEnum::UPDATE_ITEMS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_ITEMS, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::CREATE_EMPLOYEE_PDS, 'guard_name' => 'token']);
+
         /** @var Role $hrPpmsAdminRole */
         $hrPpmsAdminRole = Role::create(['name' => RoleEnum::HR_PPMS_ADMIN, 'guard_name' => 'token']);
-        $hrPpmsAdminRole->givePermissionTo(Permission::whereNotIn('name', [PermissionEnum::GENERATE_READ_UPDATE_QR_CODE->value])->get()); // PPMS cannot generate QR code for employees
+        $hrPpmsAdminRole->givePermissionTo(Permission::whereNotIn('name', [
+            PermissionEnum::GENERATE_READ_UPDATE_QR_CODE->value, // PPMS cannot generate QR code for employees
+            PermissionEnum::VIEW_ALL_TIME_LOGS->value, // PPMS cannot view the dashboard for time logs
+            PermissionEnum::LOG_TIME->value, // PPMS cannot scan QR for time logs
+        ])->get());
 
         /** @var Role $adminRole */
         $adminRole = Role::create(['name' => RoleEnum::ADMIN, 'guard_name' => 'token']);

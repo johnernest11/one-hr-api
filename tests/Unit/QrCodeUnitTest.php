@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
-use App\Models\QrCode;
+use App\Models\DailyTimeRecords\QrCode;
 use App\Services\DailyTimeRecords\QrCodeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

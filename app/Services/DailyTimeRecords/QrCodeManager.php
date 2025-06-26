@@ -3,7 +3,7 @@
 namespace App\Services\DailyTimeRecords;
 
 use App\Models\ComprehensiveRecords\Employee;
-use App\Models\QrCode;
+use App\Models\DailyTimeRecords\QrCode;
 
 interface QrCodeManager
 {

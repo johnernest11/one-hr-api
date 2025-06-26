@@ -7,10 +7,12 @@ use App\Auth\ApiKeyGuard;
 use App\Auth\ApiKeyProvider;
 use App\Auth\MultiTokenGuard;
 use App\Models\AccomplishmentReport;
+use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\User;
 use App\Policies\AccomplishmentReportPolicy;
 use App\Policies\ComprehensiveRecords\IndividualBasicDetailPolicy;
+use App\Policies\EmployeePolicy;
 use App\Policies\UserPolicy;
 use App\Services\ApiKeyManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
@@ -33,8 +35,8 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         User::class => UserPolicy::class,
         AccomplishmentReport::class => AccomplishmentReportPolicy::class,
-        //@todo Update Policy
         IndividualBasicDetail::class => IndividualBasicDetailPolicy::class,
+        Employee::class => EmployeePolicy::class,
     ];
 
     public function register(): void
