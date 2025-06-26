@@ -122,6 +122,46 @@ class DailyTimeRecordFeatureTest extends TestCase
         $this->assertEquals(3, $response['pagination']['total']);
     }
 
+    public function test_it_can_filter_dtr_per_date_range(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
+
+        $startDate = Carbon::create(2025, 6, 1); // Sample Start Date
+        $numberOfDTRs = 3;
+        for ($i = 0; $i < $numberOfDTRs; $i++) {
+            $currentDate = $startDate->copy()->addDays($i)->toDateString();
+
+            $dailyTimeRecord = DailyTimeRecord::factory()->create([
+                'employee_id' => $employee->id,
+                'date' => $currentDate,
+            ]);
+
+            $timeLogs = TimeLog::factory()
+                ->forDailyTimeRecord($dailyTimeRecord) // link created DTR
+                ->alternatingIsIn()
+                ->count(2)
+                ->create([
+                    'scanned_time' => Carbon::parse($currentDate.' 08:00:00')->toTimeString(), // First log (IN)
+                ])
+                ->each(function (TimeLog $log, int $key) use ($currentDate) {
+                    // Manually adjust the second log's time to be later
+                    if ($key === 1) { // This is the second log created (index 1)
+                        $log->scanned_time = Carbon::parse($currentDate.' 17:00:00')->toTimeString();
+                        $log->save(); // Save the adjusted time
+                    }
+                });
+        }
+
+        $startDate = '2025-06-01';
+        $endDate = '2025-06-15';
+
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/'.$employee->id.'/daily-time-records/view-dtr?start_date='.$startDate.'&end_date='.$endDate);
+        $response->assertStatus(200);
+
+        $this->assertEquals(3, $response['pagination']['total']);
+    }
+
     public function test_it_can_update_dtr(): void
     {
         $individual = IndividualBasicDetail::factory()->create();
