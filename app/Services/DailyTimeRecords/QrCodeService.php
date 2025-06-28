@@ -65,9 +65,9 @@ class QrCodeService implements QrCodeManager
     }
 
     /** {@inheritDoc} */
-    public function read(Employee $employee): QrCode
+    public function read(Employee $employee): ?QrCode
     {
-        $qrCode = $this->model->whereBelongsTo($employee)->firstOrFail();
+        $qrCode = $this->model->where('employee_id', $employee->id)->first();
 
         return $qrCode;
     }
