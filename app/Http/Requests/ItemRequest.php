@@ -43,7 +43,7 @@ class ItemRequest extends FormRequest
     public function getStoreUpdateItemRule(): array
     {
         return [
-            'number' => ['required', 'string', new DbVarcharMaxLength()],
+            'number' => ['required', 'unique:items,number', 'string', new DbVarcharMaxLength()],
             'date_of_creation' => ['required', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
             'status' => ['required', new Enum(ItemStatus::class)],
             'date_filled_up' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
