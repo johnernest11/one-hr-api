@@ -43,7 +43,7 @@ class QrCodeController extends ApiController
         if (! $qrCode) {
             return $this->error(
                 'Employee has no QR code yet.',
-                Response::HTTP_OK,
+                Response::HTTP_NOT_FOUND,
                 ApiErrorCode::RESOURCE_NOT_FOUND
             );
 
