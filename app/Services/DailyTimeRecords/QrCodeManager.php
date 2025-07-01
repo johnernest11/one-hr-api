@@ -13,9 +13,9 @@ interface QrCodeManager
     public function create(Employee $employee): QrCode;
 
     /**
-     * Fetch a single QR code
+     * Fetch a single QR code. Return null if the QrCode does not exist.
      */
-    public function read(Employee $employee): QrCode;
+    public function read(Employee $employee): ?QrCode;
 
     /**
      * Update QR Code
