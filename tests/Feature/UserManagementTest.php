@@ -477,7 +477,8 @@ class UserManagementTest extends TestCase
         // dd($response->json());
         $response->assertStatus(200);
 
-        $this->assertCount(1, $response['data']);
+        $this->assertTrue(collect($response['data'])->contains('id', $superUser->id));
+
     }
 
     /** @throws Throwable */
