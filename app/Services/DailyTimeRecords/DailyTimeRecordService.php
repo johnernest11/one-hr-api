@@ -80,7 +80,7 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         request()->merge(['date' => Carbon::today()->toDateString()]);
 
         /** @var Builder $dailyTimeRecord */
-        $query = $this->model->filtered();
+        $query = $this->model->filtered()->currentlyInsideOnly();
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
@@ -185,12 +185,12 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         // If it is on PAS dashboard, then this can be chained with all the filters.
         if ($isMyProfile) {
             request()->merge(['date' => Carbon::today()->toDateString()]); // Use request() since passing the request for merging here does not work for some reason.
+            $query = $this->model->filtered()->currentlyInsideOnly(); // Filter for the employees currently inside if query is in my profile
+        } else {
+            // Filter first, then query for name.
+            /** @var Builder $dailyTimeRecord */
+            $query = $this->model->filtered();
         }
-
-        // Filter first, then query for name.
-        /** @var Builder $dailyTimeRecord */
-        $query = $this->model->filtered();
-
         // @todo This can be a fulltext search, however it is not optimized for tests. So for now, we will compare by using like.
         $updatedQuery = $query->where(function (Builder $q) use ($term) {
             $q->where('individual_basic_details.first_name', 'like', "%$term%")

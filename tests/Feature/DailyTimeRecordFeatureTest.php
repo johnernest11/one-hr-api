@@ -80,7 +80,10 @@ class DailyTimeRecordFeatureTest extends TestCase
         $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-warm-bodies-today');
         $response->assertStatus(200);
 
-        $this->assertEquals(3, $response['pagination']['total']);
+        // Will now expect 2 logs as result. This is because in $timelogsToday, 3 records where created for 3 employees,
+        // but they have the following values for is_in: true, false, true; in that order.
+        // Therefore, the updated API will now only register 2 warm bodies, or 2 employees currently in, since one has timed out.
+        $this->assertEquals(2, $response['pagination']['total']);
     }
 
     public function test_it_can_view_dtr_per_month(): void
@@ -272,17 +275,10 @@ class DailyTimeRecordFeatureTest extends TestCase
         $timeLogs = TimeLog::factory()
             ->forDailyTimeRecord($dailyTimeRecord) // link created DTR
             ->alternatingIsIn()
-            ->count(2)
+            ->count(1) // Adjusted count so that the last record created is a time in.
             ->create([
                 'scanned_time' => Carbon::parse($date.' 08:00:00')->toTimeString(), // First log (IN)
-            ])
-            ->each(function (TimeLog $log, int $key) use ($date) {
-                // Manually adjust the second log's time to be later
-                if ($key === 1) { // This is the second log created (index 1)
-                    $log->scanned_time = Carbon::parse($date.' 17:00:00')->toTimeString();
-                    $log->save(); // Save the adjusted time
-                }
-            });
+            ]);
 
         $name = $ownData->first_name;
 
@@ -291,7 +287,8 @@ class DailyTimeRecordFeatureTest extends TestCase
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson()['data'];
-        $this->assertEquals($date, $response[0]['dtr_date']);
+        // Should now be able to find the employee generated via factory. Last record generated is a time in, therefore the employee is currently inside the office.
+        $this->assertEquals($name, $response[0]['first_name']);
 
     }
 }
