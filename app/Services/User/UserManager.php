@@ -48,6 +48,17 @@ class UserManager implements UserAccountManager, UserCredentialManager
             ]);
         }
 
+        // Check if the individual_basic_detail_id is already linked
+        if (! empty($userInfo['individual_basic_detail_id'])) {
+            $alreadyLinked = UserProfile::where('individual_basic_detail_id', $userInfo['individual_basic_detail_id'])->exists();
+
+            if ($alreadyLinked) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'individual_basic_detail_id' => ['This employee is already linked to another user.'],
+                ]);
+            }
+        }
+
         return DB::transaction(function () use ($userInfo) {
             $userCredentials = [
                 'email' => $userInfo['email'],
@@ -65,6 +76,7 @@ class UserManager implements UserAccountManager, UserCredentialManager
             $user = User::create($userCredentials);
 
             $userRoles = empty($userInfo['roles']) ? [Role::STANDARD_USER->value] : $userInfo['roles'];
+
             $user->syncRoles($userRoles);
             $user = $user->fresh();
 
@@ -81,8 +93,10 @@ class UserManager implements UserAccountManager, UserCredentialManager
                 'region_id',
                 'postal_code',
             ];
-            $user->userProfile()->create(Arr::except($userInfo, $exemptedAttributes));
+            $profileFields = Arr::except($userInfo, $exemptedAttributes);
+            $profileFields['individual_basic_detail_id'] = $userInfo['individual_basic_detail_id'] ?? null;
 
+            $user->userProfile()->create($profileFields);
             // Set the Address fields
             $user->userProfile->address()->create(Arr::only(
                 $userInfo,
@@ -109,6 +123,7 @@ class UserManager implements UserAccountManager, UserCredentialManager
      */
     public function update(User|int|string $modelOrId, array $newUserInfo): User
     {
+
         return DB::transaction(function () use ($modelOrId, $newUserInfo) {
             /** @var User $user */
             $user = $this->retrieveModel($modelOrId, User::query());
@@ -116,22 +131,60 @@ class UserManager implements UserAccountManager, UserCredentialManager
             unset($newUserInfo['password_confirmation']);
 
             if (isset($newUserInfo['email_verified'])) {
-                $newUserInfo['email_verified_at'] = $newUserInfo['email_verified'] ? Carbon::now('utc') : null;
+                $newUserInfo['email_verified_at'] = $newUserInfo['email_verified']
+                    ? Carbon::now('utc')
+                    : null;
                 unset($newUserInfo['email_verified']);
             }
 
-            $user->update(Arr::only($newUserInfo, ['email', 'password', 'active', 'email_verified_at']));
-            $user->userProfile()->update(
-                Arr::except($newUserInfo, ['email', 'password', 'active', 'email_verified_at', 'roles', 'home_address',
-                    'barangay_id', 'city_id', 'province_id', 'region_id', 'postal_code',
-                ])
+            // Update the basic user fields
+            $user->update(
+                Arr::only($newUserInfo, ['email', 'password', 'active', 'email_verified_at'])
             );
 
-            // Update the address fields
-            $user->userProfile->address()->update(Arr::only(
-                $newUserInfo,
-                ['home_address', 'barangay_id', 'city_id', 'province_id', 'region_id', 'postal_code']
-            ));
+            // Check for duplicate individual_basic_detail_id if it's being changed
+            if (! empty($newUserInfo['individual_basic_detail_id'])) {
+                $existingUserId = UserProfile::where('individual_basic_detail_id', $newUserInfo['individual_basic_detail_id'])
+                    ->where('user_id', '!=', $user->id)
+                    ->value('user_id');
+
+                if ($existingUserId) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'individual_basic_detail_id' => ['This employee is already linked to another user.'],
+                    ]);
+                }
+            }
+
+            $profileFields = Arr::only($newUserInfo, [
+                'first_name',
+                'last_name',
+                'middle_name',
+                'ext_name',
+                'sex',
+                'birthday',
+                'mobile_number',
+                'telephone_number',
+                'individual_basic_detail_id',
+            ]);
+
+            $addressFields = Arr::only($newUserInfo, [
+                'home_address',
+                'barangay_id',
+                'city_id',
+                'province_id',
+                'region_id',
+                'postal_code',
+            ]);
+
+            $userProfile = $user->userProfile()->updateOrCreate(
+                ['user_id' => $user->id],
+                $profileFields
+            );
+
+            $userProfile->address()->updateOrCreate(
+                ['user_profile_id' => $userProfile->id],
+                $addressFields
+            );
 
             if (isset($newUserInfo['roles'])) {
                 $user->syncRoles($newUserInfo['roles']);
