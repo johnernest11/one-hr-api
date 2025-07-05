@@ -8,6 +8,8 @@ use App\QueryFilters\DailyTimeRecords\DateFilter;
 use App\QueryFilters\DailyTimeRecords\DivisionFilter;
 use App\QueryFilters\DailyTimeRecords\SectionFilter;
 use App\QueryFilters\DailyTimeRecords\TimeInOrOutFilter;
+use Carbon\Carbon;
+use DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -65,6 +67,7 @@ class DailyTimeRecord extends Model
                     // daily_time_records
                     'daily_time_records.date AS dtr_date',
                     // time_logs
+                    'time_logs.id AS time_log_id',
                     'time_logs.is_in',
                     'time_logs.scanned_time',
                     'time_logs.date AS time_log_date',
@@ -90,6 +93,29 @@ class DailyTimeRecord extends Model
                 TimeInOrOutFilter::class,
             ])
             ->thenReturn();
+    }
+
+    public function scopeCurrentlyInsideOnly(Builder $query): Builder
+    {
+        $today = Carbon::now()->toDateString();
+
+        // Subquery: get latest scan time for each employee today
+        $latestScanPerEmployee = DB::table('time_logs as tl')
+            ->join('daily_time_records as dtr', 'tl.daily_time_record_id', '=', 'dtr.id')
+            ->where('tl.date', $today)
+            ->groupBy('dtr.employee_id')
+            ->select([
+                'dtr.employee_id',
+                DB::raw('MAX(tl.scanned_time) as latest_time'),
+            ]);
+
+        // Join the subquery and filter for latest "IN" scan
+        return $query
+            ->joinSub($latestScanPerEmployee, 'latest_logs', function ($join) {
+                $join->on('employees.id', '=', 'latest_logs.employee_id');
+                $join->on('time_logs.scanned_time', '=', 'latest_logs.latest_time');
+            })
+            ->where('time_logs.is_in', 1);
     }
 
     /**
