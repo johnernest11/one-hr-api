@@ -18,7 +18,9 @@ class DailyTimeRecordFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
-    private string $baseUri = self::BASE_API_URI.'/employees';
+    private string $baseUri = self::BASE_API_URI.'/employees/daily-time-records';
+
+    private string $uriWithId = self::BASE_API_URI.'/employees';
 
     private User $user_ppms;
 
@@ -66,7 +68,7 @@ class DailyTimeRecordFeatureTest extends TestCase
     {
         $timelogs = TimeLog::factory(5)->alternatingIsIn()->create();
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-time-logs');
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/time-logs');
         $response->assertStatus(200);
 
         $this->assertEquals(5, $response['pagination']['total']);
@@ -120,7 +122,7 @@ class DailyTimeRecordFeatureTest extends TestCase
             ->create();
 
         // Call API
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/count-warm-bodies');
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/warm-bodies/count');
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson()['data'];
@@ -148,7 +150,7 @@ class DailyTimeRecordFeatureTest extends TestCase
             ]);
 
         // Call API
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/count-warm-bodies');
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/warm-bodies/count');
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson()['data'];
@@ -175,7 +177,7 @@ class DailyTimeRecordFeatureTest extends TestCase
         $timelogsToday = TimeLog::factory(3)->alternatingIsIn()->setDate($dateToday)->create();
         $timelogsRandom = TimeLog::factory(5)->alternatingIsIn()->create();
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-warm-bodies-today');
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/warm-bodies/today');
         $response->assertStatus(200);
 
         // Will now expect 2 logs as result. This is because in $timelogsToday, 3 records where created for 3 employees,
@@ -217,7 +219,7 @@ class DailyTimeRecordFeatureTest extends TestCase
 
         $month = '2025-06';
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/'.$employee->id.'/daily-time-records/view-dtr?month='.$month);
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->uriWithId.'/'.$employee->id.'/daily-time-records/view-dtr?month='.$month);
         $response->assertStatus(200);
 
         $this->assertEquals(3, $response['pagination']['total']);
@@ -257,7 +259,7 @@ class DailyTimeRecordFeatureTest extends TestCase
         $startDate = '2025-06-01';
         $endDate = '2025-06-15';
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/'.$employee->id.'/daily-time-records/view-dtr?start_date='.$startDate.'&end_date='.$endDate);
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->uriWithId.'/'.$employee->id.'/daily-time-records/view-dtr?start_date='.$startDate.'&end_date='.$endDate);
         $response->assertStatus(200);
 
         $this->assertEquals(3, $response['pagination']['total']);
@@ -313,7 +315,7 @@ class DailyTimeRecordFeatureTest extends TestCase
             ],
         ];
 
-        $response = $this->withToken($this->authTokenPAS)->putJson($this->baseUri.'/'.$employee->id.'/daily-time-records', $updatedData);
+        $response = $this->withToken($this->authTokenPAS)->putJson($this->uriWithId.'/'.$employee->id.'/daily-time-records', $updatedData);
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson()['data'];
@@ -351,7 +353,7 @@ class DailyTimeRecordFeatureTest extends TestCase
 
         $name = $individual->first_name;
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/search-time-logs?query=$name&is_my_profile=0");
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/time-logs?query=$name&is_my_profile=0");
         $response->assertStatus(200);
 
         $this->assertEquals($date, $response['data'][0]['dtr_date']);
@@ -380,8 +382,8 @@ class DailyTimeRecordFeatureTest extends TestCase
 
         $name = $ownData->first_name;
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-time-logs');
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/search-time-logs?query=$name&is_my_profile=1");
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/time-logs');
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/time-logs/search?query=$name&is_my_profile=1");
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson()['data'];
