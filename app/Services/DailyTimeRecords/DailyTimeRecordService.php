@@ -41,6 +41,72 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
     }
 
+    /** {@inheritDoc} */
+    public function countWarmBodies(): array
+    {
+        $date = now()->toDateString();
+
+        /* ---------- 1. latest log per employee ---------- */
+        $latestLogSub = DB::table('time_logs as tl')
+            ->join('daily_time_records as dtr', 'tl.daily_time_record_id', '=', 'dtr.id')
+            ->select('dtr.employee_id', 'tl.is_in')
+            ->whereDate('dtr.date', $date)
+            ->whereRaw('tl.id = (                     
+                SELECT MAX(tl2.id)
+                FROM time_logs tl2
+                JOIN daily_time_records dtr2 ON dtr2.id = tl2.daily_time_record_id
+                WHERE dtr2.employee_id = dtr.employee_id
+            )');
+
+        /* ---------- 2. section‑level roll‑up ---------- */
+        $perSection = DB::table('employees as e')
+            ->join('divisions as d', 'e.division_id', '=', 'd.id')
+            ->join('section_or_units as s', 'e.section_or_unit_id', '=', 's.id')
+            ->leftJoinSub($latestLogSub, 'latest_logs', 'e.id', '=', 'latest_logs.employee_id')
+            ->groupBy('e.division_id', 'd.name', 's.id', 's.name')
+            ->selectRaw('
+                e.division_id          as division_id,
+                d.name                 as division_name,
+                s.id                   as section_id,
+                s.name                 as section_name,
+                COUNT(e.id)                                                                as total_employees,
+                CAST(SUM(CASE WHEN latest_logs.is_in = 1 THEN 1 ELSE 0 END) AS UNSIGNED)   as in_office,
+                CAST(SUM(CASE WHEN latest_logs.is_in = 0 OR latest_logs.is_in IS NULL
+                        THEN 1 ELSE 0 END) AS UNSIGNED)                                    as out_of_office
+            ')
+            ->get();
+
+        /* ---------- 3. division‑level roll‑up ---------- */
+        $perDivision = $perSection
+            ->groupBy('division_id')
+            ->map(function ($sections, $divisionId) {
+                return [
+                    'division_id' => $divisionId,
+                    'division_name' => $sections->first()->division_name,
+                    'total_employees' => $sections->sum('total_employees'),
+                    'in_office' => $sections->sum('in_office'),
+                    'out_of_office' => $sections->sum('out_of_office'),
+                    'sections' => $sections->values(),
+                ];
+            })
+            ->values();
+
+        /* ---------- 4. grand totals ---------- */
+        $totals = [
+            'total_employees' => $perSection->sum('total_employees'),
+            'in_office' => $perSection->sum('in_office'),
+            'out_of_office' => $perSection->sum('out_of_office'),
+        ];
+
+        /* ---------- 5. final payload ---------- */
+        return [
+            'date' => $date,
+            ...$totals,
+            'per_division' => $perDivision,
+            'per_section' => $perSection,
+        ];
+    }
+
     /**
      * Get start and end date based on passed month and year.
      *

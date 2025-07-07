@@ -7,6 +7,7 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Models\Libraries\SectionOrUnit;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Carbon\Carbon;
@@ -69,6 +70,103 @@ class DailyTimeRecordFeatureTest extends TestCase
         $response->assertStatus(200);
 
         $this->assertEquals(5, $response['pagination']['total']);
+    }
+
+    private function createEmployeeWithDivision(int $divisionId): Employee
+    {
+        $sectionId = SectionOrUnit::where('division_id', $divisionId)->first()->id;
+
+        $individual = IndividualBasicDetail::factory()
+            ->afterCreating(function (IndividualBasicDetail $individual) use ($divisionId, $sectionId) {
+                $individual->employee->update([
+                    'division_id' => $divisionId,
+                    'section_or_unit_id' => $sectionId,
+                ]);
+            })
+            ->create();
+
+        return $individual->employee;
+    }
+
+    public function test_it_can_count_warm_bodies(): void
+    {
+        $currentDate = now()->toDateString();
+        $selectedDivId = 2;
+        $selectedSecId = SectionOrUnit::where('division_id', $selectedDivId)->first()->id;
+
+        // Generate Sample Employee
+        $employee1 = $this->createEmployeeWithDivision($selectedDivId);
+        $employee2 = $this->createEmployeeWithDivision($selectedDivId);
+
+        // Generate Time Log (2 employees are in the office)
+        $dailyTimeRecord1 = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee1->id,
+            'date' => $currentDate,
+        ]);
+
+        TimeLog::factory()
+            ->forDailyTimeRecord($dailyTimeRecord1)
+            ->alternatingIsIn()
+            ->create();
+
+        $dailyTimeRecord2 = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee2->id,
+            'date' => $currentDate,
+        ]);
+
+        TimeLog::factory()
+            ->forDailyTimeRecord($dailyTimeRecord2)
+            ->alternatingIsIn()
+            ->create();
+
+        // Call API
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/count-warm-bodies');
+        $response->assertStatus(200);
+
+        $response = $response->decodeResponseJson()['data'];
+
+        // Assert Employee Count
+        $this->assertSame(Employee::count(), $response['total_employees']);
+
+        // Assert that division summary is correct (Both employees are in the office.)
+        $div = collect($response['per_division'])->firstWhere('division_id', $selectedDivId);
+        $this->assertSame(2, $div['in_office']);
+        $this->assertSame(0, $div['out_of_office']);
+        $this->assertSame(2, $div['total_employees']);
+
+        // Assert that section summary is correct (Both employees are in the office.)
+        $sec = collect($response['per_section'])->firstWhere('section_id', $selectedSecId);
+        $this->assertSame(2, $sec['in_office']);
+        $this->assertSame(0, $sec['out_of_office']);
+        $this->assertSame(2, $sec['total_employees']);
+
+        // Generate Time Log (1 employee is now out of the office)
+        TimeLog::factory()
+            ->forDailyTimeRecord($dailyTimeRecord2)
+            ->create([
+                'is_in' => 0,
+            ]);
+
+        // Call API
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/count-warm-bodies');
+        $response->assertStatus(200);
+
+        $response = $response->decodeResponseJson()['data'];
+
+        // Assert Employee Count
+        $this->assertSame(Employee::count(), $response['total_employees']);
+
+        // Assert that division summary is correct (One of the employees are now not in the office.)
+        $div = collect($response['per_division'])->firstWhere('division_id', $selectedDivId);
+        $this->assertSame(1, $div['in_office']);
+        $this->assertSame(1, $div['out_of_office']);
+        $this->assertSame(2, $div['total_employees']);
+
+        // Assert that section summary is correct (One of the employees are now not in the office.)
+        $sec = collect($response['per_section'])->firstWhere('section_id', $selectedSecId);
+        $this->assertSame(1, $sec['in_office']);
+        $this->assertSame(1, $sec['out_of_office']);
+        $this->assertSame(2, $div['total_employees']);
     }
 
     public function test_it_can_view_all_warm_bodies_today(): void
