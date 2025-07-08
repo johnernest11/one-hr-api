@@ -17,6 +17,12 @@ interface DailyTimeRecordManager
     public function all(): LengthAwarePaginator;
 
     /**
+     * Count how many employees are currently inside the office and how many are not.
+     * This will consider employees that did not go to the office today.
+     */
+    public function countWarmBodies(): array;
+
+    /**
      * View daily time records per month.
      */
     public function viewDtrPerPeriodRange(Employee $employee, array $request): LengthAwarePaginator;

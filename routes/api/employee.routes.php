@@ -47,18 +47,22 @@ Route::middleware(['auth:token', 'verified.api'])->group(function () {
 
     });
 
-    Route::controller(DailyTimeRecordController::class)->name('daily-time-records.')->group(function () {
+    Route::prefix('daily-time-records')->controller(DailyTimeRecordController::class)->name('daily-time-records.')->group(function () {
         /** @uses DailyTimeRecordController::index */
         Route::middleware(['permission:'.Permission::VIEW_ALL_TIME_LOGS->value])
-            ->get('/view-time-logs', 'index')->name('index');
+            ->get('/time-logs', 'index')->name('index');
+
+        /** @uses DailyTimeRecordController::countWarmBodies */
+        Route::middleware(['permission:'.Permission::VIEW_ALL_TIME_LOGS->value])
+            ->get('/warm-bodies/count', 'countWarmBodies')->name('count-warm-bodies');
 
         /** @uses DailyTimeRecordController::viewWarmBodiesToday */
         Route::middleware(['permission:'.Permission::VIEW_WARM_BODIES_TODAY->value])
-            ->get('/view-warm-bodies-today', 'viewWarmBodiesToday')->name('view-warm-bodies-today');
+            ->get('/warm-bodies/today', 'viewWarmBodiesToday')->name('view-warm-bodies-today');
 
         /** @uses DailyTimeRecordController::search */
         Route::middleware(['permission:'.Permission::SEARCH_TIME_LOGS->value])
-            ->get('/search-time-logs', 'search')->name('search-time-logs');
+            ->get('/time-logs/search', 'search')->name('search-time-logs');
     });
 
 });

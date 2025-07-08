@@ -7,6 +7,7 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Models\Libraries\SectionOrUnit;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Carbon\Carbon;
@@ -17,7 +18,9 @@ class DailyTimeRecordFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
-    private string $baseUri = self::BASE_API_URI.'/employees';
+    private string $baseUri = self::BASE_API_URI.'/employees/daily-time-records';
+
+    private string $uriWithId = self::BASE_API_URI.'/employees';
 
     private User $user_ppms;
 
@@ -65,10 +68,107 @@ class DailyTimeRecordFeatureTest extends TestCase
     {
         $timelogs = TimeLog::factory(5)->alternatingIsIn()->create();
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-time-logs');
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/time-logs');
         $response->assertStatus(200);
 
         $this->assertEquals(5, $response['pagination']['total']);
+    }
+
+    private function createEmployeeWithDivision(int $divisionId): Employee
+    {
+        $sectionId = SectionOrUnit::where('division_id', $divisionId)->first()->id;
+
+        $individual = IndividualBasicDetail::factory()
+            ->afterCreating(function (IndividualBasicDetail $individual) use ($divisionId, $sectionId) {
+                $individual->employee->update([
+                    'division_id' => $divisionId,
+                    'section_or_unit_id' => $sectionId,
+                ]);
+            })
+            ->create();
+
+        return $individual->employee;
+    }
+
+    public function test_it_can_count_warm_bodies(): void
+    {
+        $currentDate = now()->toDateString();
+        $selectedDivId = 2;
+        $selectedSecId = SectionOrUnit::where('division_id', $selectedDivId)->first()->id;
+
+        // Generate Sample Employee
+        $employee1 = $this->createEmployeeWithDivision($selectedDivId);
+        $employee2 = $this->createEmployeeWithDivision($selectedDivId);
+
+        // Generate Time Log (2 employees are in the office)
+        $dailyTimeRecord1 = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee1->id,
+            'date' => $currentDate,
+        ]);
+
+        TimeLog::factory()
+            ->forDailyTimeRecord($dailyTimeRecord1)
+            ->alternatingIsIn()
+            ->create();
+
+        $dailyTimeRecord2 = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee2->id,
+            'date' => $currentDate,
+        ]);
+
+        TimeLog::factory()
+            ->forDailyTimeRecord($dailyTimeRecord2)
+            ->alternatingIsIn()
+            ->create();
+
+        // Call API
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/warm-bodies/count');
+        $response->assertStatus(200);
+
+        $response = $response->decodeResponseJson()['data'];
+
+        // Assert Employee Count
+        $this->assertSame(Employee::count(), $response['total_employees']);
+
+        // Assert that division summary is correct (Both employees are in the office.)
+        $div = collect($response['per_division'])->firstWhere('division_id', $selectedDivId);
+        $this->assertSame(2, $div['in_office']);
+        $this->assertSame(0, $div['out_of_office']);
+        $this->assertSame(2, $div['total_employees']);
+
+        // Assert that section summary is correct (Both employees are in the office.)
+        $sec = collect($response['per_section'])->firstWhere('section_id', $selectedSecId);
+        $this->assertSame(2, $sec['in_office']);
+        $this->assertSame(0, $sec['out_of_office']);
+        $this->assertSame(2, $sec['total_employees']);
+
+        // Generate Time Log (1 employee is now out of the office)
+        TimeLog::factory()
+            ->forDailyTimeRecord($dailyTimeRecord2)
+            ->create([
+                'is_in' => 0,
+            ]);
+
+        // Call API
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/warm-bodies/count');
+        $response->assertStatus(200);
+
+        $response = $response->decodeResponseJson()['data'];
+
+        // Assert Employee Count
+        $this->assertSame(Employee::count(), $response['total_employees']);
+
+        // Assert that division summary is correct (One of the employees are now not in the office.)
+        $div = collect($response['per_division'])->firstWhere('division_id', $selectedDivId);
+        $this->assertSame(1, $div['in_office']);
+        $this->assertSame(1, $div['out_of_office']);
+        $this->assertSame(2, $div['total_employees']);
+
+        // Assert that section summary is correct (One of the employees are now not in the office.)
+        $sec = collect($response['per_section'])->firstWhere('section_id', $selectedSecId);
+        $this->assertSame(1, $sec['in_office']);
+        $this->assertSame(1, $sec['out_of_office']);
+        $this->assertSame(2, $div['total_employees']);
     }
 
     public function test_it_can_view_all_warm_bodies_today(): void
@@ -77,7 +177,7 @@ class DailyTimeRecordFeatureTest extends TestCase
         $timelogsToday = TimeLog::factory(3)->alternatingIsIn()->setDate($dateToday)->create();
         $timelogsRandom = TimeLog::factory(5)->alternatingIsIn()->create();
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-warm-bodies-today');
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/warm-bodies/today');
         $response->assertStatus(200);
 
         // Will now expect 2 logs as result. This is because in $timelogsToday, 3 records where created for 3 employees,
@@ -119,7 +219,7 @@ class DailyTimeRecordFeatureTest extends TestCase
 
         $month = '2025-06';
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/'.$employee->id.'/daily-time-records/view-dtr?month='.$month);
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->uriWithId.'/'.$employee->id.'/daily-time-records/view-dtr?month='.$month);
         $response->assertStatus(200);
 
         $this->assertEquals(3, $response['pagination']['total']);
@@ -159,7 +259,7 @@ class DailyTimeRecordFeatureTest extends TestCase
         $startDate = '2025-06-01';
         $endDate = '2025-06-15';
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/'.$employee->id.'/daily-time-records/view-dtr?start_date='.$startDate.'&end_date='.$endDate);
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->uriWithId.'/'.$employee->id.'/daily-time-records/view-dtr?start_date='.$startDate.'&end_date='.$endDate);
         $response->assertStatus(200);
 
         $this->assertEquals(3, $response['pagination']['total']);
@@ -215,7 +315,7 @@ class DailyTimeRecordFeatureTest extends TestCase
             ],
         ];
 
-        $response = $this->withToken($this->authTokenPAS)->putJson($this->baseUri.'/'.$employee->id.'/daily-time-records', $updatedData);
+        $response = $this->withToken($this->authTokenPAS)->putJson($this->uriWithId.'/'.$employee->id.'/daily-time-records', $updatedData);
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson()['data'];
@@ -253,7 +353,7 @@ class DailyTimeRecordFeatureTest extends TestCase
 
         $name = $individual->first_name;
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/search-time-logs?query=$name&is_my_profile=0");
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/time-logs?query=$name&is_my_profile=0");
         $response->assertStatus(200);
 
         $this->assertEquals($date, $response['data'][0]['dtr_date']);
@@ -282,8 +382,8 @@ class DailyTimeRecordFeatureTest extends TestCase
 
         $name = $ownData->first_name;
 
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/view-time-logs');
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/search-time-logs?query=$name&is_my_profile=1");
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/time-logs');
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri."/time-logs/search?query=$name&is_my_profile=1");
         $response->assertStatus(200);
 
         $response = $response->decodeResponseJson()['data'];

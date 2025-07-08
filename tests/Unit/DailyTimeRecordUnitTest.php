@@ -137,4 +137,23 @@ class DailyTimeRecordUnitTest extends TestCase
             }
         }
     }
+
+    /**
+     * Test current warm bodies can be accurately counted
+     */
+    public function test_can_count_warm_bodies(): void
+    {
+        // Call the service
+        $result = $this->dailyTimeRecordService->countWarmBodies();
+
+        $this->assertSame(0, $result['in_office']); // Assert that there is no employee in the office.
+
+        $tl = $this->timeLogService->create($this->employee); // Generate time logs. Now an employee is in the office.
+        $this->assertDatabaseCount('daily_time_records', 1); // Check that the generated sample record exists in the db
+
+        // Call the service again.
+        $result = $this->dailyTimeRecordService->countWarmBodies();
+        $this->assertSame(1, $result['in_office']); // Assert that the log time registers and now there is an employee in the office.
+
+    }
 }
