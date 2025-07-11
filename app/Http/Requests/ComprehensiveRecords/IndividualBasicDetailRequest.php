@@ -46,6 +46,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.store' => $this->getStoreIndividualRules(),
             'individual.update' => $this->getUpdateIndividualRules(),
             'individual.search' => $this->getSearchIndividualRules(),
+            'individual.import' => $this->getImportIndividualRules(),
             default => [],
         };
     }
@@ -582,6 +583,29 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_reference.*.tel_no' => ['nullable',
                 (new PhoneRule())->country('PH')], // Can be either mobile or tele
             'individual_reference.*._delete' => ['nullable', 'boolean'], // Can delete references
+        ];
+    }
+
+    public function getImportIndividualRules(): array
+    {
+        return [
+            'excel_file' => ['required', 'max:2048', 'mimes:xlsx, xls'],
+            'is_update' => ['required', 'boolean'],
+
+            /* -------------------------------- Employee -------------------------------- */
+            'item_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'salary_grade_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'program_id' => ['nullable', 'int'],
+            'office_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'division_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'section_or_unit_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
+            'employee_id' => [
+                'nullable',
+                'int',
+                $this->validateRecordID('employees'),
+            ],
+            'id_number' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'agency_employee_no' => ['nullable', 'string', new DbTextMaxLength()],
         ];
     }
 
