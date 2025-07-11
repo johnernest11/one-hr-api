@@ -19,7 +19,7 @@ class IndividualBasicDetailPolicy
      */
     public function view(User $user, IndividualBasicDetail $individualBasicDetail): bool
     {
-        if ($user->hasAnyRole([Role::HR_PPMS_ADMIN->value, Role::ADMIN->value, Role::HR_PAS_ADMIN->value])) {
+        if ($user->hasAnyRole([Role::HR_PPMS_ADMIN->value, Role::ADMIN->value, Role::HR_PAS_ADMIN->value, Role::SUPER_USER->value])) {
             return true;
         }
 
@@ -66,7 +66,7 @@ class IndividualBasicDetailPolicy
             }
 
         }
-        if ($user->hasAnyRole([Role::HR_PPMS_ADMIN->value, Role::ADMIN->value, Role::HR_PAS_ADMIN->value])) {
+        if ($user->hasAnyRole([Role::HR_PPMS_ADMIN->value, Role::ADMIN->value, Role::HR_PAS_ADMIN->value, Role::SUPER_USER->value])) {
             return true; // give permission to update records if user's role is HR PPMS admin or HR PAS admin
         }
 
