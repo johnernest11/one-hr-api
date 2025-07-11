@@ -35,14 +35,7 @@ class IndividualBasicDetailsImport implements ToModel, WithMappedCells
     public function processEmployeeData(array $data): array
     {
         $employee = [
-            'id_number' => $data['id_number'],
-            'item_id' => $data['item_id'],
-            'salary_grade_id' => $data['salary_grade_id'],
-            'program_id' => $data['program_id'],
-            'office_id' => $data['office_id'],
-            'division_id' => $data['division_id'],
-            'section_or_unit_id' => $data['section_or_unit_id'],
-            'agency_employee_no' => $data['agency_employee_no'],
+            ...$data,
             'id' => $data['employee_id'],
         ];
 
