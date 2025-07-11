@@ -185,6 +185,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -215,6 +216,7 @@ return [
         'PaginationHelper' => \App\Facades\PaginationHelperFacade::class,
         'DateTimeHelper' => \App\Facades\DateTimeHelperFacade::class,
         'ConversionHelper' => \App\Facades\ConversionHelperFacade::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
 
 ];

@@ -21,6 +21,10 @@ use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\Item;
 use App\Models\Libraries\Country;
+use App\Models\Libraries\Division;
+use App\Models\Libraries\Office;
+use App\Models\Libraries\Program;
+use App\Models\Libraries\SalaryGrade;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Carbon\Carbon;
@@ -28,7 +32,9 @@ use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Storage;
 use Str;
 use Tests\TestCase;
 
@@ -1215,5 +1221,50 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Can View
         $response = $this->withToken($this->authTokenStandard)->getJson("$this->baseUri/$ownData->id");
         $response->assertStatus(200);
+    }
+
+    public function test_it_can_import_pds_excel(): void
+    {
+        // Assert that the databases are empty before importing
+        $this->assertDatabaseCount('individual_basic_details', 0);
+        $this->assertDatabaseCount('employees', 0);
+
+        // Process test file
+        $testExcelPath = Storage::disk('assets')->path('test_data_pds.xlsx');
+
+        // Get the file name and mime type for the UploadedFile constructor
+        $filename = basename($testExcelPath);
+        $mimeType = mime_content_type($testExcelPath);
+        $error = null; // No upload error
+        $test = true; // Mark as a test file
+
+        // Create an UploadedFile instance
+        $uploadedFile = new UploadedFile($testExcelPath, $filename, $mimeType, $error, $test);
+
+        // Generate sample data for the employee
+        $division = Division::first();
+        $section = $division->sectionOrUnits()->first();
+
+        // Payload
+        $payload = [
+            'excel_file' => $uploadedFile,
+            'is_update' => 0, // Set as false since we are creating one.
+            'employee_id' => null, // Set as null since we are creating one.
+            'id_number' => (string) fake()->randomNumber(9),
+            'item_id' => Item::factory()->create()->id,
+            'salary_grade_id' => SalaryGrade::first()->id,
+            'program_id' => Program::first()->id,
+            'office_id' => Office::first()->id,
+            'division_id' => $division->id,
+            'section_or_unit_id' => $section->id,
+            'agency_employee_no' => (string) fake()->randomNumber(9),
+        ];
+
+        $response = $this->withToken($this->authTokenStandard)->postJson("$this->baseUri/import", $payload);
+        $response->assertStatus(200);
+
+        // Assert that an individual has been created after importing.
+        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('employees', 1);
     }
 }
