@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\DailyTimeRecords\QrCodeRequest;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Services\DailyTimeRecords\QrCodeManager;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -27,8 +28,16 @@ class QrCodeController extends ApiController
      */
     public function store(Employee $employee): JsonResponse
     {
-
-        $qrCode = $this->qrCodeService->create($employee);
+        try {
+            $qrCode = $this->qrCodeService->create($employee);
+        } catch (Exception $error) {
+            // Catch error wherein the employee currently has no id number.
+            return $this->error(
+                $error->getMessage(),
+                Response::HTTP_BAD_REQUEST,
+                ApiErrorCode::BAD_REQUEST
+            );
+        }
 
         return $this->success(['data' => $qrCode], Response::HTTP_CREATED);
     }

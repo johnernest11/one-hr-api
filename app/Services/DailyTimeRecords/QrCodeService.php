@@ -7,6 +7,7 @@ use App\Models\DailyTimeRecords\QrCode;
 use App\Traits\Services\CanBuildPagination;
 use Carbon\Carbon;
 use Crypt;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 
@@ -30,6 +31,11 @@ class QrCodeService implements QrCodeManager
     public function create(Employee $employee): QrCode
     {
         return DB::transaction(function () use ($employee) {
+            // Updated such that, if the employee has no id_number, it will throw an error.
+            if (! $employee->id_number) {
+                throw new Exception('This employee has no ID number.');
+            }
+
             $encryptedId = Crypt::encrypt($employee->id_number);
             $issuedAt = Carbon::now();
 
