@@ -30,12 +30,12 @@ class QrCodeService implements QrCodeManager
      */
     public function create(Employee $employee): QrCode
     {
-        return DB::transaction(function () use ($employee) {
-            // Updated such that, if the employee has no id_number, it will throw an error.
-            if (! $employee->id_number) {
-                throw new Exception('This employee has no ID number.');
-            }
+        // Updated such that, if the employee has no id_number, it will throw an error.
+        if (! $employee->id_number) {
+            throw new Exception('This employee has no ID number.');
+        }
 
+        return DB::transaction(function () use ($employee) {
             $encryptedId = Crypt::encrypt($employee->id_number);
             $issuedAt = Carbon::now();
 
