@@ -47,15 +47,23 @@ class QrCodeController extends ApiController
      */
     public function read(Employee $employee): JsonResponse
     {
-        $qrCode = $this->qrCodeService->read($employee);
+        try {
+            $qrCode = $this->qrCodeService->read($employee);
+            if (! $qrCode) {
+                return $this->error(
+                    'Employee has no QR code yet.',
+                    Response::HTTP_NOT_FOUND,
+                    ApiErrorCode::RESOURCE_NOT_FOUND
+                );
 
-        if (! $qrCode) {
+            }
+        } catch (Exception $error) {
+            // Catch error wherein the employee currently has no id number.
             return $this->error(
-                'Employee has no QR code yet.',
-                Response::HTTP_NOT_FOUND,
-                ApiErrorCode::RESOURCE_NOT_FOUND
+                $error->getMessage(),
+                Response::HTTP_BAD_REQUEST,
+                ApiErrorCode::BAD_REQUEST
             );
-
         }
 
         return $this->success(['data' => $qrCode], Response::HTTP_OK);
