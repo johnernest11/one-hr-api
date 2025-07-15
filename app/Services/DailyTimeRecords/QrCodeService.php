@@ -73,6 +73,11 @@ class QrCodeService implements QrCodeManager
     /** {@inheritDoc} */
     public function read(Employee $employee): ?QrCode
     {
+        // Updated such that, if the employee has no id_number, it will throw an error.
+        if (! $employee->id_number) {
+            throw new Exception('This employee has no ID number.');
+        }
+
         $qrCode = $this->model->where('employee_id', $employee->id)->first();
 
         return $qrCode;
