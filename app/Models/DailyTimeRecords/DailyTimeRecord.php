@@ -59,6 +59,7 @@ class DailyTimeRecord extends Model
         return app(Pipeline::class)
             ->send($builder
                 ->join('employees', 'daily_time_records.employee_id', '=', 'employees.id')
+                ->whereNull('employees.deleted_at') // filter soft deleted employees
                 ->join('divisions', 'employees.division_id', '=', 'divisions.id')
                 ->join('section_or_units', 'employees.section_or_unit_id', '=', 'section_or_units.id')
                 ->join('individual_basic_details', 'employees.individual_basic_detail_id', '=', 'individual_basic_details.id')
@@ -111,6 +112,7 @@ class DailyTimeRecord extends Model
 
         // Join the subquery and filter for latest "IN" scan
         return $query
+            ->whereNull('employees.deleted_at') // filter soft deleted employees
             ->joinSub($latestScanPerEmployee, 'latest_logs', function ($join) {
                 $join->on('employees.id', '=', 'latest_logs.employee_id');
                 $join->on('time_logs.scanned_time', '=', 'latest_logs.latest_time');
