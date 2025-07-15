@@ -63,6 +63,7 @@ class DailyTimeRecordService implements DailyTimeRecordManager
             ->join('divisions as d', 'e.division_id', '=', 'd.id')
             ->join('section_or_units as s', 'e.section_or_unit_id', '=', 's.id')
             ->leftJoinSub($latestLogSub, 'latest_logs', 'e.id', '=', 'latest_logs.employee_id')
+            ->whereNull('e.deleted_at') // filter soft deleted employees
             ->groupBy('e.division_id', 'd.name', 's.id', 's.name')
             ->selectRaw('
                 e.division_id          as division_id,
