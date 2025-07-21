@@ -69,7 +69,9 @@ class TimeLogFeatureTest extends TestCase
         $response->assertStatus(200);
 
         $currentTime = Carbon::now()->format('H:i');
-        $this->assertEquals($currentTime, $response['data']['scanned_time']);
+        $carbonResponse = Carbon::parse($response['data']['scanned_time'])->format('H:i');
+
+        $this->assertEquals($currentTime, $carbonResponse);
 
         $this->assertDatabaseCount('time_logs', 1);
     }
@@ -86,7 +88,8 @@ class TimeLogFeatureTest extends TestCase
         $response->assertStatus(200);
 
         $currentTime = Carbon::now()->format('H:i');
-        $this->assertEquals($currentTime, $response['data']['scanned_time']);
+        $carbonResponse = Carbon::parse($response['data']['scanned_time'])->format('H:i');
+        $this->assertEquals($currentTime, $carbonResponse);
 
         $this->assertDatabaseCount('time_logs', 1);
 

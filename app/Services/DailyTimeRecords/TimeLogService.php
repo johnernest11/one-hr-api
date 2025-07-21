@@ -55,7 +55,14 @@ class TimeLogService implements TimeLogManager
                     'scanned_time' => Carbon::now()->format('H:i'),
                     'is_in' => true,
                 ];
-                $timeLog = $dtr->timeLog()->create($timeLogData);
+                $timeLog = $dtr->timeLog()->create($timeLogData)
+                    ->fresh([
+                        'dailyTimeRecord.employee:id,id_number,individual_basic_detail_id,item_id',
+                        'dailyTimeRecord.employee.item:id,position_id',
+                        'dailyTimeRecord.employee.individualBasicDetail:id,first_name,last_name,middle_name,ext_name',
+                        'dailyTimeRecord.employee.item.position:id,title',
+                        'dailyTimeRecord.employee.individualBasicDetail.userProfile:id,individual_basic_detail_id,profile_picture_path',
+                    ]);
 
                 return $timeLog;
             }

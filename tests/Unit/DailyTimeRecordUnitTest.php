@@ -90,6 +90,7 @@ class DailyTimeRecordUnitTest extends TestCase
     {
         $tl = $this->timeLogService->create($this->employee);
         $this->assertDatabaseCount('daily_time_records', 1); // Check that the generated sample record exists in the db
+        $this->assertEquals(true, $tl->is_selected);
         $dtrId = $tl->dailyTimeRecord->id;
 
         $sampleRequest = [
@@ -98,7 +99,7 @@ class DailyTimeRecordUnitTest extends TestCase
                 [
                     'id' => $dtrId,
                     'employee_remarks' => 'Test Update',
-                    'time_log' => [
+                    'time_logs' => [
                         [
                             'id' => $tl->id,
                             'is_selected' => false,
@@ -113,7 +114,8 @@ class DailyTimeRecordUnitTest extends TestCase
         $this->assertCount(1, $collectionResults);
         $dtr = $collectionResults->first();
         $this->assertEquals('Test Update', $dtr->employee_remarks);
-        $this->assertEquals(false, $tl->is_selected);
+        $updatedTl = TimeLog::find($tl->id);
+        $this->assertEquals(false, $updatedTl->is_selected);
     }
 
     /**
