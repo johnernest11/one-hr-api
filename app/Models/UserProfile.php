@@ -49,6 +49,7 @@ class UserProfile extends Model
      */
     protected $with = [
         'address',
+        'individualBasicDetail',
     ];
 
     /**
