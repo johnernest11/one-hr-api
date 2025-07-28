@@ -50,6 +50,15 @@ class IndividualBasicDetail extends Model
     ];
 
     /**
+     * Relationships to eager-load
+     *
+     * @var array<int, string>
+     */
+    protected $with = [
+        'employee',
+    ];
+
+    /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
