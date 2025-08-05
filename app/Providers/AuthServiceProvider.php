@@ -9,10 +9,12 @@ use App\Auth\MultiTokenGuard;
 use App\Models\AccomplishmentReport;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
+use App\Models\Item;
 use App\Models\User;
 use App\Policies\AccomplishmentReportPolicy;
 use App\Policies\ComprehensiveRecords\IndividualBasicDetailPolicy;
 use App\Policies\EmployeePolicy;
+use App\Policies\ItemPolicy;
 use App\Policies\UserPolicy;
 use App\Services\ApiKeyManager;
 use App\Services\Authentication\Interfaces\AuthTokenManager;
@@ -37,6 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         AccomplishmentReport::class => AccomplishmentReportPolicy::class,
         IndividualBasicDetail::class => IndividualBasicDetailPolicy::class,
         Employee::class => EmployeePolicy::class,
+        Item::class => ItemPolicy::class,
     ];
 
     public function register(): void

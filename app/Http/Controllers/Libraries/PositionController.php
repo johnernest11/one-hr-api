@@ -2,24 +2,28 @@
 
 namespace App\Http\Controllers\Libraries;
 
+use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Libraries\PositionRequest;
 use App\Models\Libraries\Position;
+use App\Traits\Services\CanBuildPagination;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class PositionController extends ApiController
 {
+    use CanBuildPagination;
+
     /**
      * Retrieve all positions
      */
     public function fetch(PositionRequest $request): JsonResponse
     {
-        // Paginate 9 per page
-        $positions = Position::filtered()->orderBy('title')->paginate(9)->toArray();
+        $query = Position::query()->filtered()->orderBy('title');
+        $positions = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
-        $positions_formatted = PaginationHelper::formatLengthAwarePagination($positions);
+        $positions_formatted = PaginationHelper::formatPagination($positions);
 
         return $this->success($positions_formatted, Response::HTTP_OK);
     }

@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers\Libraries;
 
+use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Libraries\CountryRequest;
 use App\Models\Libraries\Country;
+use App\Traits\Services\CanBuildPagination;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class CountryController extends ApiController
 {
+    use CanBuildPagination;
+
     /**
      * Retrieve all countries
      */
     public function fetch(CountryRequest $request): JsonResponse
     {
-        $countries = Country::orderBy('common_name')->paginate(9)->toArray();
+        $query = Country::query()->orderBy('common_name');
+        $countries = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
-        $countries_formatted = PaginationHelper::formatLengthAwarePagination($countries);
+        $countries_formatted = PaginationHelper::formatPagination($countries);
 
         return $this->success($countries_formatted, Response::HTTP_OK);
 

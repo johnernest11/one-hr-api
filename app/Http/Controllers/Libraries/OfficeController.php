@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers\Libraries;
 
+use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Libraries\OfficeRequest;
 use App\Models\Libraries\Office;
+use App\Traits\Services\CanBuildPagination;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class OfficeController extends ApiController
 {
+    use CanBuildPagination;
+
     /**
      * Retrieve all offices
      */
     public function fetch(OfficeRequest $request): JsonResponse
     {
-        $offices = Office::orderBy('name')->paginate(9)->toArray();
+        $query = Office::query()->orderBy('name');
+        $offices = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
-        $offices_formatted = PaginationHelper::formatLengthAwarePagination($offices);
+        $offices_formatted = PaginationHelper::formatPagination($offices);
 
         return $this->success($offices_formatted, Response::HTTP_OK);
 

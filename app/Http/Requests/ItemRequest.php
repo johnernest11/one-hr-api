@@ -42,8 +42,19 @@ class ItemRequest extends FormRequest
      */
     public function getStoreUpdateItemRule(): array
     {
+        $item = '';
+        if ($this->method() == 'PUT') {
+            $item = $this->route('item');
+        }
+
         return [
-            'number' => ['required', 'unique:items,number', 'string', new DbVarcharMaxLength()],
+            'number' => [Rule::requiredIf($this->method() === 'POST'),
+                // Apply unique rule only when creating a new item (POST),
+                // Or when the item number is updated ($item->number != $this->input('number'))
+                Rule::when($this->method() === 'POST' || ($item && $item->number != $this->input('number')), [
+                    Rule::unique('items', 'number'),
+                ]),
+                'string', new DbVarcharMaxLength()],
             'date_of_creation' => ['required', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
             'status' => ['required', new Enum(ItemStatus::class)],
             'date_filled_up' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],

@@ -48,6 +48,7 @@ class ItemController extends ApiController
      */
     public function show(Item $item): JsonResponse
     {
+        $this->authorize('viewItem', [$item]);
         $item = $this->itemService->read($item);
 
         return $this->success(['data' => $item], Response::HTTP_OK);
