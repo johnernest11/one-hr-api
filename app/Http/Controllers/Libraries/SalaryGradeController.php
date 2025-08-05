@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Libraries;
 
+use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Libraries\SalaryGradeRequest;
 use App\Models\Libraries\SalaryGrade;
+use App\Traits\Services\CanBuildPagination;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class SalaryGradeController extends ApiController
 {
+    use CanBuildPagination;
+
     /**
      * Retrieve all Salary Grades. Can also filter based on the following:
      * 1. nbc-no,
@@ -22,9 +26,10 @@ class SalaryGradeController extends ApiController
      */
     public function fetch(SalaryGradeRequest $request): JsonResponse
     {
-        $salaryGrades = SalaryGrade::filtered()->orderBy('salary_grade')->paginate(9)->toArray();
+        $query = SalaryGrade::query()->filtered()->orderBy('salary_grade');
+        $salaryGrades = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
-        $sg_formatted = PaginationHelper::formatLengthAwarePagination($salaryGrades);
+        $sg_formatted = PaginationHelper::formatPagination($salaryGrades);
 
         return $this->success($sg_formatted, Response::HTTP_OK);
 

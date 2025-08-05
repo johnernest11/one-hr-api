@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers\Libraries;
 
+use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Libraries\SectionOrUnitRequest;
 use App\Models\Libraries\SectionOrUnit;
+use App\Traits\Services\CanBuildPagination;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class SectionOrUnitController extends ApiController
 {
+    use CanBuildPagination;
+
     /**
      * Retrieve all Sections or Units
      */
     public function fetch(SectionOrUnitRequest $request): JsonResponse
     {
-        $section_units = SectionOrUnit::orderBy('name')->with('divisions')->paginate(9)->toArray();
+        $query = SectionOrUnit::query()->orderBy('name')->with('divisions');
+        $section_units = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
-        $section_units_formatted = PaginationHelper::formatLengthAwarePagination($section_units);
+        $section_units_formatted = PaginationHelper::formatPagination($section_units);
 
         return $this->success($section_units_formatted, Response::HTTP_OK);
 

@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers\Libraries;
 
+use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Libraries\DivisionRequest;
 use App\Models\Libraries\Division;
+use App\Traits\Services\CanBuildPagination;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class DivisionController extends ApiController
 {
+    use CanBuildPagination;
+
     /**
      * Retrieve all divisions
      */
     public function fetch(DivisionRequest $request): JsonResponse
     {
-        $divisions = Division::orderBy('name')->with('sectionOrUnits')->paginate(9)->toArray();
+        $query = Division::query()->orderBy('name')->with('sectionOrUnits');
+        $divisions = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
-        $divisions_formatted = PaginationHelper::formatLengthAwarePagination($divisions);
+        $divisions_formatted = PaginationHelper::formatPagination($divisions);
 
         return $this->success($divisions_formatted, Response::HTTP_OK);
 

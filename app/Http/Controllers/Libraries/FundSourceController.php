@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers\Libraries;
 
+use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\Libraries\FundSourceRequest;
 use App\Models\Libraries\FundSource;
+use App\Traits\Services\CanBuildPagination;
 use Illuminate\Http\JsonResponse;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
 class FundSourceController extends ApiController
 {
+    use CanBuildPagination;
+
     /**
      * Retrieve all Fund Sources
      */
     public function fetch(FundSourceRequest $request): JsonResponse
     {
-        $funds = FundSource::orderBy('name')->paginate(9)->toArray();
+        $query = FundSource::query()->orderBy('name');
+        $funds = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
-        $funds_formatted = PaginationHelper::formatLengthAwarePagination($funds);
+        $funds_formatted = PaginationHelper::formatPagination($funds);
 
         return $this->success($funds_formatted, Response::HTTP_OK);
 

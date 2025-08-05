@@ -11,7 +11,7 @@ Route::middleware(['auth:token', 'verified.api'])->controller(ItemController::cl
     Route::middleware(['permission:'.Permission::VIEW_ITEMS->value])->get('/search', 'search')->name('search');
 
     /** @uses ItemController::show */
-    Route::middleware(['permission:'.Permission::VIEW_ITEMS->value])->get('{item}', 'show')->name('show');
+    Route::get('{item}', 'show')->name('show');
 
     /** @uses ItemController::store */
     Route::middleware(['permission:'.Permission::CREATE_ITEMS->value])->post('', 'store')->name('store');
