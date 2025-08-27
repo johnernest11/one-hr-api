@@ -39,4 +39,6 @@ interface IndividualBasicDetailManager
         ?PaginationType $pagination = null,
         ?int $limit = null
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
+
+    public function import(array $validatedRequest): array;
 }

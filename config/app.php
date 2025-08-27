@@ -199,6 +199,7 @@ return [
         App\Providers\CloudFileServiceProvider::class,
         App\Providers\DbServiceProvider::class,
         App\Providers\VerificationFactorServiceProvider::class,
+        App\Providers\NameParserServiceProvider::class,
     ],
 
     /*

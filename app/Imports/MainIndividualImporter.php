@@ -2,9 +2,9 @@
 
 namespace App\Imports;
 
-use App\Services\ComprehensiveRecords\IndividualBasicDetailManager;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use TheIconic\NameParser\Parser;
 
 /**
  * Handle mapping of sheets to each import object
@@ -13,22 +13,22 @@ class MainIndividualImporter implements WithMultipleSheets
 {
     private $request;
 
-    private IndividualBasicDetailManager $individualBasicDetailService;
-
     public $allImportedRecords; //@todo Can be altered later on depending on which logic is best in accessing the generated records.
 
     protected $sheetImporters = []; // Save the initialized importers
 
+    protected Parser $nameParser;
+
     public function __construct(
-        IndividualBasicDetailManager $individualBasicDetailService,
-        array $request
+        array $request,
+        Parser $nameParser
+
     ) {
-        $this->individualBasicDetailService = $individualBasicDetailService;
         $this->request = $request;
         $this->allImportedRecords = new Collection();
         // Initialize the importers here so that they are initialized only once.
         // This is to preserve the generated records per importer.
-        $this->sheetImporters['C1'] = new IndividualBasicDetailsImport($this->individualBasicDetailService, $this->request);
+        $this->sheetImporters['C1'] = new IndividualBasicDetailsImport($this->request, $nameParser);
     }
 
     public function sheets(): array
