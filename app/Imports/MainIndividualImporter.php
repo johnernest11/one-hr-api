@@ -29,6 +29,7 @@ class MainIndividualImporter implements WithMultipleSheets
         // Initialize the importers here so that they are initialized only once.
         // This is to preserve the generated records per importer.
         $this->sheetImporters['C1'] = new IndividualBasicDetailsImport($this->request, $nameParser);
+        $this->sheetImporters['C2'] = new C2Import();
     }
 
     public function sheets(): array
