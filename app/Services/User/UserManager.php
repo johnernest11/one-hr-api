@@ -108,7 +108,22 @@ class UserManager implements UserAccountManager, UserCredentialManager
     }
 
     /** {@inheritDoc} */
-    public function read(int|string $id, array $relationships = ['userProfile']): User
+    public function read(int|string $id, array $relationships = ['userProfile',
+        'userProfile.individualBasicDetail',
+        'userProfile.individualBasicDetail.individualContactInfo',
+        'userProfile.individualBasicDetail.individualAddress',
+        'userProfile.individualBasicDetail.individualFamily',
+        'userProfile.individualBasicDetail.individualEducationalBackground',
+        'userProfile.individualBasicDetail.individualEligibility',
+        'userProfile.individualBasicDetail.individualWorkExperience',
+        'userProfile.individualBasicDetail.individualVoluntaryWork',
+        'userProfile.individualBasicDetail.individualLnd',
+        'userProfile.individualBasicDetail.individualSkillsHobby',
+        'userProfile.individualBasicDetail.individualRecognition',
+        'userProfile.individualBasicDetail.individualMembership',
+        'userProfile.individualBasicDetail.individualQuestion',
+        'userProfile.individualBasicDetail.individualReference',
+    ]): User
     {
         /** @var User $user */
         $user = User::with($relationships)->findOrFail($id);
