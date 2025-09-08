@@ -4,11 +4,13 @@ namespace App\Services\ComprehensiveRecords;
 
 use App\Enums\ItemStatus;
 use App\Enums\PaginationType;
+use App\Imports\MainIndividualImporter;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\Item;
 use App\Traits\Services\CanBuildPagination;
 use App\Traits\Services\CanResolveModelFromId;
 use Carbon\Carbon;
+use Excel;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,6 +19,7 @@ use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use TheIconic\NameParser\Parser;
 
 class IndividualBasicDetailService implements IndividualBasicDetailManager
 {
@@ -46,10 +49,12 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
     private $maxReferences = 3; // Maximum number of references
 
-    public function __construct(IndividualBasicDetail $model)
+    protected Parser $nameParser;
+
+    public function __construct(IndividualBasicDetail $model, Parser $nameParser)
     {
         $this->model = $model;
-
+        $this->nameParser = $nameParser;
     }
 
     //@todo follow the structure:
@@ -238,5 +243,22 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
             ->orWhereFullText('middle_name', $term);
 
         return $this->buildPagination($pagination, $individual, $limit);
+    }
+
+    public function import(array $validatedRequest): array
+    {
+        $mainImporter = new MainIndividualImporter($validatedRequest, $this->nameParser);
+        Excel::import($mainImporter, $validatedRequest['excel_file']);
+
+        // Get mapped data during the import process.
+        $generatedRecords = $mainImporter->getImportedRecords();
+
+        $generatedRecordsArray = $generatedRecords ? $generatedRecords->toArray() : []; // @todo or perhaps handle empty records?
+
+        $restructuredData = [
+            ...$generatedRecordsArray,
+        ];
+
+        return $restructuredData;
     }
 }

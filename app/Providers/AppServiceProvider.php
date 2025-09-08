@@ -29,6 +29,7 @@ use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
+use TheIconic\NameParser\Parser;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -65,8 +66,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AccomplishmentReportManager::class, function () {
             return new AccomplishmentReportService();
         });
-        $this->app->bind(IndividualBasicDetailManager::class, function () {
-            return new IndividualBasicDetailService(new IndividualBasicDetail());
+        $this->app->bind(IndividualBasicDetailManager::class, function ($app) {
+            return new IndividualBasicDetailService(new IndividualBasicDetail(), new Parser());
         });
         $this->app->bind(QrCodeManager::class, function () {
             return new QrCodeService(new QrCode());

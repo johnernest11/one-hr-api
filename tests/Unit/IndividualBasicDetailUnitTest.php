@@ -39,7 +39,7 @@ class IndividualBasicDetailUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->individualBasicDetailService = new IndividualBasicDetailService(new IndividualBasicDetail());
+        $this->individualBasicDetailService = new IndividualBasicDetailService(new IndividualBasicDetail(), $this->app->make(\TheIconic\NameParser\Parser::class));
         $this->user = $this->produceUsers();
 
     }
