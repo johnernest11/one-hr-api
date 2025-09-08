@@ -398,7 +398,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
                 'middle_name' => trim($parsedName->getInitials() === '') ? $parsedName->getMiddlename() : $parsedName->getInitials(),
                 'last_name' => $parsedName->getLastname(),
                 'date_of_birth' => $dateOfBirth,
-                'class' => 'Children',
+                'class' => FamilyMemberCategory::CHILDREN->value,
             ];
         }
 
