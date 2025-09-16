@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\AuthRequest;
+use App\Models\PersonalAccessToken;
 use App\Models\User;
 use App\Services\AppSettingsManager;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
@@ -77,5 +78,39 @@ class SanctumAuthController extends AuthController
     public function getTokenExpiration(): Carbon
     {
         return now()->addMinutes(config('sanctum.expiration'));
+    }
+
+    /**
+     * Refresh Current Access and Refresh Token
+     */
+    public function refreshCurrentTokens(AuthRequest $request): JsonResponse
+    {
+        $currentRefreshToken = $request->bearerToken();
+        $refreshToken = PersonalAccessToken::findToken($currentRefreshToken);
+
+        if (! $refreshToken || ! $refreshToken->can('refresh') || $refreshToken->expires_at->isPast()) {
+            return $this->error('Invalid or expired refresh token', Response::HTTP_UNAUTHORIZED);
+        }
+
+        $user = $refreshToken->tokenable;
+        $this->tokenManager->invalidateToken($refreshToken);
+
+        $accessTokenExpiresAt = $this->getTokenExpiration();
+        $refreshTokenExpiresAt = $this->getTokenExpiration()->addDays(1); // @todo Update to 5 days once testing is done.
+
+        $newAccessToken = $user->createToken('api_token', ['*'], $accessTokenExpiresAt)->plainTextToken;
+        $newRefreshToken = $user->createToken('refresh_token', ['refresh'], $refreshTokenExpiresAt)->plainTextToken;
+
+        $data = [
+            'token' => $newAccessToken,
+            'token_name' => 'api_token',
+            'expires_at' => $accessTokenExpiresAt,
+            'refresh_token' => $newRefreshToken,
+            'refresh_token_name' => 'refresh_token',
+            'refresh_token_expires_at' => $refreshTokenExpiresAt,
+            'user' => $user,
+        ];
+
+        return $this->success(['data' => $data], Response::HTTP_CREATED);
     }
 }

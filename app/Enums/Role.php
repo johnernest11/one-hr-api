@@ -10,6 +10,7 @@ enum Role: string
     case HR_PPMS_ADMIN = 'hr_ppms_admin';
     case SECTION_HEAD = 'section_head';
     case DIVISION_HEAD = 'division_head';
+    case TIME_LOGGER = 'time_logger';
     case SYSTEM_SUPPORT = 'system_support';
     case SUPER_USER = 'super_user';
 }
