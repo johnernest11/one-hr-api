@@ -103,6 +103,7 @@ class DailyTimeRecordUnitTest extends TestCase
                         [
                             'id' => $tl->id,
                             'is_selected' => false,
+                            'scanned_time' => $tl->scanned_time,
                         ],
                     ],
                 ],

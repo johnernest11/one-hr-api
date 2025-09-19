@@ -305,6 +305,7 @@ class DailyTimeRecordFeatureTest extends TestCase
                         [
                             'id' => $timeLogsIds[0],
                             'is_selected' => false,
+                            'scanned_time' => '08:00:00', // Must include this
                         ],
                     ],
                 ],
