@@ -72,5 +72,6 @@ class Kernel extends HttpKernel
         'api_key_permission' => \App\Http\Middleware\ApiKeyPermission::class,
         'enabled.webhooks' => \App\Http\Middleware\EnsureWebhooksAreEnabled::class,
         'block.deactivated' => \App\Http\Middleware\EnsureUserIsActivated::class,
+        'refresh.guard' => \App\Http\Middleware\EnsureRefreshTokenIsValid::class,
     ];
 }
