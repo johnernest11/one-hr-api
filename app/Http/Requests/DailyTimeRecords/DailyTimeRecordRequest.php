@@ -65,9 +65,9 @@ class DailyTimeRecordRequest extends FormRequest
 
             'dtr' => ['array'],
             'dtr.*.id' => ['nullable', 'int'],
-            'dtr.*.ut' => ['nullable', 'double'],
+            'dtr.*.ut' => ['nullable', 'numeric'],
             'dtr.*.is_edit_ut' => ['nullable', 'boolean'], // @todo add logic for this one later once UT and OT is implemented
-            'dtr.*.ot' => ['nullable', 'double'],
+            'dtr.*.ot' => ['nullable', 'numeric'],
             'dtr.*.employee_remarks' => ['nullable', 'string', new DbTextMaxLength()],
             'dtr.*.hr_remarks' => ['nullable', 'string', new DbTextMaxLength()],
             // Date will be required if ID is not passed (for new records).
@@ -75,7 +75,7 @@ class DailyTimeRecordRequest extends FormRequest
             'dtr.*.date' => ['nullable', 'required_without:dtr.*.id', 'exclude_with:dtr.*.id', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
 
             'dtr.*.time_logs' => ['array'],
-            'dtr.*.time_logs.*.id' => ['required', 'int'],
+            'dtr.*.time_logs.*.id' => ['nullable', 'int'],
             'dtr.*.time_logs.*.is_selected' => ['required', 'boolean'],
         ];
 

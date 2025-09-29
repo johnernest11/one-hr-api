@@ -72,6 +72,10 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         Permission::create(['name' => PermissionEnum::LOG_TIME, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_ALL_TIME_LOGS, 'guard_name' => 'token']);
 
+        /** @var Role $timeLoggerRole */
+        $timeLoggerRole = Role::create(['name' => RoleEnum::TIME_LOGGER, 'guard_name' => 'token']);
+        $timeLoggerRole->givePermissionTo(Permission::all());
+
         /** @var Role $hrPasAdminRole */
         $hrPasAdminRole = Role::create(['name' => RoleEnum::HR_PAS_ADMIN, 'guard_name' => 'token']);
         $hrPasAdminRole->givePermissionTo(Permission::all());
