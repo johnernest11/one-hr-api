@@ -269,11 +269,11 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
         /* -------------------------------------------------------------------------- */
         $row['citizenship'] = $row['dual_citizenship'] ? Citizenship::DUAL_CITIZENSHIP->value : Citizenship::FILIPINO->value;
         $row['citizenship_acquisition'] = $row['citizenship_by_naturalization'] ? CitizenshipAcquisition::NATURALIZATION->value : CitizenshipAcquisition::BIRTH->value;
-        $row['birthday'] = Date::excelToDateTimeObject($row['birthday'])->format('Y-m-d');
-        $row['sex'] = $this->matchToEnums(SexualCategory::class, $row['sex'])->value ?? null;
-        $row['civil_status'] = $this->matchToEnums(CivilStatus::class, $row['civil_status'])->value ?? null;
-        $row['blood_type'] = $this->matchToEnums(BloodType::class, $row['blood_type'])->value ?? null;
-        $row['ext_name'] = $this->matchToEnums(ExtensionNameCategory::class, $row['ext_name'])->value ?? null;
+        $row['birthday'] = $row['birthday'] ? Date::excelToDateTimeObject($row['birthday'])->format('Y-m-d') : null;
+        $row['sex'] = $row['sex'] ? $this->matchToEnums(SexualCategory::class, $row['sex'])->value : null;
+        $row['civil_status'] = $row['civil_status'] ? $this->matchToEnums(CivilStatus::class, $row['civil_status'])->value : null;
+        $row['blood_type'] = $row['blood_type'] ? $this->matchToEnums(BloodType::class, $row['blood_type'])->value : null;
+        $row['ext_name'] = $row['ext_name'] ? $this->matchToEnums(ExtensionNameCategory::class, $row['ext_name'])->value : null;
 
         /* --------------------------------- Address -------------------------------- */
         $row = $this->handleAddressData($row);
