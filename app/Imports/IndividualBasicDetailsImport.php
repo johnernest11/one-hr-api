@@ -18,6 +18,8 @@ use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use Arr;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -269,11 +271,11 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
         /* -------------------------------------------------------------------------- */
         $row['citizenship'] = $row['dual_citizenship'] ? Citizenship::DUAL_CITIZENSHIP->value : Citizenship::FILIPINO->value;
         $row['citizenship_acquisition'] = $row['citizenship_by_naturalization'] ? CitizenshipAcquisition::NATURALIZATION->value : CitizenshipAcquisition::BIRTH->value;
-        $row['birthday'] = Date::excelToDateTimeObject($row['birthday'])->format('Y-m-d');
-        $row['sex'] = $this->matchToEnums(SexualCategory::class, $row['sex'])->value ?? null;
-        $row['civil_status'] = $this->matchToEnums(CivilStatus::class, $row['civil_status'])->value ?? null;
-        $row['blood_type'] = $this->matchToEnums(BloodType::class, $row['blood_type'])->value ?? null;
-        $row['ext_name'] = $this->matchToEnums(ExtensionNameCategory::class, $row['ext_name'])->value ?? null;
+        $row['birthday'] = $this->safeExcelDateParser($row['birthday']);
+        $row['sex'] = $row['sex'] ? $this->matchToEnums(SexualCategory::class, $row['sex'])->value : null;
+        $row['civil_status'] = $row['civil_status'] ? $this->matchToEnums(CivilStatus::class, $row['civil_status'])->value : null;
+        $row['blood_type'] = $row['blood_type'] ? $this->matchToEnums(BloodType::class, $row['blood_type'])->value : null;
+        $row['ext_name'] = $row['ext_name'] ? $this->matchToEnums(ExtensionNameCategory::class, $row['ext_name'])->value : null;
 
         /* --------------------------------- Address -------------------------------- */
         $row = $this->handleAddressData($row);
@@ -390,7 +392,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             $parsedName = $this->nameParser->parse($name);
 
             // Convert the Excel date to Y-m-d format
-            $dateOfBirth = Date::excelToDateTimeObject($bd)->format('Y-m-d');
+            $dateOfBirth = $this->safeExcelDateParser($bd);
 
             // Add the processed data to the output array
             $output[] = [
@@ -514,7 +516,48 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
      */
     public function matchToEnums(string $enumClass, string $strToMatch)
     {
+        // Remove non-alphanumeric characters
+        $cleanString = fn (string $str): string => strtolower(
+            preg_replace('/[^a-z0-9\s]/i', '', $str)
+        );
+
+        $cleanedStrToMatch = $cleanString($strToMatch);
+
         return collect($enumClass::cases())
-            ->first(fn ($case) => strtolower($case->value) === strtolower($strToMatch));
+            ->first(function ($case) use ($cleanedStrToMatch, $cleanString) {
+                return $cleanString($case->value) === $cleanedStrToMatch;
+            });
+    }
+
+    /**
+     * Safely converts a cell value from an Excel import into a 'Y-m-d' date string.
+     * Handles numeric Excel dates and attempts to parse common string date formats.
+     */
+    public function safeExcelDateParser($value): ?string
+    {
+        if (is_null($value) || $value === '') {
+            return null;
+        }
+
+        // Check if it's a numeric Excel date (int or float)
+        if (is_numeric($value)) {
+            try {
+                return Date::excelToDateTimeObject($value)->format('Y-m-d');
+            } catch (Exception $e) {
+                return null;
+            }
+        }
+
+        // Treat as a string (Handles '11/22/1985', 'Nov 22, 1985', etc.)
+        if (is_string($value)) {
+            try {
+                return Carbon::parse($value)->format('Y-m-d');
+            } catch (Exception $e) {
+                return null;
+            }
+        }
+
+        // Fallback for any other unexpected type
+        return null;
     }
 }
