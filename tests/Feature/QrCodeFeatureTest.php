@@ -8,9 +8,9 @@ use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\DailyTimeRecords\QrCode;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
-use Crypt;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Vinkla\Hashids\Facades\Hashids;
 
 class QrCodeFeatureTest extends TestCase
 {
@@ -123,13 +123,21 @@ class QrCodeFeatureTest extends TestCase
     {
         $qrCode = QrCode::factory()->create();
         $employee = Employee::find($qrCode->employee_id);
+        $invalidHash = $this->getInvalidHashFromDifferentSalt();
 
         $data = [
-            'scanned_qr' => 'invalidQr',
+            'scanned_qr' => $invalidHash,
         ];
         $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/verify-qr', $data);
         $response->assertStatus(400); //Should throw BAD_REQUEST_ERROR
 
+    }
+
+    protected function getInvalidHashFromDifferentSalt(): string
+    {
+        $hashids = new \Hashids\Hashids('a_totally_different_salt', 10);
+
+        return $hashids->encode(999999);
     }
 
     public function test_it_can_verify_when_qr_does_not_belong_to_any_employee(): void
@@ -138,7 +146,7 @@ class QrCodeFeatureTest extends TestCase
         $employee = Employee::whereBelongsTo($individual)->firstOrFail();
 
         $data = [
-            'scanned_qr' => Crypt::encrypt($employee->id_number),
+            'scanned_qr' => Hashids::encode($employee->id_number),
         ];
         $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/verify-qr', $data);
         $response->assertStatus(404); //Should throw RESOURCE_NOT_FOUND_ERROR

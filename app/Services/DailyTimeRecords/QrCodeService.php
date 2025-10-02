@@ -6,10 +6,11 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\DailyTimeRecords\QrCode;
 use App\Traits\Services\CanBuildPagination;
 use Carbon\Carbon;
-use Crypt;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\DB;
+use Vinkla\Hashids\Facades\Hashids;
 
 class QrCodeService implements QrCodeManager
 {
@@ -36,7 +37,7 @@ class QrCodeService implements QrCodeManager
         }
 
         return DB::transaction(function () use ($employee) {
-            $encryptedId = Crypt::encrypt($employee->id_number);
+            $encryptedId = Hashids::encode($employee->id_number);
             $issuedAt = Carbon::now();
 
             // Check if a QR already exists for the employee
@@ -102,7 +103,12 @@ class QrCodeService implements QrCodeManager
         // Decrypt QR
         // Check if the decrypted id number exists
         // If it does, return the employee record
-        $decryptedData = Crypt::decrypt($request['scanned_qr']);
+        $decryptedData = Hashids::decode($request['scanned_qr']);
+
+        if (empty($decryptedData)) {
+            throw new DecryptException('Invalid or malformed QR code data.');
+        }
+
         $employee = Employee::where('id_number', $decryptedData)->firstOrFail();
 
         // Ensure that the QR Code of the employee is active.
