@@ -67,7 +67,7 @@ class AppServiceProvider extends ServiceProvider
             return new AccomplishmentReportService();
         });
         $this->app->bind(IndividualBasicDetailManager::class, function ($app) {
-            return new IndividualBasicDetailService(new IndividualBasicDetail(), new Parser());
+            return new IndividualBasicDetailService(new IndividualBasicDetail(), new Parser(), $this->app->make(QrCodeManager::class));
         });
         $this->app->bind(QrCodeManager::class, function () {
             return new QrCodeService(new QrCode());
