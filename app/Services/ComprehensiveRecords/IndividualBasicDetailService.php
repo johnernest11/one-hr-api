@@ -7,6 +7,7 @@ use App\Enums\PaginationType;
 use App\Imports\MainIndividualImporter;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\Item;
+use App\Services\DailyTimeRecords\QrCodeManager;
 use App\Traits\Services\CanBuildPagination;
 use App\Traits\Services\CanResolveModelFromId;
 use Carbon\Carbon;
@@ -51,10 +52,13 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
     protected Parser $nameParser;
 
-    public function __construct(IndividualBasicDetail $model, Parser $nameParser)
+    private QrCodeManager $qrCodeService;
+
+    public function __construct(IndividualBasicDetail $model, Parser $nameParser, QrCodeManager $qrCodeService)
     {
         $this->model = $model;
         $this->nameParser = $nameParser;
+        $this->qrCodeService = $qrCodeService;
     }
 
     //@todo follow the structure:
@@ -169,6 +173,12 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                 }
 
                 $individualBasicDetail->employee()->update($request['employee']);
+                // Check if id_number is changed.
+                // if it is, update qr code.
+                if (isset($request['employee']['id_number'])) {
+                    $updatedEmployee = $individualBasicDetail->employee->fresh();
+                    $this->qrCodeService->create($updatedEmployee);
+                }
             }
 
             // For every model,

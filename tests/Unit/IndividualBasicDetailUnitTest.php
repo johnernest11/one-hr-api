@@ -20,6 +20,7 @@ use App\Models\ComprehensiveRecords\IndividualVoluntaryWork;
 use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\User;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
+use App\Services\DailyTimeRecords\QrCodeManager;
 use Arr;
 use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -39,7 +40,7 @@ class IndividualBasicDetailUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->individualBasicDetailService = new IndividualBasicDetailService(new IndividualBasicDetail(), $this->app->make(\TheIconic\NameParser\Parser::class));
+        $this->individualBasicDetailService = new IndividualBasicDetailService(new IndividualBasicDetail(), $this->app->make(\TheIconic\NameParser\Parser::class), $this->app->make(QrCodeManager::class));
         $this->user = $this->produceUsers();
 
     }
