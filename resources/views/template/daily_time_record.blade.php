@@ -371,7 +371,7 @@ if (!function_exists('resolveDTRSlots')) {
                     </div>
                 </div>
             </div>
-            <div class="signature-block" style="margin-top: 25px;">
+            <div class="signature-block" style="margin-top: 45px;">
                 <div class="sig-item" style="width: 80%; margin: 0 auto; text-align: center;">
                     <div style="border-bottom: 1px solid #000; width: 100%;"></div>
                     <div class="label" style="margin-top: 3px; font-size: 10px; font-weight: bold;">
@@ -380,14 +380,14 @@ if (!function_exists('resolveDTRSlots')) {
                 </div>
             </div>
     
-            <div class="verification-block" style="margin-top: 25px; text-align: center;">
+            <div class="verification-block" style="margin-top: 20px; text-align: center;">
                 <div style="border-bottom: 2px dashed #000; width: 80%; margin: 0 auto;"></div>
                 <div style="border-bottom: 2px dashed #000; width: 80%; margin: 0.5px auto 0;"></div>
                 <p style="margin: 10px 0 0; font-size: 10px; font-weight: bold;">
                     VERIFIED as to the prescribed office hours
                 </p>
     
-                <div class="signature-block" style="margin-top: 30px;">
+                <div class="signature-block" style="margin-top: 45px;">
                     <div class="sig-item" style="width: 80%; margin: 0 auto; text-align: center;">
                         <div style="border-bottom: 1px solid #000; width: 100%;"></div>
                         <div class="label" style="margin-top: 3px; font-size: 10px; font-weight: bold;">
