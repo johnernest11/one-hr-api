@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\DailyTimeRecords\TimeLogRequest;
 use App\Services\DailyTimeRecords\QrCodeManager;
 use App\Services\DailyTimeRecords\TimeLogManager;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -55,6 +56,13 @@ class TimeLogController extends ApiController
                 $e->getMessage(),
                 Response::HTTP_UNAUTHORIZED,
                 ApiErrorCode::UNAUTHORIZED
+            );
+        } catch (Exception $e) {
+            // Catch any exceptions
+            return $this->error(
+                $e->getMessage(),
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                ApiErrorCode::VALIDATION
             );
         }
 
