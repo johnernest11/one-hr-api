@@ -36,7 +36,7 @@ class DailyTimeRecordFeatureTest extends TestCase
 
     private PersistentAuthTokenManager $tokenManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
@@ -389,6 +389,38 @@ class DailyTimeRecordFeatureTest extends TestCase
         $response = $response->decodeResponseJson()['data'];
         // Should now be able to find the employee generated via factory. Last record generated is a time in, therefore the employee is currently inside the office.
         $this->assertEquals($name, $response[0]['first_name']);
+
+    }
+
+    public function test_it_can_generate_dtr_pdf(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
+
+        $dates = ['2025-09-01', '2025-09-02', '2025-09-05'];
+        foreach ($dates as $date) {
+            $dtr = DailyTimeRecord::factory()->create([
+                'employee_id' => $employee->id,
+                'date' => $date,
+                'ut' => 1,
+                'ot' => 2,
+                'employee_remarks' => 'Test remark',
+            ]);
+            TimeLog::factory()->count(2)->create([
+                'daily_time_record_id' => $dtr->id,
+                'is_in' => true,
+            ]);
+        }
+
+        $startDate = '2025-09-01';
+        $endDate = '2025-09-05';
+        $sort = 'asc';
+
+        $response = $this->withHeader('Authorization', "Bearer {$this->authTokenStandard}")
+            ->get("{$this->uriWithId}/{$employee->id}/daily-time-records/generate-dtr?start_date={$startDate}&end_date={$endDate}&sort={$sort}");
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/pdf');
+        $this->assertNotEmpty($response->getContent(), 'Generated DTR PDF content should not be empty');
 
     }
 }

@@ -45,8 +45,8 @@ class DailyTimeRecordRequest extends FormRequest
             'is_edit_ut' => ['nullable', 'boolean'],
             'ot' => ['nullable', 'double'],
             'is_missing' => ['nullable', 'boolean'],
-            'employee_remarks' => ['nullable', 'string', new DbTextMaxLength()],
-            'hr_remarks' => ['nullable', 'string', new DbTextMaxLength()],
+            'employee_remarks' => ['nullable', 'string', new DbTextMaxLength],
+            'hr_remarks' => ['nullable', 'string', new DbTextMaxLength],
             'status' => ['required', new Enum(DocumentStatus::class)],
         ];
 
@@ -68,8 +68,8 @@ class DailyTimeRecordRequest extends FormRequest
             'dtr.*.ut' => ['nullable', 'double'],
             'dtr.*.is_edit_ut' => ['nullable', 'boolean'], // @todo add logic for this one later once UT and OT is implemented
             'dtr.*.ot' => ['nullable', 'double'],
-            'dtr.*.employee_remarks' => ['nullable', 'string', new DbTextMaxLength()],
-            'dtr.*.hr_remarks' => ['nullable', 'string', new DbTextMaxLength()],
+            'dtr.*.employee_remarks' => ['nullable', 'string', new DbTextMaxLength],
+            'dtr.*.hr_remarks' => ['nullable', 'string', new DbTextMaxLength],
             // Date will be required if ID is not passed (for new records).
             // Date will be excluded if ID is passed so as not to update the date on the given ID.
             'dtr.*.date' => ['nullable', 'required_without:dtr.*.id', 'exclude_with:dtr.*.id', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],

@@ -23,7 +23,7 @@ class EmailVerificationChannelTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->channel = new EmailVerificationChannel();
+        $this->channel = new EmailVerificationChannel;
     }
 
     public function test_it_can_generate_code(): void

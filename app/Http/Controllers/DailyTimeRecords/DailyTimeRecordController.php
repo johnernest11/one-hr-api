@@ -114,4 +114,18 @@ class DailyTimeRecordController extends ApiController
         return $this->success($formatted, Response::HTTP_OK);
 
     }
+
+    public function generateDailyTimeRecord(Employee $employee, DailyTimeRecordRequest $request)
+    {
+        $startDate = $request->query('start_date', '1900-01-01');
+        $endDate = $request->query('end_date', '2100-12-31');
+        $sort = $request->query('sort', 'asc');
+
+        $response = $this->dailyTimeRecordService->generate($employee, $startDate, $endDate, $sort);
+
+        return response($response['fileContent'], 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$response['fileName'].'"',
+        ])->header('Access-Control-Expose-Headers', 'Content-Disposition');
+    }
 }

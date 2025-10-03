@@ -23,7 +23,7 @@ class AccomplishmentReportUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->aRService = new AccomplishmentReportService();
+        $this->aRService = new AccomplishmentReportService;
         $this->user = $this->produceUsers();
     }
 
@@ -117,7 +117,7 @@ class AccomplishmentReportUnitTest extends TestCase
         $this->assertDatabaseCount('accomplishment_reports', 5);
         $this->assertDatabaseCount('a_r_rows', 15);
 
-        $request = new Request();
+        $request = new Request;
         $request->replace(['status' => 'done']);
         app()->instance('request', $request);
 
@@ -128,7 +128,7 @@ class AccomplishmentReportUnitTest extends TestCase
         $this->assertInstanceOf(LengthAwarePaginator::class, $paginatedResults);
     }
 
-    public function test_can_search_AR(): void
+    public function test_can_search_ar(): void
     {
 
         $initialItem = AccomplishmentReport::factory()->hasProfile($this->user)->isDraft()->create();

@@ -12,7 +12,7 @@ class DateTimeHelperTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->dateTimeHelper = new DateTimeHelper();
+        $this->dateTimeHelper = new DateTimeHelper;
     }
 
     /** @dataProvider stringSamples */

@@ -14,7 +14,7 @@ class CloudFileServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(CloudStorageManager::class, function () {
-            return new AwsS3StorageService();
+            return new AwsS3StorageService;
         });
     }
 

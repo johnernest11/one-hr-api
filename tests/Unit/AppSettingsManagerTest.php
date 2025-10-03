@@ -20,7 +20,7 @@ class AppSettingsManagerTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->service = new AppSettingsManager();
+        $this->service = new AppSettingsManager;
     }
 
     /**

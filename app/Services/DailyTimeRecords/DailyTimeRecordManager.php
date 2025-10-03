@@ -47,4 +47,9 @@ interface DailyTimeRecordManager
         ?int $limit,
         bool $isMyProfile
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
+
+    /**
+     * Generate PDF of daily time records
+     */
+    public function generate(Employee $employee, string $startDate, string $endDate, string $sort = 'asc'): array;
 }

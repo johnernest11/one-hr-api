@@ -51,7 +51,7 @@ class AuthRequest extends FormRequest
             'username' => ['required_without:email'],
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
-            'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'client_name' => ['nullable', 'string', new DbVarcharMaxLength],
             'with_user' => ['nullable', 'bool'], // Send the token back with user information
             'auth_type' => ['nullable', 'in:'.AuthenticationType::SANCTUM->value.','.AuthenticationType::JWT->value],
         ];
@@ -95,7 +95,7 @@ class AuthRequest extends FormRequest
             'token' => ['required'],
             'email' => ['required', 'email', 'exists:users,email'],
             'password' => ['string', 'nullable', 'confirmed', Password::min(8)->mixedCase()->numbers()],
-            'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'client_name' => ['nullable', 'string', new DbVarcharMaxLength],
         ];
     }
 
@@ -107,26 +107,26 @@ class AuthRequest extends FormRequest
         return [
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['string', 'required', 'confirmed', 'max:100', Password::min(8)->mixedCase()->numbers()],
-            'first_name' => ['string', 'required', new DbVarcharMaxLength()],
-            'last_name' => ['string', 'required', new DbVarcharMaxLength()],
-            'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'first_name' => ['string', 'required', new DbVarcharMaxLength],
+            'last_name' => ['string', 'required', new DbVarcharMaxLength],
+            'middle_name' => ['string', 'nullable', new DbVarcharMaxLength],
+            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength],
             'mobile_number' => [
                 'nullable',
                 'unique:user_profiles,mobile_number',
-                new InternationalPhoneNumberFormat(),
+                new InternationalPhoneNumberFormat,
                 new PhoneCountryFormat('PH'),
                 'phone:mobile',
             ],
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
-            'home_address' => ['string', 'nullable', new DbTextMaxLength()],
+            'home_address' => ['string', 'nullable', new DbTextMaxLength],
             'barangay_id' => ['nullable', 'exists:barangays,id'],
             'city_id' => ['nullable', 'exists:cities,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'region_id' => ['nullable', 'exists:regions,id'],
             'postal_code' => ['nullable', 'digits:4'],
-            'client_name' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'client_name' => ['nullable', 'string', new DbVarcharMaxLength],
         ];
     }
 

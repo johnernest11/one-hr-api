@@ -52,14 +52,14 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
     }
 
-    //@todo follow the structure:
-    //CRUD for consolidated
-    //CRUD for C1
-    //CRUD for C2
-    //CRUD for C3
-    //CRUD for C4
-    //CRUD for WES
-    //imports & exports
+    // @todo follow the structure:
+    // CRUD for consolidated
+    // CRUD for C1
+    // CRUD for C2
+    // CRUD for C3
+    // CRUD for C4
+    // CRUD for WES
+    // imports & exports
 
     public function all(?int $limit = null): LengthAwarePaginator
     {

@@ -23,7 +23,7 @@ class WebhooksTest extends TestCase
 
     const API_KEY_HEADER = 'X-API-KEY';
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');

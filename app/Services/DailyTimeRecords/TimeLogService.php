@@ -20,7 +20,7 @@ class TimeLogService implements TimeLogManager
 
     private const MAX_SELECTED_TIMELOGS = 4;
 
-    private const DUPLICATE_SCAN_LIMIT_MINUTES = 1; //@todo adjust for testing. by default = 15 mins
+    private const DUPLICATE_SCAN_LIMIT_MINUTES = 1; // @todo adjust for testing. by default = 15 mins
 
     private TimeLog $model;
 

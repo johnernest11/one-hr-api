@@ -47,35 +47,35 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->bind(UserAccountManager::class, function () {
-            return new UserManager();
+            return new UserManager;
         });
 
         $this->app->bind(UserCredentialManager::class, function () {
-            return new UserManager();
+            return new UserManager;
         });
 
         $this->app->bind(AppSettingsManager::class, function () {
-            return new AppSettingsManager();
+            return new AppSettingsManager;
         });
 
         $this->app->bind(ItemManager::class, function () {
-            return new ItemService(new Item());
+            return new ItemService(new Item);
         });
 
         $this->app->bind(AccomplishmentReportManager::class, function () {
-            return new AccomplishmentReportService();
+            return new AccomplishmentReportService;
         });
         $this->app->bind(IndividualBasicDetailManager::class, function () {
-            return new IndividualBasicDetailService(new IndividualBasicDetail());
+            return new IndividualBasicDetailService(new IndividualBasicDetail);
         });
         $this->app->bind(QrCodeManager::class, function () {
-            return new QrCodeService(new QrCode());
+            return new QrCodeService(new QrCode);
         });
         $this->app->bind(DailyTimeRecordManager::class, function () {
-            return new DailyTimeRecordService(new DailyTimeRecord());
+            return new DailyTimeRecordService(new DailyTimeRecord);
         });
         $this->app->bind(TimeLogManager::class, function () {
-            return new TimeLogService(new TimeLog());
+            return new TimeLogService(new TimeLog);
         });
     }
 

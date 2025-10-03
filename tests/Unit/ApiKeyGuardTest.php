@@ -55,7 +55,7 @@ class ApiKeyGuardTest extends TestCase
             $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
-        $request = new Request();
+        $request = new Request;
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue);
 
         $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
@@ -69,7 +69,7 @@ class ApiKeyGuardTest extends TestCase
             $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
-        $request = new Request();
+        $request = new Request;
         $request->headers->set(static::API_KEY_HEADER, 'something_else');
 
         $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
@@ -83,7 +83,7 @@ class ApiKeyGuardTest extends TestCase
             $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
-        $request = new Request();
+        $request = new Request;
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue.'K1');
 
         $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
@@ -97,7 +97,7 @@ class ApiKeyGuardTest extends TestCase
             $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
-        $request = new Request();
+        $request = new Request;
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue);
 
         $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
@@ -115,7 +115,7 @@ class ApiKeyGuardTest extends TestCase
             $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
-        $request = new Request();
+        $request = new Request;
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue);
 
         $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
@@ -129,7 +129,7 @@ class ApiKeyGuardTest extends TestCase
             $this->apiKeyName, $this->user->id, $this->apiKeyDescription, $this->apiKeyExpiration, $this->apiKeyPermissions
         );
 
-        $request = new Request();
+        $request = new Request;
         $request->headers->set(static::API_KEY_HEADER, $apiKey->rawKeyValue);
         $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
         $this->assertFalse($guard->guest());
@@ -141,7 +141,7 @@ class ApiKeyGuardTest extends TestCase
 
     public function test_it_can_set_user(): void
     {
-        $request = new Request();
+        $request = new Request;
         $guard = new ApiKeyGuard($request, $this->apiKeyProvider);
         $this->assertFalse($guard->hasUser());
 

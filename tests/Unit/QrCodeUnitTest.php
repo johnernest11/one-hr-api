@@ -21,7 +21,7 @@ class QrCodeUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->qrCodeService = new QrCodeService(new QrCode());
+        $this->qrCodeService = new QrCodeService(new QrCode);
         $individual = IndividualBasicDetail::factory()->create();
         $this->employee = Employee::whereBelongsTo($individual)->firstOrFail();
     }

@@ -22,7 +22,7 @@ class GAuthenticatorVerificationAppTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->authenticator = new GAuthenticatorVerificationApp();
+        $this->authenticator = new GAuthenticatorVerificationApp;
         $this->user = $this->produceUsers();
     }
 

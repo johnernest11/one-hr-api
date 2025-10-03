@@ -28,7 +28,7 @@ class QrCodeFeatureTest extends TestCase
 
     private PersistentAuthTokenManager $tokenManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
@@ -115,7 +115,7 @@ class QrCodeFeatureTest extends TestCase
             'scanned_qr' => $qrCode->qr_code_value,
         ];
         $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/verify-qr', $data);
-        $response->assertStatus(401); //Should throw UNAUTHORIZED_ERROR
+        $response->assertStatus(401); // Should throw UNAUTHORIZED_ERROR
 
     }
 
@@ -128,7 +128,7 @@ class QrCodeFeatureTest extends TestCase
             'scanned_qr' => 'invalidQr',
         ];
         $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/verify-qr', $data);
-        $response->assertStatus(400); //Should throw BAD_REQUEST_ERROR
+        $response->assertStatus(400); // Should throw BAD_REQUEST_ERROR
 
     }
 
@@ -141,7 +141,7 @@ class QrCodeFeatureTest extends TestCase
             'scanned_qr' => Crypt::encrypt($employee->id_number),
         ];
         $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/verify-qr', $data);
-        $response->assertStatus(404); //Should throw RESOURCE_NOT_FOUND_ERROR
+        $response->assertStatus(404); // Should throw RESOURCE_NOT_FOUND_ERROR
 
     }
 

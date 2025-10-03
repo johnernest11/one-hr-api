@@ -29,7 +29,7 @@ class IndividualBasicDetailsImport implements ToModel, WithMappedCells
         $this->individualBasicDetailService = $individualBasicDetailService;
         $this->request = $request;
         $this->employeeData = $this->processEmployeeData($request);
-        $this->importedRecords = new Collection();
+        $this->importedRecords = new Collection;
     }
 
     public function processEmployeeData(array $data): array
@@ -50,10 +50,10 @@ class IndividualBasicDetailsImport implements ToModel, WithMappedCells
             'middle_name' => 'D12',
             'ext_name' => 'L12',
             'birthday' => 'D13',
-            //'mobile_number' => 'I33', @todo map to individual contact info
-            //'telephone_number' => 'I32', @todo map to individual contact info
+            // 'mobile_number' => 'I33', @todo map to individual contact info
+            // 'telephone_number' => 'I32', @todo map to individual contact info
             'sex' => 'D16',
-            //'email' => 'I34', @todo map to individual contact info
+            // 'email' => 'I34', @todo map to individual contact info
             'place_of_birth' => 'D15',
             'civil_status' => 'D17',
             'height' => 'D22',
@@ -82,7 +82,7 @@ class IndividualBasicDetailsImport implements ToModel, WithMappedCells
             'individual' => $row,
             'employee' => $this->employeeData,
         ];
-        $createRules = new IndividualBasicDetailRequest();
+        $createRules = new IndividualBasicDetailRequest;
 
         $validatedData = Validator::validate($restructuredData, $createRules->getStoreIndividualRules());
 
