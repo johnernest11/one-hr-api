@@ -3,7 +3,7 @@
 namespace App\Models\Address;
 
 use App\Enums\BarangayClassification;
-use App\QueryFilters\Address\CityFilter as CityFilter;
+use App\QueryFilters\Address\CityFilter;
 use App\QueryFilters\Address\ClassificationFilter;
 use App\QueryFilters\Address\CodeFilter;
 use Illuminate\Database\Eloquent\Builder;

@@ -29,7 +29,7 @@ class CustomParser extends Parser
                 new InitialMapper($this->getMaxCombinedInitials()),
                 new LastnameMapper($this->getPrefixes()),
                 new CustomMiddlenameMapper($this->getPrefixes()), // Map the middle name first.
-                new CustomFirstnameMapper(), // Map the first name last.
+                new CustomFirstnameMapper, // Map the first name last.
             ]);
         }
 

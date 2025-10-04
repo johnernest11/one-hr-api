@@ -18,13 +18,13 @@ class FacadeServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind('PaginationHelper', function ($app) {
-            return new PaginationHelper();
+            return new PaginationHelper;
         });
         $this->app->bind('DateTimeHelper', function ($app) {
-            return new DateTimeHelper();
+            return new DateTimeHelper;
         });
         $this->app->bind('ConversionHelper', function ($app) {
-            return new ConversionHelper();
+            return new ConversionHelper;
         });
     }
 

@@ -80,7 +80,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         'individualReference',
     ];
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
@@ -438,7 +438,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
                 [
                     'name' => fake()->name(),
                     'address' => fake()->address(),
-                    'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+                    'tel_no' => fake()->numerify('+6391234567##'), // Randomizing last two digits since it is causing issues otherwise.
                 ],
             ],
         ];
@@ -565,7 +565,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $testQuestion = IndividualQuestion::factory()->make()->toArray();
         $testReference = IndividualReference::factory()->make()->toArray();
 
-        //@todo Update as new models are added until all forms are completed
+        // @todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
         $c1_request = [
             'form_type' => PDSFormType::C1->value,
@@ -643,7 +643,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $response = $response->decodeResponseJson()['data'];
 
         foreach ($response as $key => $value) {
-            if (array_key_exists($key, $newInfo['individual'])) { //assertion for individual
+            if (array_key_exists($key, $newInfo['individual'])) { // assertion for individual
                 $this->assertEquals($newInfo['individual'][$key], $value);
             }
 
@@ -784,22 +784,22 @@ class IndividualBasicDetailFeatureTest extends TestCase
             [
                 'name' => fake()->name(),
                 'address' => fake()->address(),
-                'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+                'tel_no' => fake()->numerify('+6391234567##'), // Randomizing last two digits since it is causing issues otherwise.
             ],
             [
                 'name' => fake()->name(),
                 'address' => fake()->address(),
-                'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+                'tel_no' => fake()->numerify('+6391234567##'), // Randomizing last two digits since it is causing issues otherwise.
             ],
             [
                 'name' => fake()->name(),
                 'address' => fake()->address(),
-                'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+                'tel_no' => fake()->numerify('+6391234567##'), // Randomizing last two digits since it is causing issues otherwise.
             ],
             [
                 'name' => fake()->name(),
                 'address' => fake()->address(),
-                'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+                'tel_no' => fake()->numerify('+6391234567##'), // Randomizing last two digits since it is causing issues otherwise.
             ],
         ];
 
@@ -823,7 +823,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
         // Should throw an error when attempting to create new references since the total count of the records will be 4.
         $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $updateData);
-        $response->assertStatus(403); //Should be an UNAUTHORIZED_ERROR
+        $response->assertStatus(403); // Should be an UNAUTHORIZED_ERROR
 
         $newUpdateData = [
             'form_type' => PDSFormType::C4->value,

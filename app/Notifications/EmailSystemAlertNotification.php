@@ -42,7 +42,7 @@ class EmailSystemAlertNotification extends Notification implements ShouldQueue
      */
     public function toMail(mixed $notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
             ->greeting("System Notification: $this->level")
             ->level($this->level)
             ->line('Issue: ')

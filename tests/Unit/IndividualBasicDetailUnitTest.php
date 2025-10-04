@@ -40,7 +40,7 @@ class IndividualBasicDetailUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->individualBasicDetailService = new IndividualBasicDetailService(new IndividualBasicDetail(), $this->app->make(\TheIconic\NameParser\Parser::class), $this->app->make(QrCodeManager::class));
+        $this->individualBasicDetailService = new IndividualBasicDetailService(new IndividualBasicDetail, $this->app->make(\TheIconic\NameParser\Parser::class), $this->app->make(QrCodeManager::class));
         $this->user = $this->produceUsers();
 
     }
@@ -123,7 +123,7 @@ class IndividualBasicDetailUnitTest extends TestCase
         $testQuestion = IndividualQuestion::factory()->make()->toArray();
         $testReference = IndividualReference::factory()->make()->toArray();
 
-        //@todo Update as new models are added until all forms are completed
+        // @todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
         $c1_request = [
             'individual' => $testIndividual,

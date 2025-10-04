@@ -74,7 +74,7 @@ abstract class AuthController extends ApiController
         }
 
         // Check if the user has the 'admin' role BEFORE proceeding with token generation
-        if (! $user->roles()->where('name', 'super_user')->orWhere('name', operator: 'admin')->exists()) {
+        if (! $user->roles()->where('name', 'super_user')->orWhere('name', operator: 'admin')->orWhere('name', operator: 'time_logger')->exists()) {
             return $this->error(
                 'You do not have administrator privileges.',
                 Response::HTTP_FORBIDDEN,
@@ -134,7 +134,7 @@ abstract class AuthController extends ApiController
 
         if ($user->roles()->where('name', 'time_logger')->exists()) {
             $refreshName = 'refresh_token';
-            $refreshExpiresAt = $this->getTokenExpiration()->addDays(1); //@todo Update this once testing is done. Set to 5 days after testing.
+            $refreshExpiresAt = $this->getTokenExpiration()->addDays(1); // @todo Update this once testing is done. Set to 5 days after testing.
             $refreshToken = $this->generateRefreshToken($user, $refreshExpiresAt, $refreshName);
             $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user, $withUserDetails, $refreshToken, $refreshExpiresAt, $refreshName);
         }

@@ -14,7 +14,7 @@ class DbSchemaInspectorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new DbSchemaInspector();
+        $this->service = new DbSchemaInspector;
 
         // create dummy table
         Schema::create('stubs', function (Blueprint $table) {

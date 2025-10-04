@@ -50,12 +50,12 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
     ) {
         $this->request = $request;
         $this->employeeData = $this->processEmployeeData($request);
-        $this->importedRecords = new Collection();
+        $this->importedRecords = new Collection;
 
         // Initialize Individual Models
-        $individualBD = new IndividualBasicDetail();
-        $individualAddress = new IndividualAddress();
-        $individualContactInfo = new IndividualContactInfo();
+        $individualBD = new IndividualBasicDetail;
+        $individualAddress = new IndividualAddress;
+        $individualContactInfo = new IndividualContactInfo;
 
         // Get fillable fields for the models.
         $ibdFillable = $individualBD->getFillable();
@@ -87,7 +87,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
     {
         return [
             /* -------------------------------------------------------------------------- */
-            /*                          Individual Basic Details                          */
+            /*                          Individual Basic Details */
             /* -------------------------------------------------------------------------- */
             'first_name' => 'D11',
             'last_name' => 'D10',
@@ -112,7 +112,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             // @todo map country here once it is added
 
             /* -------------------------------------------------------------------------- */
-            /*                             Individual Address                             */
+            /*                             Individual Address */
             /* -------------------------------------------------------------------------- */
             'residential_house_block_lot_no' => 'I17',
             'residential_street' => 'L17',
@@ -130,14 +130,14 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             'permanent_zip_code' => 'I31',
 
             /* -------------------------------------------------------------------------- */
-            /*                           Individual Contact Info                          */
+            /*                           Individual Contact Info */
             /* -------------------------------------------------------------------------- */
             'tel_no' => 'I32',
             'mobile_no' => 'I33',
             'email_address' => 'I34',
 
             /* -------------------------------------------------------------------------- */
-            /*                              Individual Family                             */
+            /*                              Individual Family */
             /* -------------------------------------------------------------------------- */
             'spouse_last_name' => 'D36',
             'spouse_first_name' => 'D37',
@@ -194,7 +194,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             'children_date_of_birth_12' => 'M48',
 
             /* -------------------------------------------------------------------------- */
-            /*                      Individual Educational Background                     */
+            /*                      Individual Educational Background */
             /* -------------------------------------------------------------------------- */
             'elem_level' => 'B54',
             'elem_schools_name' => 'D54',
@@ -267,7 +267,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
     public function array(array $row): array
     {
         /* -------------------------------------------------------------------------- */
-        /*                                Process Data                                */
+        /*                                Process Data */
         /* -------------------------------------------------------------------------- */
         $row['citizenship'] = $row['dual_citizenship'] ? Citizenship::DUAL_CITIZENSHIP->value : Citizenship::FILIPINO->value;
         $row['citizenship_acquisition'] = $row['citizenship_by_naturalization'] ? CitizenshipAcquisition::NATURALIZATION->value : CitizenshipAcquisition::BIRTH->value;
@@ -288,7 +288,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
         $educationalData = $this->handleEducationData($row);
 
         /* -------------------------------------------------------------------------- */
-        /*                              Restructure Data                              */
+        /*                              Restructure Data */
         /* -------------------------------------------------------------------------- */
         $restructuredData = [
             'individual' => Arr::only($row, $this->individualBasicDetailKeys),
@@ -297,7 +297,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             'individual_family' => array_merge($familyData, $childrenData),
         ];
 
-        $createRules = new IndividualBasicDetailRequest();
+        $createRules = new IndividualBasicDetailRequest;
 
         /* -------------------------- Validate Address Data ------------------------- */
         $addressRequiredFields = collect($createRules->getStoreIndividualRules())
@@ -322,7 +322,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
         }
 
         /* -------------------------------------------------------------------------- */
-        /*                              Return Collection                             */
+        /*                              Return Collection */
         /* -------------------------------------------------------------------------- */
         // Push the mapped data into the collection so that it persists outside of this importer.
         // This allows it to be accessed outside of this importer.

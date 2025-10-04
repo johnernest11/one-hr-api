@@ -46,8 +46,8 @@ class AccomplishmentReportRequest extends FormRequest
         $ar = $this->route('accomplishmentReport'); // Get current AR
 
         return [
-            'period' => ['required', 'string', new DbVarcharMaxLength()],
-            'supervisor_notes' => ['nullable', 'string', new DbVarcharMaxLength()],
+            'period' => ['required', 'string', new DbVarcharMaxLength],
+            'supervisor_notes' => ['nullable', 'string', new DbVarcharMaxLength],
             'status' => [new Enum(ARStatus::class)],
             'rows' => ['required', 'array'], // a row has to be present to be able to save
             'rows.*.id' => ['nullable', 'exists:a_r_rows,id',
@@ -56,9 +56,9 @@ class AccomplishmentReportRequest extends FormRequest
                 }),
                 'int'],
             'rows.*.week_num' => ['required_without:rows.*.id', new Enum(WeekNumber::class)], // 'week_num' has to be present in rows to be able to save AR
-            'rows.*.dates_in_week' => ['required_if:status,done', 'string', new DbVarcharMaxLength()],
-            'rows.*.specific_activity' => ['required_if:status,done', 'string', new DbTextMaxLength()],
-            'rows.*.highlights' => ['required_if:status,done', 'string', new DbTextMaxLength()],
+            'rows.*.dates_in_week' => ['required_if:status,done', 'string', new DbVarcharMaxLength],
+            'rows.*.specific_activity' => ['required_if:status,done', 'string', new DbTextMaxLength],
+            'rows.*.highlights' => ['required_if:status,done', 'string', new DbTextMaxLength],
         ];
     }
 

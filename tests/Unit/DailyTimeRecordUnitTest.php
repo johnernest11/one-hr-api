@@ -34,10 +34,10 @@ class DailyTimeRecordUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord());
+        $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord);
         $this->individual = IndividualBasicDetail::factory()->create();
         $this->employee = Employee::whereBelongsTo($this->individual)->firstOrFail();
-        $this->timeLogService = new TimeLogService(new TimeLog());
+        $this->timeLogService = new TimeLogService(new TimeLog);
     }
 
     /**

@@ -158,7 +158,7 @@ class DailyTimeRecordService implements DailyTimeRecordManager
     {
         return DB::transaction(function () use ($employee, $request) {
             // Initialize empty collection for returning updated records.
-            $updatedDtrs = new Collection();
+            $updatedDtrs = new Collection;
 
             // Get status and update all dtrs.
             $newStatus = isset($request['status']) ? $request['status'] : null;
