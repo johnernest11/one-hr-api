@@ -8,9 +8,9 @@ use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
 use App\Traits\Services\CanBuildPagination;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class TimeLogService implements TimeLogManager
 {
@@ -75,7 +75,7 @@ class TimeLogService implements TimeLogManager
             $timeLogTime = Carbon::parse($latestTimeLog->scanned_time);
 
             if ($timeLogTime->diffInMinutes(Carbon::now()) <= self::DUPLICATE_SCAN_LIMIT_MINUTES) {
-                throw ValidationException::withMessages(['scanned_qr' => 'Duplicate scan.']);
+                throw new Exception('Duplicate scan.');
             }
 
             $timeLogData = [

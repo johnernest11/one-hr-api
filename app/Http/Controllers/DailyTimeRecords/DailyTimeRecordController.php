@@ -75,20 +75,27 @@ class DailyTimeRecordController extends ApiController
     public function update(Employee $employee, DailyTimeRecordRequest $request): JsonResponse
     {
         try {
+            // Decode raw JSON payload into an associative array
+            $payload = json_decode($request->getContent(), true);
+
             $validatedRequest = $request->validated();
-            $dtrIds = data_get($validatedRequest, 'dtr.*.id'); // Get all DTR ids for authorization checking
+
+            $dtrPayload = $payload['dtr'] ?? $validatedRequest['dtr'] ?? [];
+
+            $dtrIds = data_get($dtrPayload, '*.id');
 
             $keysToMove = ['month', 'start_date', 'end_date'];
             foreach ($keysToMove as $key) {
-                if (array_key_exists($key, $validatedRequest)) {
-                    $dates[$key] = $validatedRequest[$key];
+                if (array_key_exists($key, $payload)) {
+                    $dates[$key] = $payload[$key];
                 }
             }
 
             $this->authorize('updateBulkDtr', [$employee, $dtrIds, $dates]);
-            $dtr = $this->dailyTimeRecordService->update($employee, $validatedRequest);
+
+            // Pass the array to your service
+            $dtr = $this->dailyTimeRecordService->update($employee, $payload);
         } catch (Exception $e) {
-            // Catch different exceptions and display error message.
             return $this->error(
                 $e->getMessage(),
                 Response::HTTP_BAD_REQUEST,
@@ -115,11 +122,15 @@ class DailyTimeRecordController extends ApiController
 
     }
 
-    public function generateDailyTimeRecord(Employee $employee, DailyTimeRecordRequest $request)
+    public function generateDailyTimeRecord(Employee $employee, DailyTimeRecordRequest $request): Response
     {
-        $startDate = $request->query('start_date', '1900-01-01');
-        $endDate = $request->query('end_date', '2100-12-31');
-        $sort = $request->query('sort', 'asc');
+        // Merge query params so validated() works
+        $request->merge($request->query());
+        $validated = $request->validated();
+
+        $startDate = $validated['start_date'] ?? '1900-01-01';
+        $endDate = $validated['end_date'] ?? '2100-12-31';
+        $sort = $validated['sort'] ?? 'asc';
 
         $response = $this->dailyTimeRecordService->generate($employee, $startDate, $endDate, $sort);
 

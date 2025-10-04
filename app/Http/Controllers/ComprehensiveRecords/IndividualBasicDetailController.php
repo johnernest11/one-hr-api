@@ -5,11 +5,9 @@ namespace App\Http\Controllers\ComprehensiveRecords;
 use App\Enums\PaginationType;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\ComprehensiveRecords\IndividualBasicDetailRequest;
-use App\Imports\MainIndividualImporter;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailManager;
 use Illuminate\Http\JsonResponse;
-use Maatwebsite\Excel\Facades\Excel;
 use PaginationHelper;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -82,18 +80,11 @@ class IndividualBasicDetailController extends ApiController
 
     }
 
-    public function import(IndividualBasicDetailRequest $request)
+    public function importPreview(IndividualBasicDetailRequest $request)
     {
         $validatedRequest = $request->validated();
 
-        // Initialize main importer and import excel
-        $mainImporter = new MainIndividualImporter($this->individualBasicDetailService, $validatedRequest);
-        Excel::import($mainImporter, $validatedRequest['excel_file']);
-
-        // Get generated records during the import process.
-        $generatedRecords = $mainImporter->getImportedRecords();
-
-        $data = $generatedRecords ? $generatedRecords->toArray() : []; // @todo or perhaps handle empty records?
+        $data = $this->individualBasicDetailService->import($validatedRequest);
 
         return $this->success(['data' => $data], Response::HTTP_OK);
     }

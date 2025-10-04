@@ -25,6 +25,6 @@ Route::middleware(['auth:token', 'verified.api'])->controller(IndividualBasicDet
         ->name('update');
 
     Route::middleware(['permission:'.Permission::IMPORT_EMPLOYEE_PDS->value])
-        ->post('import', 'import')
+        ->post('import', 'importPreview')
         ->name('import');
 });

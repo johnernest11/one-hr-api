@@ -1225,6 +1225,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
     public function test_it_can_import_pds_excel(): void
     {
+        // Importing will now not generate a record. Instead it will read the file and return a response of the mapped data.
         // Assert that the databases are empty before importing
         $this->assertDatabaseCount('individual_basic_details', 0);
         $this->assertDatabaseCount('employees', 0);
@@ -1263,8 +1264,8 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $response = $this->withToken($this->authTokenStandard)->postJson("$this->baseUri/import", $payload);
         $response->assertStatus(200);
 
-        // Assert that an individual has been created after importing.
-        $this->assertDatabaseCount('individual_basic_details', 1);
-        $this->assertDatabaseCount('employees', 1);
+        // Assert that the databases are still empty after importing since we are now previewing the mapped data.
+        $this->assertDatabaseCount('individual_basic_details', 0);
+        $this->assertDatabaseCount('employees', 0);
     }
 }

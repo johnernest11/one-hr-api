@@ -177,43 +177,36 @@ class DailyTimeRecordService implements DailyTimeRecordManager
                         $dtrInfo['status'] = $newStatus;
                     }
 
-                    // Update time_logs if it is passed
-                    if (isset($dtrInfo['time_logs'])) {
-                        // Get current count of selected time logs
-                        $currentSelectedCount = $dtr->timeLog->where('is_selected', true)->count();
-                        $newSelectedCount = 0;
+                    if (! empty($dtrInfo['time_logs'])) {
+                        foreach ($dtrInfo['time_logs'] as $timeLog) {
+                            // Convert stdClass to array safely
+                            $timeLogInfo = is_array($timeLog) ? $timeLog : get_object_vars($timeLog);
 
-                        foreach ($dtrInfo['time_logs'] as $timeLogInfo) {
-                            // Verify that the passed time log belongs to the current dtr.
-                            $belongsToDtr = TimeLog::where('daily_time_record_id', $id)->where('id', $timeLogInfo['id'])->exists();
-                            if (! $belongsToDtr) {
-                                throw new Exception("One or more time logs do not belong to the daily time record ID: $id.");
+                            if (empty($timeLogInfo['scanned_time'])) {
+                                throw new \Exception("scanned_time is required for DTR id {$dtr->id}");
                             }
 
-                            // Verify that the incoming is_selected changes is the opposite of the current value.
-                            $currentSelection = TimeLog::where('id', $timeLogInfo['id'])->where('daily_time_record_id', $dtrInfo['id'])->value('is_selected');
+                            $isNew = empty($timeLogInfo['id']);
+                            $timeLogInfo['daily_time_record_id'] = $dtr->id;
+                            $timeLogInfo['date'] = $timeLogInfo['date'] ?? $dtr->date->format('Y-m-d');
+                            $timeLogInfo['is_in'] = $timeLogInfo['is_in'] ?? false;
+                            $timeLogInfo['is_selected'] = $timeLogInfo['is_selected'] ?? false;
 
-                            if ($timeLogInfo['is_selected'] && $currentSelection != $timeLogInfo['is_selected']) {
-                                $newSelectedCount++;
-                            } elseif (! $timeLogInfo['is_selected'] && $currentSelection != $timeLogInfo['is_selected']) {
-                                $newSelectedCount--;
+                            if ($isNew) {
+                                unset($timeLogInfo['id']);
+                                TimeLog::create($timeLogInfo);
+                            } else {
+                                TimeLog::where('id', $timeLogInfo['id'])
+                                    ->where('daily_time_record_id', $dtr->id)
+                                    ->update(Arr::except($timeLogInfo, ['id']));
                             }
                         }
-                        // Check that there is always a maximum of 4 selected for this dtr.
-                        // Compare current and new updates if they exceed the maximum limit
-                        if ($currentSelectedCount + $newSelectedCount > self::MAX_SELECTED_TIMELOGS) {
-                            throw new Exception('Exceeded maximum number of selected time logs. Maximum: '.self::MAX_SELECTED_TIMELOGS);
-                        }
 
-                        // Update time logs after all validations are passed.
-                        foreach ($dtrInfo['time_logs'] as $timeLogInfo) {
-                            TimeLog::where('id', $timeLogInfo['id'])->where('daily_time_record_id', $dtrInfo['id'])->update(Arr::except($timeLogInfo, ['id']));
-                        }
                     }
 
                     // Update existing record if ID exists
                     $dtr->update(Arr::except($dtrInfo, ['id'])); // Exclude id
-                    $dtr->refresh()->with('timeLog');
+                    $dtr->refresh()->load('timeLog'); // correctly eager loads the relationship
                     $updatedDtrs->push($dtr);
                 } else {
                     // Validate that the passed date is not already taken.
