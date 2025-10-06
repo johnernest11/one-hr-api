@@ -32,6 +32,7 @@ class DailyTimeRecordRequest extends FormRequest
             'daily-time-records.update' => $this->getUpdateDailyTimeRecordRule(),
             'daily-time-records.view-dtr' => $this->getViewDtrPerPeriodRangeRule(),
             'daily-time-records.search-time-logs' => $this->getSearchDailyTimeRecordRule(),
+            'daily-time-records.generate-dtr' => $this->getGenerateDtrPerPeriodRangeRule(),
             default => [],
         };
 
@@ -45,8 +46,8 @@ class DailyTimeRecordRequest extends FormRequest
             'is_edit_ut' => ['nullable', 'boolean'],
             'ot' => ['nullable', 'double'],
             'is_missing' => ['nullable', 'boolean'],
-            'employee_remarks' => ['nullable', 'string', new DbTextMaxLength()],
-            'hr_remarks' => ['nullable', 'string', new DbTextMaxLength()],
+            'employee_remarks' => ['nullable', 'string', new DbTextMaxLength],
+            'hr_remarks' => ['nullable', 'string', new DbTextMaxLength],
             'status' => ['required', new Enum(DocumentStatus::class)],
         ];
 
@@ -67,9 +68,9 @@ class DailyTimeRecordRequest extends FormRequest
             'dtr.*.id' => ['nullable', 'int'],
             'dtr.*.ut' => ['nullable', 'numeric'],
             'dtr.*.is_edit_ut' => ['nullable', 'boolean'], // @todo add logic for this one later once UT and OT is implemented
-            'dtr.*.ot' => ['nullable', 'numeric'],
-            'dtr.*.employee_remarks' => ['nullable', 'string', new DbTextMaxLength()],
-            'dtr.*.hr_remarks' => ['nullable', 'string', new DbTextMaxLength()],
+            'dtr.*.ot' => ['nullable', 'double'],
+            'dtr.*.employee_remarks' => ['nullable', 'string', new DbTextMaxLength],
+            'dtr.*.hr_remarks' => ['nullable', 'string', new DbTextMaxLength],
             // Date will be required if ID is not passed (for new records).
             // Date will be excluded if ID is passed so as not to update the date on the given ID.
             'dtr.*.date' => ['nullable', 'required_without:dtr.*.id', 'exclude_with:dtr.*.id', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
@@ -100,6 +101,17 @@ class DailyTimeRecordRequest extends FormRequest
             'query' => ['required', 'string'],
             'limit' => ['nullable', 'int'],
             'is_my_profile' => ['required', 'boolean'], // Determines which view this is called.
+        ];
+    }
+
+    public function getGenerateDtrPerPeriodRangeRule(): array
+    {
+        return [
+            // Either month OR start_date+end_date is required
+            'month' => ['nullable', 'required_without_all:start_date,end_date', 'date:Y-m', new BeforeOrEqualCurrentMonthYear],
+            'start_date' => ['nullable', 'required_without:month', 'date:Y-m-d'],
+            'end_date' => ['nullable', 'required_without:month', 'after_or_equal:start_date'],
+            'sort' => ['nullable', 'in:asc,desc'], // Add sort validation
         ];
     }
 }

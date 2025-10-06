@@ -21,7 +21,7 @@ class TimeLogUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->timeLogService = new TimeLogService(new TimeLog());
+        $this->timeLogService = new TimeLogService(new TimeLog);
         $individual = IndividualBasicDetail::factory()->create();
         $this->employee = Employee::whereBelongsTo($individual)->firstOrFail();
     }

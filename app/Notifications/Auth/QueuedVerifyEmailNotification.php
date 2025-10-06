@@ -55,7 +55,7 @@ class QueuedVerifyEmailNotification extends VerifyEmail implements ShouldQueue
     {
         $appName = config('app.name');
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject('Verify Your Email Address')
             ->greeting('Hey, '.$this->notifiableName.'!')
             ->line("Thank you for registering to $appName.")

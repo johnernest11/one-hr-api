@@ -15,14 +15,14 @@ class C2Import implements ToCollection
 
     public function __construct()
     {
-        $this->importedRecords = new Collection();
+        $this->importedRecords = new Collection;
     }
 
     public function collection(Collection $rows)
     {
 
         /* -------------------------------------------------------------------------- */
-        /*                            IndividualEligibility                           */
+        /*                            IndividualEligibility */
         /* -------------------------------------------------------------------------- */
 
         $civilServiceData = $rows->slice(4, 7); // Rows 5-11 (index 4 to 10, with 7 rows)
@@ -59,7 +59,7 @@ class C2Import implements ToCollection
         }
 
         /* -------------------------------------------------------------------------- */
-        /*                          IndividualWorkExperience                          */
+        /*                          IndividualWorkExperience */
         /* -------------------------------------------------------------------------- */
 
         $workExpData = $rows->slice(17, 28); // Rows 18-45 (index 17 to 44, with 28 rows)
@@ -113,7 +113,7 @@ class C2Import implements ToCollection
         ];
 
         /* -------------------------------------------------------------------------- */
-        /*                              Return Collection                             */
+        /*                              Return Collection */
         /* -------------------------------------------------------------------------- */
         // Push the mapped data into the collection so that it persists outside of this importer.
         // This allows it to be accessed outside of this importer.

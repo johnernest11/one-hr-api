@@ -34,10 +34,10 @@ class DailyTimeRecordUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord());
+        $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord);
         $this->individual = IndividualBasicDetail::factory()->create();
         $this->employee = Employee::whereBelongsTo($this->individual)->firstOrFail();
-        $this->timeLogService = new TimeLogService(new TimeLog());
+        $this->timeLogService = new TimeLogService(new TimeLog);
     }
 
     /**
@@ -157,6 +157,39 @@ class DailyTimeRecordUnitTest extends TestCase
         // Call the service again.
         $result = $this->dailyTimeRecordService->countWarmBodies();
         $this->assertSame(1, $result['in_office']); // Assert that the log time registers and now there is an employee in the office.
+
+    }
+
+    /**
+     * Test DTR PDF can be generated for a given employee and date range
+     */
+    public function test_can_generate_dtr_pdf_for_given_employee_and_date_range(): void
+    {
+        $employee = $this->employee;
+
+        // Create some DTRs with time logs
+        $dates = ['2025-09-01', '2025-09-02', '2025-09-05'];
+        foreach ($dates as $date) {
+            $dtr = DailyTimeRecord::factory()->create([
+                'employee_id' => $employee->id,
+                'date' => $date,
+                'ut' => 1,
+                'ot' => 2,
+                'employee_remarks' => 'Test remark',
+            ]);
+            TimeLog::factory()->count(2)->create([
+                'daily_time_record_id' => $dtr->id,
+            ]);
+        }
+
+        $startDate = '2025-09-01';
+        $endDate = '2025-09-05';
+
+        $result = $this->dailyTimeRecordService->generate($employee, $startDate, $endDate);
+
+        $this->assertNotEmpty($result['fileContent'], 'PDF content should not be empty');
+        $expectedFileName = "DTR-{$employee->id}-{$startDate}_to_{$endDate}.pdf";
+        $this->assertEquals($expectedFileName, $result['fileName']);
 
     }
 }

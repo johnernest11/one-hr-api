@@ -13,7 +13,7 @@ class DbServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(DbSchemaInspector::class, function () {
-            return new DbSchemaInspector();
+            return new DbSchemaInspector;
         });
     }
 

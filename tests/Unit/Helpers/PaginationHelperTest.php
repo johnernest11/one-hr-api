@@ -25,8 +25,8 @@ class PaginationHelperTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->paginationHelper = new PaginationHelper();
-        $this->userService = new UserManager(new User());
+        $this->paginationHelper = new PaginationHelper;
+        $this->userService = new UserManager(new User);
     }
 
     public function test_can_format_length_aware_pagination()

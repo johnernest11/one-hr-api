@@ -47,15 +47,15 @@ class AuthServiceProvider extends ServiceProvider
         parent::register();
 
         $this->app->bind(AuthTokenManager::class, function () {
-            return new JwtAuthService();
+            return new JwtAuthService;
         });
 
         $this->app->bind(PersistentAuthTokenManager::class, function () {
-            return new SanctumAuthService();
+            return new SanctumAuthService;
         });
 
         $this->app->bind(ApiKeyManager::class, function () {
-            return new ApiKeyManager();
+            return new ApiKeyManager;
         });
 
         $this->app->bind(MfaOrchestrator::class, function () {

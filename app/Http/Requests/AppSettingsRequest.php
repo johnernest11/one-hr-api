@@ -42,7 +42,7 @@ class AppSettingsRequest extends FormRequest
             'mfa' => ['array'],
             'mfa.enabled' => ['boolean'],
             'mfa.steps' => ['min:1', 'array'],
-            'mfa.steps.*' => ['distinct', new MfaStep()],
+            'mfa.steps.*' => ['distinct', new MfaStep],
         ];
     }
 

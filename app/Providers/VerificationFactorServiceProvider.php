@@ -14,11 +14,11 @@ class VerificationFactorServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(EmailVerificationChannel::class, function () {
-            return new EmailVerificationChannel();
+            return new EmailVerificationChannel;
         });
 
         $this->app->bind(GAuthenticatorVerificationApp::class, function () {
-            return new GAuthenticatorVerificationApp();
+            return new GAuthenticatorVerificationApp;
         });
     }
 

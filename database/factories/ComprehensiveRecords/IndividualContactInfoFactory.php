@@ -17,8 +17,8 @@ class IndividualContactInfoFactory extends Factory
     public function definition(): array
     {
         return [
-            'tel_no' => fake()->numerify('+637255512##'), //Randomizing last two digits since it is causing issues otherwise.
-            'mobile_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+            'tel_no' => fake()->numerify('+637255512##'), // Randomizing last two digits since it is causing issues otherwise.
+            'mobile_no' => fake()->numerify('+6391234567##'), // Randomizing last two digits since it is causing issues otherwise.
             'email_address' => fake()->unique()->safeEmail(),
         ];
     }

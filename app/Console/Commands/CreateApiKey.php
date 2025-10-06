@@ -60,8 +60,8 @@ class CreateApiKey extends Command
         try {
             Validator::validate($data, [
                 'user_email' => ['required', 'email', 'exists:users,email'],
-                'name' => ['string', 'required', new DbVarcharMaxLength()],
-                'description' => ['nullable', 'string', new DbTextMaxLength()],
+                'name' => ['string', 'required', new DbVarcharMaxLength],
+                'description' => ['nullable', 'string', new DbTextMaxLength],
                 'expires_at' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:'.date('Y-m-d')],
             ]);
         } catch (ValidationException $e) {

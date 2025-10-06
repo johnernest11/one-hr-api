@@ -30,7 +30,7 @@ class TimeLogFeatureTest extends TestCase
 
     private PersistentAuthTokenManager $tokenManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
@@ -97,6 +97,6 @@ class TimeLogFeatureTest extends TestCase
         $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/log-time', $data);
         $response->assertStatus(422);
 
-        $this->assertDatabaseCount('time_logs', 1); //Database count should still be 1
+        $this->assertDatabaseCount('time_logs', 1); // Database count should still be 1
     }
 }

@@ -25,7 +25,7 @@ class ApiKeyManagerTest extends TestCase
         parent::setUp();
         DB::connection('one_account')->table('api_keys')->truncate();
         $this->artisan('db:seed');
-        $this->apiKeyService = new ApiKeyManager();
+        $this->apiKeyService = new ApiKeyManager;
         $this->apiKeyPermissions = ConversionHelper::enumToArray(WebhookPermission::class);
     }
 
@@ -39,7 +39,7 @@ class ApiKeyManagerTest extends TestCase
         $this->assertDatabaseCount('api_keys', 1, 'one_account');
     }
 
-    public function test_a_newly_created_api_key_has_the_rawKeyValue_property(): void
+    public function test_a_newly_created_api_key_has_the_raw_key_value_property(): void
     {
         $user = $this->produceUsers();
         $name = fake()->domainName;

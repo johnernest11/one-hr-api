@@ -155,7 +155,7 @@ class MfaOrchestratorTest extends TestCase
         $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
         $this->mfaOrchestrator->runSecretGeneration($mfaToken);
 
-        $factor = new EmailVerificationChannel();
+        $factor = new EmailVerificationChannel;
         $code = $factor->generateCode($this->user);
         $success = $this->mfaOrchestrator->runCodeVerification($mfaAttempt, $code);
         $this->assertTrue($success);
@@ -195,7 +195,7 @@ class MfaOrchestratorTest extends TestCase
         $mfaAttempt = $this->mfaOrchestrator->getMfaAttemptFromToken($mfaToken);
         $this->mfaOrchestrator->runSecretGeneration($mfaToken);
 
-        $authenticator = new GAuthenticatorVerificationApp();
+        $authenticator = new GAuthenticatorVerificationApp;
         $backupCodes = $authenticator->generateBackupCodes($this->user);
 
         $success = $this->mfaOrchestrator->runBackupCodeVerification($mfaAttempt, $backupCodes[0]);
