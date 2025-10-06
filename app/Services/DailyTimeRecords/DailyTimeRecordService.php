@@ -6,6 +6,8 @@ use App\Enums\PaginationType;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Models\Libraries\Division;
+use App\Models\Libraries\SectionOrUnit;
 use App\Traits\Services\CanBuildPagination;
 use Arr;
 use Carbon\Carbon;
@@ -259,5 +261,83 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         });
 
         return $this->buildPagination($pagination, $updatedQuery, $limit);
+    }
+
+    /** {@inheritDoc} */
+    public function generate(Employee $employee, string $startDate, string $endDate, string $sort = 'asc'): array
+    {
+        // Fetch DTRs with time logs
+        $dtrs = DailyTimeRecord::with('timeLog')
+            ->where('employee_id', $employee->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date', $sort)
+            ->get();
+
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+
+        // Generate all dates in the range
+        $startFormatted = Carbon::parse($startDate)->format('F j, Y');
+        $endFormatted = Carbon::parse($endDate)->format('F j, Y');
+
+        $allRows = collect();
+
+        for ($date = $start; $date->lte($end); $date->addDay()) {
+            $dateStr = $date->format('Y-m-d');
+
+            // Find existing DTR for this date
+            $existing = $dtrs->first(function ($dtr) use ($dateStr) {
+                return Carbon::parse($dtr->date)->format('Y-m-d') === $dateStr;
+            });
+
+            // Ensure timeLog is always a collection
+            $allRows->push($existing ? (object) [
+                'date' => $existing->date,
+                'timeLog' => $existing->timeLog ?? collect(),
+                'ut' => $existing->ut ?? 0,
+                'ot' => $existing->ot ?? 0,
+                'employee_remarks' => $existing->employee_remarks ?? '',
+            ] : (object) [
+                'date' => $dateStr,
+                'timeLog' => collect(),
+                'ut' => 0,
+                'ot' => 0,
+                'employee_remarks' => '',
+            ]);
+        }
+
+        // Employee details
+        $employeeDetail = $employee->individualBasicDetail;
+        $fullName = trim("{$employeeDetail->last_name}, {$employeeDetail->first_name} {$employeeDetail->middle_name}");
+        $divisionName = optional($employee->division_id ? Division::find($employee->division_id) : null)->name ?? 'PLACEHOLDER';
+        $sectionName = optional($employee->section_or_unit_id ? SectionOrUnit::find($employee->section_or_unit_id) : null)->name ?? 'PLACEHOLDER';
+        $positionTitle = optional($employee->item->position)->title ?? 'PLACEHOLDER';
+
+        // Pass to Blade
+        $html = view('template.daily_time_record', [
+            'period' => "From: {$startFormatted} To: {$endFormatted}",
+            'fullName' => $fullName,
+            'position' => $positionTitle,
+            'dept_division' => $divisionName,
+            'dept_section' => $sectionName,
+            'allRows' => $allRows,
+            'supervisorNotes' => null,
+            'certifyingOfficer' => 'PLACEHOLDER',
+            'officerPosition' => 'PLACEHOLDER',
+        ])->render();
+
+        $options = new \Dompdf\Options;
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('Legal', 'portrait');
+        $dompdf->render();
+
+        return [
+            'fileContent' => $dompdf->output(),
+            'fileName' => "DTR-{$employee->id}-{$startDate}_to_{$endDate}.pdf",
+        ];
     }
 }

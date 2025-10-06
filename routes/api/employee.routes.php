@@ -26,6 +26,10 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         Route::middleware(['permission:'.Permission::UPDATE_DTR->value])
             ->put('', 'update')->name('update');
 
+        /** @uses DailyTimeRecordController::generateDtrPerMonth */
+        Route::middleware(['permission:'.Permission::VIEW_DTR->value])
+            ->get('/generate-dtr', 'generateDailyTimeRecord')->name('generate-dtr');
+
         /** @uses DailyTimeRecordController::viewDtrPerMonth */
         Route::middleware(['permission:'.Permission::VIEW_DTR->value])
             ->get('/view-dtr', 'viewDtrPerPeriodRange')->name('view-dtr');

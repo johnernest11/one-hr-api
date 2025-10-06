@@ -392,4 +392,36 @@ class DailyTimeRecordFeatureTest extends TestCase
         $this->assertEquals($name, $response[0]['first_name']);
 
     }
+
+    public function test_it_can_generate_dtr_pdf(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
+
+        $dates = ['2025-09-01', '2025-09-02', '2025-09-05'];
+        foreach ($dates as $date) {
+            $dtr = DailyTimeRecord::factory()->create([
+                'employee_id' => $employee->id,
+                'date' => $date,
+                'ut' => 1,
+                'ot' => 2,
+                'employee_remarks' => 'Test remark',
+            ]);
+            TimeLog::factory()->count(2)->create([
+                'daily_time_record_id' => $dtr->id,
+                'is_in' => true,
+            ]);
+        }
+
+        $startDate = '2025-09-01';
+        $endDate = '2025-09-05';
+        $sort = 'asc';
+
+        $response = $this->withHeader('Authorization', "Bearer {$this->authTokenStandard}")
+            ->get("{$this->uriWithId}/{$employee->id}/daily-time-records/generate-dtr?start_date={$startDate}&end_date={$endDate}&sort={$sort}");
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/pdf');
+        $this->assertNotEmpty($response->getContent(), 'Generated DTR PDF content should not be empty');
+
+    }
 }

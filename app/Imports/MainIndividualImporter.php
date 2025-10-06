@@ -13,6 +13,8 @@ class MainIndividualImporter implements WithMultipleSheets
 {
     private $request;
 
+    private IndividualBasicDetailManager $individualBasicDetailService;
+
     public $allImportedRecords; // @todo Can be altered later on depending on which logic is best in accessing the generated records.
 
     protected $sheetImporters = []; // Save the initialized importers
