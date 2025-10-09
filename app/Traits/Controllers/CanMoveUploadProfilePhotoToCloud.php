@@ -21,8 +21,9 @@ trait CanMoveUploadProfilePhotoToCloud
         $oldPath = $user->userProfile->profile_picture_path;
 
         $fullPath = $cloudStorage->upload($path, $file);
-        $updatedUser = $userAccountManager->update($user, ['profile_picture_path' => $fullPath]);
 
+        $updatedUser = $userAccountManager->update($user, ['profile_picture_path' => $fullPath]);
+        // dd($updatedUser);
         // We delete the old profile picture
         if ($oldPath) {
             $cloudStorage->delete($oldPath);

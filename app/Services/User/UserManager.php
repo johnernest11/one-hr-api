@@ -178,6 +178,7 @@ class UserManager implements UserAccountManager, UserCredentialManager
                 'sex',
                 'birthday',
                 'mobile_number',
+                'profile_picture_path',
                 'telephone_number',
                 'individual_basic_detail_id',
             ]);
