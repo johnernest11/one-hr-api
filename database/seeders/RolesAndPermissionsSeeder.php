@@ -46,6 +46,7 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         Permission::create(['name' => PermissionEnum::VIEW_DTR, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::VIEW_WARM_BODIES_TODAY, 'guard_name' => 'token']);
         Permission::create(['name' => PermissionEnum::SEARCH_TIME_LOGS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::CRUD_LOCATOR_SLIP, 'guard_name' => 'token']);
 
         /** @var Role $standardRole */
         $standardRole = Role::create(['name' => RoleEnum::STANDARD_USER, 'guard_name' => 'token']);

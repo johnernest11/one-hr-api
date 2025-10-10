@@ -38,4 +38,5 @@ enum Permission: string
     case VIEW_WARM_BODIES_TODAY = 'view_warm_bodies_today';
     case UPDATE_DTR = 'update_dtr';
     case SEARCH_TIME_LOGS = 'search_time_logs';
+    case CRUD_LOCATOR_SLIP = 'crud_locator_slip';
 }
