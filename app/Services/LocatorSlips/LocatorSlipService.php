@@ -7,10 +7,8 @@ use App\Enums\LocatorFormType;
 use App\Enums\PaginationType;
 use App\Enums\Period;
 use App\Models\ComprehensiveRecords\Employee;
-use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\LocatorSlip\LocatorSlip;
 use App\Models\LocatorSlip\LocatorSlipLogger;
-use App\Services\DailyTimeRecords\DailyTimeRecordManager;
 use App\Traits\Services\CanBuildPagination;
 use Arr;
 use Carbon\Carbon;
@@ -27,12 +25,9 @@ class LocatorSlipService implements LocatorSlipManager
 
     private LocatorSlip $model;
 
-    private DailyTimeRecordManager $dailyTimeRecordService;
-
-    public function __construct(LocatorSlip $model, DailyTimeRecordManager $dailyTimeRecordService)
+    public function __construct(LocatorSlip $model)
     {
         $this->model = $model;
-        $this->dailyTimeRecordService = $dailyTimeRecordService;
     }
 
     /**
@@ -148,45 +143,6 @@ class LocatorSlipService implements LocatorSlipManager
                     $logRecord->update(Arr::except($logs, 'id'));
                 } else {
                     $newLogs = $locatorSlip->locatorSlipLogger()->create($logs);
-
-                    /* -------------------------------------------------------------------------- */
-                    /*                             Update DTR Remarks */
-                    /* -------------------------------------------------------------------------- */
-                    // search for dtr == log date.
-                    // if exists, append to remarks.
-                    // else, create dtr and add remarks.
-                    $dtr = DailyTimeRecord::where('date', $newLogs->date)->where('employee_id', $locatorSlip->employee_id)->first();
-                    $lsMonth = Carbon::parse($newLogs->date)->format('Y-m');
-                    $headlineApproval = Str::headline($newLogs->approved_for->value);
-                    $lsNo = $locatorSlip->locator_slip_no ? "LS No.: $locatorSlip->locator_slip_no" : '';
-                    $remarks = "$headlineApproval $lsNo - $newLogs->purpose at $newLogs->destination";
-
-                    if ($dtr) {
-                        $existingRemarks = $dtr->employee_remarks;
-                        $payload = [
-                            'month' => $lsMonth,
-                            'dtr' => [
-                                [
-                                    'id' => $dtr->id,
-                                    'employee_remarks' => $existingRemarks ? $existingRemarks."\n\n".$remarks : $remarks,
-                                ],
-                            ],
-                        ];
-
-                    } else {
-                        $payload = [
-                            'month' => $lsMonth,
-                            'dtr' => [
-                                [
-                                    'date' => $newLogs->date,
-                                    'employee_remarks' => $remarks,
-                                ],
-                            ],
-                        ];
-                    }
-
-                    $this->dailyTimeRecordService->update($locatorSlip->employee, $payload);
-
                 }
             }
 

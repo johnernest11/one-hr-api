@@ -82,7 +82,7 @@ class AppServiceProvider extends ServiceProvider
             return new TimeLogService(new TimeLog);
         });
         $this->app->bind(LocatorSlipManager::class, function () {
-            return new LocatorSlipService(new LocatorSlip, $this->app->make(DailyTimeRecordManager::class));
+            return new LocatorSlipService(new LocatorSlip);
         });
     }
 
