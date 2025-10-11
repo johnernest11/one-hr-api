@@ -10,6 +10,7 @@ use App\Models\Libraries\Program;
 use App\Models\Libraries\SalaryGrade;
 use App\Models\Libraries\SectionOrUnit;
 use App\Models\LocatorSlip\LocatorSlip;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,7 +44,7 @@ class Employee extends Model
         'item',
     ];
 
-    public function scopeWithLocatorSlip($query)
+    public function scopeWithLocatorSlip($query): Builder
     {
         return $query->has('locatorSlip')->with('locatorSlip');
     }

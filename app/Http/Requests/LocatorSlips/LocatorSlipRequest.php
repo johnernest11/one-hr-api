@@ -46,7 +46,7 @@ class LocatorSlipRequest extends FormRequest
     {
         return [
             'locator_slip_logger' => ['array'],
-            'locator_slip_logger.*.id' => ['nullable', 'int'], // null if creating new records
+            'locator_slip_logger.*.id' => ['nullable', 'exists:locator_slip_loggers,id', 'int'], // null if creating new records
             'locator_slip_logger.*.date' => ['required', 'date_format:Y-m-d'],
             'locator_slip_logger.*.time_out' => ['nullable', 'date_format:H:i'],
             'locator_slip_logger.*.time_in' => ['nullable', 'date_format:H:i'],

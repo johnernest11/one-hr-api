@@ -129,34 +129,36 @@ class TimeLogService implements TimeLogManager
      */
     public function updateLocatorSlipLogger(Employee $employee, array $timeLog): void
     {
-        $carbonDate = Carbon::parse($timeLog['date']);
-        $lsCollection = LocatorSlip::where('employee_id', $employee->id)
-            ->whereYear('date', $carbonDate->year)
-            ->whereMonth('date', $carbonDate->month)
-            ->get();
+        DB::transaction(function () use ($employee, $timeLog) {
+            $carbonDate = Carbon::parse($timeLog['date']);
+            $lsCollection = LocatorSlip::where('employee_id', $employee->id)
+                ->whereYear('date', $carbonDate->year)
+                ->whereMonth('date', $carbonDate->month)
+                ->get();
 
-        if (! $lsCollection) {
-            return;
-        }
-
-        foreach ($lsCollection as $slip) {
-            $lsLogs = LocatorSlipLogger::whereBelongsTo($slip)->where('date', $timeLog['date'])->get();
-
-            if (! $lsLogs) {
+            if (! $lsCollection) {
                 return;
             }
 
-            foreach ($lsLogs as $log) {
-                if (! $log->time_out) {
-                    $log->update([
-                        'time_out' => $timeLog['scanned_time'],
-                    ]);
-                } elseif (! $log->time_in) {
-                    $log->update([
-                        'time_in' => $timeLog['scanned_time'],
-                    ]);
+            foreach ($lsCollection as $slip) {
+                $lsLogs = LocatorSlipLogger::whereBelongsTo($slip)->where('date', $timeLog['date'])->get();
+
+                if (! $lsLogs) {
+                    return;
+                }
+
+                foreach ($lsLogs as $log) {
+                    if (! $log->time_out) {
+                        $log->update([
+                            'time_out' => $timeLog['scanned_time'],
+                        ]);
+                    } elseif (! $log->time_in) {
+                        $log->update([
+                            'time_in' => $timeLog['scanned_time'],
+                        ]);
+                    }
                 }
             }
-        }
+        }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
     }
 }

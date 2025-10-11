@@ -26,7 +26,7 @@ class LocatorUpdateDtrRemarks extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         // get the list of employee with locators for the day
         // get the dtrs corresponding to that employee for that day
