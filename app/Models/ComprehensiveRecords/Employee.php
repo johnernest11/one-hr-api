@@ -39,6 +39,8 @@ class Employee extends Model
 
     protected $with = [
         'item',
+        'division',
+        'sectionOrUnit',
     ];
 
     /**
@@ -68,17 +70,17 @@ class Employee extends Model
     /**
      * An employee has one section or unit
      */
-    public function sectionOrUnit(): HasOne
+    public function sectionOrUnit(): BelongsTo
     {
-        return $this->hasOne(SectionOrUnit::class);
+        return $this->belongsTo(SectionOrUnit::class);
     }
 
     /**
      * An employee has one division
      */
-    public function division(): HasOne
+    public function division(): BelongsTo
     {
-        return $this->hasOne(Division::class);
+        return $this->belongsTo(Division::class);
     }
 
     /**

@@ -14,7 +14,11 @@ interface IndividualBasicDetailManager
     /**
      * Fetch all IndividualBasicDetails
      */
-    public function all(?int $limit = null): LengthAwarePaginator;
+    public function all(
+        ?int $limit = null,
+        ?int $divisionId = null,
+        ?int $sectionOrUnitId = null
+    ): LengthAwarePaginator;
 
     /**
      * Create an IndividualBasicDetail
