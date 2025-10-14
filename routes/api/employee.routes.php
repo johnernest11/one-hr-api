@@ -4,6 +4,7 @@ use App\Enums\Permission;
 use App\Http\Controllers\DailyTimeRecords\DailyTimeRecordController;
 use App\Http\Controllers\DailyTimeRecords\QrCodeController;
 use App\Http\Controllers\DailyTimeRecords\TimeLogController;
+use App\Http\Controllers\LocatorSlipController;
 
 // Routes that requires employee id
 Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(function () {
@@ -33,6 +34,21 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         /** @uses DailyTimeRecordController::viewDtrPerMonth */
         Route::middleware(['permission:'.Permission::VIEW_DTR->value])
             ->get('/view-dtr', 'viewDtrPerPeriodRange')->name('view-dtr');
+    });
+
+    Route::prefix('locator-slips')->controller(LocatorSlipController::class)->name('locator-slips.')->group(function () {
+        /** @uses LocatorSlip::create */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->post('', 'store')->name('store');
+
+        /** @uses LocatorSlip::viewEmployeeLocator */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('', 'viewEmployeeLocator')->name('view-employee-locator');
+
+        /** @uses LocatorSlip::show */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('/{locatorSlip}', 'show')->name('view-locator');
+
     });
 });
 
@@ -67,6 +83,20 @@ Route::middleware(['auth:token', 'verified.api'])->group(function () {
         /** @uses DailyTimeRecordController::search */
         Route::middleware(['permission:'.Permission::SEARCH_TIME_LOGS->value])
             ->get('/time-logs/search', 'search')->name('search-time-logs');
+    });
+
+    Route::prefix('locator-slips')->controller(LocatorSlipController::class)->name('locator-slips.')->group(function () {
+        /** @uses LocatorSlip::update */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->put('/{locatorSlip}', 'update')->name('update');
+
+        /** @uses LocatorSlip::readGrouped */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('grouped', 'readGrouped')->name('read-grouped');
+
+        /** @uses LocatorSlip::show */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('/{locatorSlip}', 'show')->name('view-locator');
     });
 
 });

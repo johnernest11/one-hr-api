@@ -8,6 +8,7 @@ use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\QrCode;
 use App\Models\DailyTimeRecords\TimeLog;
 use App\Models\Item;
+use App\Models\LocatorSlip\LocatorSlip;
 use App\Models\PersonalAccessToken;
 use App\Services\AccomplishmentReport\AccomplishmentReportManager;
 use App\Services\AccomplishmentReport\AccomplishmentReportService;
@@ -22,6 +23,8 @@ use App\Services\DailyTimeRecords\TimeLogManager;
 use App\Services\DailyTimeRecords\TimeLogService;
 use App\Services\Item\ItemManager;
 use App\Services\Item\ItemService;
+use App\Services\LocatorSlips\LocatorSlipManager;
+use App\Services\LocatorSlips\LocatorSlipService;
 use App\Services\User\UserAccountManager;
 use App\Services\User\UserCredentialManager;
 use App\Services\User\UserManager;
@@ -77,6 +80,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(TimeLogManager::class, function () {
             return new TimeLogService(new TimeLog);
+        });
+        $this->app->bind(LocatorSlipManager::class, function () {
+            return new LocatorSlipService(new LocatorSlip);
         });
     }
 

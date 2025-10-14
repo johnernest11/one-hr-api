@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
         CountriesSeeder::class,
         SalaryGradesSeeder::class,
         ProgramsSeeder::class,
+        LocatorSlipPermissionSeeder::class,
     ];
 
     /**
