@@ -76,21 +76,14 @@ class RolesAndPermissionsSeeder extends CiCdCompliantSeeder
         $timeLoggerRole = Role::create(['name' => RoleEnum::TIME_LOGGER, 'guard_name' => 'token']);
         $timeLoggerRole->givePermissionTo(Permission::all());
 
-        Permission::create(['name' => PermissionEnum::CREATE_ITEMS, 'guard_name' => 'token']);
-        Permission::create(['name' => PermissionEnum::UPDATE_ITEMS, 'guard_name' => 'token']);
-        Permission::create(['name' => PermissionEnum::VIEW_ITEMS, 'guard_name' => 'token']);
-        Permission::create(['name' => PermissionEnum::CREATE_EMPLOYEE_PDS, 'guard_name' => 'token']);
-
         /** @var Role $hrPasAdminRole */
         $hrPasAdminRole = Role::create(['name' => RoleEnum::HR_PAS_ADMIN, 'guard_name' => 'token']);
         $hrPasAdminRole->givePermissionTo(Permission::all());
 
-        // Remove item creation and update permissions
-        $hrPasAdminRole->revokePermissionTo([
-            PermissionEnum::CREATE_ITEMS->value,
-            PermissionEnum::UPDATE_ITEMS->value,
-            PermissionEnum::CREATE_EMPLOYEE_PDS->value,
-        ]);
+        Permission::create(['name' => PermissionEnum::CREATE_ITEMS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::UPDATE_ITEMS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::VIEW_ITEMS, 'guard_name' => 'token']);
+        Permission::create(['name' => PermissionEnum::CREATE_EMPLOYEE_PDS, 'guard_name' => 'token']);
 
         /** @var Role $hrPpmsAdminRole */
         $hrPpmsAdminRole = Role::create(['name' => RoleEnum::HR_PPMS_ADMIN, 'guard_name' => 'token']);

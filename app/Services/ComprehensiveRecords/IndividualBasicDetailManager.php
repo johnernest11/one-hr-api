@@ -16,8 +16,6 @@ interface IndividualBasicDetailManager
      */
     public function all(
         ?int $limit = null,
-        ?int $divisionId = null,
-        ?int $sectionOrUnitId = null
     ): LengthAwarePaginator;
 
     /**
