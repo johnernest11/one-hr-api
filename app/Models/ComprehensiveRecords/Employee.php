@@ -42,6 +42,8 @@ class Employee extends Model
 
     protected $with = [
         'item',
+        'division',
+        'sectionOrUnit',
     ];
 
     public function scopeWithLocatorSlip($query): Builder
@@ -86,7 +88,7 @@ class Employee extends Model
      */
     public function division(): BelongsTo
     {
-        return $this->BelongsTo(Division::class);
+        return $this->belongsTo(Division::class);
     }
 
     /**

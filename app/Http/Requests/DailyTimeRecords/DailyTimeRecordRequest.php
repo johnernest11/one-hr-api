@@ -68,7 +68,7 @@ class DailyTimeRecordRequest extends FormRequest
             'dtr.*.id' => ['nullable', 'int'],
             'dtr.*.ut' => ['nullable', 'numeric'],
             'dtr.*.is_edit_ut' => ['nullable', 'boolean'], // @todo add logic for this one later once UT and OT is implemented
-            'dtr.*.ot' => ['nullable', 'double'],
+            'dtr.*.ot' => ['nullable', 'numeric'],
             'dtr.*.employee_remarks' => ['nullable', 'string', new DbTextMaxLength],
             'dtr.*.hr_remarks' => ['nullable', 'string', new DbTextMaxLength],
             // Date will be required if ID is not passed (for new records).

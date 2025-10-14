@@ -70,9 +70,10 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
     // CRUD for WES
     // imports & exports
 
+    /** {@inheritDoc} */
     public function all(?int $limit = null): LengthAwarePaginator
     {
-        $query = $this->model->with(array_merge($this->comprehensive_records, ['employee']));
+        $query = $this->model->filtered();
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query, $limit);
     }
