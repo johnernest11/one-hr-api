@@ -27,8 +27,10 @@ class IndividualBasicDetailController extends ApiController
     public function viewAllIndividuals(IndividualBasicDetailRequest $request): JsonResponse
     {
         $limit = $request->validated('limit', 9);
+        $divisionId = $request->input('division_id');
+        $sectionOrUnitId = $request->input('section_or_unit_id');
 
-        $individualData = $this->individualBasicDetailService->all($limit);
+        $individualData = $this->individualBasicDetailService->all($limit, $divisionId, $sectionOrUnitId);
         $formatted = PaginationHelper::formatPagination($individualData);
 
         return $this->success($formatted, Response::HTTP_OK);
