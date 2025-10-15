@@ -35,7 +35,7 @@ class LocatorUpdateDtrRemarks extends Command
         // the new remarks will be taken from locator_slip_loggers (combining the following fields: locator_slip_no, approved_for, purpose, destination, time_out, & time_in)
         Log::info('Starting to update the DTRs of employees with locator slip logs for the day...');
 
-        $today = now()->toDateString();
+        $today = now()->yesterday()->toDateString(); // get yesterday to process the data of the day that just ended.
         $updatedDtrCount = 0;
         $createdDtrCount = 0;
 
