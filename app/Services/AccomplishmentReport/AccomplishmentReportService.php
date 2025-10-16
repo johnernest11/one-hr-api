@@ -61,28 +61,27 @@ class AccomplishmentReportService implements AccomplishmentReportManager
         $templateProcessor = new TemplateProcessor($templatePath);
 
         // Process report data
-        $userInfo = $accomplishmentReport->userProfile;
+        $userInfo = $accomplishmentReport->userProfile->individualBasicDetail;
 
         // Set period
         $templateProcessor->setValue('period', $accomplishmentReport->period);
 
         // Set Names
-        $fullName = $userInfo->full_name_w_middle_initial;
         $templateProcessor->setValues([
             'firstName' => $userInfo->first_name,
             'middleName' => $userInfo->middle_name,
             'lastName' => $userInfo->last_name,
-            'fullName' => $fullName,
+            'fullName' => trim(($userInfo?->first_name ?? '').' '.($userInfo?->middle_name ?? '').' '.($userInfo?->last_name ?? '').' '.($userInfo?->ext_name?->value ?? '')),
         ]);
 
         // Set Position and Designation
         $templateProcessor->setValues([
-            'position' => 'PLACEHOLDER',
-            'designation' => 'PLACEHOLDER',
+            'position' => $userInfo->employee->item->position->title,
+            'designation' => $userInfo->employee->item->position->parenthetical_title,
         ]);
 
         // Set ODSU
-        $templateProcessor->setValue('odsu', 'PLACEHOLDER');
+        $templateProcessor->setValue('odsu', trim(($userInfo?->employee->division->name ?? '').' - '.($userInfo?->employee->sectionOrUnit->name ?? '')));
 
         // Set Weeks and Activities
         $values = [];
@@ -103,11 +102,11 @@ class AccomplishmentReportService implements AccomplishmentReportManager
 
         // Set Officer Information
         $templateProcessor->setValues([
-            'certifyingOfficer' => 'PLACEHOLDER',
-            'officerPosition' => 'PLACEHOLDER',
+            'certifyingOfficer' => 'SECTION HEAD NAME',
+            'officerPosition' => 'POSITION/DESIGNATION',
         ]);
 
-        $fileName = "$accomplishmentReport->period-$userInfo->initials-AccomplishmentReport.docx";
+        $fileName = "$accomplishmentReport->period-$userInfo->last_name-AccomplishmentReport.docx";
 
         ob_start();
         $templateProcessor->saveAs('php://output');

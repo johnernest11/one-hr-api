@@ -507,11 +507,14 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
     public function test_it_can_read_all_individuals_data(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $individuals = IndividualBasicDetail::factory(5)->create();
 
         $response = $this->withToken($this->authToken)->getJson($this->baseUri);
         $response->assertStatus(200);
-        $response->assertJsonCount(5, 'data');
+
+        $expectedCount = $initialCount + 5;
+        $response->assertJsonCount($expectedCount, 'data');
     }
 
     public function test_it_can_read_individual_data_by_id(): void
@@ -1059,6 +1062,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
     public function test_ppms_admin_can_create_records(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $individualInfo = $this->generate_test_data(PDSFormType::C1->value);
 
         $generatedItem = Item::factory()->create();
@@ -1068,7 +1072,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Assert that PPMS admin should be able to create a record
         $response = $this->withToken($this->authTokenAdmin)->postJson($this->baseUri, $individualInfo); // Use the generated token for ppms admin
         $response->assertStatus(201); // Should be able to create
-        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('individual_basic_details', $initialCount + 1);
 
     }
 
@@ -1110,6 +1114,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
     public function test_pas_admin_cannot_create_records(): void
     {
+        $initialIndividualsCount = IndividualBasicDetail::count();
         $individualInfo = $this->generate_test_data(PDSFormType::C1->value);
 
         $generatedItem = Item::factory()->create();
@@ -1119,7 +1124,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Assert that PAS admin should not be able to create a record
         $response = $this->withToken($this->authTokenPas)->postJson($this->baseUri, $individualInfo); // Use the generated token for PAS user
         $response->assertStatus(403); // Should be 403 Forbidden (UNAUTHORIZED_ERROR)
-        $this->assertDatabaseCount('individual_basic_details', 0);
+        $this->assertDatabaseCount('individual_basic_details', $initialIndividualsCount);
     }
 
     public function test_pas_admin_can_update_records(): void
@@ -1160,6 +1165,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
     public function test_standard_user_cannot_create_records(): void
     {
+        $initialIndividualsCount = IndividualBasicDetail::count();
         $individualInfo = $this->generate_test_data(PDSFormType::C1->value);
 
         $generatedItem = Item::factory()->create();
@@ -1169,7 +1175,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Assert that Standard User should not be able to create a record
         $response = $this->withToken($this->authTokenStandard)->postJson($this->baseUri, $individualInfo); // Use the generated token for standard user
         $response->assertStatus(403); // Should be 403 Forbidden (UNAUTHORIZED_ERROR)
-        $this->assertDatabaseCount('individual_basic_details', 0);
+        $this->assertDatabaseCount('individual_basic_details', $initialIndividualsCount);
 
     }
 
@@ -1227,8 +1233,10 @@ class IndividualBasicDetailFeatureTest extends TestCase
     {
         // Importing will now not generate a record. Instead it will read the file and return a response of the mapped data.
         // Assert that the databases are empty before importing
-        $this->assertDatabaseCount('individual_basic_details', 0);
-        $this->assertDatabaseCount('employees', 0);
+        $initialIndividualsCount = IndividualBasicDetail::count();
+        $initialEmployeesCount = Employee::count();
+        $this->assertDatabaseCount('individual_basic_details', $initialIndividualsCount);
+        $this->assertDatabaseCount('employees', $initialEmployeesCount);
 
         // Process test file
         $testExcelPath = Storage::disk('assets')->path('test_data_pds.xlsx');
@@ -1265,7 +1273,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $response->assertStatus(200);
 
         // Assert that the databases are still empty after importing since we are now previewing the mapped data.
-        $this->assertDatabaseCount('individual_basic_details', 0);
-        $this->assertDatabaseCount('employees', 0);
+        $this->assertDatabaseCount('individual_basic_details', $initialIndividualsCount);
+        $this->assertDatabaseCount('employees', $initialEmployeesCount);
     }
 }

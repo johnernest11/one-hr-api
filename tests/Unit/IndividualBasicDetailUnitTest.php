@@ -71,11 +71,12 @@ class IndividualBasicDetailUnitTest extends TestCase
      */
     public function test_can_search_individual_data_by_name(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $testData = $this->generate_test_data();
         $testData['individual']['first_name'] = 'TestFirstName';
 
         $individual = $this->individualBasicDetailService->store($testData);
-        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('individual_basic_details', $initialCount + 1);
 
         // Problem: Fulltext does not work in tests: https://dev.mysql.com/doc/refman/en/innodb-fulltext-index.html#innodb-fulltext-index-transaction
         // To resolve this, we need to commit the transaction first and clean the database later.
@@ -175,8 +176,9 @@ class IndividualBasicDetailUnitTest extends TestCase
      */
     public function test_can_create_individual_data(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $this->individualBasicDetailService->store($this->generate_test_data());
-        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('individual_basic_details', $initialCount + 1);
     }
 
     /**
@@ -184,8 +186,9 @@ class IndividualBasicDetailUnitTest extends TestCase
      */
     public function test_can_edit_c1(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $individual = $this->individualBasicDetailService->store($this->generate_test_data());
-        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('individual_basic_details', $initialCount + 1);
 
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
@@ -223,8 +226,9 @@ class IndividualBasicDetailUnitTest extends TestCase
      */
     public function test_can_edit_c2(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $individual = $this->individualBasicDetailService->store($this->generate_test_data());
-        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('individual_basic_details', $initialCount + 1);
 
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
@@ -248,8 +252,9 @@ class IndividualBasicDetailUnitTest extends TestCase
      */
     public function test_can_edit_c3(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $individual = $this->individualBasicDetailService->store($this->generate_test_data());
-        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('individual_basic_details', $initialCount + 1);
 
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
@@ -280,8 +285,9 @@ class IndividualBasicDetailUnitTest extends TestCase
      */
     public function test_can_edit_c4(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $individual = $this->individualBasicDetailService->store($this->generate_test_data());
-        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('individual_basic_details', $initialCount + 1);
 
         // Get first record in hasMany relationship.
         // @todo: Update as we add new models.
@@ -305,8 +311,9 @@ class IndividualBasicDetailUnitTest extends TestCase
      */
     public function test_can_view_all_individual_data(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $this->individualBasicDetailService->store($this->generate_test_data());
-        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('individual_basic_details', $initialCount + 1);
 
         $this->actingAs($this->user); // simulate user auth
         $paginatedResultsDefault = $this->individualBasicDetailService->all();
@@ -322,8 +329,9 @@ class IndividualBasicDetailUnitTest extends TestCase
      */
     public function test_can_view_individual_data_by_id(): void
     {
+        $initialCount = IndividualBasicDetail::count();
         $individual = $this->individualBasicDetailService->store($this->generate_test_data());
-        $this->assertDatabaseCount('individual_basic_details', 1);
+        $this->assertDatabaseCount('individual_basic_details', $initialCount + 1);
 
         $searchForThis = IndividualBasicDetail::find($individual->id);
         $paginatedResults = $this->individualBasicDetailService->viewConsolidatedData($searchForThis);

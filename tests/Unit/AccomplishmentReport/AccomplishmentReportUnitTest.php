@@ -160,13 +160,14 @@ class AccomplishmentReportUnitTest extends TestCase
         $this->assertDatabaseCount('a_r_rows', 15);
 
         $testReport = $ar->first();
-        $userInfo = $testReport->userProfile;
+        $userInfo = $testReport->userProfile->individualBasicDetail;
         $response = $this->aRService->generate($testReport);
 
         $this->assertNotEmpty($response['fileContent']);
 
         // filename should match format
-        $fileNameFormat = "$testReport->period-$userInfo->initials-AccomplishmentReport.docx";
+        $fileNameFormat = "$testReport->period-{$userInfo->last_name}-AccomplishmentReport.docx";
+
         $this->assertEquals($response['fileName'], $fileNameFormat);
     }
 }
