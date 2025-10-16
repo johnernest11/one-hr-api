@@ -96,7 +96,7 @@ class SanctumAuthController extends AuthController
         $this->tokenManager->invalidateToken($refreshToken);
 
         $accessTokenExpiresAt = $this->getTokenExpiration();
-        $refreshTokenExpiresAt = $this->getTokenExpiration()->addSeconds(10); // @todo Update to 5 days once testing is done.
+        $refreshTokenExpiresAt = $this->getTokenExpiration()->addDays(1); // @todo Update to 5 days once testing is done.
 
         $newAccessToken = $user->createToken('api_token', ['*'], $accessTokenExpiresAt)->plainTextToken;
         $newRefreshToken = $user->createToken('refresh_token', ['refresh'], $refreshTokenExpiresAt)->plainTextToken;
