@@ -71,7 +71,7 @@ class AccomplishmentReportService implements AccomplishmentReportManager
             'firstName' => $userInfo->first_name,
             'middleName' => $userInfo->middle_name,
             'lastName' => $userInfo->last_name,
-            'fullName' => trim(($userInfo?->first_name ?? '').' '.($userInfo?->middle_name ?? '').' '.($userInfo?->last_name ?? '')),
+            'fullName' => trim(($userInfo?->first_name ?? '').' '.($userInfo?->middle_name ?? '').' '.($userInfo?->last_name ?? '').' '.($userInfo?->ext_name?->value ?? '')),
         ]);
 
         // Set Position and Designation
