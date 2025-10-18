@@ -14,6 +14,10 @@ use Arr;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Facades\DB;
 use Str;
 
@@ -117,6 +121,7 @@ class LocatorSlipService implements LocatorSlipManager
     public function viewEmployeeLocator(Employee $employee): LengthAwarePaginator
     {
         $query = $this->model->query()->where('employee_id', $employee->id)->orderBy('date', 'desc');
+        $query = $query->filtered();
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
@@ -125,7 +130,7 @@ class LocatorSlipService implements LocatorSlipManager
     /** {@inheritDoc} */
     public function readGrouped(): LengthAwarePaginator
     {
-        $query = Employee::withLocatorSlip()->with(['individualBasicDetail', 'office', 'division', 'sectionOrUnit']);
+        $query = Employee::query()->locatorSlipFiltered();
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
     }
@@ -148,5 +153,64 @@ class LocatorSlipService implements LocatorSlipManager
 
             return $locatorSlip->fresh();
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function search(
+        string $term,
+        ?PaginationType $pagination = null
+    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
+        /** @var Builder $locatorSlip */
+        $query = $this->model->filtered();
+        $ls = $query->where('locator_slip_no', 'like', "%$term%");
+
+        return $this->buildPagination($pagination, $ls);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function searchAll(
+        string $term,
+        ?PaginationType $pagination = null
+    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
+        /** @var Builder $locatorSlip */
+        $query = Employee::query()->locatorSlipFiltered();
+
+        $updatedQuery = $query->where(function (Builder $q) use ($term) {
+            $q->whereHas('individualBasicDetail', function ($sub) use ($term) {
+                $sub->where('first_name', 'like', "%$term%")
+                    ->orWhere('last_name', 'like', "%$term%")
+                    ->orWhere('middle_name', 'like', "%$term%");
+            })
+                ->orWhereHas('locatorSlip', function ($sub) use ($term) {
+                    $sub->where('locator_slip_no', 'like', "%$term%");
+                });
+        });
+
+        $results = $this->buildPagination($pagination, $updatedQuery);
+
+        $results->getCollection()->transform(function ($employee) use ($term) {
+            // Check if the employee matches by name
+            $matchesByName = str_contains(strtolower($employee->individualBasicDetail->first_name ?? ''), strtolower($term))
+                || str_contains(strtolower($employee->individualBasicDetail->last_name ?? ''), strtolower($term))
+                || str_contains(strtolower($employee->individualBasicDetail->middle_name ?? ''), strtolower($term));
+
+            // If the match was by name => keep all locators
+            if ($matchesByName) {
+                return $employee;
+            }
+
+            // Otherwise, filter locator slips by locator number
+            $employee->setRelation('locatorSlip', $employee->locatorSlip->filter(function ($slip) use ($term) {
+                return str_contains(strtolower($slip->locator_slip_no ?? ''), strtolower($term));
+            })->values());
+
+            return $employee;
+        });
+
+        return $results;
     }
 }
