@@ -21,8 +21,7 @@ class FormTypeFilter extends Filter
             return $builder->where('form_type', $formType);
         }
 
-        return $builder->whereHas('locatorSlip', fn ($slip) => $slip->where('form_type', $formType)
-        );
+        return $builder->whereHas('locatorSlip', fn ($slip) => $slip->where('form_type', $formType));
     }
 
     /**
