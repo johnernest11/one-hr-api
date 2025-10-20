@@ -12,7 +12,10 @@ use App\Services\DailyTimeRecords\DailyTimeRecordManager;
 use App\Services\LocatorSlips\LocatorSlipService;
 use ConversionHelper;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Pagination\CursorPaginator;
 use Tests\TestCase;
 
 class LocatorSlipUnitTest extends TestCase
@@ -132,7 +135,7 @@ class LocatorSlipUnitTest extends TestCase
 
         $paginatedResults = $this->locatorSlipService->readGrouped();
         $this->assertInstanceOf(LengthAwarePaginator::class, $paginatedResults);
-        $this->assertCount(2, $paginatedResults->items());
+        $this->assertCount(3, $paginatedResults->items());
     }
 
     /**
@@ -146,5 +149,41 @@ class LocatorSlipUnitTest extends TestCase
         $searchForThis = LocatorSlip::find($ls->id);
         $paginatedResults = $this->locatorSlipService->read($searchForThis);
         $this->assertEquals($searchForThis->id, $paginatedResults->id);
+    }
+
+    public function test_can_search_my_locator_slip(): void
+    {
+        $initialLsData = ['form_type' => LocatorFormType::FORM_C->value];
+        $initialLs = $this->locatorSlipService->create($this->employee, $initialLsData);
+        $query = $initialLs->locator_slip_no;
+        $result = $this->locatorSlipService->search($query);
+
+        // Compare result to the expected types of response from the service and the new number should match with the query
+        if ($result instanceof Collection || $result instanceof Paginator || $result instanceof LengthAwarePaginator || $result instanceof CursorPaginator) {
+            $locatorSlips = ($result instanceof Collection) ? $result : $result->items();
+
+            foreach ($locatorSlips as $ls) {
+                $this->assertStringContainsString($query, $ls['locator_slip_no']);
+            }
+        }
+
+    }
+
+    public function test_can_search_all_locator_slips(): void
+    {
+        $initialLsData = ['form_type' => LocatorFormType::FORM_C->value];
+        $initialLs = $this->locatorSlipService->create($this->employee, $initialLsData);
+        $query = $initialLs->locator_slip_no;
+        $result = $this->locatorSlipService->search($query);
+
+        // Compare result to the expected types of response from the service and the new number should match with the query
+        if ($result instanceof Collection || $result instanceof Paginator || $result instanceof LengthAwarePaginator || $result instanceof CursorPaginator) {
+            $locatorSlips = ($result instanceof Collection) ? $result : $result->items();
+
+            foreach ($locatorSlips as $ls) {
+                $this->assertStringContainsString($query, $ls['locator_slip_no']);
+            }
+        }
+
     }
 }

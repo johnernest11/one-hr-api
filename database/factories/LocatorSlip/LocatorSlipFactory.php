@@ -6,7 +6,6 @@ use App\Enums\DocumentStatus;
 use App\Enums\LocatorFormType;
 use App\Enums\Period;
 use App\Models\ComprehensiveRecords\Employee;
-use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use ConversionHelper;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,11 +21,9 @@ class LocatorSlipFactory extends Factory
      */
     public function definition(): array
     {
-        $individual = IndividualBasicDetail::factory()->create();
-        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
 
         return [
-            'employee_id' => $employee,
+            'employee_id' => Employee::factory(),
             'locator_slip_no' => fake()->text(),
             'date' => fake()->date(),
             'period' => fake()->randomElement(ConversionHelper::enumToArray(Period::class)),

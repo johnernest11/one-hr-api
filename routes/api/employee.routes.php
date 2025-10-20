@@ -41,6 +41,10 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->post('', 'store')->name('store');
 
+        /** @uses LocatorSlip::search */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('/search', 'search')->name('search');
+
         /** @uses LocatorSlip::viewEmployeeLocator */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->get('', 'viewEmployeeLocator')->name('view-employee-locator');
@@ -48,7 +52,6 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         /** @uses LocatorSlip::show */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->get('/{locatorSlip}', 'show')->name('view-locator');
-
     });
 });
 
@@ -89,6 +92,10 @@ Route::middleware(['auth:token', 'verified.api'])->group(function () {
         /** @uses LocatorSlip::update */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->put('/{locatorSlip}', 'update')->name('update');
+
+        /** @uses LocatorSlip::search */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('/search-all', 'searchAll')->name('search-all');
 
         /** @uses LocatorSlip::readGrouped */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])

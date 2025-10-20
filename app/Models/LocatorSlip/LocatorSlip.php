@@ -6,11 +6,15 @@ use App\Enums\DocumentStatus;
 use App\Enums\LocatorFormType;
 use App\Enums\Period;
 use App\Models\ComprehensiveRecords\Employee;
+use App\QueryFilters\LocatorSlip\FormTypeFilter;
+use App\QueryFilters\LocatorSlip\LocatorMonthFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Pipeline\Pipeline;
 
 class LocatorSlip extends Model
 {
@@ -52,6 +56,21 @@ class LocatorSlip extends Model
         'period' => Period::class,
         'form_type' => LocatorFormType::class,
     ];
+
+    /**
+     * @Scope
+     * Pipeline for HTTP query filters
+     */
+    public function scopeFiltered(Builder $builder): Builder
+    {
+        return app(Pipeline::class)
+            ->send($builder)
+            ->through([
+                FormTypeFilter::class,
+                LocatorMonthFilter::class,
+            ])
+            ->thenReturn();
+    }
 
     public function employee(): BelongsTo
     {

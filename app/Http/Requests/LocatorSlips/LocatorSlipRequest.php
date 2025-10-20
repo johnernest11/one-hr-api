@@ -30,6 +30,8 @@ class LocatorSlipRequest extends FormRequest
         return match ($routeName) {
             'locator-slips.store' => $this->getStoreLocatorSlipRule(),
             'locator-slips.update' => $this->getUpdateLocatorSlipRule(),
+            'locator-slips.search' => $this->getSearchLocatorSlipRule(),
+            'locator-slips.search-all' => $this->getSearchLocatorSlipRule(),
             default => [],
         };
 
@@ -55,6 +57,13 @@ class LocatorSlipRequest extends FormRequest
             'locator_slip_logger.*.approved_for' => ['required',  new Enum(ApprovalType::class)],
             'locator_slip_logger.*.duration' => ['nullable',  'numeric'],
             'locator_slip_logger.*.remarks' => ['nullable', new DbTextMaxLength],
+        ];
+    }
+
+    public function getSearchLocatorSlipRule(): array
+    {
+        return [
+            'query' => ['required', 'string'],
         ];
     }
 }

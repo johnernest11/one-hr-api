@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ApiErrorCode;
+use App\Enums\PaginationType;
 use App\Http\Requests\LocatorSlips\LocatorSlipRequest;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\LocatorSlip\LocatorSlip;
@@ -80,5 +81,27 @@ class LocatorSlipController extends ApiController
 
         return $this->success(['data' => $updatedItem], Response::HTTP_OK);
 
+    }
+
+    /**
+     * Search for a resource in storage.
+     */
+    public function search(LocatorSlipRequest $request): JsonResponse
+    {
+        $ls = $this->locatorSlipService->search($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $formatted = PaginationHelper::formatPagination($ls);
+
+        return $this->success($formatted, Response::HTTP_OK);
+    }
+
+    /**
+     * Search for locator slip in all of employees.
+     */
+    public function searchAll(LocatorSlipRequest $request): JsonResponse
+    {
+        $ls = $this->locatorSlipService->searchAll($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $formatted = PaginationHelper::formatPagination($ls);
+
+        return $this->success($formatted, Response::HTTP_OK);
     }
 }

@@ -2,9 +2,13 @@
 
 namespace App\Services\LocatorSlips;
 
+use App\Enums\PaginationType;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\LocatorSlip\LocatorSlip;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\CursorPaginator;
 
 interface LocatorSlipManager
 {
@@ -32,4 +36,20 @@ interface LocatorSlipManager
      * Update a Locator Slip
      */
     public function update(LocatorSlip $locatorSlip, array $newLocatorSlipInfo): LocatorSlip;
+
+    /**
+     * Search for Locator Slips
+     */
+    public function search(
+        string $term,
+        ?PaginationType $pagination = null
+    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
+
+    /**
+     * Search for Locator Slips on All Employees
+     */
+    public function searchAll(
+        string $term,
+        ?PaginationType $pagination = null
+    ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
 }
