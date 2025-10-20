@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Enums\ApiErrorCode;
 use App\Enums\AppEnvironment;
+use Fruitcake\Cors\CorsService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -174,7 +175,7 @@ class Handler extends ExceptionHandler
                 $response = response()->json($body, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $response;
+        return $this->addCorsHeaders($response);
     }
 
     /**
@@ -188,5 +189,12 @@ class Handler extends ExceptionHandler
         }
 
         return $errors;
+    }
+
+    private function addCorsHeaders(JsonResponse $response): JsonResponse
+    {
+        app(CorsService::class)->addActualRequestHeaders($response, request());
+
+        return $response;
     }
 }
