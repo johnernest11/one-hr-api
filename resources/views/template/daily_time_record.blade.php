@@ -197,7 +197,10 @@
                 $slots['in1'] = $sorted->first(fn($log) => ($h = $getHour($log)) >= 6 && $h < 12);
 
                 // OUT1: first 12–13
-                $slots['out1'] = $sorted->first(fn($log) => ($h = $getHour($log)) >= 12 && $h < 13);
+                $slots['out1'] = $sorted
+                    ->filter(fn($log) => ($h = $getHour($log)) >= 11 && $h <= 13) // consider around 11 AM–1 PM
+                    ->sortBy(fn($log) => abs(strtotime($log->scanned_time) - strtotime('12:00')))
+                    ->first();
 
                 // IN2: first log between 12–14 and 15 mins after OUT1
                 if ($slots['out1']) {
@@ -205,7 +208,7 @@
                     $slots['in2'] = $sorted->first(function ($log) use ($out1Time) {
                         $time = strtotime($log->scanned_time);
                         $h = (int) date('H', $time);
-                        return $h >= 12 && $h < 14 && $time >= $out1Time + (15 * 60);
+                        return $h >= 12 && $h < 14 && $time >= $out1Time + (1 * 60);
                     });
                 }
 
@@ -216,6 +219,7 @@
             }
         }
     @endphp
+
     <div class="header-section" style="text-align: center; white-space: nowrap; margin-right: 10%;">
         <p style="font-size: 20px;">DSWD Field Office I</p>
         <p>DAILY TIME RECORD</p>
@@ -339,22 +343,22 @@
 
                             {{-- Time slots with edit check --}}
                             <td colspan="2"
-                                style="text-align: center; white-space: nowrap; {{ isEdited('in1', $row->timeLog) ? 'color: #b58900;' : '' }}">
+                                style="text-align: center; white-space: nowrap; {{ isEdited('in1', $row->timeLog) ? 'color: #b58900; font-style: italic;' : '' }}">
                                 {{ $slots['in1'] ? \Carbon\Carbon::parse($slots['in1']->scanned_time)->format('h:i A') : '-' }}
                             </td>
 
                             <td colspan="2"
-                                style="text-align: center; white-space: nowrap; {{ isEdited('out1', $row->timeLog) ? 'color: #b58900;' : '' }}">
+                                style="text-align: center; white-space: nowrap; {{ isEdited('out1', $row->timeLog) ? 'color: #b58900; font-style: italic;' : '' }}">
                                 {{ $slots['out1'] ? \Carbon\Carbon::parse($slots['out1']->scanned_time)->format('h:i A') : '-' }}
                             </td>
 
                             <td colspan="2"
-                                style="text-align: center; white-space: nowrap; {{ isEdited('in2', $row->timeLog) ? 'color: #b58900;' : '' }}">
+                                style="text-align: center; white-space: nowrap; {{ isEdited('in2', $row->timeLog) ? 'color: #b58900; font-style: italic;' : '' }}">
                                 {{ $slots['in2'] ? \Carbon\Carbon::parse($slots['in2']->scanned_time)->format('h:i A') : '-' }}
                             </td>
 
                             <td colspan="2"
-                                style="text-align: center; white-space: nowrap; {{ isEdited('out2', $row->timeLog) ? 'color: #b58900;' : '' }}">
+                                style="text-align: center; white-space: nowrap; {{ isEdited('out2', $row->timeLog) ? 'color: #b58900; font-style: italic;' : '' }}">
                                 {{ $slots['out2'] ? \Carbon\Carbon::parse($slots['out2']->scanned_time)->format('h:i A') : '-' }}
                             </td>
 
