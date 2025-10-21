@@ -5,6 +5,7 @@ namespace App\Services\LocatorSlips;
 use App\Enums\PaginationType;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\LocatorSlip\LocatorSlip;
+use App\Models\LocatorSlip\LocatorSlipLogger;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -52,4 +53,9 @@ interface LocatorSlipManager
         string $term,
         ?PaginationType $pagination = null
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
+
+    /**
+     * Check if there is an active locator slip log
+     */
+    public function checkActiveLog(Employee $employee): ?LocatorSlipLogger;
 }

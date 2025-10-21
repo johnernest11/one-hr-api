@@ -34,6 +34,10 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         /** @uses DailyTimeRecordController::viewDtrPerMonth */
         Route::middleware(['permission:'.Permission::VIEW_DTR->value])
             ->get('/view-dtr', 'viewDtrPerPeriodRange')->name('view-dtr');
+
+        /** @uses DailyTimeRecordController::getLastTimeLog */
+        Route::middleware(['permission:'.Permission::VIEW_DTR->value])
+            ->get('/last-time-log', 'getLastTimeLog')->name('last-time-log');
     });
 
     Route::prefix('locator-slips')->controller(LocatorSlipController::class)->name('locator-slips.')->group(function () {
@@ -44,6 +48,10 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         /** @uses LocatorSlip::search */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->get('/search', 'search')->name('search');
+
+        /** @uses LocatorSlip::checkActiveLog */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('/active', 'checkActiveLog')->name('check-active');
 
         /** @uses LocatorSlip::viewEmployeeLocator */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])

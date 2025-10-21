@@ -375,4 +375,20 @@ class LocatorSlipFeatureTest extends TestCase
             'employee_id' => $employee_1->id,
         ]);
     }
+
+    public function test_it_can_check_active_log(): void
+    {
+        $myProf = $this->user_admin->userProfile;
+        $ownData = IndividualBasicDetail::factory()->withExistingUserProfile($myProf)->create();
+        $employee = Employee::whereBelongsTo($ownData)->firstOrFail();
+
+        $date = now()->toDateString();
+        $locatorSlip = LocatorSlip::factory()->create(['employee_id' => $employee->id, 'date' => $date]);
+        $log = LocatorSlipLogger::factory()->create(['locator_slip_id' => $locatorSlip->id, 'date' => $date, 'time_out' => null, 'time_in' => null]);
+
+        $response = $this->withToken($this->authTokenAdmin)->getJson($this->uriWithId.'/'.$employee->id.'/'.'locator-slips/active');
+        $response->assertStatus(200);
+
+        $this->assertEquals($log->id, $response['data']['id']);
+    }
 }
