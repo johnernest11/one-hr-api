@@ -42,6 +42,7 @@ interface LocatorSlipManager
      * Search for Locator Slips
      */
     public function search(
+        Employee $employee,
         string $term,
         ?PaginationType $pagination = null
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;

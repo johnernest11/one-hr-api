@@ -86,9 +86,9 @@ class LocatorSlipController extends ApiController
     /**
      * Search for a resource in storage.
      */
-    public function search(LocatorSlipRequest $request): JsonResponse
+    public function search(Employee $employee, LocatorSlipRequest $request): JsonResponse
     {
-        $ls = $this->locatorSlipService->search($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $ls = $this->locatorSlipService->search($employee, $request->validated('query'), PaginationType::LENGTH_AWARE);
         $formatted = PaginationHelper::formatPagination($ls);
 
         return $this->success($formatted, Response::HTTP_OK);
