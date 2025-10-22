@@ -159,12 +159,14 @@ class LocatorSlipService implements LocatorSlipManager
      * {@inheritDoc}
      */
     public function search(
+        Employee $employee,
         string $term,
         ?PaginationType $pagination = null
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator {
         /** @var Builder $locatorSlip */
         $query = $this->model->filtered();
-        $ls = $query->where('locator_slip_no', 'like', "%$term%");
+        $ls = $query->where('locator_slip_no', 'like', "%$term%")
+            ->where('employee_id', $employee->id);
 
         return $this->buildPagination($pagination, $ls);
     }
@@ -192,7 +194,13 @@ class LocatorSlipService implements LocatorSlipManager
 
         $results = $this->buildPagination($pagination, $updatedQuery);
 
-        $results->getCollection()->transform(function ($employee) use ($term) {
+        if ($results instanceof Paginator || $results instanceof LengthAwarePaginator || $results instanceof CursorPaginator) {
+            $collectionToTransform = $results->getCollection();
+        } else {
+            $collectionToTransform = $results;
+        }
+
+        $collectionToTransform->transform(function ($employee) use ($term) {
             // Check if the employee matches by name
             $matchesByName = str_contains(strtolower($employee->individualBasicDetail->first_name ?? ''), strtolower($term))
                 || str_contains(strtolower($employee->individualBasicDetail->last_name ?? ''), strtolower($term))

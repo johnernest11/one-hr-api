@@ -156,7 +156,7 @@ class LocatorSlipUnitTest extends TestCase
         $initialLsData = ['form_type' => LocatorFormType::FORM_C->value];
         $initialLs = $this->locatorSlipService->create($this->employee, $initialLsData);
         $query = $initialLs->locator_slip_no;
-        $result = $this->locatorSlipService->search($query);
+        $result = $this->locatorSlipService->search($this->employee, $query);
 
         // Compare result to the expected types of response from the service and the new number should match with the query
         if ($result instanceof Collection || $result instanceof Paginator || $result instanceof LengthAwarePaginator || $result instanceof CursorPaginator) {
@@ -174,17 +174,35 @@ class LocatorSlipUnitTest extends TestCase
         $initialLsData = ['form_type' => LocatorFormType::FORM_C->value];
         $initialLs = $this->locatorSlipService->create($this->employee, $initialLsData);
         $query = $initialLs->locator_slip_no;
-        $result = $this->locatorSlipService->search($query);
+        $result = $this->locatorSlipService->searchAll($query);
 
-        // Compare result to the expected types of response from the service and the new number should match with the query
-        if ($result instanceof Collection || $result instanceof Paginator || $result instanceof LengthAwarePaginator || $result instanceof CursorPaginator) {
-            $locatorSlips = ($result instanceof Collection) ? $result : $result->items();
+        $locatorSlips = ($result instanceof Collection) ? $result : $result->items();
 
-            foreach ($locatorSlips as $ls) {
-                $this->assertStringContainsString($query, $ls['locator_slip_no']);
+        $foundMatch = false;
+
+        foreach ($locatorSlips as $employee) {
+            // Assert the query matches either the employee's name or a locator slip number
+
+            $fullName = strtolower(implode(' ', [
+                $employee['individual_basic_detail']['first_name'] ?? '',
+                $employee['individual_basic_detail']['middle_name'] ?? '',
+                $employee['individual_basic_detail']['last_name'] ?? '',
+            ]));
+
+            if (str_contains($fullName, strtolower($query))) {
+                $foundMatch = true;
+                break;
+            }
+
+            foreach ($employee->locatorSlip as $slip) {
+                if (str_contains(strtolower($slip['locator_slip_no']), strtolower($query))) {
+                    $foundMatch = true;
+                    break 2;
+                }
             }
         }
 
+        $this->assertTrue($foundMatch, "The search query '{$query}' was not found in the returned collection.");
     }
 
     public function test_can_check_active_log(): void
