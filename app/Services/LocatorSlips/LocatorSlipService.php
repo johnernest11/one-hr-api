@@ -213,4 +213,23 @@ class LocatorSlipService implements LocatorSlipManager
 
         return $results;
     }
+
+    /** {@inheritDoc} */
+    public function checkActiveLog(Employee $employee): ?LocatorSlipLogger
+    {
+
+        $today = now()->toDateString();
+        $lsl = LocatorSlipLogger::whereHas('locatorSlip.employee', function ($query) use ($employee) {
+            $query->where('id', $employee->id);
+        })
+            ->whereDate('date', $today)
+            ->where(function (Builder $query) {
+                $query->whereNull('time_out')
+                    ->orWhereNull('time_in');
+            })
+            ->first();
+
+        return $lsl;
+
+    }
 }

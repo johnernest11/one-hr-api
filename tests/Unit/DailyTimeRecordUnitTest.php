@@ -192,4 +192,24 @@ class DailyTimeRecordUnitTest extends TestCase
         $this->assertEquals($expectedFileName, $result['fileName']);
 
     }
+
+    /**
+     * Test that it can fetch user's last time log
+     */
+    public function test_can_get_last_time_log(): void
+    {
+        // Call the service
+        $result = $this->dailyTimeRecordService->getLastTimeLog($this->employee);
+
+        $this->assertNull($result); // Assert that it fetches no time logs
+
+        $tl = $this->timeLogService->create($this->employee); // Generate time logs. Now an employee has time log
+        $this->assertDatabaseCount('time_logs', 1); // Check that the generated sample record exists in the db
+
+        // Call the service again.
+        $result = $this->dailyTimeRecordService->getLastTimeLog($this->employee);
+        $this->assertNotNull($result); // Assert that it now fetches the record
+        $this->assertSame($tl->id, $result['id']); // Assert that the fetched record is the same as the created one
+
+    }
 }

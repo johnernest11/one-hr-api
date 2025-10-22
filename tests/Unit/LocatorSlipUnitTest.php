@@ -186,4 +186,34 @@ class LocatorSlipUnitTest extends TestCase
         }
 
     }
+
+    public function test_can_check_active_log(): void
+    {
+        $ls = $this->locatorSlipService->create($this->employee, $this->testInputLocator);
+        $this->assertDatabaseCount('locator_slips', 1);
+
+        $newData = [
+            'locator_slip_logger' => [
+                [
+                    'date' => now()->toDateString(),
+                    'time_out' => null,
+                    'time_in' => null,
+                    'destination' => fake()->text(),
+                    'purpose' => fake()->text(),
+                    'approved_for' => fake()->randomElement(ConversionHelper::enumToArray(ApprovalType::class)),
+                    'duration' => 0,
+                    'remarks' => fake()->text(),
+                ],
+            ],
+        ];
+
+        // Should be able to create locator slip logs
+        $lsl = $this->locatorSlipService->update($ls, $newData);
+        $this->assertDatabaseCount('locator_slip_loggers', 1);
+
+        // Should be able to update the created locator slip logs
+        $activeLog = $this->locatorSlipService->checkActiveLog($this->employee);
+        $this->assertNotNull($activeLog); // Assert that it fetches the newly created log
+
+    }
 }

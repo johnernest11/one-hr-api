@@ -340,4 +340,18 @@ class DailyTimeRecordService implements DailyTimeRecordManager
             'fileName' => "DTR-{$employee->id}-{$startDate}_to_{$endDate}.pdf",
         ];
     }
+
+    /** {@inheritDoc} */
+    public function getLastTimeLog(Employee $employee): ?TimeLog
+    {
+        $today = now()->toDateString();
+        $timeLog = TimeLog::whereDate('date', $today)
+            ->whereHas('dailyTimeRecord', function (Builder $query) use ($employee) {
+                $query->where('employee_id', $employee->id);
+            })
+            ->latest()
+            ->first();
+
+        return $timeLog;
+    }
 }

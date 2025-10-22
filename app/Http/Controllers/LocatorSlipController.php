@@ -104,4 +104,14 @@ class LocatorSlipController extends ApiController
 
         return $this->success($formatted, Response::HTTP_OK);
     }
+
+    /**
+     * Checks for active locator slip loggers.
+     */
+    public function checkActiveLog(Employee $employee): JsonResponse
+    {
+        $lsl = $this->locatorSlipService->checkActiveLog($employee);
+
+        return $this->success(['data' => $lsl], Response::HTTP_OK);
+    }
 }

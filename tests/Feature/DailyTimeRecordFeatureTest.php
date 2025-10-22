@@ -424,4 +424,27 @@ class DailyTimeRecordFeatureTest extends TestCase
         $this->assertNotEmpty($response->getContent(), 'Generated DTR PDF content should not be empty');
 
     }
+
+    public function test_it_can_get_last_time_log(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
+
+        $dtr = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee->id,
+            'date' => '2025-10-21',
+            'ut' => 1,
+            'ot' => 2,
+            'employee_remarks' => 'Test remark',
+        ]);
+        $timeLog = TimeLog::factory()->create([
+            'daily_time_record_id' => $dtr->id,
+            'is_in' => true,
+        ]);
+
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->uriWithId.'/'.$employee->id.'/daily-time-records/last-time-log');
+        $response->assertStatus(200);
+
+        $this->assertEquals($timeLog->id, $response['data']['id']);
+    }
 }
