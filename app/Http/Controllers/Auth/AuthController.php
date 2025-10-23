@@ -134,7 +134,8 @@ abstract class AuthController extends ApiController
 
         if ($user->roles()->where('name', 'time_logger')->exists()) {
             $refreshName = 'refresh_token';
-            $refreshExpiresAt = $this->getTokenExpiration()->addDays(1); // @todo Update this once testing is done. Set to 5 days after testing.
+            $refreshLifetime = config('auth.refresh_lifetime');
+            $refreshExpiresAt = $this->getTokenExpiration()->addMinutes($refreshLifetime);
             $refreshToken = $this->generateRefreshToken($user, $refreshExpiresAt, $refreshName);
             $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user, $withUserDetails, $refreshToken, $refreshExpiresAt, $refreshName);
         }
