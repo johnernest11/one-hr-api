@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Enums\ApprovalType;
 use App\Enums\LocatorFormType;
+use App\Enums\Period;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\LocatorSlip\LocatorSlip;
@@ -52,6 +53,9 @@ class LocatorSlipUnitTest extends TestCase
         $this->testInputLocator = [
             'form_type' => fake()->randomElement(ConversionHelper::enumToArray(LocatorFormType::class)),
         ];
+        if ($this->testInputLocator['form_type'] == LocatorFormType::FORM_C->value) {
+            $this->testInputLocator['period'] = fake()->randomElement(ConversionHelper::enumToArray(Period::class));
+        }
         $this->testInputLogs = [
             'locator_slip_logger' => [
                 [
@@ -232,6 +236,20 @@ class LocatorSlipUnitTest extends TestCase
         // Should be able to update the created locator slip logs
         $activeLog = $this->locatorSlipService->checkActiveLog($this->employee);
         $this->assertNotNull($activeLog); // Assert that it fetches the newly created log
+
+    }
+
+    /**
+     * Test if locator slips can be generated into docx via service
+     */
+    public function test_can_generate_docx(): void
+    {
+        $ls = $this->locatorSlipService->create($this->employee, $this->testInputLocator);
+        $this->assertDatabaseCount('locator_slips', 1);
+
+        $response = $this->locatorSlipService->generate($this->employee, $ls);
+
+        $this->assertNotEmpty($response['fileContent']);
 
     }
 }
