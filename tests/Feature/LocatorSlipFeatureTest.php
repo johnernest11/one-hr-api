@@ -391,4 +391,19 @@ class LocatorSlipFeatureTest extends TestCase
 
         $this->assertEquals($log->id, $response['data']['id']);
     }
+
+    public function test_it_can_generate_docx(): void
+    {
+        $myProf = $this->user_admin->userProfile;
+        $ownData = IndividualBasicDetail::factory()->withExistingUserProfile($myProf)->create();
+        $employee = Employee::whereBelongsTo($ownData)->firstOrFail();
+
+        $date = now()->toDateString();
+        $locatorSlip = LocatorSlip::factory()->create(['employee_id' => $employee->id, 'date' => $date]);
+
+        $response = $this->withToken($this->authTokenAdmin)->get($this->uriWithId.'/'.$employee->id.'/'.'locator-slips/'.$locatorSlip->id.'/generate');
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    }
 }

@@ -59,4 +59,9 @@ interface LocatorSlipManager
      * Check if there is an active locator slip log
      */
     public function checkActiveLog(Employee $employee): ?LocatorSlipLogger;
+
+    /**
+     * Generate a Locator Slip
+     */
+    public function generate(Employee $employee, LocatorSlip $locatorSlip): array;
 }

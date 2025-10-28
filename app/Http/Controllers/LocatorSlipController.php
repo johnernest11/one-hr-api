@@ -114,4 +114,25 @@ class LocatorSlipController extends ApiController
 
         return $this->success(['data' => $lsl], Response::HTTP_OK);
     }
+
+    /**
+     * Generate the locator slip
+     */
+    public function generateLocator(Employee $employee, LocatorSlip $locatorSlip): JsonResponse|Response
+    {
+        try {
+            $response = $this->locatorSlipService->generate($employee, $locatorSlip);
+        } catch (Exception $e) {
+            return $this->error(
+                $e->getMessage(),
+                Response::HTTP_BAD_REQUEST,
+                ApiErrorCode::BAD_REQUEST
+            );
+        }
+
+        return response($response['fileContent'], 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => 'attachment; filename="'.$response['fileName'].'"',
+        ])->header('Access-Control-Expose-Headers', 'Content-Disposition'); // Expose Content-Disposition header since it is not exposed by default to get the filename
+    }
 }

@@ -57,6 +57,10 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->get('', 'viewEmployeeLocator')->name('view-employee-locator');
 
+        /** @uses LocatorSlip::generate */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('{locatorSlip}/generate', 'generateLocator')->name('generate');
+
         /** @uses LocatorSlip::show */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->get('/{locatorSlip}', 'show')->name('view-locator');
