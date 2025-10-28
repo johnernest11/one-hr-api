@@ -318,7 +318,7 @@ class LocatorSlipService implements LocatorSlipManager
             // XML for an unchecked box (Wingdings character F0A8)
             $unCheckedBox = '<w:sym w:font="Wingdings" w:char="F0A8"/>';
 
-            if ($employmentStatus == EmploymentStatus::CONTRACT_OF_SERVICE->value || $employmentStatus == EmploymentStatus::JOB_ORDER->value) {
+            if ($employmentStatus === EmploymentStatus::CONTRACT_OF_SERVICE->value || $employmentStatus === EmploymentStatus::JOB_ORDER->value) {
                 $templateProcessorC->setValue('cos', $checkedBox);
                 $templateProcessorC->setValue('notcos', $unCheckedBox);
             } else {

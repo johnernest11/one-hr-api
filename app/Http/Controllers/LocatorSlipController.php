@@ -118,7 +118,7 @@ class LocatorSlipController extends ApiController
     /**
      * Generate the locator slip
      */
-    public function generateLocator(Employee $employee, LocatorSlip $locatorSlip)
+    public function generateLocator(Employee $employee, LocatorSlip $locatorSlip): JsonResponse|Response
     {
         try {
             $response = $this->locatorSlipService->generate($employee, $locatorSlip);
