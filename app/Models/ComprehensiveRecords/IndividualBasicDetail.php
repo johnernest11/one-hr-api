@@ -51,6 +51,7 @@ class IndividualBasicDetail extends Model
         'tin',
         'citizenship',
         'citizenship_acquisition',
+        'country_id',
     ];
 
     /**
@@ -236,5 +237,13 @@ class IndividualBasicDetail extends Model
     public function individualReference(): HasMany
     {
         return $this->hasMany(IndividualReference::class);
+    }
+
+    /**
+     * An individual has one Government Id
+     */
+    public function individualGovernmentId(): HasOne
+    {
+        return $this->hasOne(IndividualGovernmentId::class);
     }
 }
