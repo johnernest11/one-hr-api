@@ -8,6 +8,7 @@ use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
 use App\Models\Libraries\Division;
 use App\Models\Libraries\SectionOrUnit;
+use App\Services\CloudStorageServices\CloudStorageManager;
 use App\Traits\Services\CanBuildPagination;
 use Arr;
 use Carbon\Carbon;
@@ -23,15 +24,18 @@ class DailyTimeRecordService implements DailyTimeRecordManager
 {
     use CanBuildPagination;
 
+    protected $model;
+
+    protected CloudStorageManager $cloudStorage;
+
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
     private const MAX_SELECTED_TIMELOGS = 4;
 
-    private DailyTimeRecord $model;
-
-    public function __construct(DailyTimeRecord $model)
+    public function __construct(DailyTimeRecord $model, CloudStorageManager $cloudStorage)
     {
         $this->model = $model;
+        $this->cloudStorage = $cloudStorage;
     }
 
     /** {@inheritDoc} */
@@ -146,32 +150,44 @@ class DailyTimeRecordService implements DailyTimeRecordManager
     /** {@inheritDoc} */
     public function viewWarmBodiesToday(): LengthAwarePaginator
     {
-        request()->merge(['date' => Carbon::today()->toDateString()]);
+        request()->merge(['date' => now()->toDateString()]);
 
         /** @var Builder $dailyTimeRecord */
         $query = $this->model->filtered()->currentlyInsideOnly();
 
-        return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
+        $paginated = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
+        foreach ($paginated as $record) {
+            foreach ($record->timeLog ?? [] as $log) {
+                if (! empty($log->captured_image_path)) {
+                    try {
+                        $log->captured_image_url = $this->cloudStorage->generateTmpUrl($log->captured_image_path, 3600);
+                    } catch (\Throwable $e) {
+                        \Log::warning("Failed to generate temporary URL for image: {$log->captured_image_path}");
+                        $log->captured_image_url = null;
+                    }
+                } else {
+                    $log->captured_image_url = null;
+                }
+            }
+        }
+
+        return $paginated;
     }
 
     /** {@inheritDoc} */
     public function update(Employee $employee, array $request): Collection
     {
         return DB::transaction(function () use ($employee, $request) {
-            // Initialize empty collection for returning updated records.
             $updatedDtrs = new Collection;
 
-            // Get status and update all dtrs.
             $newStatus = isset($request['status']) ? $request['status'] : null;
 
             foreach ($request['dtr'] as $dtrInfo) {
-                // Extract ID if present, otherwise it's a new record
                 $id = $dtrInfo['id'] ?? null;
 
-                // Update existing DTR if id exists in the request
                 if ($id) {
-                    $dtr = $this->model->findOrFail($dtrInfo['id']); // Check if record exists
+                    $dtr = $this->model->findOrFail($dtrInfo['id']);
 
                     if ($newStatus) {
                         $dtrInfo['status'] = $newStatus;
@@ -179,7 +195,6 @@ class DailyTimeRecordService implements DailyTimeRecordManager
 
                     if (! empty($dtrInfo['time_logs'])) {
                         foreach ($dtrInfo['time_logs'] as $timeLog) {
-                            // Convert stdClass to array safely
                             $timeLogInfo = is_array($timeLog) ? $timeLog : get_object_vars($timeLog);
 
                             if (empty($timeLogInfo['scanned_time'])) {
@@ -204,19 +219,16 @@ class DailyTimeRecordService implements DailyTimeRecordManager
 
                     }
 
-                    // Update existing record if ID exists
-                    $dtr->update(Arr::except($dtrInfo, ['id'])); // Exclude id
-                    $dtr->refresh()->load('timeLog'); // correctly eager loads the relationship
+                    $dtr->update(Arr::except($dtrInfo, ['id']));
+                    $dtr->refresh()->load('timeLog');
                     $updatedDtrs->push($dtr);
                 } else {
-                    // Validate that the passed date is not already taken.
                     $dateIsTaken = $this->model->where('date', $dtrInfo['date'])->where('employee_id', $employee->id)->exists();
 
                     if ($dateIsTaken) {
                         throw new Exception($dtrInfo['date'].' already has a daily time record.');
                     }
 
-                    // For the status of the dtr, copy the passed status in the request.
                     if ($newStatus) {
                         $dtrInfo['status'] = $newStatus;
                     }
@@ -229,7 +241,6 @@ class DailyTimeRecordService implements DailyTimeRecordManager
 
             }
 
-            // Return collection of updated records.
             return $updatedDtrs;
 
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);

@@ -9,6 +9,8 @@ interface TimeLogManager
 {
     /**
      * Create a time log by scanning the employee's QR code.
+     *
+     * @param  string|\Illuminate\Http\UploadedFile|null  $capturedImage  Optional captured image file or path
      */
-    public function create(Employee $employee): TimeLog;
+    public function create(Employee $employee, $capturedImage = null): TimeLog;
 }

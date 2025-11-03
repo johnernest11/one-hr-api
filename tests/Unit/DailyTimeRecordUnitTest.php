@@ -6,6 +6,7 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Services\CloudStorageServices\AwsS3StorageService;
 use App\Services\DailyTimeRecords\DailyTimeRecordService;
 use App\Services\DailyTimeRecords\TimeLogService;
 use Carbon\Carbon;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\Paginator;
+use Mockery;
 use Tests\TestCase;
 
 class DailyTimeRecordUnitTest extends TestCase
@@ -34,10 +36,17 @@ class DailyTimeRecordUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord);
+
+        // Create a fake cloud storage for isolation
+        $mockStorage = Mockery::mock(AwsS3StorageService::class);
+        $mockStorage->shouldReceive('upload')->andReturn('mocked/path/file.jpg');
+        $mockStorage->shouldReceive('delete')->andReturn(true);
+
+        $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord, $mockStorage);
+        $this->timeLogService = new TimeLogService(new TimeLog, $mockStorage);
+
         $this->individual = IndividualBasicDetail::factory()->create();
         $this->employee = Employee::whereBelongsTo($this->individual)->firstOrFail();
-        $this->timeLogService = new TimeLogService(new TimeLog);
     }
 
     /**

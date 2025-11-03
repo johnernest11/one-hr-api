@@ -62,12 +62,17 @@ class AccomplishmentReportFactory extends Factory
     public function hasProfile(?User $user = null): Factory
     {
         return $this->state(function () use ($user) {
-            // If a User is provided, find or create the associated UserProfile
             if ($user) {
                 $userProfile = UserProfile::firstOrCreate(['user_id' => $user->id]);
             } else {
-                // Create a new UserProfile (and associated User)
-                $userProfile = UserProfile::factory()->create();
+                $user = User::factory()->create([
+                    'email' => fake()->unique()->safeEmail(),
+                    'username' => fake()->unique()->userName(),
+                ]);
+
+                $userProfile = UserProfile::factory()->create([
+                    'user_id' => $user->id,
+                ]);
             }
 
             return ['user_profile_id' => $userProfile->id];

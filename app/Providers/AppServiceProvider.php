@@ -13,6 +13,8 @@ use App\Models\PersonalAccessToken;
 use App\Services\AccomplishmentReport\AccomplishmentReportManager;
 use App\Services\AccomplishmentReport\AccomplishmentReportService;
 use App\Services\AppSettingsManager;
+use App\Services\CloudStorageServices\AwsS3StorageService;
+use App\Services\CloudStorageServices\CloudStorageManager;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailManager;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
 use App\Services\DailyTimeRecords\DailyTimeRecordManager;
@@ -41,49 +43,57 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        /**
-         * Load IDE helper for non-production environment
-         *
-         * @see https://github.com/barryvdh/laravel-ide-helper
-         */
+        // IDE Helper for local
         if ($this->app->isLocal()) {
             $this->app->register(IdeHelperServiceProvider::class);
         }
 
-        $this->app->bind(UserAccountManager::class, function () {
-            return new UserManager;
-        });
+        // User services
+        $this->app->bind(UserAccountManager::class, fn () => new UserManager);
+        $this->app->bind(UserCredentialManager::class, fn () => new UserManager);
 
-        $this->app->bind(UserCredentialManager::class, function () {
-            return new UserManager;
-        });
+        // App Settings
+        $this->app->bind(AppSettingsManager::class, fn () => new AppSettingsManager);
 
-        $this->app->bind(AppSettingsManager::class, function () {
-            return new AppSettingsManager;
-        });
+        // Item services
+        $this->app->bind(ItemManager::class, fn () => new ItemService(new Item));
 
-        $this->app->bind(ItemManager::class, function () {
-            return new ItemService(new Item);
-        });
+        // Accomplishment Reports
+        $this->app->bind(AccomplishmentReportManager::class, fn () => new AccomplishmentReportService);
 
-        $this->app->bind(AccomplishmentReportManager::class, function () {
-            return new AccomplishmentReportService;
-        });
+        // IndividualBasicDetail
         $this->app->bind(IndividualBasicDetailManager::class, function ($app) {
-            return new IndividualBasicDetailService(new IndividualBasicDetail, new Parser, $this->app->make(QrCodeManager::class));
+            return new IndividualBasicDetailService(
+                new IndividualBasicDetail,
+                new Parser,
+                $this->app->make(QrCodeManager::class)
+            );
         });
-        $this->app->bind(QrCodeManager::class, function () {
-            return new QrCodeService(new QrCode);
+
+        // QR Code
+        $this->app->bind(QrCodeManager::class, fn () => new QrCodeService(new QrCode));
+
+        // Cloud Storage binding
+        $this->app->bind(CloudStorageManager::class, fn () => new AwsS3StorageService());
+
+        // Daily Time Records
+        $this->app->bind(DailyTimeRecordManager::class, function ($app) {
+            return new DailyTimeRecordService(
+                $app->make(DailyTimeRecord::class),
+                $app->make(CloudStorageManager::class)
+            );
         });
-        $this->app->bind(DailyTimeRecordManager::class, function () {
-            return new DailyTimeRecordService(new DailyTimeRecord);
+
+        // Time Logs
+        $this->app->bind(TimeLogManager::class, function ($app) {
+            return new TimeLogService(
+                $app->make(TimeLog::class),
+                $app->make(CloudStorageManager::class)
+            );
         });
-        $this->app->bind(TimeLogManager::class, function () {
-            return new TimeLogService(new TimeLog);
-        });
-        $this->app->bind(LocatorSlipManager::class, function () {
-            return new LocatorSlipService(new LocatorSlip);
-        });
+
+        // Locator Slips
+        $this->app->bind(LocatorSlipManager::class, fn () => new LocatorSlipService(new LocatorSlip));
     }
 
     /**
@@ -92,11 +102,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
-        if (in_array(app()->environment(), [
-            AppEnvironment::PRODUCTION->value,
-            AppEnvironment::UAT->value,
-            AppEnvironment::DEVELOPMENT->value,
-        ])) {
+
+        if (
+            in_array(app()->environment(), [
+                AppEnvironment::PRODUCTION->value,
+                AppEnvironment::UAT->value,
+                AppEnvironment::DEVELOPMENT->value,
+            ])
+        ) {
             $this->app['request']->server->set('HTTPS', 'on');
             URL::forceScheme('https');
         }
