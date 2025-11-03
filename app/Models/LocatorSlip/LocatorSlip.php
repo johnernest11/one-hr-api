@@ -33,6 +33,7 @@ class LocatorSlip extends Model
         'period',
         'status',
         'form_type',
+        'auxiliary_wellness',
     ];
 
     /**

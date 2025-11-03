@@ -40,6 +40,15 @@ class Kernel extends ConsoleKernel
             ->daily()
             ->onOneServer();
 
+        /**
+         * Computes time for today's locator slips.
+         *
+         * @see LocatorComputeTime
+         */
+        $schedule->command('locator-compute-time')
+            ->daily()
+            ->onOneServer();
+
     }
 
     /**

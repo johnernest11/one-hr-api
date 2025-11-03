@@ -67,6 +67,12 @@ class LocatorSlipService implements LocatorSlipManager
                             if ($isFirstPeriodLastLS == $isFirstPeriodCurrent && $isSameMonthAndYear) {
                                 throw new Exception('A Locator Slip Form C has already been created for this period.');
                             }
+
+                            $firstPeriodAux = $empLastLS->auxiliary_wellness;
+                            if ($isFirstPeriodLastLS && ! $isFirstPeriodCurrent && $firstPeriodAux < 2) {
+                                // Carry over remaining auxiliary wellness balance
+                                $request['auxiliary_wellness'] = $firstPeriodAux;
+                            }
                         }
                     } else {
                         if ($empLastLS) {
