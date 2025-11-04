@@ -130,20 +130,17 @@ class IndividualBasicDetailRequest extends FormRequest
             ],
 
             /* ---------------------------- IndividualFamily ---------------------------- */
-            'individual_family' => ['array'],
+            'individual_family' => ['nullable', 'array'],
             'individual_family.*.middle_name' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_family.*.ext_name' => ['nullable', new Enum(ExtensionNameCategory::class)],
             'individual_family.*.occupation' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_family.*.employers_business_name' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_family.*.business_address' => ['nullable', 'string', new DbVarcharMaxLength],
-            'individual_family.*.telephone_no' => [
-                'nullable',
-                (new PhoneRule)->country('PH')->mobile(),
-            ],
+            'individual_family.*.telephone_no' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_family.*._delete' => ['nullable', 'boolean'], // Can delete family members.
-            'individual_family.*.first_name' => ['required', 'string', new DbVarcharMaxLength],
-            'individual_family.*.last_name' => ['required', 'string', new DbVarcharMaxLength],
-            'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
+            'individual_family.*.first_name' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_family.*.last_name' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_family.*.class' => ['nullable', new Enum(FamilyMemberCategory::class)],
             'individual_family.*.date_of_birth' => ['nullable', 'required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
 
             /* --------------------- IndividualEducationalBackground -------------------- */
@@ -259,6 +256,12 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_reference.*.address' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_reference.*.tel_no' => ['nullable',
                 (new PhoneRule)->country('PH')], // Can be either mobile or tele
+
+            /* -------------------------------- IndividualGovernmentID -------------------------------- */
+            'individual_government_id.gov_issued_id' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_government_id.gov_id_no' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_government_id.gov_issuance' => ['nullable', 'string', new DbVarcharMaxLength],
+
         ];
     }
 
@@ -374,7 +377,7 @@ class IndividualBasicDetailRequest extends FormRequest
             ],
 
             /* ---------------------------- IndividualFamily ---------------------------- */
-            'individual_family' => ['array'],
+            'individual_family' => ['nullable', 'array'],
             'individual_family.*.id' => [
                 'nullable',
                 'int',
@@ -385,15 +388,11 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_family.*.occupation' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_family.*.employers_business_name' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_family.*.business_address' => ['nullable', 'string', new DbVarcharMaxLength],
-            'individual_family.*.telephone_no' => [
-                'nullable',
-                new InternationalPhoneNumberFormat,
-                (new PhoneRule)->country('PH')->mobile(),
-            ],
+            'individual_family.*.telephone_no' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_family.*._delete' => ['nullable', 'boolean'], // Can delete family members.
-            'individual_family.*.first_name' => ['required', 'string', new DbVarcharMaxLength],
-            'individual_family.*.last_name' => ['required', 'string', new DbVarcharMaxLength],
-            'individual_family.*.class' => ['required', new Enum(FamilyMemberCategory::class)],
+            'individual_family.*.first_name' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_family.*.last_name' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_family.*.class' => ['nullable', new Enum(FamilyMemberCategory::class)],
             'individual_family.*.date_of_birth' => ['nullable', 'required_if:individual_family.*.class,Children', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
 
             /* --------------------- IndividualEducationalBackground -------------------- */
@@ -583,6 +582,11 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_reference.*.tel_no' => ['nullable',
                 (new PhoneRule)->country('PH')], // Can be either mobile or tele
             'individual_reference.*._delete' => ['nullable', 'boolean'], // Can delete references
+
+            /* -------------------------------- IndividualGovernmentID -------------------------------- */
+            'individual_government_id.gov_issued_id' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_government_id.gov_id_no' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_government_id.gov_issuance' => ['nullable', 'string', new DbVarcharMaxLength],
         ];
     }
 

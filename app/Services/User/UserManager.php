@@ -123,6 +123,7 @@ class UserManager implements UserAccountManager, UserCredentialManager
         'userProfile.individualBasicDetail.individualMembership',
         'userProfile.individualBasicDetail.individualQuestion',
         'userProfile.individualBasicDetail.individualReference',
+        'userProfile.individualBasicDetail.individualGovernmentId',
     ]): User
     {
         /** @var User $user */

@@ -11,6 +11,7 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
+use App\Models\ComprehensiveRecords\IndividualGovernmentId;
 use App\Models\ComprehensiveRecords\IndividualLnd;
 use App\Models\ComprehensiveRecords\IndividualMembership;
 use App\Models\ComprehensiveRecords\IndividualQuestion;
@@ -78,6 +79,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         'individualSkillsHobby',
         'individualQuestion',
         'individualReference',
+        'individualGovernmentId',
     ];
 
     protected function setUp(): void
@@ -441,6 +443,12 @@ class IndividualBasicDetailFeatureTest extends TestCase
                     'tel_no' => fake()->numerify('+6391234567##'), // Randomizing last two digits since it is causing issues otherwise.
                 ],
             ],
+
+            'individual_government_id' => [
+                'gov_issued_id' => fake()->name(),
+                'gov_id_no' => fake()->bothify('ID-#######'),
+                'gov_issuance' => fake()->address(),
+            ],
         ];
 
         $missingRequiredFields = Arr::except(
@@ -480,6 +488,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
         if ($statusCode !== 422) {
             $response = $response->decodeResponseJson()['data'];
+
             $createdIndividual = IndividualBasicDetail::find($response['id']);
 
             // check if record exists
@@ -567,6 +576,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $testMembership = IndividualMembership::factory()->make()->toArray();
         $testQuestion = IndividualQuestion::factory()->make()->toArray();
         $testReference = IndividualReference::factory()->make()->toArray();
+        $testGovernmentId = IndividualGovernmentId::factory()->make()->toArray();
 
         // @todo Update as new models are added until all forms are completed
         // Combine data and structure it so that it is similar to the request body
@@ -599,6 +609,8 @@ class IndividualBasicDetailFeatureTest extends TestCase
             'form_type' => PDSFormType::C4->value,
             'individual_question' => [$testQuestion],
             'individual_reference' => [$testReference],
+            'individual_government_id' => [$testGovernmentId],
+
         ];
 
         $all_request = array_merge(
@@ -739,37 +751,42 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $individuals = IndividualBasicDetail::factory(5)->create();
         $firstIndividual = $individuals->first();
 
-        // Get first record in hasMany relationship.
-        // @todo: Update as we add new models.
+        // Get first record in relationships
         $firstReference = $firstIndividual->individualReference()->first();
+        $firstGovernmentId = $firstIndividual->individualGovernmentId()->first();
 
         // Generate updated data
         $newInfo = $this->generate_test_data(PDSFormType::C4->value);
 
-        // Add the correct id on request body.
+        // Assign the correct ids
         $newInfo['individual_question'][0]['id'] = $firstIndividual->individualQuestion->id;
         $newInfo['individual_reference'][0]['id'] = $firstReference->id;
 
-        // Generate random countries if individual_question is part of the input and q39 is true
-        if (isset($newInfo['individual_question']) and $newInfo['individual_question'][0]['q39']) {
-            $randomCountry = Country::inRandomOrder()->first()->id; // Get random country
-            $newInfo['individual_question'][0]['country_id'] = $randomCountry;
+        // Correct hasOne: use associative array, not [0]
+        $newInfo['individual_government_id']['id'] = $firstGovernmentId->id;
+
+        // Optional: random country for q39
+        if (isset($newInfo['individual_question'][0]['q39']) && $newInfo['individual_question'][0]['q39']) {
+            $newInfo['individual_question'][0]['country_id'] = Country::inRandomOrder()->first()->id;
         }
 
-        // Update
-        $response = $this->withToken($this->authToken)->putJson("$this->baseUri/$firstIndividual->id", $newInfo);
+        // Update via API
+        $response = $this->withToken($this->authToken)
+            ->putJson("$this->baseUri/{$firstIndividual->id}", $newInfo);
         $response->assertStatus(200);
 
-        // Check if the updated data matches the response result
-        $response = $response->decodeResponseJson()['data'];
+        $responseData = $response->decodeResponseJson()['data'];
 
-        foreach ($response as $key => $value) {
-            if (is_array($value) and array_key_exists($key, $newInfo)) {
-                // if array, match with the equivalent key & value pair in updatedData
-                $this->assertArrayEqualsIntersecting($newInfo[$key][0], $value);
+        // Assert updated fields
+        foreach ($newInfo as $key => $value) {
+            if (is_array($value) && array_key_exists($key, $responseData)) {
+                $this->assertArrayEqualsIntersecting(
+                    // For hasOne relationships, just pass the associative array
+                    $key === 'individual_government_id' ? $value : $value[0],
+                    $responseData[$key]
+                );
             }
         }
-
     }
 
     public function test_it_cannot_create_more_than_3_references(): void
@@ -1083,6 +1100,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
         // Get first record in hasMany relationship.
         $firstReference = $firstIndividual->individualReference()->first();
+        $firstGovermentId = $firstIndividual->individualGovernmentId()->first();
 
         // Generate updated data
         $newInfo = $this->generate_test_data(PDSFormType::C4->value);
@@ -1090,6 +1108,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Add the correct id on request body.
         $newInfo['individual_question'][0]['id'] = $firstIndividual->individualQuestion->id;
         $newInfo['individual_reference'][0]['id'] = $firstReference->id;
+        $newInfo['individual_government_id'][0]['id'] = $firstGovermentId->id;
 
         // Generate random countries if individual_question is part of the input and q39 is true
         if (isset($newInfo['individual_question']) and $newInfo['individual_question'][0]['q39']) {
@@ -1190,6 +1209,7 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Add the correct id on request body.
         $newInfo['individual_question'][0]['id'] = $notOwnData->individualQuestion->id;
         unset($newInfo['individual_reference']);
+        $newInfo['individual_government_id'][0]['id'] = $notOwnData->individualGovernmentId()->first()->id;
 
         // Generate random countries if individual_question is part of the input and q39 is true
         if (isset($newInfo['individual_question']) and $newInfo['individual_question'][0]['q39']) {
@@ -1199,12 +1219,14 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
         // Should not be able to update the record
         $response = $this->withToken($this->authTokenStandard)->putJson("$this->baseUri/$notOwnData->id", $newInfo);
+
         $response->assertStatus(403);
 
         // Generate data with the current user as the owner
         $stndrdUserProf = $this->userStandard->userProfile;
         $ownData = IndividualBasicDetail::factory()->withExistingUserProfile($stndrdUserProf)->create();
         $newInfo['individual_question'][0]['id'] = $ownData->individualQuestion->id; // Update id to point to the correct data
+        $newInfo['individual_government_id'][0]['id'] = $ownData->individualGovernmentId->first()->id;
 
         // Should now be able to update
         $response = $this->withToken($this->authTokenStandard)->putJson("$this->baseUri/$ownData->id", $newInfo);
