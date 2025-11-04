@@ -37,7 +37,6 @@ class DailyTimeRecordUnitTest extends TestCase
         parent::setUp();
         $this->artisan('db:seed');
 
-        // Create a fake cloud storage for isolation
         $mockStorage = Mockery::mock(AwsS3StorageService::class);
         $mockStorage->shouldReceive('upload')->andReturn('mocked/path/file.jpg');
         $mockStorage->shouldReceive('delete')->andReturn(true);

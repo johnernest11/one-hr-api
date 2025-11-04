@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ApiErrorCode;
+use App\Enums\PaginationType;
 use App\Http\Requests\LocatorSlips\LocatorSlipRequest;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\LocatorSlip\LocatorSlip;
@@ -80,5 +81,58 @@ class LocatorSlipController extends ApiController
 
         return $this->success(['data' => $updatedItem], Response::HTTP_OK);
 
+    }
+
+    /**
+     * Search for a resource in storage.
+     */
+    public function search(Employee $employee, LocatorSlipRequest $request): JsonResponse
+    {
+        $ls = $this->locatorSlipService->search($employee, $request->validated('query'), PaginationType::LENGTH_AWARE);
+        $formatted = PaginationHelper::formatPagination($ls);
+
+        return $this->success($formatted, Response::HTTP_OK);
+    }
+
+    /**
+     * Search for locator slip in all of employees.
+     */
+    public function searchAll(LocatorSlipRequest $request): JsonResponse
+    {
+        $ls = $this->locatorSlipService->searchAll($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $formatted = PaginationHelper::formatPagination($ls);
+
+        return $this->success($formatted, Response::HTTP_OK);
+    }
+
+    /**
+     * Checks for active locator slip loggers.
+     */
+    public function checkActiveLog(Employee $employee): JsonResponse
+    {
+        $lsl = $this->locatorSlipService->checkActiveLog($employee);
+
+        return $this->success(['data' => $lsl], Response::HTTP_OK);
+    }
+
+    /**
+     * Generate the locator slip
+     */
+    public function generateLocator(Employee $employee, LocatorSlip $locatorSlip): JsonResponse|Response
+    {
+        try {
+            $response = $this->locatorSlipService->generate($employee, $locatorSlip);
+        } catch (Exception $e) {
+            return $this->error(
+                $e->getMessage(),
+                Response::HTTP_BAD_REQUEST,
+                ApiErrorCode::BAD_REQUEST
+            );
+        }
+
+        return response($response['fileContent'], 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => 'attachment; filename="'.$response['fileName'].'"',
+        ])->header('Access-Control-Expose-Headers', 'Content-Disposition'); // Expose Content-Disposition header since it is not exposed by default to get the filename
     }
 }

@@ -4,6 +4,7 @@ namespace App\Services\DailyTimeRecords;
 
 use App\Enums\PaginationType;
 use App\Models\ComprehensiveRecords\Employee;
+use App\Models\DailyTimeRecords\TimeLog;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -52,4 +53,9 @@ interface DailyTimeRecordManager
      * Generate PDF of daily time records
      */
     public function generate(Employee $employee, string $startDate, string $endDate, string $sort = 'asc'): array;
+
+    /**
+     * Get user's last time log
+     */
+    public function getLastTimeLog(Employee $employee): ?TimeLog;
 }

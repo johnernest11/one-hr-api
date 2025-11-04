@@ -197,7 +197,10 @@
                 $slots['in1'] = $sorted->first(fn($log) => ($h = $getHour($log)) >= 6 && $h < 12);
 
                 // OUT1: first 12–13
-                $slots['out1'] = $sorted->first(fn($log) => ($h = $getHour($log)) >= 12 && $h < 13);
+                $slots['out1'] = $sorted
+                    ->filter(fn($log) => ($h = $getHour($log)) >= 11 && $h <= 13) // consider around 11 AM–1 PM
+                    ->sortBy(fn($log) => abs(strtotime($log->scanned_time) - strtotime('12:00')))
+                    ->first();
 
                 // IN2: first log between 12–14 and 15 mins after OUT1
                 if ($slots['out1']) {
@@ -205,17 +208,69 @@
                     $slots['in2'] = $sorted->first(function ($log) use ($out1Time) {
                         $time = strtotime($log->scanned_time);
                         $h = (int) date('H', $time);
-                        return $h >= 12 && $h < 14 && $time >= $out1Time + (15 * 60);
+                        return $h >= 12 && $h < 14 && $time >= $out1Time + (1 * 60);
                     });
                 }
 
                 // OUT2: last ≥ 14h
-                $slots['out2'] = $sorted->last(fn($log) => (int) date('H', strtotime($log->scanned_time)) >= 14);
-
+                $slots['out2'] = $sorted->filter(fn($log) => (int) date('H', strtotime($log->scanned_time)) >= 14)
+                    ->sortByDesc(fn($log) => strtotime($log->scanned_time))
+                    ->first();
                 return $slots;
             }
         }
+
+        if (!function_exists('computeDTRHours')) {
+            function computeDTRHours($slots)
+            {
+                $ut = 0;
+                $ot = 0;
+
+                $in1 = $slots['in1'] ? strtotime($slots['in1']->scanned_time) : null;
+                $out1 = $slots['out1'] ? strtotime($slots['out1']->scanned_time) : null;
+                $in2 = $slots['in2'] ? strtotime($slots['in2']->scanned_time) : null;
+                $out2 = $slots['out2'] ? strtotime($slots['out2']->scanned_time) : null;
+
+                // Lunch break timestamps
+                $lunchStart = strtotime('12:00');
+                $lunchEnd = strtotime('13:00');
+
+                $worked = 0;
+
+                // Helper to compute hours excluding lunch
+                $computeHours = function ($start, $end) use ($lunchStart, $lunchEnd) {
+                    if (!$start || !$end)
+                        return 0;
+                    $hours = ($end - $start) / 3600;
+
+                    // If session overlaps lunch, subtract overlap
+                    $overlapStart = max($start, $lunchStart);
+                    $overlapEnd = min($end, $lunchEnd);
+                    if ($overlapEnd > $overlapStart) {
+                        $hours -= ($overlapEnd - $overlapStart) / 3600;
+                    }
+                    return $hours;
+                };
+
+                $worked += $computeHours($in1, $out1);
+                $worked += $computeHours($in2, $out2);
+
+                // Standard work hours
+                $standardHours = 8.0;
+
+                // Compute UT/OT
+                $ut = $worked < $standardHours ? $standardHours - $worked : 0;
+                $ot = $worked > $standardHours ? $worked - $standardHours : 0;
+
+                return [
+                    'ut' => round($ut, 2),
+                    'ot' => round($ot, 2),
+                    'totalWorked' => round($worked, 2)
+                ];
+            }
+        }
     @endphp
+
     <div class="header-section" style="text-align: center; white-space: nowrap; margin-right: 10%;">
         <p style="font-size: 20px;">DSWD Field Office I</p>
         <p>DAILY TIME RECORD</p>
@@ -301,7 +356,20 @@
                         @php
                             $slots = resolveDTRSlots($row->timeLog ?? collect());
                             $remarks = $row->employee_remarks ?: '-';
-
+                            if (!empty($row->timeLog) && count($row->timeLog) > 0) {
+                                // Compute UT/OT only if there is at least one time log
+                                $computedHours = computeDTRHours($slots);
+                                $hours = [
+                                    'ut' => ($row->ut == 0.00) ? $computedHours['ut'] : $row->ut,
+                                    'ot' => ($row->ot == 0.00) ? $computedHours['ot'] : $row->ot,
+                                ];
+                            } else {
+                                // No time logs → use DB value or 0
+                                $hours = [
+                                    'ut' => $row->ut ?? 0,
+                                    'ot' => $row->ot ?? 0,
+                                ];
+                            }
 
                             if (!function_exists('isEdited')) {
                                 function isEdited($slot, $timeLogs)
@@ -339,29 +407,29 @@
 
                             {{-- Time slots with edit check --}}
                             <td colspan="2"
-                                style="text-align: center; white-space: nowrap; {{ isEdited('in1', $row->timeLog) ? 'color: #b58900;' : '' }}">
+                                style="text-align: center; white-space: nowrap; {{ isEdited('in1', $row->timeLog) ? 'color: #b58900; font-style: italic;' : '' }}">
                                 {{ $slots['in1'] ? \Carbon\Carbon::parse($slots['in1']->scanned_time)->format('h:i A') : '-' }}
                             </td>
 
                             <td colspan="2"
-                                style="text-align: center; white-space: nowrap; {{ isEdited('out1', $row->timeLog) ? 'color: #b58900;' : '' }}">
+                                style="text-align: center; white-space: nowrap; {{ isEdited('out1', $row->timeLog) ? 'color: #b58900; font-style: italic;' : '' }}">
                                 {{ $slots['out1'] ? \Carbon\Carbon::parse($slots['out1']->scanned_time)->format('h:i A') : '-' }}
                             </td>
 
                             <td colspan="2"
-                                style="text-align: center; white-space: nowrap; {{ isEdited('in2', $row->timeLog) ? 'color: #b58900;' : '' }}">
+                                style="text-align: center; white-space: nowrap; {{ isEdited('in2', $row->timeLog) ? 'color: #b58900; font-style: italic;' : '' }}">
                                 {{ $slots['in2'] ? \Carbon\Carbon::parse($slots['in2']->scanned_time)->format('h:i A') : '-' }}
                             </td>
 
                             <td colspan="2"
-                                style="text-align: center; white-space: nowrap; {{ isEdited('out2', $row->timeLog) ? 'color: #b58900;' : '' }}">
+                                style="text-align: center; white-space: nowrap; {{ isEdited('out2', $row->timeLog) ? 'color: #b58900; font-style: italic;' : '' }}">
                                 {{ $slots['out2'] ? \Carbon\Carbon::parse($slots['out2']->scanned_time)->format('h:i A') : '-' }}
                             </td>
 
 
                             {{-- Hours --}}
-                            <td style="text-align: center;">{{ $row->ut }}</td>
-                            <td style="text-align: center;">{{ $row->ot }}</td>
+                            <td style="text-align: center;">{{ $hours['ut'] }}</td>
+                            <td style="text-align: center;">{{ $hours['ot'] }}</td>
                             <td style="border-top: none; border-bottom: none;"></td>
 
                             {{-- Remarks --}}

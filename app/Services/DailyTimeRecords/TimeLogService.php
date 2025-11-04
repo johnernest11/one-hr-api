@@ -121,6 +121,8 @@ class TimeLogService implements TimeLogManager
     public function updateLocatorSlipLogger(Employee $employee, array $timeLog): void
     {
         DB::transaction(function () use ($employee, $timeLog) {
+            $lastTimeLog = app(DailyTimeRecordService::class)->getLastTimeLog($employee);
+
             $carbonDate = Carbon::parse($timeLog['date']);
             $lsCollection = LocatorSlip::where('employee_id', $employee->id)
                 ->whereYear('date', $carbonDate->year)
@@ -133,7 +135,19 @@ class TimeLogService implements TimeLogManager
                     ->get();
                 foreach ($lsLogs as $log) {
                     if (! $log->time_out) {
-                        $log->update(['time_out' => $timeLog['scanned_time']]);
+                        // Do not update locator slip if the last time log is an in, which means that the employee just went in the office and not out.
+                        if (! $lastTimeLog) {
+                            return;
+                        }
+                        if ($lastTimeLog) {
+                            if ($lastTimeLog->is_in) {
+                                return;
+                            }
+                        }
+
+                        $log->update([
+                            'time_out' => $timeLog['scanned_time'],
+                        ]);
                     } elseif (! $log->time_in) {
                         $log->update(['time_in' => $timeLog['scanned_time']]);
                     }

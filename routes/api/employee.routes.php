@@ -34,6 +34,10 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         /** @uses DailyTimeRecordController::viewDtrPerMonth */
         Route::middleware(['permission:'.Permission::VIEW_DTR->value])
             ->get('/view-dtr', 'viewDtrPerPeriodRange')->name('view-dtr');
+
+        /** @uses DailyTimeRecordController::getLastTimeLog */
+        Route::middleware(['permission:'.Permission::VIEW_DTR->value])
+            ->get('/last-time-log', 'getLastTimeLog')->name('last-time-log');
     });
 
     Route::prefix('locator-slips')->controller(LocatorSlipController::class)->name('locator-slips.')->group(function () {
@@ -41,14 +45,25 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->post('', 'store')->name('store');
 
+        /** @uses LocatorSlip::search */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('/search', 'search')->name('search');
+
+        /** @uses LocatorSlip::checkActiveLog */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('/active', 'checkActiveLog')->name('check-active');
+
         /** @uses LocatorSlip::viewEmployeeLocator */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->get('', 'viewEmployeeLocator')->name('view-employee-locator');
 
+        /** @uses LocatorSlip::generate */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('{locatorSlip}/generate', 'generateLocator')->name('generate');
+
         /** @uses LocatorSlip::show */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->get('/{locatorSlip}', 'show')->name('view-locator');
-
     });
 });
 
@@ -89,6 +104,10 @@ Route::middleware(['auth:token', 'verified.api'])->group(function () {
         /** @uses LocatorSlip::update */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
             ->put('/{locatorSlip}', 'update')->name('update');
+
+        /** @uses LocatorSlip::search */
+        Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])
+            ->get('/search-all', 'searchAll')->name('search-all');
 
         /** @uses LocatorSlip::readGrouped */
         Route::middleware(['permission:'.Permission::CRUD_LOCATOR_SLIP->value])

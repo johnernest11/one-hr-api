@@ -319,7 +319,7 @@ class DailyTimeRecordService implements DailyTimeRecordManager
 
         // Employee details
         $employeeDetail = $employee->individualBasicDetail;
-        $fullName = trim("{$employeeDetail->last_name}, {$employeeDetail->first_name} {$employeeDetail->middle_name}");
+        $fullName = strtoupper(trim("{$employeeDetail->last_name}, {$employeeDetail->first_name} {$employeeDetail->middle_name}"));
         $divisionName = optional($employee->division_id ? Division::find($employee->division_id) : null)->name ?? 'PLACEHOLDER';
         $sectionName = optional($employee->section_or_unit_id ? SectionOrUnit::find($employee->section_or_unit_id) : null)->name ?? 'PLACEHOLDER';
         $positionTitle = optional($employee->item->position)->title ?? 'PLACEHOLDER';
@@ -350,5 +350,19 @@ class DailyTimeRecordService implements DailyTimeRecordManager
             'fileContent' => $dompdf->output(),
             'fileName' => "DTR-{$employee->id}-{$startDate}_to_{$endDate}.pdf",
         ];
+    }
+
+    /** {@inheritDoc} */
+    public function getLastTimeLog(Employee $employee): ?TimeLog
+    {
+        $today = now()->toDateString();
+        $timeLog = TimeLog::whereDate('date', $today)
+            ->whereHas('dailyTimeRecord', function (Builder $query) use ($employee) {
+                $query->where('employee_id', $employee->id);
+            })
+            ->latest()
+            ->first();
+
+        return $timeLog;
     }
 }

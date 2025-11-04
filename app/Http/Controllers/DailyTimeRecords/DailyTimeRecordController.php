@@ -139,4 +139,15 @@ class DailyTimeRecordController extends ApiController
             'Content-Disposition' => 'attachment; filename="'.$response['fileName'].'"',
         ])->header('Access-Control-Expose-Headers', 'Content-Disposition');
     }
+
+    /**
+     * Get current user's last time log.
+     */
+    public function getLastTimeLog(Employee $employee): JsonResponse
+    {
+        $timeLogs = $this->dailyTimeRecordService->getLastTimeLog($employee);
+
+        return $this->success(['data' => $timeLogs], Response::HTTP_OK);
+
+    }
 }
