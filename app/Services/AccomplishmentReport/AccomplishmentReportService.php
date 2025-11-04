@@ -60,45 +60,48 @@ class AccomplishmentReportService implements AccomplishmentReportManager
         $templatePath = Storage::disk('assets')->path('TEMPLATE - Accomplishment-Report.docx');
         $templateProcessor = new TemplateProcessor($templatePath);
 
+        // Helper function to sanitize Special Characters
+        $sanitize = fn ($value) => htmlspecialchars((string) $value, ENT_QUOTES | ENT_XML1, 'UTF-8');
+
         // Process report data
         $userInfo = $accomplishmentReport->userProfile->individualBasicDetail;
 
         // Set period
-        $templateProcessor->setValue('period', $accomplishmentReport->period);
+        $templateProcessor->setValue('period', $sanitize($accomplishmentReport->period));
 
         // Set Names
         $templateProcessor->setValues([
-            'firstName' => $userInfo->first_name,
-            'middleName' => $userInfo->middle_name,
-            'lastName' => $userInfo->last_name,
-            'fullName' => trim(($userInfo?->first_name ?? '').' '.($userInfo?->middle_name ?? '').' '.($userInfo?->last_name ?? '').' '.($userInfo?->ext_name?->value ?? '')),
+            'firstName' => $sanitize($userInfo->first_name),
+            'middleName' => $sanitize($userInfo->middle_name),
+            'lastName' => $sanitize($userInfo->last_name),
+            'fullName' => $sanitize(trim(($userInfo?->first_name ?? '').' '.($userInfo?->middle_name ?? '').' '.($userInfo?->last_name ?? '').' '.($userInfo?->ext_name?->value ?? ''))),
         ]);
 
         // Set Position and Designation
         $templateProcessor->setValues([
-            'position' => $userInfo->employee->item->position->title,
-            'designation' => $userInfo->employee->item->position->parenthetical_title,
+            'position' => $sanitize($userInfo->employee->item->position->title),
+            'designation' => $sanitize($userInfo->employee->item->position->parenthetical_title),
         ]);
 
         // Set ODSU
-        $templateProcessor->setValue('odsu', trim(($userInfo?->employee->division->name ?? '').' - '.($userInfo?->employee->sectionOrUnit->name ?? '')));
+        $templateProcessor->setValue('odsu', $sanitize(trim(($userInfo?->employee->division->name ?? '').' - '.($userInfo?->employee->sectionOrUnit->name ?? ''))));
 
         // Set Weeks and Activities
         $values = [];
 
         foreach ($accomplishmentReport->rows as $row) {
             $values[] = [
-                'weekNum' => $row['week_num'],
-                'datesInWeek' => $row['dates_in_week'],
-                'activities' => $row['specific_activity'],
-                'highlights' => $row['highlights'],
+                'weekNum' => $sanitize($row['week_num']),
+                'datesInWeek' => $sanitize($row['dates_in_week']),
+                'activities' => $sanitize($row['specific_activity']),
+                'highlights' => $sanitize($row['highlights']),
             ];
         }
 
         $templateProcessor->cloneRowAndSetValues('weekNum', $values);
 
         // Set Supervisor Notes
-        $templateProcessor->setValue('supervisorNotes', $accomplishmentReport->supervisor_notes);
+        $templateProcessor->setValue('supervisorNotes', $sanitize($accomplishmentReport->supervisor_notes));
 
         // Set Officer Information
         $templateProcessor->setValues([

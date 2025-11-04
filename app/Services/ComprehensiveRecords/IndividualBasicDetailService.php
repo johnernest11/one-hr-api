@@ -44,6 +44,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualSkillsHobby',
         'individualQuestion',
         'individualReference',
+        'individualGovernmentId',
     ];
 
     private IndividualBasicDetail $model;
@@ -122,6 +123,19 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                 }
                 $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
 
+                // ← Insert HasOne logic here
+                if ($relationshipName === 'individualGovernmentId') {
+                    $govData = is_array($inputData) ? $inputData : [];
+                    $existingGov = $individualData->individualGovernmentId;
+
+                    if ($existingGov) {
+                        $existingGov->update(Arr::except($govData, ['id', '_delete']));
+                    } elseif (! empty($govData)) {
+                        $individualData->individualGovernmentId()->create(Arr::except($govData, ['id', '_delete']));
+                    }
+
+                    continue;
+                }
                 if ($individualData->{$relationshipName}() instanceof Relation && is_array($inputData) && ! empty($inputData)) {
                     foreach ($inputData as $modelData) {
                         $individualData->{$relationshipName}()->create($modelData);
@@ -209,12 +223,34 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                         // Get the class name for dynamic update/create/delete
                         $className = get_class($individualBasicDetail->{$relationshipName}()->getRelated());
 
+                        if ($relationshipName instanceof \Illuminate\Database\Eloquent\Relations\HasOne) {
+                            $data = is_array($inputData) ? $inputData[0] : $inputData;
+                            if ($relationshipName->exists) {
+                                $relationshipName->update($data);
+                            } else {
+                                $relationshipName->create($data);
+                            }
+                        }
+
                         // Soft delete if _delete flag is set
                         if (isset($modelData['_delete']) && $modelData['_delete'] && $id) {
                             $recordToDelete = $className::findOrFail($id); // Check if record exists before deletion
                             $recordToDelete->delete();
 
                             continue; // Skip to the next iteration
+                        }
+                        if ($relationshipName === 'individualGovernmentId') {
+                            // HasOne: update if exists, otherwise create
+                            $govData = is_array($inputData) ? $inputData : [];
+                            $existingGov = $individualBasicDetail->individualGovernmentId;
+
+                            if ($existingGov) {
+                                $existingGov->update(Arr::except($govData, ['id', '_delete']));
+                            } else {
+                                $individualBasicDetail->individualGovernmentId()->create(Arr::except($govData, ['id', '_delete']));
+                            }
+
+                            continue; // skip the generic HasMany loop
                         }
 
                         if ($id) {
