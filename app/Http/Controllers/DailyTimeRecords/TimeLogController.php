@@ -70,6 +70,6 @@ class TimeLogController extends ApiController
         return $this->success([
             'data' => $logTime,
             'captured_image_url' => $logTime->captured_image_url,
-        ], 200);
+        ], Response::HTTP_OK);
     }
 }

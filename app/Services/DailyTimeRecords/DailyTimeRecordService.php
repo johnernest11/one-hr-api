@@ -24,7 +24,7 @@ class DailyTimeRecordService implements DailyTimeRecordManager
 {
     use CanBuildPagination;
 
-    protected $model;
+    protected DailyTimeRecord $model;
 
     protected CloudStorageManager $cloudStorage;
 

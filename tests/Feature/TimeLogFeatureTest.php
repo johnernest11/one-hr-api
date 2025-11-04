@@ -108,11 +108,24 @@ class TimeLogFeatureTest extends TestCase
 
         $data = [
             'scanned_qr' => $qrCode->qr_code_value,
-            'capture_image' => $file,
+            'captured_image' => $file,
         ];
 
-        $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/log-time', $data);
+        $response = $this
+            ->withToken($this->authTokenPAS)
+            ->postJson($this->baseUri.'/log-time', $data);
+
         $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'data',
+            'captured_image_url',
+        ]);
+
+        $responseData = $response->json();
+
+        $this->assertArrayHasKey('captured_image_url', $responseData);
+        $this->assertNotEmpty($responseData['captured_image_url'], 'captured_image_url should not be empty or null');
 
         Storage::disk('s3')->deleteDirectory('images/time-logs');
     }

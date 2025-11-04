@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log; // <-- New Import
+use Illuminate\Support\Facades\Log;
 
 class TimeLogService implements TimeLogManager
 {
@@ -67,19 +67,8 @@ class TimeLogService implements TimeLogManager
             }
 
             $imagePath = null;
-
             if ($capturedImage instanceof UploadedFile) {
-                $path = "images/timelog/{$dateToday}/{$employee->id}/";
-                $filename = 'log_'.now()->timestamp.'.'.$capturedImage->getClientOriginalExtension();
-
-                try {
-                    $storedPath = $this->cloudStorage->upload($path, $capturedImage, $filename);
-                    $imagePath = $storedPath;
-                } catch (\Throwable $e) {
-                    Log::error("Cloud Storage Upload Failed for Employee ID {$employee->id}: ".$e->getMessage(), [
-                        'exception' => $e,
-                    ]);
-                }
+                $imagePath = $this->moveCapturedImageToCloud($capturedImage, $this->cloudStorage, $employee->id);
             } elseif (is_string($capturedImage)) {
                 $imagePath = $capturedImage;
             }
@@ -116,7 +105,7 @@ class TimeLogService implements TimeLogManager
     }
 
     /**
-     * Update locator slip logger after time log creation
+     * Update locator slip logger after time log creation.
      */
     public function updateLocatorSlipLogger(Employee $employee, array $timeLog): void
     {
@@ -133,21 +122,14 @@ class TimeLogService implements TimeLogManager
                 $lsLogs = LocatorSlipLogger::whereBelongsTo($slip)
                     ->where('date', $timeLog['date'])
                     ->get();
+
                 foreach ($lsLogs as $log) {
                     if (! $log->time_out) {
-                        // Do not update locator slip if the last time log is an in, which means that the employee just went in the office and not out.
-                        if (! $lastTimeLog) {
+                        if (! $lastTimeLog || $lastTimeLog->is_in) {
                             return;
                         }
-                        if ($lastTimeLog) {
-                            if ($lastTimeLog->is_in) {
-                                return;
-                            }
-                        }
 
-                        $log->update([
-                            'time_out' => $timeLog['scanned_time'],
-                        ]);
+                        $log->update(['time_out' => $timeLog['scanned_time']]);
                     } elseif (! $log->time_in) {
                         $log->update(['time_in' => $timeLog['scanned_time']]);
                     }
