@@ -2,4 +2,6 @@
 
 namespace App\Services\Authentication\Interfaces;
 
-interface PersistentAuthTokenManager extends AuthTokenManager, CanInvalidateAuthTokens, CanRetrieveAuthTokens {}
+interface PersistentAuthTokenManager extends AuthTokenManager, CanInvalidateAuthTokens, CanRetrieveAuthTokens
+{
+}

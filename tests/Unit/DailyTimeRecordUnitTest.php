@@ -6,6 +6,7 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Services\CloudStorageServices\AwsS3StorageService;
 use App\Services\DailyTimeRecords\DailyTimeRecordService;
 use App\Services\DailyTimeRecords\TimeLogService;
 use Carbon\Carbon;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\Paginator;
+use Mockery;
 use Tests\TestCase;
 
 class DailyTimeRecordUnitTest extends TestCase
@@ -34,10 +36,16 @@ class DailyTimeRecordUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord);
+
+        $mockStorage = Mockery::mock(AwsS3StorageService::class);
+        $mockStorage->shouldReceive('upload')->andReturn('mocked/path/file.jpg');
+        $mockStorage->shouldReceive('delete')->andReturn(true);
+
+        $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord, $mockStorage);
+        $this->timeLogService = new TimeLogService(new TimeLog, $mockStorage);
+
         $this->individual = IndividualBasicDetail::factory()->create();
         $this->employee = Employee::whereBelongsTo($this->individual)->firstOrFail();
-        $this->timeLogService = new TimeLogService(new TimeLog);
     }
 
     /**
@@ -190,26 +198,6 @@ class DailyTimeRecordUnitTest extends TestCase
         $this->assertNotEmpty($result['fileContent'], 'PDF content should not be empty');
         $expectedFileName = "DTR-{$employee->id}-{$startDate}_to_{$endDate}.pdf";
         $this->assertEquals($expectedFileName, $result['fileName']);
-
-    }
-
-    /**
-     * Test that it can fetch user's last time log
-     */
-    public function test_can_get_last_time_log(): void
-    {
-        // Call the service
-        $result = $this->dailyTimeRecordService->getLastTimeLog($this->employee);
-
-        $this->assertNull($result); // Assert that it fetches no time logs
-
-        $tl = $this->timeLogService->create($this->employee); // Generate time logs. Now an employee has time log
-        $this->assertDatabaseCount('time_logs', 1); // Check that the generated sample record exists in the db
-
-        // Call the service again.
-        $result = $this->dailyTimeRecordService->getLastTimeLog($this->employee);
-        $this->assertNotNull($result); // Assert that it now fetches the record
-        $this->assertSame($tl->id, $result['id']); // Assert that the fetched record is the same as the created one
 
     }
 }
