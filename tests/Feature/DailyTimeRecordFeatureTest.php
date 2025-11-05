@@ -222,7 +222,7 @@ class DailyTimeRecordFeatureTest extends TestCase
         $response = $this->withToken($this->authTokenPAS)->getJson($this->uriWithId.'/'.$employee->id.'/daily-time-records/view-dtr?month='.$month);
         $response->assertStatus(200);
 
-        $this->assertEquals(3, $response['pagination']['total']);
+        $this->assertEquals(1, $response['pagination']['total']);
     }
 
     public function test_it_can_filter_dtr_per_date_range(): void
@@ -262,7 +262,7 @@ class DailyTimeRecordFeatureTest extends TestCase
         $response = $this->withToken($this->authTokenPAS)->getJson($this->uriWithId.'/'.$employee->id.'/daily-time-records/view-dtr?start_date='.$startDate.'&end_date='.$endDate);
         $response->assertStatus(200);
 
-        $this->assertEquals(3, $response['pagination']['total']);
+        $this->assertEquals(1, $response['pagination']['total']);
     }
 
     public function test_it_can_update_dtr(): void

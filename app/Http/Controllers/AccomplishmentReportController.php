@@ -72,7 +72,13 @@ class AccomplishmentReportController extends ApiController
      */
     public function search(AccomplishmentReportRequest $request)
     {
-        $items = $this->accomplishmentReportService->search($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $validated = $request->validated();
+
+        $query = $validated['query'] ?? null;
+        $limit = $validated['limit'] ?? 5;
+        $page = $validated['page'] ?? 1;
+
+        $items = $this->accomplishmentReportService->search($query, PaginationType::LENGTH_AWARE, $limit, $page);
         $formatted = PaginationHelper::formatPagination($items);
 
         return $this->success($formatted, Response::HTTP_OK);
