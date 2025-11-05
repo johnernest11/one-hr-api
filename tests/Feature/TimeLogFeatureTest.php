@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class TimeLogFeatureTest extends TestCase
@@ -30,7 +32,7 @@ class TimeLogFeatureTest extends TestCase
 
     private PersistentAuthTokenManager $tokenManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
@@ -42,9 +44,9 @@ class TimeLogFeatureTest extends TestCase
         $user_ppms->syncRoles($roles[0]);
         $user_pas->syncRoles($roles[1]);
         $standard_user->syncRoles($roles[2]);
-        $this->user_ppms = $user_ppms; // save ppms admin user
-        $this->user_pas = $user_pas; // save pas admin user
-        $this->standard_user = $standard_user; // save standard user
+        $this->user_ppms = $user_ppms;
+        $this->user_pas = $user_pas;
+        $this->standard_user = $standard_user;
 
         $this->tokenManager = resolve(PersistentAuthTokenManager::class);
         $authTokenExpirationPPMS = now()->addMinutes(config('sanctum.expiration'));
@@ -93,10 +95,38 @@ class TimeLogFeatureTest extends TestCase
 
         $this->assertDatabaseCount('time_logs', 1);
 
-        // Scan for another time. It should trigger the duplicate scan error.
         $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/log-time', $data);
         $response->assertStatus(422);
 
-        $this->assertDatabaseCount('time_logs', 1); //Database count should still be 1
+        $this->assertDatabaseCount('time_logs', 1);
+    }
+
+    public function test_it_can_save_capture_image(): void
+    {
+        $qrCode = QrCode::factory()->create();
+        $file = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
+
+        $data = [
+            'scanned_qr' => $qrCode->qr_code_value,
+            'captured_image' => $file,
+        ];
+
+        $response = $this
+            ->withToken($this->authTokenPAS)
+            ->postJson($this->baseUri.'/log-time', $data);
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'data',
+            'captured_image_url',
+        ]);
+
+        $responseData = $response->json();
+
+        $this->assertArrayHasKey('captured_image_url', $responseData);
+        $this->assertNotEmpty($responseData['captured_image_url'], 'captured_image_url should not be empty or null');
+
+        Storage::disk('s3')->deleteDirectory('images/time-logs');
     }
 }

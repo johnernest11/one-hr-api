@@ -2,10 +2,12 @@
 
 namespace App\Services\CloudStorageServices;
 
+use App\Enums\FileSystem;
 use Storage;
 use Str;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AwsS3StorageService implements CloudStorageManager
 {
@@ -55,5 +57,30 @@ class AwsS3StorageService implements CloudStorageManager
     public function generateTmpUrl($path, int $timeLimit): string
     {
         return Storage::disk('s3')->temporaryUrl($path, now()->addSeconds($timeLimit));
+    }
+
+    /** {@inheritDoc} */
+    public function stream(string $path, FileSystem $disk = FileSystem::CLOUD): StreamedResponse
+    {
+        return Storage::disk($disk->value)->response($path);
+    }
+
+    /** {@inheritDoc} */
+    public function isExisting(string $path, FileSystem $disk = FileSystem::CLOUD): bool
+    {
+        return Storage::disk($disk->value)->exists($path);
+    }
+
+    /** {@inheritDoc} */
+    public function transfer(string $path): bool|UploadException
+    {
+        if ($this->isExisting($path, FileSystem::LOCAL)) {
+            $contents = Storage::disk(FileSystem::LOCAL->value)->get($path);
+            Storage::disk(FileSystem::CLOUD->value)->put($path, $contents);
+
+            return $this->delete($path, FileSystem::LOCAL);
+        }
+
+        throw new UploadException('Unable to transfer local file to S3');
     }
 }

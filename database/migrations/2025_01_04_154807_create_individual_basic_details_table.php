@@ -43,7 +43,7 @@ return new class extends Migration
             $table->enum('citizenship', ConversionHelper::enumToArray(Citizenship::class));
             $table->enum('citizenship_acquisition', ConversionHelper::enumToArray(CitizenshipAcquisition::class))->nullable();
             // @todo Add field later once libraries for list of countries are added
-            //$table->string('citizenship_country')->nullable();
+            // $table->string('citizenship_country')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

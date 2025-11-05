@@ -9,11 +9,15 @@ use App\Enums\CivilStatus;
 use App\Enums\ExtensionNameCategory;
 use App\Enums\SexualCategory;
 use App\Models\UserProfile;
+use App\QueryFilters\DailyTimeRecords\DivisionFilter;
+use App\QueryFilters\DailyTimeRecords\SectionFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Pipeline\Pipeline;
 
 class IndividualBasicDetail extends Model
 {
@@ -47,6 +51,7 @@ class IndividualBasicDetail extends Model
         'tin',
         'citizenship',
         'citizenship_acquisition',
+        'country_id',
     ];
 
     /**
@@ -73,6 +78,24 @@ class IndividualBasicDetail extends Model
         'citizenship_acquisition' => CitizenshipAcquisition::class, // Laravel 9 enum casting. @see https://laravel.com/docs/9.x/releases
     ];
 
+    public function scopeFiltered(Builder $builder): Builder
+    {
+        $model = $builder->getModel();
+
+        // Join employees so filters can target employees.division_id and employees.section_or_unit_id
+        $builder->join('employees', 'employees.individual_basic_detail_id', '=', 'individual_basic_details.id')
+            ->select('individual_basic_details.*')
+            ->with(array_merge($model->comprehensive_records ?? [], ['employee']));
+
+        return app(Pipeline::class)
+            ->send($builder)
+            ->through([
+                DivisionFilter::class,
+                SectionFilter::class,
+            ])
+            ->thenReturn();
+    }
+
     /**
      * An individual has one user profile
      */
@@ -83,7 +106,7 @@ class IndividualBasicDetail extends Model
 
     // @todo Update relations until completed
     /* -------------------------------------------------------------------------- */
-    /*                               C1 Starts Here                               */
+    /*                               C1 Starts Here */
     /* -------------------------------------------------------------------------- */
 
     /**
@@ -129,7 +152,7 @@ class IndividualBasicDetail extends Model
     /* -------------------------------------------------------------------------- */
 
     /* -------------------------------------------------------------------------- */
-    /*                               C2 starts here                               */
+    /*                               C2 starts here */
     /* -------------------------------------------------------------------------- */
 
     /**
@@ -151,7 +174,7 @@ class IndividualBasicDetail extends Model
     /* -------------------------------------------------------------------------- */
 
     /* -------------------------------------------------------------------------- */
-    /*                               C3 starts here                               */
+    /*                               C3 starts here */
     /* -------------------------------------------------------------------------- */
 
     /**
@@ -197,7 +220,7 @@ class IndividualBasicDetail extends Model
     /* -------------------------------------------------------------------------- */
 
     /* -------------------------------------------------------------------------- */
-    /*                               C4 starts here                               */
+    /*                               C4 starts here */
     /* -------------------------------------------------------------------------- */
 
     /**
@@ -214,5 +237,13 @@ class IndividualBasicDetail extends Model
     public function individualReference(): HasMany
     {
         return $this->hasMany(IndividualReference::class);
+    }
+
+    /**
+     * An individual has one Government Id
+     */
+    public function individualGovernmentId(): HasOne
+    {
+        return $this->hasOne(IndividualGovernmentId::class);
     }
 }

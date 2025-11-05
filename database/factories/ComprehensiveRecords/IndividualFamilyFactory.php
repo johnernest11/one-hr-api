@@ -27,7 +27,7 @@ class IndividualFamilyFactory extends Factory
             'occupation' => fake()->jobTitle(),
             'employers_business_name' => fake()->name(),
             'business_address' => fake()->address(),
-            'telephone_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+            'telephone_no' => fake()->numerify('+6391234567##'), // Randomizing last two digits since it is causing issues otherwise.
             'date_of_birth' => fake()->date(),
             'class' => fake()->randomElement(ConversionHelper::enumToArray(FamilyMemberCategory::class)),
         ];

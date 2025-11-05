@@ -30,6 +30,30 @@ class Kernel extends ConsoleKernel
         $schedule->command('mfa:prune-expired-attempts')
             ->daily()
             ->onOneServer();
+
+        /**
+         * Compile locator slip information for the day and apply it to DTR's remarks
+         *
+         * @see LocatorUpdateDtrRemarks
+         */
+        $schedule->command('locator-update-dtr-remarks')
+            ->daily()
+            ->onOneServer();
+
+        /**
+         * Computes time for today's locator slips.
+         *
+         * @see LocatorComputeTime
+         */
+        $schedule->command('locator-compute-time')
+            ->daily()
+            ->onOneServer()
+            ->then(function () {
+                // Only call this once locator time has been computed.
+                $this->call('dtr-compute-ut');
+            }
+            );
+
     }
 
     /**

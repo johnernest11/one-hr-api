@@ -12,14 +12,14 @@ class C3Import implements ToCollection
 
     public function __construct()
     {
-        $this->importedRecords = new Collection();
+        $this->importedRecords = new Collection;
     }
 
     public function collection(Collection $rows)
     {
 
         /* -------------------------------------------------------------------------- */
-        /*                           IndividualVoluntaryWork                          */
+        /*                           IndividualVoluntaryWork */
         /* -------------------------------------------------------------------------- */
         $voluntaryWorkData = $rows->slice(5, 7); // Rows 6-12
 
@@ -55,7 +55,7 @@ class C3Import implements ToCollection
         }
 
         /* -------------------------------------------------------------------------- */
-        /*                                IndividualLnd                               */
+        /*                                IndividualLnd */
         /* -------------------------------------------------------------------------- */
         $lndData = $rows->slice(17, 21); // Rows 18-38
 
@@ -91,7 +91,7 @@ class C3Import implements ToCollection
         }
 
         /* -------------------------------------------------------------------------- */
-        /*    IndividualSkillsHobby, IndividualRecognition, & IndividualMembership    */
+        /*    IndividualSkillsHobby, IndividualRecognition, & IndividualMembership */
         /* -------------------------------------------------------------------------- */
         $hobbyRecogMembershipData = $rows->slice(41, 7); // Rows 42-48
 
@@ -143,7 +143,7 @@ class C3Import implements ToCollection
         ];
 
         /* -------------------------------------------------------------------------- */
-        /*                              Return Collection                             */
+        /*                              Return Collection */
         /* -------------------------------------------------------------------------- */
         // Push the mapped data into the collection so that it persists outside of this importer.
         // This allows it to be accessed outside of this importer.

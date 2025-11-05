@@ -29,7 +29,7 @@ class ItemUnitTest extends TestCase
     {
         parent::setUp();
         $this->artisan('db:seed');
-        $this->itemService = new ItemService(new Item());
+        $this->itemService = new ItemService(new Item);
         $this->user = $this->produceUsers();
         $this->testInput = [
             'number' => fake()->regexify('[A-Z]{3}-[A-Z]{3}-[A-Z]{3}-\d{6}'), // Simulate number format from the provided database
@@ -47,8 +47,9 @@ class ItemUnitTest extends TestCase
      */
     public function test_can_create_item(): void
     {
+        $initialCount = Item::count();
         $this->itemService->create($this->testInput);
-        $this->assertDatabaseCount('items', 1);
+        $this->assertDatabaseCount('items', $initialCount + 1);
     }
 
     /**
@@ -56,8 +57,9 @@ class ItemUnitTest extends TestCase
      */
     public function test_can_edit_item(): void
     {
+        $initialCount = Item::count();
         $item = $this->itemService->create($this->testInput);
-        $this->assertDatabaseCount('items', 1);
+        $this->assertDatabaseCount('items', $initialCount + 1);
 
         $newInfo = ['status' => 'Filled'];
 
@@ -70,8 +72,9 @@ class ItemUnitTest extends TestCase
      */
     public function test_can_view_all_items(): void
     {
+        $initialCount = Item::count();
         $this->itemService->create($this->testInput);
-        $this->assertDatabaseCount('items', 1);
+        $this->assertDatabaseCount('items', $initialCount + 1);
 
         $this->actingAs($this->user); // simulate user auth
         $paginatedResults = $this->itemService->all();
@@ -83,8 +86,9 @@ class ItemUnitTest extends TestCase
      */
     public function test_can_view_item_by_id(): void
     {
+        $initialCount = Item::count();
         $item = $this->itemService->create($this->testInput);
-        $this->assertDatabaseCount('items', 1);
+        $this->assertDatabaseCount('items', $initialCount + 1);
 
         $searchForThis = Item::find($item->id);
         $paginatedResults = $this->itemService->read($searchForThis);
@@ -96,8 +100,9 @@ class ItemUnitTest extends TestCase
      */
     public function test_can_search_item(): void
     {
+        $initialCount = Item::count();
         $initialItem = $this->itemService->create($this->testInput);
-        $this->assertDatabaseCount('items', 1);
+        $this->assertDatabaseCount('items', $initialCount + 1);
 
         // Update Number for easier search
         $newInfo = ['number' => 'FO1-COS-CPIII-000999'];

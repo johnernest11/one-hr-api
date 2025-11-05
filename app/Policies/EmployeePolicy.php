@@ -12,7 +12,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 class EmployeePolicy
 {
     /* -------------------------------------------------------------------------- */
-    /*                    Daily Time Record Authorization Logic                   */
+    /*                    Daily Time Record Authorization Logic */
     /* -------------------------------------------------------------------------- */
 
     // Roles and what they can do:

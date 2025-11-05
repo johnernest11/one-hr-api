@@ -13,7 +13,7 @@ class SendWelcomeEmailNotification
      */
     public function handle(UserRegistered|UserCreated $event): void
     {
-        $notification = new WelcomeNotification();
+        $notification = new WelcomeNotification;
         $event->user->notify($notification);
     }
 }

@@ -34,6 +34,7 @@ class TimeLogRequest extends FormRequest
     {
         return [
             'scanned_qr' => ['required', 'string'],
+            'captured_image' => ['nullable', 'file', 'image', 'max:5120'],
         ];
 
     }

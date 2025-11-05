@@ -21,7 +21,7 @@ class LaravelPint extends AbstractExternalTask
 {
     public static function getConfigurableOptions(): OptionsResolver
     {
-        $resolver = new OptionsResolver();
+        $resolver = new OptionsResolver;
         $resolver->setDefaults([
             'ide_helper' => false,
         ]);

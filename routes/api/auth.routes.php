@@ -80,6 +80,12 @@ Route::middleware(['auth:token', 'verified.api'])->controller(SanctumAuthControl
     Route::post('tokens/invalidate', 'invalidateMultiple')->name('revoke');
 });
 
+// For refreshing Sanctum Tokens
+Route::middleware(['refresh.guard'])->controller(SanctumAuthController::class)->name('auth.')->group(function () {
+    /** @uses SanctumAuthController::refreshCurrentTokens */
+    Route::post('tokens/refresh', 'refreshCurrentTokens')->name('refresh');
+});
+
 // Email Verification
 Route::controller(VerifyController::class)->group(function () {
     /** @uses VerifyController::resendEmailVerification */

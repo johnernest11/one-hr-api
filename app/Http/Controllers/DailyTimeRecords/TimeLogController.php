@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\DailyTimeRecords\TimeLogRequest;
 use App\Services\DailyTimeRecords\QrCodeManager;
 use App\Services\DailyTimeRecords\TimeLogManager;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -26,38 +27,49 @@ class TimeLogController extends ApiController
     }
 
     /**
-     * Verify a scanned QR and check if it belongs to which employee.
-     * Afterwards, log time for that employee.
+     * Verify a scanned QR and log time for the employee.
      */
     public function logTime(TimeLogRequest $request): JsonResponse
     {
         try {
             $employee = $this->qrCodeService->verifyQr($request->validated());
-            $logTime = $this->timeLogService->create($employee);
+
+            $capturedImage = $request->file('captured_image');
+
+            $logTime = $this->timeLogService->create($employee, $capturedImage);
 
         } catch (DecryptException $e) {
-            // Catch decryption error wherein the payload is invalid, and no employee is found.
             return $this->error(
                 'QR code is invalid.',
                 Response::HTTP_BAD_REQUEST,
                 ApiErrorCode::BAD_REQUEST
             );
+
         } catch (ModelNotFoundException $e) {
-            // Catch error wherein the employee is not found.
             return $this->error(
                 'There is no employee with that QR code.',
                 Response::HTTP_NOT_FOUND,
                 ApiErrorCode::RESOURCE_NOT_FOUND
             );
+
         } catch (AuthorizationException $e) {
-            // Check if QR code is inactive.
             return $this->error(
                 $e->getMessage(),
                 Response::HTTP_UNAUTHORIZED,
                 ApiErrorCode::UNAUTHORIZED
             );
+
+        } catch (Exception $e) {
+            return $this->error(
+                $e->getMessage(),
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                ApiErrorCode::VALIDATION
+            );
         }
 
-        return $this->success(['data' => $logTime], Response::HTTP_OK);
+        return $this->success([
+            'data' => $logTime,
+            'captured_image_url' => $logTime->captured_image_url,
+        ], Response::HTTP_OK);
     }
 }

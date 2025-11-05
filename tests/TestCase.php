@@ -25,6 +25,8 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
         $this->withoutMiddleware(ThrottleRequests::class);
         Storage::fake('s3');
+
+        fake()->unique(true);
     }
 
     /**

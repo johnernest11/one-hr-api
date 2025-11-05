@@ -26,7 +26,7 @@ class UserManagerTest extends TestCase
         parent::setUp();
         $this->artisan('db:seed');
         User::on('one_account')->forceDelete();
-        $this->userManager = new UserManager();
+        $this->userManager = new UserManager;
     }
 
     /** @throws Throwable */
@@ -62,7 +62,7 @@ class UserManagerTest extends TestCase
         $count = 2;
         $this->produceUsers();
 
-        $request = new Request();
+        $request = new Request;
         $limit = 2;
         $request->replace(['limit' => $limit]);
         app()->instance('request', $request);

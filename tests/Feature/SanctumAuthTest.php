@@ -22,15 +22,23 @@ class SanctumAuthTest extends TestCase
 
     private array $userCreds;
 
+    private array $timeLoggerCreds;
+
     private array $userProfile;
+
+    private array $tLProfile;
 
     private User $user;
 
+    private User $timeLogger;
+
     private string $authToken;
+
+    private string $refreshToken;
 
     private PersistentAuthTokenManager $tokenManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
@@ -50,9 +58,23 @@ class SanctumAuthTest extends TestCase
             ->create();
         $this->user->syncRoles([Role::ADMIN]);
 
+        $this->timeLoggerCreds = [
+            'email' => fake()->unique()->safeEmail(),
+            'username' => fake()->unique()->userName(),
+            'password' => 'timeLogger123!',
+        ];
+
+        $this->tLProfile = ['mobile_number' => '+639064647295'];
+
+        $this->timeLogger = User::factory($this->timeLoggerCreds)
+            ->has(UserProfile::factory())
+            ->create();
+        $this->timeLogger->syncRoles([Role::TIME_LOGGER]);
+
         $this->tokenManager = resolve(PersistentAuthTokenManager::class);
         $authTokenExpiration = now()->addMinutes(config('sanctum.expiration'));
         $this->authToken = $this->tokenManager->generateToken($this->user, $authTokenExpiration, 'mock_token');
+        $this->refreshToken = $this->tokenManager->generateToken($this->timeLogger, $authTokenExpiration, 'refresh_token');
     }
 
     /** Start */
@@ -244,5 +266,25 @@ class SanctumAuthTest extends TestCase
             ->getJson("$this->baseUri/tokens", $this->userCreds);
 
         $response->assertStatus(401);
+    }
+
+    public function test_it_can_refresh_tokens_for_time_loggers(): void
+    {
+        $response = $this->withToken($this->refreshToken)
+            ->postJson("$this->baseUri/tokens/refresh", $this->timeLoggerCreds);
+
+        $response->assertStatus(201);
+
+        $expectedStructure = [
+            'token',
+            'token_name',
+            'expires_at',
+            'refresh_token',
+            'refresh_token_name',
+            'refresh_token_expires_at',
+            'user',
+        ];
+
+        $response->assertJsonStructure(['data' => $expectedStructure]);
     }
 }
