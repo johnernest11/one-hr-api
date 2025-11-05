@@ -26,7 +26,7 @@ class TimeLogUnitTest extends TestCase
         $this->artisan('db:seed');
 
         // Use the concrete implementation directly
-        $awsS3Service = new AwsS3StorageService();
+        $awsS3Service = new AwsS3StorageService;
 
         // Pass it to the TimeLogService
         $this->timeLogService = new TimeLogService(new TimeLog, $awsS3Service);
@@ -51,7 +51,7 @@ class TimeLogUnitTest extends TestCase
         $path = "images/timelog/{$dateToday}/{$employeeId}";
         $fileName = 'fake_image.jpg';
 
-        $awsS3Service = new AwsS3StorageService();
+        $awsS3Service = new AwsS3StorageService;
         $file = UploadedFile::fake()->image($fileName);
         $mimeType = $file->getMimeType();
         $content = $file->getRealPath();

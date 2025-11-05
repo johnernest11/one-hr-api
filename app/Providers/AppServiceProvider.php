@@ -74,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(QrCodeManager::class, fn () => new QrCodeService(new QrCode));
 
         // Cloud Storage binding
-        $this->app->bind(CloudStorageManager::class, fn () => new AwsS3StorageService());
+        $this->app->bind(CloudStorageManager::class, fn () => new AwsS3StorageService);
 
         // Daily Time Records
         $this->app->bind(DailyTimeRecordManager::class, function ($app) {

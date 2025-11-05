@@ -47,7 +47,12 @@ class Kernel extends ConsoleKernel
          */
         $schedule->command('locator-compute-time')
             ->daily()
-            ->onOneServer();
+            ->onOneServer()
+            ->then(function () {
+                // Only call this once locator time has been computed.
+                $this->call('dtr-compute-ut');
+            }
+            );
 
     }
 
