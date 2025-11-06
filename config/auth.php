@@ -194,4 +194,16 @@ return [
             'email' => 12 * 60, // 12 minutes
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Token Expiration Minutes
+    |--------------------------------------------------------------------------
+    |
+    | This value controls the number of minutes until an issued refresh token will be
+    | considered expired.
+    |
+    */
+
+    'refresh_lifetime' => env('REFRESH_TOKEN_LIFETIME_MINUTES', 4320), // 3 days
 ];

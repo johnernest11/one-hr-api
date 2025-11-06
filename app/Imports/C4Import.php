@@ -14,14 +14,14 @@ class C4Import implements ToCollection, WithMappedCells
 
     public function __construct()
     {
-        $this->importedRecords = new Collection();
+        $this->importedRecords = new Collection;
     }
 
     public function mapping(): array
     {
         return [
             /* -------------------------------------------------------------------------- */
-            /*                             IndividualQuestion                             */
+            /*                             IndividualQuestion */
             /* -------------------------------------------------------------------------- */
             'individual_question' => [
                 [
@@ -59,7 +59,7 @@ class C4Import implements ToCollection, WithMappedCells
                 ],
             ],
             /* -------------------------------------------------------------------------- */
-            /*                             IndividualReference                            */
+            /*                             IndividualReference */
             /* -------------------------------------------------------------------------- */
             'individual_reference' => [
                 [
@@ -80,7 +80,7 @@ class C4Import implements ToCollection, WithMappedCells
             ],
 
             /* -------------------------------------------------------------------------- */
-            /*    @todo Mapped Government ID for now. This has no migration/model yet.    */
+            /*    @todo Mapped Government ID for now. This has no migration/model yet. */
             /* -------------------------------------------------------------------------- */
             'individual_government_id' => [
                 'gov_id_name' => 'D61',
@@ -105,7 +105,7 @@ class C4Import implements ToCollection, WithMappedCells
         });
 
         /* -------------------------------------------------------------------------- */
-        /*                              Return Collection                             */
+        /*                              Return Collection */
         /* -------------------------------------------------------------------------- */
         // Push the mapped data into the collection so that it persists outside of this importer.
         // This allows it to be accessed outside of this importer.

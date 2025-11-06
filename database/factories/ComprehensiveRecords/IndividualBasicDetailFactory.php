@@ -14,6 +14,7 @@ use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use App\Models\ComprehensiveRecords\IndividualEducationalBackground;
 use App\Models\ComprehensiveRecords\IndividualEligibility;
 use App\Models\ComprehensiveRecords\IndividualFamily;
+use App\Models\ComprehensiveRecords\IndividualGovernmentId;
 use App\Models\ComprehensiveRecords\IndividualLnd;
 use App\Models\ComprehensiveRecords\IndividualMembership;
 use App\Models\ComprehensiveRecords\IndividualQuestion;
@@ -79,6 +80,7 @@ class IndividualBasicDetailFactory extends Factory
             IndividualMembership::factory()->for($individualBasicDetail)->create();
             IndividualQuestion::factory()->for($individualBasicDetail)->create();
             IndividualReference::factory()->for($individualBasicDetail)->create();
+            IndividualGovernmentId::factory()->for($individualBasicDetail)->create();
         });
     }
 

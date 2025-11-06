@@ -23,6 +23,7 @@ class TimeLogFactory extends Factory
             'daily_time_record_id' => DailyTimeRecord::factory(),
             'date' => Carbon::today()->toDateString(),
             'scanned_time' => fake()->time('H:i'),
+            'is_in' => true,
         ];
     }
 

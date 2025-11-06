@@ -7,6 +7,7 @@ use App\Enums\PaginationType;
 use App\Imports\MainIndividualImporter;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\Item;
+use App\Services\DailyTimeRecords\QrCodeManager;
 use App\Traits\Services\CanBuildPagination;
 use App\Traits\Services\CanResolveModelFromId;
 use Carbon\Carbon;
@@ -43,6 +44,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         'individualSkillsHobby',
         'individualQuestion',
         'individualReference',
+        'individualGovernmentId',
     ];
 
     private IndividualBasicDetail $model;
@@ -51,24 +53,28 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
     protected Parser $nameParser;
 
-    public function __construct(IndividualBasicDetail $model, Parser $nameParser)
+    private QrCodeManager $qrCodeService;
+
+    public function __construct(IndividualBasicDetail $model, Parser $nameParser, QrCodeManager $qrCodeService)
     {
         $this->model = $model;
         $this->nameParser = $nameParser;
+        $this->qrCodeService = $qrCodeService;
     }
 
-    //@todo follow the structure:
-    //CRUD for consolidated
-    //CRUD for C1
-    //CRUD for C2
-    //CRUD for C3
-    //CRUD for C4
-    //CRUD for WES
-    //imports & exports
+    // @todo follow the structure:
+    // CRUD for consolidated
+    // CRUD for C1
+    // CRUD for C2
+    // CRUD for C3
+    // CRUD for C4
+    // CRUD for WES
+    // imports & exports
 
+    /** {@inheritDoc} */
     public function all(?int $limit = null): LengthAwarePaginator
     {
-        $query = $this->model->with(array_merge($this->comprehensive_records, ['employee']));
+        $query = $this->model->filtered();
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query, $limit);
     }
@@ -117,6 +123,19 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                 }
                 $relationshipName = Str::camel($relationshipName); // convert to camel case to cater to the next portion
 
+                // ← Insert HasOne logic here
+                if ($relationshipName === 'individualGovernmentId') {
+                    $govData = is_array($inputData) ? $inputData : [];
+                    $existingGov = $individualData->individualGovernmentId;
+
+                    if ($existingGov) {
+                        $existingGov->update(Arr::except($govData, ['id', '_delete']));
+                    } elseif (! empty($govData)) {
+                        $individualData->individualGovernmentId()->create(Arr::except($govData, ['id', '_delete']));
+                    }
+
+                    continue;
+                }
                 if ($individualData->{$relationshipName}() instanceof Relation && is_array($inputData) && ! empty($inputData)) {
                     foreach ($inputData as $modelData) {
                         $individualData->{$relationshipName}()->create($modelData);
@@ -169,6 +188,12 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                 }
 
                 $individualBasicDetail->employee()->update($request['employee']);
+                // Check if id_number is changed.
+                // if it is, update qr code.
+                if (isset($request['employee']['id_number'])) {
+                    $updatedEmployee = $individualBasicDetail->employee->fresh();
+                    $this->qrCodeService->create($updatedEmployee);
+                }
             }
 
             // For every model,
@@ -198,12 +223,34 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
                         // Get the class name for dynamic update/create/delete
                         $className = get_class($individualBasicDetail->{$relationshipName}()->getRelated());
 
+                        if ($relationshipName instanceof \Illuminate\Database\Eloquent\Relations\HasOne) {
+                            $data = is_array($inputData) ? $inputData[0] : $inputData;
+                            if ($relationshipName->exists) {
+                                $relationshipName->update($data);
+                            } else {
+                                $relationshipName->create($data);
+                            }
+                        }
+
                         // Soft delete if _delete flag is set
                         if (isset($modelData['_delete']) && $modelData['_delete'] && $id) {
                             $recordToDelete = $className::findOrFail($id); // Check if record exists before deletion
                             $recordToDelete->delete();
 
                             continue; // Skip to the next iteration
+                        }
+                        if ($relationshipName === 'individualGovernmentId') {
+                            // HasOne: update if exists, otherwise create
+                            $govData = is_array($inputData) ? $inputData : [];
+                            $existingGov = $individualBasicDetail->individualGovernmentId;
+
+                            if ($existingGov) {
+                                $existingGov->update(Arr::except($govData, ['id', '_delete']));
+                            } else {
+                                $individualBasicDetail->individualGovernmentId()->create(Arr::except($govData, ['id', '_delete']));
+                            }
+
+                            continue; // skip the generic HasMany loop
                         }
 
                         if ($id) {

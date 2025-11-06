@@ -28,7 +28,7 @@ class ItemFeatureTest extends TestCase
 
     private PersistentAuthTokenManager $tokenManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');
@@ -39,7 +39,7 @@ class ItemFeatureTest extends TestCase
         $user_ppms->syncRoles($roles[0]);
         $user_standard->syncRoles($roles[1]);
         $this->user_ppms = $user_ppms; // save ppms admin user
-        $this->user_standard = $user_ppms; // save standard user
+        $this->user_standard = $user_standard; // save standard user
 
         $this->tokenManager = resolve(PersistentAuthTokenManager::class);
         $authTokenExpirationAdmin = now()->addMinutes(config('sanctum.expiration'));
@@ -107,11 +107,14 @@ class ItemFeatureTest extends TestCase
 
     public function test_it_can_read_all_items(): void
     {
+        $existingCount = Item::count();
         $items = Item::factory(5)->create();
 
         $response = $this->withToken($this->authTokenAdmin)->getJson("$this->baseUri");
         $response->assertStatus(200);
-        $response->assertJsonCount(5, 'data');
+
+        $responseData = $response->decodeResponseJson()['data'];
+        $this->assertCount($existingCount + 5, $responseData);
     }
 
     public function test_it_can_read_item_by_id(): void

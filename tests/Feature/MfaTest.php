@@ -227,7 +227,7 @@ class MfaTest extends TestCase
 
         $user = $this->produceUsers();
         $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps);
-        $factor = new EmailVerificationChannel();
+        $factor = new EmailVerificationChannel;
         $code = $factor->generateCode($user);
         $response = $this->postJson($this->baseUri.'/verify-code', [
             'token' => $mfaToken['token'],
@@ -252,7 +252,7 @@ class MfaTest extends TestCase
         $this->assertNull($user->email_verified_at);
 
         $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps);
-        $factor = new EmailVerificationChannel();
+        $factor = new EmailVerificationChannel;
         $code = $factor->generateCode($user);
         $response = $this->postJson($this->baseUri.'/verify-code', [
             'token' => $mfaToken['token'],
@@ -345,7 +345,7 @@ class MfaTest extends TestCase
 
         $user = $this->produceUsers();
         $mfaToken = $this->mfaOrchestrator->generateMfaAttemptToken($user, $mfaSteps);
-        $factor = new EmailVerificationChannel();
+        $factor = new EmailVerificationChannel;
         $code = $factor->generateCode($user);
         $response = $this->postJson($this->baseUri.'/verify-code', [
             'token' => $mfaToken['token'],
@@ -397,7 +397,7 @@ class MfaTest extends TestCase
         $mfaAttempt->save();
         $mfaAttempt->refresh();
 
-        $factor = new EmailVerificationChannel();
+        $factor = new EmailVerificationChannel;
         $code = $factor->generateCode($user);
         $response = $this->postJson($this->baseUri.'/verify-code', [
             'token' => $mfaToken['token'],

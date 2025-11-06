@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -38,5 +39,16 @@ class UserProfileFactory extends Factory
             'profile_picture_path' => 'avatars/'.fake()->uuid().'.jpg',
 
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (UserProfile $profile) {
+            $individual = IndividualBasicDetail::factory()->create();
+
+            $profile->update([
+                'individual_basic_detail_id' => $individual->id,
+            ]);
+        });
     }
 }

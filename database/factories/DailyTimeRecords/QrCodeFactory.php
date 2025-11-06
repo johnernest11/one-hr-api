@@ -4,8 +4,8 @@ namespace Database\Factories\DailyTimeRecords;
 
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
-use Crypt;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Vinkla\Hashids\Facades\Hashids;
 
 /**
  * @extends Factory<QrCodeFactory>
@@ -24,7 +24,7 @@ class QrCodeFactory extends Factory
 
         return [
             'employee_id' => $employee,
-            'qr_code_value' => Crypt::encrypt($employee->id_number),
+            'qr_code_value' => Hashids::encode($employee->id_number),
             'last_generated_at' => fake()->dateTime(),
             'is_active' => fake()->boolean(100),
         ];

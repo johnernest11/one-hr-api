@@ -74,7 +74,7 @@ abstract class AuthController extends ApiController
         }
 
         // Check if the user has the 'admin' role BEFORE proceeding with token generation
-        if (! $user->roles()->where('name', 'super_user')->orWhere('name', operator: 'admin')->exists()) {
+        if (! $user->roles()->where('name', 'super_user')->orWhere('name', operator: 'admin')->orWhere('name', operator: 'time_logger')->exists()) {
             return $this->error(
                 'You do not have administrator privileges.',
                 Response::HTTP_FORBIDDEN,
@@ -131,6 +131,14 @@ abstract class AuthController extends ApiController
         $expiresAt = $this->getTokenExpiration();
         $token = $this->generateAuthToken($user, $expiresAt, $clientName);
         $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user, $withUserDetails);
+
+        if ($user->roles()->where('name', 'time_logger')->exists()) {
+            $refreshName = 'refresh_token';
+            $refreshLifetime = config('auth.refresh_lifetime');
+            $refreshExpiresAt = $this->getTokenExpiration()->addMinutes($refreshLifetime);
+            $refreshToken = $this->generateRefreshToken($user, $refreshExpiresAt, $refreshName);
+            $dataResponse = $this->composeUserTokenData($token, $clientName, $expiresAt, $user, $withUserDetails, $refreshToken, $refreshExpiresAt, $refreshName);
+        }
 
         return $this->success(['data' => $dataResponse], Response::HTTP_OK);
     }
@@ -195,7 +203,7 @@ abstract class AuthController extends ApiController
         return $this->success(['data' => $dataResponse], Response::HTTP_CREATED);
     }
 
-    private function composeUserTokenData(string $token, string $clientName, Carbon $expiresAt, User $user, bool $withUserDetails = true): array
+    private function composeUserTokenData(string $token, string $clientName, Carbon $expiresAt, User $user, bool $withUserDetails = true, ?string $refreshToken = null, ?Carbon $refreshExpiresAt = null, ?string $refreshName = null): array
     {
         $data = [
             'token' => $token,
@@ -207,7 +215,18 @@ abstract class AuthController extends ApiController
             $data['user'] = $user->fresh('userProfile');
         }
 
+        if ($refreshToken) {
+            $data['refresh_token'] = $refreshToken;
+            $data['refresh_token_name'] = $refreshName;
+            $data['refresh_token_expires_at'] = $refreshExpiresAt;
+        }
+
         return $data;
+    }
+
+    protected function generateRefreshToken(User $user, Carbon $expiresAt, string $clientName): string
+    {
+        return $user->createToken($clientName, ['refresh'], $expiresAt)->plainTextToken;
     }
 
     /** Create an authentication token for the user */

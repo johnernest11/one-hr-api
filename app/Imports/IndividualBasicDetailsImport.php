@@ -18,6 +18,8 @@ use App\Models\ComprehensiveRecords\IndividualAddress;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\ComprehensiveRecords\IndividualContactInfo;
 use Arr;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -48,12 +50,12 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
     ) {
         $this->request = $request;
         $this->employeeData = $this->processEmployeeData($request);
-        $this->importedRecords = new Collection();
+        $this->importedRecords = new Collection;
 
         // Initialize Individual Models
-        $individualBD = new IndividualBasicDetail();
-        $individualAddress = new IndividualAddress();
-        $individualContactInfo = new IndividualContactInfo();
+        $individualBD = new IndividualBasicDetail;
+        $individualAddress = new IndividualAddress;
+        $individualContactInfo = new IndividualContactInfo;
 
         // Get fillable fields for the models.
         $ibdFillable = $individualBD->getFillable();
@@ -85,7 +87,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
     {
         return [
             /* -------------------------------------------------------------------------- */
-            /*                          Individual Basic Details                          */
+            /*                          Individual Basic Details */
             /* -------------------------------------------------------------------------- */
             'first_name' => 'D11',
             'last_name' => 'D10',
@@ -110,7 +112,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             // @todo map country here once it is added
 
             /* -------------------------------------------------------------------------- */
-            /*                             Individual Address                             */
+            /*                             Individual Address */
             /* -------------------------------------------------------------------------- */
             'residential_house_block_lot_no' => 'I17',
             'residential_street' => 'L17',
@@ -128,14 +130,14 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             'permanent_zip_code' => 'I31',
 
             /* -------------------------------------------------------------------------- */
-            /*                           Individual Contact Info                          */
+            /*                           Individual Contact Info */
             /* -------------------------------------------------------------------------- */
             'tel_no' => 'I32',
             'mobile_no' => 'I33',
             'email_address' => 'I34',
 
             /* -------------------------------------------------------------------------- */
-            /*                              Individual Family                             */
+            /*                              Individual Family */
             /* -------------------------------------------------------------------------- */
             'spouse_last_name' => 'D36',
             'spouse_first_name' => 'D37',
@@ -192,7 +194,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             'children_date_of_birth_12' => 'M48',
 
             /* -------------------------------------------------------------------------- */
-            /*                      Individual Educational Background                     */
+            /*                      Individual Educational Background */
             /* -------------------------------------------------------------------------- */
             'elem_level' => 'B54',
             'elem_schools_name' => 'D54',
@@ -265,15 +267,15 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
     public function array(array $row): array
     {
         /* -------------------------------------------------------------------------- */
-        /*                                Process Data                                */
+        /*                                Process Data */
         /* -------------------------------------------------------------------------- */
         $row['citizenship'] = $row['dual_citizenship'] ? Citizenship::DUAL_CITIZENSHIP->value : Citizenship::FILIPINO->value;
         $row['citizenship_acquisition'] = $row['citizenship_by_naturalization'] ? CitizenshipAcquisition::NATURALIZATION->value : CitizenshipAcquisition::BIRTH->value;
-        $row['birthday'] = Date::excelToDateTimeObject($row['birthday'])->format('Y-m-d');
-        $row['sex'] = $this->matchToEnums(SexualCategory::class, $row['sex'])->value ?? null;
-        $row['civil_status'] = $this->matchToEnums(CivilStatus::class, $row['civil_status'])->value ?? null;
-        $row['blood_type'] = $this->matchToEnums(BloodType::class, $row['blood_type'])->value ?? null;
-        $row['ext_name'] = $this->matchToEnums(ExtensionNameCategory::class, $row['ext_name'])->value ?? null;
+        $row['birthday'] = $this->safeExcelDateParser($row['birthday']);
+        $row['sex'] = $row['sex'] ? $this->matchToEnums(SexualCategory::class, $row['sex'])->value : null;
+        $row['civil_status'] = $row['civil_status'] ? $this->matchToEnums(CivilStatus::class, $row['civil_status'])->value : null;
+        $row['blood_type'] = $row['blood_type'] ? $this->matchToEnums(BloodType::class, $row['blood_type'])->value : null;
+        $row['ext_name'] = $row['ext_name'] ? $this->matchToEnums(ExtensionNameCategory::class, $row['ext_name'])->value : null;
 
         /* --------------------------------- Address -------------------------------- */
         $row = $this->handleAddressData($row);
@@ -286,7 +288,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
         $educationalData = $this->handleEducationData($row);
 
         /* -------------------------------------------------------------------------- */
-        /*                              Restructure Data                              */
+        /*                              Restructure Data */
         /* -------------------------------------------------------------------------- */
         $restructuredData = [
             'individual' => Arr::only($row, $this->individualBasicDetailKeys),
@@ -295,7 +297,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             'individual_family' => array_merge($familyData, $childrenData),
         ];
 
-        $createRules = new IndividualBasicDetailRequest();
+        $createRules = new IndividualBasicDetailRequest;
 
         /* -------------------------- Validate Address Data ------------------------- */
         $addressRequiredFields = collect($createRules->getStoreIndividualRules())
@@ -320,7 +322,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
         }
 
         /* -------------------------------------------------------------------------- */
-        /*                              Return Collection                             */
+        /*                              Return Collection */
         /* -------------------------------------------------------------------------- */
         // Push the mapped data into the collection so that it persists outside of this importer.
         // This allows it to be accessed outside of this importer.
@@ -390,7 +392,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
             $parsedName = $this->nameParser->parse($name);
 
             // Convert the Excel date to Y-m-d format
-            $dateOfBirth = Date::excelToDateTimeObject($bd)->format('Y-m-d');
+            $dateOfBirth = $this->safeExcelDateParser($bd);
 
             // Add the processed data to the output array
             $output[] = [
@@ -398,7 +400,7 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
                 'middle_name' => trim($parsedName->getInitials() === '') ? $parsedName->getMiddlename() : $parsedName->getInitials(),
                 'last_name' => $parsedName->getLastname(),
                 'date_of_birth' => $dateOfBirth,
-                'class' => 'Children',
+                'class' => FamilyMemberCategory::CHILDREN->value,
             ];
         }
 
@@ -514,7 +516,48 @@ class IndividualBasicDetailsImport implements ToArray, WithMappedCells
      */
     public function matchToEnums(string $enumClass, string $strToMatch)
     {
+        // Remove non-alphanumeric characters
+        $cleanString = fn (string $str): string => strtolower(
+            preg_replace('/[^a-z0-9\s]/i', '', $str)
+        );
+
+        $cleanedStrToMatch = $cleanString($strToMatch);
+
         return collect($enumClass::cases())
-            ->first(fn ($case) => strtolower($case->value) === strtolower($strToMatch));
+            ->first(function ($case) use ($cleanedStrToMatch, $cleanString) {
+                return $cleanString($case->value) === $cleanedStrToMatch;
+            });
+    }
+
+    /**
+     * Safely converts a cell value from an Excel import into a 'Y-m-d' date string.
+     * Handles numeric Excel dates and attempts to parse common string date formats.
+     */
+    public function safeExcelDateParser($value): ?string
+    {
+        if (is_null($value) || $value === '') {
+            return null;
+        }
+
+        // Check if it's a numeric Excel date (int or float)
+        if (is_numeric($value)) {
+            try {
+                return Date::excelToDateTimeObject($value)->format('Y-m-d');
+            } catch (Exception $e) {
+                return null;
+            }
+        }
+
+        // Treat as a string (Handles '11/22/1985', 'Nov 22, 1985', etc.)
+        if (is_string($value)) {
+            try {
+                return Carbon::parse($value)->format('Y-m-d');
+            } catch (Exception $e) {
+                return null;
+            }
+        }
+
+        // Fallback for any other unexpected type
+        return null;
     }
 }

@@ -38,7 +38,7 @@ class VerifyAccountNotification extends QueuedVerifyEmailNotification implements
         $url .= "&email=$safeEmail";
         $expirationTimeDays = floor($this->expirationTimeMinutes / 1440);
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject('Verify Your Account')
             ->greeting('Hey, '.$this->notifiableName.'!')
             ->line("A $appName account has been created for you.")

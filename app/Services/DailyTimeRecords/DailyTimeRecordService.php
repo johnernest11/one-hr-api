@@ -6,6 +6,9 @@ use App\Enums\PaginationType;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Models\Libraries\Division;
+use App\Models\Libraries\SectionOrUnit;
+use App\Services\CloudStorageServices\CloudStorageManager;
 use App\Traits\Services\CanBuildPagination;
 use Arr;
 use Carbon\Carbon;
@@ -21,15 +24,18 @@ class DailyTimeRecordService implements DailyTimeRecordManager
 {
     use CanBuildPagination;
 
+    protected DailyTimeRecord $model;
+
+    protected CloudStorageManager $cloudStorage;
+
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
     private const MAX_SELECTED_TIMELOGS = 4;
 
-    private DailyTimeRecord $model;
-
-    public function __construct(DailyTimeRecord $model)
+    public function __construct(DailyTimeRecord $model, CloudStorageManager $cloudStorage)
     {
         $this->model = $model;
+        $this->cloudStorage = $cloudStorage;
     }
 
     /** {@inheritDoc} */
@@ -144,84 +150,85 @@ class DailyTimeRecordService implements DailyTimeRecordManager
     /** {@inheritDoc} */
     public function viewWarmBodiesToday(): LengthAwarePaginator
     {
-        request()->merge(['date' => Carbon::today()->toDateString()]);
+        request()->merge(['date' => now()->toDateString()]);
 
         /** @var Builder $dailyTimeRecord */
         $query = $this->model->filtered()->currentlyInsideOnly();
 
-        return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
+        $paginated = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
 
+        foreach ($paginated as $record) {
+            foreach ($record->timeLog ?? [] as $log) {
+                if (! empty($log->captured_image_path)) {
+                    try {
+                        $log->captured_image_url = $this->cloudStorage->generateTmpUrl($log->captured_image_path, 3600);
+                    } catch (\Throwable $e) {
+                        \Log::warning("Failed to generate temporary URL for image: {$log->captured_image_path}");
+                        $log->captured_image_url = null;
+                    }
+                } else {
+                    $log->captured_image_url = null;
+                }
+            }
+        }
+
+        return $paginated;
     }
 
     /** {@inheritDoc} */
     public function update(Employee $employee, array $request): Collection
     {
         return DB::transaction(function () use ($employee, $request) {
-            // Initialize empty collection for returning updated records.
-            $updatedDtrs = new Collection();
+            $updatedDtrs = new Collection;
 
-            // Get status and update all dtrs.
             $newStatus = isset($request['status']) ? $request['status'] : null;
 
             foreach ($request['dtr'] as $dtrInfo) {
-                // Extract ID if present, otherwise it's a new record
                 $id = $dtrInfo['id'] ?? null;
 
-                // Update existing DTR if id exists in the request
                 if ($id) {
-                    $dtr = $this->model->findOrFail($dtrInfo['id']); // Check if record exists
+                    $dtr = $this->model->findOrFail($dtrInfo['id']);
 
                     if ($newStatus) {
                         $dtrInfo['status'] = $newStatus;
                     }
 
-                    // Update time_logs if it is passed
-                    if (isset($dtrInfo['time_logs'])) {
-                        // Get current count of selected time logs
-                        $currentSelectedCount = $dtr->timeLog->where('is_selected', true)->count();
-                        $newSelectedCount = 0;
+                    if (! empty($dtrInfo['time_logs'])) {
+                        foreach ($dtrInfo['time_logs'] as $timeLog) {
+                            $timeLogInfo = is_array($timeLog) ? $timeLog : get_object_vars($timeLog);
 
-                        foreach ($dtrInfo['time_logs'] as $timeLogInfo) {
-                            // Verify that the passed time log belongs to the current dtr.
-                            $belongsToDtr = TimeLog::where('daily_time_record_id', $id)->where('id', $timeLogInfo['id'])->exists();
-                            if (! $belongsToDtr) {
-                                throw new Exception("One or more time logs do not belong to the daily time record ID: $id.");
+                            if (empty($timeLogInfo['scanned_time'])) {
+                                throw new \Exception("scanned_time is required for DTR id {$dtr->id}");
                             }
 
-                            // Verify that the incoming is_selected changes is the opposite of the current value.
-                            $currentSelection = TimeLog::where('id', $timeLogInfo['id'])->where('daily_time_record_id', $dtrInfo['id'])->value('is_selected');
+                            $isNew = empty($timeLogInfo['id']);
+                            $timeLogInfo['daily_time_record_id'] = $dtr->id;
+                            $timeLogInfo['date'] = $timeLogInfo['date'] ?? $dtr->date->format('Y-m-d');
+                            $timeLogInfo['is_in'] = $timeLogInfo['is_in'] ?? false;
+                            $timeLogInfo['is_selected'] = $timeLogInfo['is_selected'] ?? false;
 
-                            if ($timeLogInfo['is_selected'] && $currentSelection != $timeLogInfo['is_selected']) {
-                                $newSelectedCount++;
-                            } elseif (! $timeLogInfo['is_selected'] && $currentSelection != $timeLogInfo['is_selected']) {
-                                $newSelectedCount--;
+                            if ($isNew) {
+                                unset($timeLogInfo['id']);
+                                TimeLog::create($timeLogInfo);
+                            } else {
+                                TimeLog::where('id', $timeLogInfo['id'])
+                                    ->where('daily_time_record_id', $dtr->id)
+                                    ->update(Arr::except($timeLogInfo, ['id']));
                             }
                         }
-                        // Check that there is always a maximum of 4 selected for this dtr.
-                        // Compare current and new updates if they exceed the maximum limit
-                        if ($currentSelectedCount + $newSelectedCount > self::MAX_SELECTED_TIMELOGS) {
-                            throw new Exception('Exceeded maximum number of selected time logs. Maximum: '.self::MAX_SELECTED_TIMELOGS);
-                        }
 
-                        // Update time logs after all validations are passed.
-                        foreach ($dtrInfo['time_logs'] as $timeLogInfo) {
-                            TimeLog::where('id', $timeLogInfo['id'])->where('daily_time_record_id', $dtrInfo['id'])->update(Arr::except($timeLogInfo, ['id']));
-                        }
                     }
 
-                    // Update existing record if ID exists
-                    $dtr->update(Arr::except($dtrInfo, ['id'])); // Exclude id
-                    $dtr->refresh()->with('timeLog');
+                    $dtr->update(Arr::except($dtrInfo, ['id']));
+                    $dtr->refresh()->load('timeLog');
                     $updatedDtrs->push($dtr);
                 } else {
-                    // Validate that the passed date is not already taken.
                     $dateIsTaken = $this->model->where('date', $dtrInfo['date'])->where('employee_id', $employee->id)->exists();
 
                     if ($dateIsTaken) {
                         throw new Exception($dtrInfo['date'].' already has a daily time record.');
                     }
 
-                    // For the status of the dtr, copy the passed status in the request.
                     if ($newStatus) {
                         $dtrInfo['status'] = $newStatus;
                     }
@@ -234,7 +241,6 @@ class DailyTimeRecordService implements DailyTimeRecordManager
 
             }
 
-            // Return collection of updated records.
             return $updatedDtrs;
 
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
@@ -266,5 +272,97 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         });
 
         return $this->buildPagination($pagination, $updatedQuery, $limit);
+    }
+
+    /** {@inheritDoc} */
+    public function generate(Employee $employee, string $startDate, string $endDate, string $sort = 'asc'): array
+    {
+        // Fetch DTRs with time logs
+        $dtrs = DailyTimeRecord::with('timeLog')
+            ->where('employee_id', $employee->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date', $sort)
+            ->get();
+
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+
+        // Generate all dates in the range
+        $startFormatted = Carbon::parse($startDate)->format('F j, Y');
+        $endFormatted = Carbon::parse($endDate)->format('F j, Y');
+
+        $allRows = collect();
+
+        for ($date = $start; $date->lte($end); $date->addDay()) {
+            $dateStr = $date->format('Y-m-d');
+
+            // Find existing DTR for this date
+            $existing = $dtrs->first(function ($dtr) use ($dateStr) {
+                return Carbon::parse($dtr->date)->format('Y-m-d') === $dateStr;
+            });
+
+            // Ensure timeLog is always a collection
+            $allRows->push($existing ? (object) [
+                'date' => $existing->date,
+                'timeLog' => $existing->timeLog ?? collect(),
+                'ut' => $existing->ut ?? 0,
+                'ot' => $existing->ot ?? 0,
+                'employee_remarks' => $existing->employee_remarks ?? '',
+            ] : (object) [
+                'date' => $dateStr,
+                'timeLog' => collect(),
+                'ut' => 0,
+                'ot' => 0,
+                'employee_remarks' => '',
+            ]);
+        }
+
+        // Employee details
+        $employeeDetail = $employee->individualBasicDetail;
+        $fullName = strtoupper(trim("{$employeeDetail->last_name}, {$employeeDetail->first_name} {$employeeDetail->middle_name}"));
+        $divisionName = optional($employee->division_id ? Division::find($employee->division_id) : null)->name ?? 'PLACEHOLDER';
+        $sectionName = optional($employee->section_or_unit_id ? SectionOrUnit::find($employee->section_or_unit_id) : null)->name ?? 'PLACEHOLDER';
+        $positionTitle = optional($employee->item->position)->title ?? 'PLACEHOLDER';
+
+        // Pass to Blade
+        $html = view('template.daily_time_record', [
+            'period' => "From: {$startFormatted} To: {$endFormatted}",
+            'fullName' => $fullName,
+            'position' => $positionTitle,
+            'dept_division' => $divisionName,
+            'dept_section' => $sectionName,
+            'allRows' => $allRows,
+            'supervisorNotes' => null,
+            'certifyingOfficer' => 'PLACEHOLDER',
+            'officerPosition' => 'PLACEHOLDER',
+        ])->render();
+
+        $options = new \Dompdf\Options;
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('Legal', 'portrait');
+        $dompdf->render();
+
+        return [
+            'fileContent' => $dompdf->output(),
+            'fileName' => "DTR-{$employee->id}-{$startDate}_to_{$endDate}.pdf",
+        ];
+    }
+
+    /** {@inheritDoc} */
+    public function getLastTimeLog(Employee $employee): ?TimeLog
+    {
+        $today = now()->toDateString();
+        $timeLog = TimeLog::whereDate('date', $today)
+            ->whereHas('dailyTimeRecord', function (Builder $query) use ($employee) {
+                $query->where('employee_id', $employee->id);
+            })
+            ->latest()
+            ->first();
+
+        return $timeLog;
     }
 }

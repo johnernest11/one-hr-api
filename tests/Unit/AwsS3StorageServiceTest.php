@@ -19,7 +19,7 @@ class AwsS3StorageServiceTest extends TestCase
     {
         $ownerId = 1;
         $path = "images/$ownerId/profile-pictures";
-        $service = new AwsS3StorageService();
+        $service = new AwsS3StorageService;
         $file = UploadedFile::fake()->image('fake_image.jpg');
 
         // This returns "path-to-file/filename.extension"
@@ -38,7 +38,7 @@ class AwsS3StorageServiceTest extends TestCase
         $path = "images/$ownerId/profile-pictures";
         $fileName = 'fake_image.jpg';
 
-        $service = new AwsS3StorageService();
+        $service = new AwsS3StorageService;
         $file = UploadedFile::fake()->image($fileName);
 
         // This returns "path-to-file/filename.extension"
@@ -57,7 +57,7 @@ class AwsS3StorageServiceTest extends TestCase
         $path = "images/$ownerId/profile-pictures";
         $fileName = 'fake_image.jpg';
 
-        $service = new AwsS3StorageService();
+        $service = new AwsS3StorageService;
         $file = UploadedFile::fake()->image($fileName);
         $mimeType = $file->getMimeType();
         $content = $file->getRealPath();
@@ -79,7 +79,7 @@ class AwsS3StorageServiceTest extends TestCase
     {
         $ownerId = 1;
         $path = "images/$ownerId/profile-pictures";
-        $service = new AwsS3StorageService();
+        $service = new AwsS3StorageService;
         $fileName = 'fake_image.jpg';
         $file = UploadedFile::fake()->image($fileName);
         $fullPath = $service->upload($path, $file, $fileName);

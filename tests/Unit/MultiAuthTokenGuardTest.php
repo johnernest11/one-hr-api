@@ -32,7 +32,7 @@ class MultiAuthTokenGuardTest extends TestCase
     {
         $user = $this->produceUsers();
         $token = $this->sanctumAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
@@ -45,7 +45,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $user = $this->produceUsers();
         $token = $this->sanctumAuthService->generateToken($user, now()->addMinutes(5));
         $token .= '_invalid';
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
@@ -57,7 +57,7 @@ class MultiAuthTokenGuardTest extends TestCase
     {
         $user = $this->produceUsers();
         $token = $this->jwtAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
@@ -70,7 +70,7 @@ class MultiAuthTokenGuardTest extends TestCase
         $user = $this->produceUsers();
         $token = $this->sanctumAuthService->generateToken($user, now()->addMinutes(5));
         $token .= '_invalid';
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
@@ -82,7 +82,7 @@ class MultiAuthTokenGuardTest extends TestCase
     {
         $user = $this->produceUsers();
         $token = $this->sanctumAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
@@ -95,7 +95,7 @@ class MultiAuthTokenGuardTest extends TestCase
     {
         $user = $this->produceUsers();
         $token = $this->jwtAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
@@ -108,7 +108,7 @@ class MultiAuthTokenGuardTest extends TestCase
     {
         $user = $this->produceUsers();
         $token = $this->sanctumAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
@@ -120,7 +120,7 @@ class MultiAuthTokenGuardTest extends TestCase
     {
         $user = $this->produceUsers();
         $token = $this->jwtAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
@@ -132,14 +132,14 @@ class MultiAuthTokenGuardTest extends TestCase
     {
         $user = $this->produceUsers();
         $token = $this->sanctumAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
         $this->assertFalse($guard->guest());
 
         // Without the Bearer token
-        $guard = new MultiTokenGuard(new Request());
+        $guard = new MultiTokenGuard(new Request);
         $this->assertTrue($guard->guest());
     }
 
@@ -147,20 +147,20 @@ class MultiAuthTokenGuardTest extends TestCase
     {
         $user = $this->produceUsers();
         $token = $this->jwtAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
         $this->assertFalse($guard->guest());
 
         // Without the Bearer token
-        $guard = new MultiTokenGuard(new Request());
+        $guard = new MultiTokenGuard(new Request);
         $this->assertTrue($guard->guest());
     }
 
     public function test_it_can_set_user(): void
     {
-        $request = new Request();
+        $request = new Request;
         $guard = new MultiTokenGuard($request);
 
         $this->assertFalse($guard->hasUser());
@@ -176,7 +176,7 @@ class MultiAuthTokenGuardTest extends TestCase
 
         $user = $this->produceUsers();
         $token = $this->sanctumAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);
@@ -189,7 +189,7 @@ class MultiAuthTokenGuardTest extends TestCase
 
         $user = $this->produceUsers();
         $token = $this->jwtAuthService->generateToken($user, now()->addMinutes(5));
-        $request = new Request();
+        $request = new Request;
         $request->headers->set('Authorization', "Bearer $token");
 
         $guard = new MultiTokenGuard($request);

@@ -61,30 +61,30 @@ class ProfileRequest extends FormRequest
     {
         return [
             'email' => ['nullable', 'email', 'unique:users,email,'.auth()->id()],
-            'first_name' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'last_name' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'middle_name' => ['string', 'nullable', new DbVarcharMaxLength()],
-            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'first_name' => ['string', 'nullable', new DbVarcharMaxLength],
+            'last_name' => ['string', 'nullable', new DbVarcharMaxLength],
+            'middle_name' => ['string', 'nullable', new DbVarcharMaxLength],
+            'ext_name' => ['string', 'nullable', new DbVarcharMaxLength],
             'mobile_number' => [
                 'nullable',
                 'unique:user_profiles,mobile_number,'.auth()->id().',user_id',
-                new InternationalPhoneNumberFormat(),
-                (new PhoneRule())->country('PH')->mobile(),
+                new InternationalPhoneNumberFormat,
+                (new PhoneRule)->country('PH')->mobile(),
             ],
             'telephone_number' => [
                 'nullable',
-                new InternationalPhoneNumberFormat(),
-                (new PhoneRule())->country('PH')->fixedLine(),
+                new InternationalPhoneNumberFormat,
+                (new PhoneRule)->country('PH')->fixedLine(),
             ],
             'sex' => ['nullable', new Enum(SexualCategory::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
-            'home_address' => ['string', 'nullable', new DbTextMaxLength()],
+            'home_address' => ['string', 'nullable', new DbTextMaxLength],
             'barangay_id' => ['nullable', 'exists:barangays,id'],
             'city_id' => ['nullable', 'exists:cities,id'],
             'province_id' => ['nullable', 'exists:provinces,id'],
             'region_id' => ['nullable', 'exists:regions,id'],
             'postal_code' => ['nullable', 'digits:4'],
-            'profile_picture_path' => ['string', 'nullable', new DbVarcharMaxLength()],
+            'profile_picture_path' => ['string', 'nullable', new DbVarcharMaxLength],
         ];
     }
 

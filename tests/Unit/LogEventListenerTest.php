@@ -36,7 +36,7 @@ class LogEventListenerTest extends TestCase
     public function test_it_can_send_system_alert_to_slack_once(): void
     {
         $this->produceUsers(2, [], false, Role::SYSTEM_SUPPORT);
-        $logEventLister = new LogEventListener();
+        $logEventLister = new LogEventListener;
         $logEventLister->handle($this->loggedEvent);
 
         // Regardless of how may system support users there are, Slack notifications are only send once
@@ -53,7 +53,7 @@ class LogEventListenerTest extends TestCase
 
         Config::set('logging.enable_email_dev_alerts', true);
 
-        $logEventLister = new LogEventListener();
+        $logEventLister = new LogEventListener;
         $logEventLister->handle($this->loggedEvent);
 
         // Email notifications are sent to each system support user
@@ -73,7 +73,7 @@ class LogEventListenerTest extends TestCase
 
         Config::set('logging.enable_email_dev_alerts', false);
 
-        $logEventLister = new LogEventListener();
+        $logEventLister = new LogEventListener;
         $logEventLister->handle($this->loggedEvent);
 
         $users = User::all();

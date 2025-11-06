@@ -20,7 +20,7 @@ class AppSettingsTest extends TestCase
 
     private string $authToken;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->artisan('db:seed');

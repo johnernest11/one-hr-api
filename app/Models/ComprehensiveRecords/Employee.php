@@ -9,11 +9,20 @@ use App\Models\Libraries\Office;
 use App\Models\Libraries\Program;
 use App\Models\Libraries\SalaryGrade;
 use App\Models\Libraries\SectionOrUnit;
+use App\Models\LocatorSlip\LocatorSlip;
+use App\QueryFilters\DailyTimeRecords\DivisionFilter;
+use App\QueryFilters\DailyTimeRecords\SectionFilter;
+use App\QueryFilters\LocatorSlip\FormTypeFilter;
+use App\QueryFilters\LocatorSlip\LocatorMonthFilter;
+use App\QueryFilters\LocatorSlip\OfficeFilter;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Pipeline\Pipeline;
 
 class Employee extends Model
 {
@@ -39,7 +48,57 @@ class Employee extends Model
 
     protected $with = [
         'item',
+        'division',
+        'sectionOrUnit',
     ];
+
+    public function scopeWithLocatorSlip($query): Builder
+    {
+        return $query->has('locatorSlip')->with('locatorSlip');
+    }
+
+    /**
+     * Filters for the PAS view locator slip.
+     * The main table here is employee.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeLocatorSlipFiltered(Builder $builder): Builder
+    {
+        $pipeline = app(Pipeline::class);
+
+        $builder = $pipeline
+            ->send($builder->whereNull('employees.deleted_at'))
+            ->through([
+                DivisionFilter::class,
+                SectionFilter::class,
+                OfficeFilter::class,
+            ])
+            ->thenReturn();
+
+        $builder->distinct('employees.id');
+
+        $builder->with([
+            'individualBasicDetail',
+            'office',
+            'division',
+            'sectionOrUnit',
+            'locatorSlip' => function ($relation) use ($pipeline) {
+                $builder = $relation->getQuery();
+                $pipeline
+                    ->send($builder)
+                    ->through([
+                        FormTypeFilter::class,
+                        LocatorMonthFilter::class,
+                    ])
+                    ->thenReturn();
+            },
+        ]);
+
+        return $builder;
+
+    }
 
     /**
      * An employee belongs to exactly one individualBasicDetail
@@ -60,41 +119,41 @@ class Employee extends Model
     /**
      * An employee has one salaryGrade
      */
-    public function salaryGrade(): HasOne
+    public function salaryGrade(): BelongsTo
     {
-        return $this->hasOne(SalaryGrade::class);
+        return $this->belongsTo(SalaryGrade::class);
     }
 
     /**
      * An employee has one section or unit
      */
-    public function sectionOrUnit(): HasOne
+    public function sectionOrUnit(): BelongsTo
     {
-        return $this->hasOne(SectionOrUnit::class);
+        return $this->belongsTo(SectionOrUnit::class);
     }
 
     /**
      * An employee has one division
      */
-    public function division(): HasOne
+    public function division(): BelongsTo
     {
-        return $this->hasOne(Division::class);
+        return $this->belongsTo(Division::class);
     }
 
     /**
      * An employee has one office
      */
-    public function office(): HasOne
+    public function office(): BelongsTo
     {
-        return $this->hasOne(Office::class);
+        return $this->belongsTo(Office::class);
     }
 
     /**
      * An employee has one program
      */
-    public function program(): HasOne
+    public function program(): BelongsTo
     {
-        return $this->hasOne(Program::class);
+        return $this->belongsTo(Program::class);
     }
 
     /**
@@ -103,5 +162,13 @@ class Employee extends Model
     public function qrCode(): HasOne
     {
         return $this->hasOne(QrCode::class);
+    }
+
+    /**
+     * An employee has many locator slips
+     */
+    public function locatorSlip(): HasMany
+    {
+        return $this->hasMany(LocatorSlip::class);
     }
 }

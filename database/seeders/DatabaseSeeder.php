@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
      */
     private array $seeders = [
         RolesAndPermissionsSeeder::class,
+        NewRoleAndPermissionSedder::class,
         RegionsSeeder::class,
         ProvincesSeeder::class,
         CitiesSeeder::class,
@@ -35,6 +36,7 @@ class DatabaseSeeder extends Seeder
         CountriesSeeder::class,
         SalaryGradesSeeder::class,
         ProgramsSeeder::class,
+        LocatorSlipPermissionSeeder::class,
     ];
 
     /**

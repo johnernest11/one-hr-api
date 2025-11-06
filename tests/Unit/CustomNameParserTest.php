@@ -65,7 +65,7 @@ class CustomNameParserTest extends TestCase
     /**
      * @dataProvider provider
      */
-    public function testParse($input, $expectation)
+    public function test_parse($input, $expectation)
     {
         $parser = $this->app->make(Parser::class);
         $name = $parser->parse($input);

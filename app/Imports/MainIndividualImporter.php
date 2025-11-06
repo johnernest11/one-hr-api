@@ -13,7 +13,7 @@ class MainIndividualImporter implements WithMultipleSheets
 {
     private $request;
 
-    public $allImportedRecords; //@todo Can be altered later on depending on which logic is best in accessing the generated records.
+    public $allImportedRecords; // @todo Can be altered later on depending on which logic is best in accessing the generated records.
 
     protected $sheetImporters = []; // Save the initialized importers
 
@@ -25,13 +25,13 @@ class MainIndividualImporter implements WithMultipleSheets
 
     ) {
         $this->request = $request;
-        $this->allImportedRecords = new Collection();
+        $this->allImportedRecords = new Collection;
         // Initialize the importers here so that they are initialized only once.
         // This is to preserve the generated records per importer.
         $this->sheetImporters['C1'] = new IndividualBasicDetailsImport($this->request, $nameParser);
-        $this->sheetImporters['C2'] = new C2Import();
-        $this->sheetImporters['C3'] = new C3Import();
-        $this->sheetImporters['C4'] = new C4Import();
+        $this->sheetImporters['C2'] = new C2Import;
+        $this->sheetImporters['C3'] = new C3Import;
+        $this->sheetImporters['C4'] = new C4Import;
     }
 
     public function sheets(): array
@@ -45,7 +45,7 @@ class MainIndividualImporter implements WithMultipleSheets
     public function getImportedRecords(): Collection
     {
         // @todo subject to changes. This logic might not be the best way to handle this.
-        $allImportedRecords = new Collection();
+        $allImportedRecords = new Collection;
 
         // Iterate through the *stored instances* to collect their data
         foreach ($this->sheetImporters as $sheetName => $sheetImporter) {

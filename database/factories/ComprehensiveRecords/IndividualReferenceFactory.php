@@ -19,7 +19,7 @@ class IndividualReferenceFactory extends Factory
         return [
             'name' => fake()->name(),
             'address' => fake()->address(),
-            'tel_no' => fake()->numerify('+6391234567##'), //Randomizing last two digits since it is causing issues otherwise.
+            'tel_no' => fake()->numerify('+6391234567##'), // Randomizing last two digits since it is causing issues otherwise.
         ];
     }
 }

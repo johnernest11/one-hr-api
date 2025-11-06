@@ -6,103 +6,155 @@ use App\Enums\DocumentStatus;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Models\LocatorSlip\LocatorSlip;
+use App\Models\LocatorSlip\LocatorSlipLogger;
+use App\Services\CloudStorageServices\CloudStorageManager;
+use App\Traits\Controllers\CanMoveCapturedImageToCloud;
 use App\Traits\Services\CanBuildPagination;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class TimeLogService implements TimeLogManager
 {
     use CanBuildPagination;
+    use CanMoveCapturedImageToCloud;
 
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
     private const MAX_SELECTED_TIMELOGS = 4;
 
-    private const DUPLICATE_SCAN_LIMIT_MINUTES = 1; //@todo adjust for testing. by default = 15 mins
-
     private TimeLog $model;
 
-    public function __construct(TimeLog $model)
+    private CloudStorageManager $cloudStorage;
+
+    public function __construct(TimeLog $model, CloudStorageManager $cloudStorage)
     {
         $this->model = $model;
-
+        $this->cloudStorage = $cloudStorage;
     }
 
     /**
-     * {@inheritDoc}
+     * Create a time log by scanning the employee's QR code.
+     *
+     * @param  UploadedFile|string|null  $capturedImage
+     *
+     * @throws Exception
      */
-    public function create(Employee $employee): TimeLog
+    public function create(Employee $employee, $capturedImage = null): TimeLog
     {
-        return DB::transaction(function () use ($employee) {
-            // Check if there's a DTR for today.
-            // If none, create record. Skip checks for 15 minute delay since if there's no DTR, this entry will be the very first time log for today.
-            try {
-                $dateToday = Carbon::now()->toDateString();
-                $dtr = DailyTimeRecord::whereBelongsTo($employee)->where('date', $dateToday)->firstOrFail();
-            } catch (ModelNotFoundException $e) {
-                $dtrData = [
-                    'employee_id' => $employee->id,
-                    'date' => $dateToday,
-                    'status' => DocumentStatus::DRAFT->value,
-                ];
+        return DB::transaction(function () use ($employee, $capturedImage) {
+            $limit = config('timelog.duplicate_scan_limit');
+            $dateToday = Carbon::now()->toDateString();
 
-                $dtr = DailyTimeRecord::create($dtrData);
-
-                $timeLogData = [
-                    'date' => $dateToday,
-                    'scanned_time' => Carbon::now()->format('H:i'),
-                    'is_in' => true,
-                ];
-                $timeLog = $dtr->timeLog()->create($timeLogData)
-                    ->fresh([
-                        'dailyTimeRecord.employee:id,id_number,individual_basic_detail_id,item_id',
-                        'dailyTimeRecord.employee.item:id,position_id',
-                        'dailyTimeRecord.employee.individualBasicDetail:id,first_name,last_name,middle_name,ext_name',
-                        'dailyTimeRecord.employee.item.position:id,title',
-                        'dailyTimeRecord.employee.individualBasicDetail.userProfile:id,individual_basic_detail_id,profile_picture_path',
-                    ]);
-
-                return $timeLog;
-            }
-
-            // Check if there's already a previous log 15 minutes before the current one.
-            // If there is, disregard the following entry and throw exception to signify duplicate entry.
-            // If not, create new time log.
+            $dtr = DailyTimeRecord::firstOrCreate(
+                ['employee_id' => $employee->id, 'date' => $dateToday],
+                ['status' => DocumentStatus::DRAFT->value]
+            );
 
             $latestTimeLog = $this->model->whereBelongsTo($dtr)->latest('scanned_time')->first();
-            $timeLogTime = Carbon::parse($latestTimeLog->scanned_time);
+            if ($latestTimeLog) {
+                $timeLogTime = Carbon::parse($latestTimeLog->scanned_time);
+                if ($timeLogTime->diffInMinutes(Carbon::now()) <= $limit) {
+                    throw new Exception('Duplicate scan.');
+                }
+                $isIn = ! $latestTimeLog->is_in;
+            } else {
+                $isIn = true;
+            }
 
-            if ($timeLogTime->diffInMinutes(Carbon::now()) <= self::DUPLICATE_SCAN_LIMIT_MINUTES) {
-                throw ValidationException::withMessages(['scanned_qr' => 'Duplicate scan.']);
+            $imagePath = null;
+            if ($capturedImage instanceof UploadedFile) {
+                $imagePath = $this->moveCapturedImageToCloud($capturedImage, $this->cloudStorage, $employee->id);
+            } elseif (is_string($capturedImage)) {
+                $imagePath = $capturedImage;
             }
 
             $timeLogData = [
                 'date' => $dateToday,
                 'scanned_time' => Carbon::now()->format('H:i'),
-                'is_in' => $latestTimeLog->is_in ? false : true, // If latest time log is true, current one will be false. And vice versa.
+                'is_in' => $isIn,
+                'captured_image_path' => $imagePath,
+                'is_selected' => true,
             ];
 
-            // Check if there's already 4 is_selected=true for this day.
-            // If there is, set the succeeding records as false.
-            // If there is not, do nothing since the default value of the field is true.
             $countIsSelected = $this->model->whereBelongsTo($dtr)->where('is_selected', true)->count();
-
             if ($countIsSelected >= self::MAX_SELECTED_TIMELOGS) {
                 $timeLogData['is_selected'] = false;
             }
 
-            $timeLog = $dtr->timeLog()->create($timeLogData)
-                ->fresh([
-                    'dailyTimeRecord.employee:id,id_number,individual_basic_detail_id,item_id',
-                    'dailyTimeRecord.employee.item:id,position_id',
-                    'dailyTimeRecord.employee.individualBasicDetail:id,first_name,last_name,middle_name,ext_name',
-                    'dailyTimeRecord.employee.item.position:id,title',
-                    'dailyTimeRecord.employee.individualBasicDetail.userProfile:id,individual_basic_detail_id,profile_picture_path',
-                ]);
+            $timeLog = $dtr->timeLog()->create($timeLogData);
+
+            $timeLog->load([
+                'dailyTimeRecord:id,employee_id,date,ut,is_edit_ut,ot,is_missing,employee_remarks,hr_remarks,status,created_at,updated_at',
+                'dailyTimeRecord.employee:id,id_number,individual_basic_detail_id,item_id,division_id,section_or_unit_id',
+                'dailyTimeRecord.employee.item:id,position_id,number,date_of_creation,status,date_filled_up,employment_status,fund_source_id',
+                'dailyTimeRecord.employee.item.position:id,title,parenthetical_title,level,created_at,updated_at',
+                'dailyTimeRecord.employee.item.fundSource:id,name,created_at,updated_at',
+                'dailyTimeRecord.employee.division:id,name,head_user_id,added_by_user_id,last_modified_by_user_id,created_at,updated_at',
+                'dailyTimeRecord.employee.sectionOrUnit:id,name,division_id,head_user_id,added_by_user_id,last_modified_by_user_id,created_at,updated_at',
+                'dailyTimeRecord.employee.individualBasicDetail:id,first_name,last_name,middle_name,ext_name',
+                'dailyTimeRecord.employee.individualBasicDetail.userProfile:id,individual_basic_detail_id,profile_picture_path',
+            ]);
+
+            $this->updateLocatorSlipLogger($employee, $timeLogData);
 
             return $timeLog;
+        }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
+    }
+
+    /**
+     * Updates Locator Slip Logs Time Out/In.
+     *
+     * This expects the user to only have one locator slip logger active at a time.
+     * If there are multiple, all of them will be updated, hence the loop.
+     * This is to prevent issues from arising.
+     */
+    public function updateLocatorSlipLogger(Employee $employee, array $timeLog): void
+    {
+        DB::transaction(function () use ($employee, $timeLog) {
+            $lastTimeLog = app(DailyTimeRecordService::class)->getLastTimeLog($employee);
+
+            $carbonDate = Carbon::parse($timeLog['date']);
+            $lsCollection = LocatorSlip::where('employee_id', $employee->id)
+                ->whereYear('date', $carbonDate->year)
+                ->whereMonth('date', $carbonDate->month)
+                ->get();
+
+            if (! $lsCollection) {
+                return;
+            }
+
+            foreach ($lsCollection as $slip) {
+                $lsLogs = LocatorSlipLogger::whereBelongsTo($slip)->where('date', $timeLog['date'])->get();
+
+                if (! $lsLogs) {
+                    return;
+                }
+
+                foreach ($lsLogs as $log) {
+                    if (! $log->time_out) {
+                        // Do not update locator slip if the last time log is an in, which means that the employee just went in the office and not out.
+                        if (! $lastTimeLog) {
+                            return;
+                        }
+                        if ($lastTimeLog) {
+                            if ($lastTimeLog->is_in) {
+                                return;
+                            }
+                        }
+
+                        $log->update([
+                            'time_out' => $timeLog['scanned_time'],
+                        ]);
+                    } elseif (! $log->time_in) {
+                        $log->update([
+                            'time_in' => $timeLog['scanned_time'],
+                        ]);
+                    }
+                }
+            }
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
     }
 }

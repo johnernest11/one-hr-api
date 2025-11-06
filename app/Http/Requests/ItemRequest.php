@@ -54,7 +54,7 @@ class ItemRequest extends FormRequest
                 Rule::when($this->method() === 'POST' || ($item && $item->number != $this->input('number')), [
                     Rule::unique('items', 'number'),
                 ]),
-                'string', new DbVarcharMaxLength()],
+                'string', new DbVarcharMaxLength],
             'date_of_creation' => ['required', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
             'status' => ['required', new Enum(ItemStatus::class)],
             'date_filled_up' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],

@@ -23,7 +23,7 @@ class IndividualBasicDetailPolicy
             return true;
         }
 
-        return $user->id === $individualBasicDetail->userProfile->user_id;
+        return $user->id === $individualBasicDetail->userProfile?->user_id;
     }
 
     /**
@@ -70,6 +70,6 @@ class IndividualBasicDetailPolicy
             return true; // give permission to update records if user's role is HR PPMS admin or HR PAS admin
         }
 
-        return $user->id === $individualBasicDetail->userProfile->user_id;
+        return $user->id === $individualBasicDetail->userProfile?->user_id;
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Imports;
 
 use App\Enums\EmploymentStatus;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -13,14 +15,14 @@ class C2Import implements ToCollection
 
     public function __construct()
     {
-        $this->importedRecords = new Collection();
+        $this->importedRecords = new Collection;
     }
 
     public function collection(Collection $rows)
     {
 
         /* -------------------------------------------------------------------------- */
-        /*                            IndividualEligibility                           */
+        /*                            IndividualEligibility */
         /* -------------------------------------------------------------------------- */
 
         $civilServiceData = $rows->slice(4, 7); // Rows 5-11 (index 4 to 10, with 7 rows)
@@ -44,7 +46,7 @@ class C2Import implements ToCollection
 
                 if (isset($value)) {
                     if ($keyName == 'date_of_examination_conferment' || $keyName == 'license_date_of_validity') {
-                        $extractedRow[$keyName] = Date::excelToDateTimeObject($value)->format('Y-m-d');
+                        $extractedRow[$keyName] = $this->safeExcelDateParser($value);
 
                         continue;
                     }
@@ -57,7 +59,7 @@ class C2Import implements ToCollection
         }
 
         /* -------------------------------------------------------------------------- */
-        /*                          IndividualWorkExperience                          */
+        /*                          IndividualWorkExperience */
         /* -------------------------------------------------------------------------- */
 
         $workExpData = $rows->slice(17, 28); // Rows 18-45 (index 17 to 44, with 28 rows)
@@ -85,7 +87,7 @@ class C2Import implements ToCollection
                     switch ($keyName) {
                         case 'inclusive_date_from':
                         case 'inclusive_date_to':
-                            $extractedRow[$keyName] = Date::excelToDateTimeObject($value)->format('Y-m-d');
+                            $extractedRow[$keyName] = $this->safeExcelDateParser($value);
                             break;
 
                         case 'status_of_appointment':
@@ -111,7 +113,7 @@ class C2Import implements ToCollection
         ];
 
         /* -------------------------------------------------------------------------- */
-        /*                              Return Collection                             */
+        /*                              Return Collection */
         /* -------------------------------------------------------------------------- */
         // Push the mapped data into the collection so that it persists outside of this importer.
         // This allows it to be accessed outside of this importer.
@@ -147,6 +149,38 @@ class C2Import implements ToCollection
             return false;
         }
 
+        return null;
+    }
+
+    /**
+     * Safely converts a cell value from an Excel import into a 'Y-m-d' date string.
+     * Handles numeric Excel dates and attempts to parse common string date formats.
+     */
+    public function safeExcelDateParser($value): ?string
+    {
+        if (is_null($value) || $value === '') {
+            return null;
+        }
+
+        // Check if it's a numeric Excel date (int or float)
+        if (is_numeric($value)) {
+            try {
+                return Date::excelToDateTimeObject($value)->format('Y-m-d');
+            } catch (Exception $e) {
+                return null;
+            }
+        }
+
+        // Treat as a string (Handles '11/22/1985', 'Nov 22, 1985', etc.)
+        if (is_string($value)) {
+            try {
+                return Carbon::parse($value)->format('Y-m-d');
+            } catch (Exception $e) {
+                return null;
+            }
+        }
+
+        // Fallback for any other unexpected type
         return null;
     }
 }

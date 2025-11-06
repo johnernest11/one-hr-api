@@ -53,7 +53,7 @@ class CreateUser extends Command
             'roles' => [Role::findByName($role, 'token')->id],
             'email_verified' => true,
         ];
-        $createUserRules = (new UserRequest())->getStoreUserRules();
+        $createUserRules = (new UserRequest)->getStoreUserRules();
 
         try {
             Validator::validate($data, $createUserRules);
