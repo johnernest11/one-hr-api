@@ -15,7 +15,6 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TimeLogService implements TimeLogManager
 {
@@ -25,8 +24,6 @@ class TimeLogService implements TimeLogManager
     public const MAX_TRANSACTION_DEADLOCK_ATTEMPTS = 5;
 
     private const MAX_SELECTED_TIMELOGS = 4;
-
-    private const DUPLICATE_SCAN_LIMIT_MINUTES = 1;
 
     private TimeLog $model;
 
@@ -48,6 +45,7 @@ class TimeLogService implements TimeLogManager
     public function create(Employee $employee, $capturedImage = null): TimeLog
     {
         return DB::transaction(function () use ($employee, $capturedImage) {
+            $limit = config('timelog.duplicate_scan_limit');
             $dateToday = Carbon::now()->toDateString();
 
             $dtr = DailyTimeRecord::firstOrCreate(
@@ -58,7 +56,7 @@ class TimeLogService implements TimeLogManager
             $latestTimeLog = $this->model->whereBelongsTo($dtr)->latest('scanned_time')->first();
             if ($latestTimeLog) {
                 $timeLogTime = Carbon::parse($latestTimeLog->scanned_time);
-                if ($timeLogTime->diffInMinutes(Carbon::now()) <= self::DUPLICATE_SCAN_LIMIT_MINUTES) {
+                if ($timeLogTime->diffInMinutes(Carbon::now()) <= $limit) {
                     throw new Exception('Duplicate scan.');
                 }
                 $isIn = ! $latestTimeLog->is_in;
@@ -75,7 +73,7 @@ class TimeLogService implements TimeLogManager
 
             $timeLogData = [
                 'date' => $dateToday,
-                'scanned_time' => Carbon::now()->format('H:i:s'),
+                'scanned_time' => Carbon::now()->format('H:i'),
                 'is_in' => $isIn,
                 'captured_image_path' => $imagePath,
                 'is_selected' => true,
@@ -100,12 +98,18 @@ class TimeLogService implements TimeLogManager
                 'dailyTimeRecord.employee.individualBasicDetail.userProfile:id,individual_basic_detail_id,profile_picture_path',
             ]);
 
+            $this->updateLocatorSlipLogger($employee, $timeLogData);
+
             return $timeLog;
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
     }
 
     /**
-     * Update locator slip logger after time log creation.
+     * Updates Locator Slip Logs Time Out/In.
+     *
+     * This expects the user to only have one locator slip logger active at a time.
+     * If there are multiple, all of them will be updated, hence the loop.
+     * This is to prevent issues from arising.
      */
     public function updateLocatorSlipLogger(Employee $employee, array $timeLog): void
     {
@@ -118,20 +122,36 @@ class TimeLogService implements TimeLogManager
                 ->whereMonth('date', $carbonDate->month)
                 ->get();
 
+            if (! $lsCollection) {
+                return;
+            }
+
             foreach ($lsCollection as $slip) {
-                $lsLogs = LocatorSlipLogger::whereBelongsTo($slip)
-                    ->where('date', $timeLog['date'])
-                    ->get();
+                $lsLogs = LocatorSlipLogger::whereBelongsTo($slip)->where('date', $timeLog['date'])->get();
+
+                if (! $lsLogs) {
+                    return;
+                }
 
                 foreach ($lsLogs as $log) {
                     if (! $log->time_out) {
-                        if (! $lastTimeLog || $lastTimeLog->is_in) {
+                        // Do not update locator slip if the last time log is an in, which means that the employee just went in the office and not out.
+                        if (! $lastTimeLog) {
                             return;
                         }
+                        if ($lastTimeLog) {
+                            if ($lastTimeLog->is_in) {
+                                return;
+                            }
+                        }
 
-                        $log->update(['time_out' => $timeLog['scanned_time']]);
+                        $log->update([
+                            'time_out' => $timeLog['scanned_time'],
+                        ]);
                     } elseif (! $log->time_in) {
-                        $log->update(['time_in' => $timeLog['scanned_time']]);
+                        $log->update([
+                            'time_in' => $timeLog['scanned_time'],
+                        ]);
                     }
                 }
             }
