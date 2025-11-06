@@ -135,25 +135,13 @@ class DailyTimeRecordService implements DailyTimeRecordManager
     /** {@inheritDoc} */
     public function viewDtrPerPeriodRange(Employee $employee, array $request): LengthAwarePaginator
     {
-        $dates = isset($request['month'])
-            ? $this->getStartEndDate($request['month'])
-            : [
-                'startDate' => $request['start_date'],
-                'endDate' => $request['end_date'],
-            ];
+        $dates = isset($request['month']) ? $this->getStartEndDate($request['month']) : [
+            'startDate' => $request['start_date'],
+            'endDate' => $request['end_date'],
+        ];
 
-        // Subquery: get the first (or any) DTR per month for that employee
-        $monthlyIds = $this->model->query()
-            ->selectRaw('MIN(id) as id') // use MIN or MAX depending on your logic
-            ->where('employee_id', $employee->id)
-            ->whereBetween('date', [$dates['startDate'], $dates['endDate']])
-            ->groupByRaw('YEAR(date), MONTH(date)'); // group by month-year
-
-        // Fetch only those records
-        $query = $this->model->query()
-            ->whereIn('id', $monthlyIds)
-            ->with('timeLog')
-            ->orderBy('date', 'asc');
+        // Create a query for getting the DTRs between the start and end date.
+        $query = $this->model->query()->whereBetween('date', [$dates['startDate'], $dates['endDate']])->where('employee_id', $employee->id)->with('timeLog');
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
     }
