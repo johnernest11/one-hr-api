@@ -84,6 +84,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.ext_name' => ['nullable', 'string', new Enum(ExtensionNameCategory::class)],
             'individual.citizenship_acquisition' => ['nullable', 'string', new Enum(CitizenshipAcquisition::class)],
             'individual.gsis_no' => ['nullable', 'string', new DbTextMaxLength],
+            'individual.country_id' => ['nullable', 'int'],
 
             /* -------------------------------- Employee -------------------------------- */
             'employee' => ['array', $this->requiredIfUserIsPPMSAdmin()],
@@ -315,6 +316,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.ext_name' => ['nullable', 'string', new Enum(ExtensionNameCategory::class)],
             'individual.citizenship_acquisition' => ['nullable', 'string', new Enum(CitizenshipAcquisition::class)],
             'individual.gsis_no' => ['nullable', 'string', new DbTextMaxLength],
+            'individual.country_id' => ['nullable', 'int'],
 
             /* -------------------------------- Employee -------------------------------- */
             'employee' => ['array', $this->requiredIfUserIsPPMSAdmin()],
@@ -578,10 +580,7 @@ class IndividualBasicDetailRequest extends FormRequest
             ],
             'individual_reference.*.name' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_reference.*.address' => ['nullable', 'string', new DbVarcharMaxLength],
-            'individual_reference.*.tel_no' => ['nullable',
-                (new PhoneRule)->country('PH')], // Can be either mobile or tele
-            'individual_reference.*._delete' => ['nullable', 'boolean'], // Can delete references
-
+            'individual_reference.*.tel_no' => ['nullable', 'string', new DbVarcharMaxLength],
             /* -------------------------------- IndividualGovernmentID -------------------------------- */
             'individual_government_id.gov_issued_id' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_government_id.gov_id_no' => ['nullable', 'string', new DbVarcharMaxLength],
