@@ -199,8 +199,8 @@ class DtrComputeUndertime extends Command
         $in2 = $createTime($slots['in2']);
         $out2 = $createTime($slots['out2']);
 
-        $lunchStart = $dtrDate->copy()->setTimeFromTimeString('12:00');
-        $lunchEnd = $dtrDate->copy()->setTimeFromTimeString('13:00');
+        $lunchStart = $dtrDate->copy()->setTimeFromTimeString('12:00')->second(0);
+        $lunchEnd = $dtrDate->copy()->setTimeFromTimeString('13:00')->second(0);
 
         // Cut offs for late and half day based on day of the week
         $lateCutoff = $dtrDate->copy()->setTimeFromTimeString($dtrDate->dayOfWeek === Carbon::MONDAY ? '08:00' : '09:00');
