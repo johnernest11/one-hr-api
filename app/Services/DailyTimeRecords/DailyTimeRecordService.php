@@ -144,7 +144,6 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         $query = $this->model->query()->whereBetween('date', [$dates['startDate'], $dates['endDate']])->where('employee_id', $employee->id)->with('timeLog');
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
-
     }
 
     /** {@inheritDoc} */

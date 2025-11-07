@@ -66,6 +66,8 @@ class AccomplishmentReportRequest extends FormRequest
     {
         return [
             'query' => ['required', 'string'],
+            'limit' => ['nullable', 'integer', 'min:1'],
+            'page' => ['nullable', 'integer', 'min:1'],
         ];
     }
 

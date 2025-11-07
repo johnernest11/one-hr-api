@@ -71,7 +71,13 @@ class ItemController extends ApiController
      */
     public function search(ItemRequest $request): JsonResponse
     {
-        $items = $this->itemService->search($request->validated('query'), PaginationType::LENGTH_AWARE);
+        $validated = $request->validated();
+
+        $query = $validated['query'] ?? null;
+        $limit = $validated['limit'] ?? 5;
+        $page = $validated['page'] ?? null;
+
+        $items = $this->itemService->search($query, PaginationType::LENGTH_AWARE, $limit, $page);
         $formatted = PaginationHelper::formatPagination($items);
 
         return $this->success($formatted, Response::HTTP_OK);

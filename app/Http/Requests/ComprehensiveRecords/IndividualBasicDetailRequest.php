@@ -254,8 +254,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_reference' => ['array', 'max:3'], // Maximum of 3 references allowed per individual
             'individual_reference.*.name' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_reference.*.address' => ['nullable', 'string', new DbVarcharMaxLength],
-            'individual_reference.*.tel_no' => ['nullable',
-                (new PhoneRule)->country('PH')], // Can be either mobile or tele
+            'individual_reference.*.tel_no' => ['nullable', 'string', new DbVarcharMaxLength],
 
             /* -------------------------------- IndividualGovernmentID -------------------------------- */
             'individual_government_id.gov_issued_id' => ['nullable', 'string', new DbVarcharMaxLength],
