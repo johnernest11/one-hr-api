@@ -183,13 +183,24 @@ class DtrComputeUndertime extends Command
      */
     private function getCreditedWorkHours(array $slots, Carbon $dtrDate): array
     {
-        $in1 = $slots['in1'] ? $dtrDate->copy()->setTimeFromTimeString($slots['in1']->scanned_time) : null;
-        $out1 = $slots['out1'] ? $dtrDate->copy()->setTimeFromTimeString($slots['out1']->scanned_time) : null;
-        $in2 = $slots['in2'] ? $dtrDate->copy()->setTimeFromTimeString($slots['in2']->scanned_time) : null;
-        $out2 = $slots['out2'] ? $dtrDate->copy()->setTimeFromTimeString($slots['out2']->scanned_time) : null;
+        // Helper to create Carbon object and zero out seconds
+        $createTime = function ($slot) use ($dtrDate) {
+            if (! $slot) {
+                return null;
+            }
 
-        $lunchStart = $dtrDate->copy()->setTimeFromTimeString('12:00');
-        $lunchEnd = $dtrDate->copy()->setTimeFromTimeString('13:00');
+            return $dtrDate->copy()
+                ->setTimeFromTimeString($slot->scanned_time)
+                ->second(0);
+        };
+
+        $in1 = $createTime($slots['in1']);
+        $out1 = $createTime($slots['out1']);
+        $in2 = $createTime($slots['in2']);
+        $out2 = $createTime($slots['out2']);
+
+        $lunchStart = $dtrDate->copy()->setTimeFromTimeString('12:00')->second(0);
+        $lunchEnd = $dtrDate->copy()->setTimeFromTimeString('13:00')->second(0);
 
         // Cut offs for late and half day based on day of the week
         $lateCutoff = $dtrDate->copy()->setTimeFromTimeString($dtrDate->dayOfWeek === Carbon::MONDAY ? '08:00' : '09:00');
@@ -199,19 +210,12 @@ class DtrComputeUndertime extends Command
         $requiredEnd = null;
 
         if (! $in1 || $in1->greaterThan($halfDayCutoff)) {
-            // Absence or automatic 4-hour penalty scenario
+            // Automatic 4-hour penalty scenario
             $creditStart = null;
-            $requiredEnd = null;
-        } elseif ($in1->greaterThan($lateCutoff)) {
-            // Scenario: LATE (e.g., 8:05 AM Mon). Credit starts at actual time in.
-            $creditStart = $in1;
-        } else {
-            // Scenario: ON TIME (e.g., 8:22 AM Tue). Credit starts at actual time in.
-            $creditStart = $in1;
+            $requiredEnd = $lunchEnd->copy()->addHours(4);
         }
-
         // Calculate the Required End Time based on the Credited Start Time
-        if ($creditStart) {
+        else {
             // Shift is 8 hours + 1 hour lunch = 9 hours total duration
             $requiredEnd = $creditStart->copy()->addHours(9);
         }
