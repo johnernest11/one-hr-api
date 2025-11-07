@@ -83,9 +83,9 @@ class C4Import implements ToCollection, WithMappedCells
             /*    @todo Mapped Government ID for now. This has no migration/model yet. */
             /* -------------------------------------------------------------------------- */
             'individual_government_id' => [
-                'gov_id_name' => 'D61',
+                'gov_issued_id' => 'D61',
                 'gov_id_no' => 'D62',
-                'gov_id_issuance' => 'D64',
+                'gov_issuance' => 'D64',
             ],
         ];
     }
