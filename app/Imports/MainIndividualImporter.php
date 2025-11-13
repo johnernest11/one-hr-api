@@ -31,6 +31,7 @@ class MainIndividualImporter implements WithMultipleSheets
         $this->sheetImporters['C1'] = new IndividualBasicDetailsImport($this->request, $nameParser);
         $this->sheetImporters['C2'] = new C2Import;
         $this->sheetImporters['C3'] = new C3Import;
+        $this->sheetImporters['C4'] = new C4Import;
     }
 
     public function sheets(): array
