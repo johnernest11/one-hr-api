@@ -90,4 +90,18 @@ class IndividualBasicDetailController extends ApiController
 
         return $this->success(['data' => $data], Response::HTTP_OK);
     }
+
+    /**
+     * Generate PDS PDF for a specific individual
+     */
+    public function generatePds(IndividualBasicDetail $individualBasicDetail): Response
+    {
+
+        $response = $this->individualBasicDetailService->generatePDF($individualBasicDetail);
+
+        return response($response['fileContent'], 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$response['fileName'].'"',
+        ])->header('Access-Control-Expose-Headers', 'Content-Disposition');
+    }
 }

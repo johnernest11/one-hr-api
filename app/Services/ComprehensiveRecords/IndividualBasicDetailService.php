@@ -55,6 +55,8 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
     private QrCodeManager $qrCodeService;
 
+    private ?PdsPdfBuilder $pdfBuilder = null;
+
     public function __construct(IndividualBasicDetail $model, Parser $nameParser, QrCodeManager $qrCodeService)
     {
         $this->model = $model;
@@ -307,5 +309,38 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         ];
 
         return $restructuredData;
+    }
+
+    /**
+     * Setter to inject a custom PdsPdfBuilder (useful for testing)
+     */
+    public function setPdfBuilder(PdsPdfBuilder $builder): void
+    {
+        $this->pdfBuilder = $builder;
+    }
+
+    /**
+     * Generate PDS PDF for given individual
+     *
+     * @param  IndividualBasicDetail|int  $individual
+     * @return array ['fileContent' => string, 'fileName' => string]
+     */
+    /** {@inheritDoc} */
+    public function generatePDF(IndividualBasicDetail $individualBasicDetail): array
+    {
+        // Use the injected builder if available, otherwise create a new one
+        $builder = $this->pdfBuilder ?? new PdsPdfBuilder;
+
+        $builder->loadTemplate(storage_path('assets/PDS_C1_Template.png'))
+            ->renderPersonalInfo($individualBasicDetail)
+            ->renderAddress($individualBasicDetail)
+            ->renderIds($individualBasicDetail)
+            ->renderContact($individualBasicDetail)
+            ->renderPhysicalInfo($individualBasicDetail);
+
+        return [
+            'fileContent' => $builder->output(),
+            'fileName' => "PDS-{$individualBasicDetail->id}.pdf",
+        ];
     }
 }

@@ -28,6 +28,8 @@ use App\Models\Libraries\Program;
 use App\Models\Libraries\SalaryGrade;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
+use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
+use App\Services\DailyTimeRecords\QrCodeManager;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
@@ -1297,5 +1299,29 @@ class IndividualBasicDetailFeatureTest extends TestCase
         // Assert that the databases are still empty after importing since we are now previewing the mapped data.
         $this->assertDatabaseCount('individual_basic_details', $initialIndividualsCount);
         $this->assertDatabaseCount('employees', $initialEmployeesCount);
+    }
+
+    public function test_it_can_generate_a_pds_pdf_for_a_real_employee(): void
+    {
+        // Make the parent individual in memory
+        $individual = IndividualBasicDetail::factory()->make();
+
+        // Attach related models safely for in-memory usage
+        $individual->setRelation('employee', Employee::factory()->make());
+        $individual->setRelation('individualAddress', IndividualAddress::factory()->make());
+        $individual->setRelation('individualContactInfo', IndividualContactInfo::factory()->make());
+
+        $pdsService = new IndividualBasicDetailService(
+            new IndividualBasicDetail,
+            $this->app->make(\TheIconic\NameParser\Parser::class),
+            $this->app->make(QrCodeManager::class)
+        );
+
+        $result = $pdsService->generatePDF($individual);
+
+        $this->assertArrayHasKey('fileContent', $result);
+        $this->assertArrayHasKey('fileName', $result);
+        $this->assertStringContainsString((string) $individual->id, $result['fileName']);
+        $this->assertStringStartsWith('%PDF', $result['fileContent']);
     }
 }
