@@ -123,11 +123,11 @@ class PdsPdfBuilder
     public function renderIds(IndividualBasicDetail $ind): self
     {
         $this->pdf->SetFont('Arial', '', 10);
-        $this->setText(131, 366, 128, $ind->gsis_no);
-        $this->setText(131, 389, 128, $ind->pag_ibig_no);
-        $this->setText(131, 410, 128, $ind->philhealth_no);
-        $this->setText(131, 431.5, 128, $ind->sss_no);
-        $this->setText(131, 451.5, 128, $ind->tin);
+        $this->setText(131, 366, 128, $ind->gsis_no ?? '');
+        $this->setText(131, 389, 128, $ind->pag_ibig_no ?? '');
+        $this->setText(131, 410, 128, $ind->philhealth_no ?? '');
+        $this->setText(131, 431.5, 128, $ind->sss_no ?? '');
+        $this->setText(131, 451.5, 128, $ind->tin ?? '');
         $this->setText(131, 474, 128, $ind->employee->agency_employee_no ?? '');
 
         return $this;
