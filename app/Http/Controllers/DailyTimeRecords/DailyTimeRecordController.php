@@ -150,4 +150,15 @@ class DailyTimeRecordController extends ApiController
         return $this->success(['data' => $timeLogs], Response::HTTP_OK);
 
     }
+
+    /**
+     * Check if the employee is late.
+     */
+    public function checkLate(Employee $employee): JsonResponse
+    {
+        $isLate = $this->dailyTimeRecordService->checkLate($employee);
+
+        return $this->success(['data' => ['is_late' => $isLate]], Response::HTTP_OK);
+
+    }
 }

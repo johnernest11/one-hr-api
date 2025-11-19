@@ -58,4 +58,9 @@ interface DailyTimeRecordManager
      * Get user's last time log
      */
     public function getLastTimeLog(Employee $employee): ?TimeLog;
+
+    /**
+     * Check if employee is late
+     */
+    public function checkLate(Employee $employee): bool;
 }

@@ -447,4 +447,53 @@ class DailyTimeRecordFeatureTest extends TestCase
 
         $this->assertEquals($timeLog->id, $response['data']['id']);
     }
+
+    public function test_it_can_check_lateness(): void
+    {
+        $individual = IndividualBasicDetail::factory()->create();
+        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
+
+        $individual2 = IndividualBasicDetail::factory()->create();
+        $employee2 = Employee::whereBelongsTo($individual2)->firstOrFail();
+
+        $dtr = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee->id,
+            'date' => '2025-10-21',
+            'ut' => 1,
+            'ot' => 2,
+            'employee_remarks' => 'Test remark',
+        ]);
+
+        $dtr2 = DailyTimeRecord::factory()->create([
+            'employee_id' => $employee2->id,
+            'date' => '2025-10-21',
+            'ut' => 1,
+            'ot' => 2,
+            'employee_remarks' => 'Test remark',
+        ]);
+
+        $timeLog = TimeLog::factory()->create([
+            'daily_time_record_id' => $dtr->id,
+            'is_in' => true,
+            'scanned_time' => '10:00:00',
+        ]);
+
+        $timeLog2 = TimeLog::factory()->create([
+            'daily_time_record_id' => $dtr2->id,
+            'is_in' => true,
+            'scanned_time' => '07:40:00',
+        ]);
+
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->uriWithId.'/'.$employee->id.'/daily-time-records/check-late');
+        $response->assertStatus(200);
+
+        // Should detect that the employee is late
+        $this->assertEquals(true, $response['data']['is_late']);
+
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->uriWithId.'/'.$employee2->id.'/daily-time-records/check-late');
+        $response->assertStatus(200);
+
+        // Should detect that the employee is not late
+        $this->assertEquals(false, $response['data']['is_late']);
+    }
 }

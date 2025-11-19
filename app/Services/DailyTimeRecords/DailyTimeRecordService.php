@@ -364,4 +364,30 @@ class DailyTimeRecordService implements DailyTimeRecordManager
 
         return $timeLog;
     }
+
+    /** {@inheritDoc} */
+    public function checkLate(Employee $employee): bool
+    {
+        $today = now()->toDateString();
+        $timeLog = TimeLog::whereDate('date', $today)
+            ->whereHas('dailyTimeRecord', function (Builder $query) use ($employee) {
+                $query->where('employee_id', $employee->id);
+            })
+            ->oldest()
+            ->first();
+
+        if (! $timeLog) {
+            return false;
+        }
+
+        $carbonScannedTime = Carbon::parse("$today $timeLog->scanned_time");
+
+        $lateCutoff = now()->copy()->setTimeFromTimeString(now()->dayOfWeek === Carbon::MONDAY ? '08:00' : '09:00');
+
+        if ($carbonScannedTime->greaterThan($lateCutoff)) {
+            return true;
+        }
+
+        return false;
+    }
 }

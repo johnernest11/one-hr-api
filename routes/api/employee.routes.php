@@ -38,6 +38,11 @@ Route::middleware(['auth:token', 'verified.api'])->prefix('/{employee}')->group(
         /** @uses DailyTimeRecordController::getLastTimeLog */
         Route::middleware(['permission:'.Permission::VIEW_DTR->value])
             ->get('/last-time-log', 'getLastTimeLog')->name('last-time-log');
+
+        /** @uses DailyTimeRecordController::checkLate */
+        Route::middleware(['permission:'.Permission::VIEW_DTR->value])
+            ->get('/check-late', 'checkLate')->name('check-late');
+
     });
 
     Route::prefix('locator-slips')->controller(LocatorSlipController::class)->name('locator-slips.')->group(function () {
