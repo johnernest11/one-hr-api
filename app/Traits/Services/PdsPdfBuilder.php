@@ -1,11 +1,16 @@
 <?php
 
-namespace App\Services\ComprehensiveRecords;
+namespace App\Traits\Services;
 
+use App\Enums\Citizenship;
+use App\Enums\CitizenshipAcquisition;
+use App\Enums\CivilStatus;
+use App\Enums\SexualCategory;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
+use App\Models\Libraries\Country;
 use FPDF;
 
 class PdsPdfBuilder
@@ -21,8 +26,7 @@ class PdsPdfBuilder
     {
         if ($this->pdf === null) {
             $this->pdf = new FPDF('P', 'pt', 'Legal');
-            $this->pdf->AddPage();
-            $this->pdf->SetFont('Arial', '', 10);
+            $this->pdf->SetFont('Arial', '', 11);
             $this->pdf->SetTextColor(0, 0, 0);
         }
     }
@@ -33,6 +37,8 @@ class PdsPdfBuilder
         if (! file_exists($path)) {
             throw new \Exception("Template not found at: {$path}");
         }
+
+        $this->pdf->AddPage();
         $this->pdf->Image($path, 0, 0, 612, 1008);
 
         return $this;
@@ -49,49 +55,63 @@ class PdsPdfBuilder
     {
         $this->setText(131, 133, 440, $ind->last_name);
         $this->setText(131, 153, 310, $ind->first_name);
-        $this->setText(443, 159, 100, $ind->middle_name);
+        $this->setText(443, 155, 100, $ind->middle_name);
         $this->setText(131, 171, 440, $ind->middle_name);
         $this->setText(131, 193, 130, $ind->birthday?->format('m/d/Y'));
 
         // Citizenship checkboxes
-        // $this->pdf->SetFont('ZapfDingbats', '', 7);
-        // if ($ind->citizenship?->value === 'Filipino') {
-        //     $this->pdf->Cell(122.5, 10, "4"); // check
-        // } elseif ($ind->citizenship?->value === 'Dual Citizenship') {
-        //     $this->pdf->Cell(171.5, 10, "4");
-        // }
+        $this->pdf->SetFont('ZapfDingbats', '', 7);
 
-        // // Citizenship acquisition
-        // if ($ind->citizenship_acquisition?->value === 'By Birth') {
-        //     $this->pdf->Cell(417.5, 10, "4");
-        // } elseif ($ind->citizenship_acquisition?->value === 'By Naturalization') {
-        //     $this->pdf->Cell(459, 10, "4");
-        // }
+        $citizenship = $ind->citizenship;
+        if ($citizenship === Citizenship::FILIPINO) {
+            $this->pdf->SetXY(382.5, 200);
+            $this->pdf->Cell(10, 10, '4'); // check
+        } elseif ($citizenship === Citizenship::DUAL_CITIZENSHIP) {
+            $this->pdf->SetXY(432.5, 200);
+            $this->pdf->Cell(10, 10, '4');
+        }
+
+        // Citizenship acquisition
+        $citizenship_acquisition = $ind->citizenship_acquisition;
+        if ($citizenship_acquisition === CitizenshipAcquisition::BIRTH) {
+            $this->pdf->SetXY(445.5, 213);
+            $this->pdf->Cell(10, 10, '4');
+        } elseif ($citizenship_acquisition === CitizenshipAcquisition::NATURALIZATION) {
+            $this->pdf->SetXY(486.5, 213);
+            $this->pdf->Cell(10, 10, txt: '4');
+        }
 
         // Sex
-        $this->pdf->SetFont('ZapfDingbats', '', 7);
-        if ($ind->sex?->value === 'male') {
+
+        $sex = $ind->sex;
+
+        if ($sex === SexualCategory::MALE) {
+            // Mark male checkbox
             $this->pdf->SetXY(135, 250);
             $this->pdf->Cell(10, 8, '4');
-        } elseif ($ind->sex?->value === 'female') {
+        } elseif ($sex === SexualCategory::FEMALE) {
+            // Mark female checkbox
             $this->pdf->SetXY(210.5, 250);
             $this->pdf->Cell(10, 8, '4');
         }
-
         // Civil status
         $civilStatusPositions = [
-            'Single' => [135, 268],
-            'Married' => [210.5, 268],
-            'Widowed' => [135, 280],
-            'Separated' => [210.5, 280],
-            '' => [135, 293],
+            CivilStatus::SINGLE->value => [135, 268],
+            CivilStatus::MARRIED->value => [210.5, 268],
+            CivilStatus::WIDOWED->value => [135, 280],
+            CivilStatus::SEPARATED->value => [210.5, 280],
         ];
+
+        // Convert enum object to string safely
         $status = $ind->civil_status?->value ?? '';
+
         if (isset($civilStatusPositions[$status])) {
             [$x, $y] = $civilStatusPositions[$status];
             $this->pdf->SetXY($x, $y);
             $this->pdf->Cell(10, 8, '4');
         }
+        $this->pdf->SetFont('Arial', '', 7);
+        $this->setText(378, 244, 165, Country::find($ind->country_id)?->common_name ?? '', 'C');
 
         return $this;
     }
