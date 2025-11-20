@@ -43,4 +43,9 @@ interface IndividualBasicDetailManager
     ): Collection|Paginator|LengthAwarePaginator|CursorPaginator;
 
     public function import(array $validatedRequest): array;
+
+    /**
+     * Generate PDF of daily time records
+     */
+    public function generatePDF(IndividualBasicDetail $individualBasicDetail): array;
 }

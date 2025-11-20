@@ -27,4 +27,9 @@ Route::middleware(['auth:token', 'verified.api'])->controller(IndividualBasicDet
     Route::middleware(['permission:'.Permission::IMPORT_EMPLOYEE_PDS->value])
         ->post('import', 'importPreview')
         ->name('import');
+
+    Route::middleware(['permission:'.Permission::VIEW_EMPLOYEE_PDS->value])
+        ->get('{individualBasicDetail}/export', 'generatePds')
+        ->name('export');
+
 });

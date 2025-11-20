@@ -22,6 +22,7 @@ use App\Models\ComprehensiveRecords\IndividualWorkExperience;
 use App\Models\User;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
 use App\Services\DailyTimeRecords\QrCodeManager;
+use App\Traits\Services\PdsPdfBuilder;
 use Arr;
 use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -347,5 +348,52 @@ class IndividualBasicDetailUnitTest extends TestCase
         $searchForThis = IndividualBasicDetail::find($individual->id);
         $paginatedResults = $this->individualBasicDetailService->viewConsolidatedData($searchForThis);
         $this->assertEquals($searchForThis->id, $paginatedResults->id);
+    }
+
+    /**
+     * Test PDS PDF can be generated for a given employee
+     */
+    public function test_can_generate_pds_pdf_with_mocked_fpdpdf(): void
+    {
+        $individual = IndividualBasicDetail::factory()->make([
+            'last_name' => 'Doe',
+            'first_name' => 'John',
+            'middle_name' => 'M',
+            'birthday' => now()->subYears(30),
+        ]);
+
+        $pdsService = new IndividualBasicDetailService(
+            new IndividualBasicDetail,
+            $this->app->make(\TheIconic\NameParser\Parser::class),
+            $this->app->make(QrCodeManager::class)
+        );
+
+        $pdfBuilderMock = $this->getMockBuilder(PdsPdfBuilder::class)
+            ->onlyMethods([
+                'renderPersonalInfo',
+                'renderAddress',
+                'renderContact',
+                'renderIds',
+                'renderPhysicalInfo',
+                'output',
+            ])
+            ->getMock(); // constructor runs now, $pdf initialized
+
+        $pdfBuilderMock->expects($this->once())->method('renderPersonalInfo')->with($individual)->willReturnSelf();
+        $pdfBuilderMock->expects($this->once())->method('renderAddress')->with($individual)->willReturnSelf();
+        $pdfBuilderMock->expects($this->once())->method('renderContact')->with($individual)->willReturnSelf();
+        $pdfBuilderMock->expects($this->once())->method('renderIds')->with($individual)->willReturnSelf();
+        $pdfBuilderMock->expects($this->once())->method('renderPhysicalInfo')->with($individual)->willReturnSelf();
+        $pdfBuilderMock->expects($this->once())->method('output')->willReturn('%PDF-1.4 fake pdf content');
+
+        // Inject mock
+        $pdsService->setPdfBuilder($pdfBuilderMock);
+
+        $result = $pdsService->generatePDF($individual);
+
+        $this->assertArrayHasKey('fileContent', $result);
+        $this->assertArrayHasKey('fileName', $result);
+        $this->assertStringContainsString((string) $individual->id, $result['fileName']);
+        $this->assertEquals('%PDF-1.4 fake pdf content', $result['fileContent']);
     }
 }

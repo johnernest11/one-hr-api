@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Services\DailyTimeRecords\QrCodeManager;
 use App\Traits\Services\CanBuildPagination;
 use App\Traits\Services\CanResolveModelFromId;
+use App\Traits\Services\PdsPdfBuilder;
 use Carbon\Carbon;
 use Excel;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -54,6 +55,8 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
     protected Parser $nameParser;
 
     private QrCodeManager $qrCodeService;
+
+    private ?PdsPdfBuilder $pdfBuilder = null;
 
     public function __construct(IndividualBasicDetail $model, Parser $nameParser, QrCodeManager $qrCodeService)
     {
@@ -307,5 +310,47 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         ];
 
         return $restructuredData;
+    }
+
+    /**
+     * Setter to inject a custom PdsPdfBuilder (useful for testing)
+     */
+    public function setPdfBuilder(PdsPdfBuilder $builder): void
+    {
+        $this->pdfBuilder = $builder;
+    }
+
+    /**
+     * Generate PDS PDF for given individual
+     *
+     * @param  IndividualBasicDetail|int  $individual
+     * @return array ['fileContent' => string, 'fileName' => string]
+     */
+    /** {@inheritDoc} */
+    public function generatePDF(IndividualBasicDetail $individualBasicDetail): array
+    {
+        // Use the injected builder if available, otherwise create a new one
+        $builder = $this->pdfBuilder ?? new PdsPdfBuilder;
+        // Page 1 — C1
+        $builder->loadTemplate(storage_path('assets/PDS_C1_Template.png'))
+            ->renderPersonalInfo($individualBasicDetail)
+            ->renderAddress($individualBasicDetail)
+            ->renderIds($individualBasicDetail)
+            ->renderContact($individualBasicDetail)
+            ->renderPhysicalInfo($individualBasicDetail);
+
+        // Page 2 — C2
+        $builder->loadTemplate(storage_path('assets/PDS_C2_Template.png'));
+
+        // Page 3 — C3
+        $builder->loadTemplate(storage_path('assets/PDS_C3_Template.png'));
+
+        // Page 4 — C4
+        $builder->loadTemplate(storage_path('assets/PDS_C4_Template.png'));
+
+        return [
+            'fileContent' => $builder->output(),
+            'fileName' => "PDS-{$individualBasicDetail->id}.pdf",
+        ];
     }
 }
