@@ -20,16 +20,14 @@ class TagStandardUserRoleSeeder extends Seeder
 
             return;
         }
-        // 2. Get all users from one_account connection
-        $users = User::all();
+        // 2. Get only users WITHOUT the standard user role
+        $users = User::whereDoesntHave('roles', function ($q) {
+            $q->where('name', RoleEnum::STANDARD_USER);
+        })->get();
 
         foreach ($users as $user) {
-            // Check if the user already has this role
-            if (! $user->hasRole(RoleEnum::STANDARD_USER)) {
-                // Assign the role (works across databases)
-                $user->assignRole($role);
-                $count++;
-            }
+            $user->assignRole($role);
+            $count++;
         }
 
         $this->command->info("Tagged {$count} users with 'standard_user' role.");
