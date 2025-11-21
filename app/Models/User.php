@@ -40,6 +40,8 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
 
     protected $table = 'users';
 
+    protected $guard_name = 'token';
+
     /**
      * The attributes that are mass assignable.
      *
