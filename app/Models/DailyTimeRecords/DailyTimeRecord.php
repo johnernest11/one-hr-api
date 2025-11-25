@@ -6,6 +6,7 @@ use App\Enums\DocumentStatus;
 use App\Models\ComprehensiveRecords\Employee;
 use App\QueryFilters\DailyTimeRecords\DateFilter;
 use App\QueryFilters\DailyTimeRecords\DivisionFilter;
+use App\QueryFilters\DailyTimeRecords\OfficeFilter;
 use App\QueryFilters\DailyTimeRecords\SectionFilter;
 use App\QueryFilters\DailyTimeRecords\TimeInOrOutFilter;
 use Carbon\Carbon;
@@ -60,6 +61,7 @@ class DailyTimeRecord extends Model
             ->send($builder
                 ->join('employees', 'daily_time_records.employee_id', '=', 'employees.id')
                 ->whereNull('employees.deleted_at')
+                ->join('offices', 'employees.office_id', '=', 'offices.id')
                 ->join('divisions', 'employees.division_id', '=', 'divisions.id')
                 ->join('section_or_units', 'employees.section_or_unit_id', '=', 'section_or_units.id')
                 ->join('individual_basic_details', 'employees.individual_basic_detail_id', '=', 'individual_basic_details.id')
@@ -76,6 +78,8 @@ class DailyTimeRecord extends Model
                     'individual_basic_details.middle_name',
                     'individual_basic_details.last_name',
                     'individual_basic_details.ext_name',
+                    'employees.office_id',
+                    'offices.name AS office_name',
                     'divisions.name AS division_name',
                     'section_or_units.name AS section_name',
                 )
@@ -83,6 +87,7 @@ class DailyTimeRecord extends Model
                 ->orderBy('time_logs.scanned_time', 'desc')
             )
             ->through([
+                OfficeFilter::class,
                 DivisionFilter::class,
                 SectionFilter::class,
                 DateFilter::class,
