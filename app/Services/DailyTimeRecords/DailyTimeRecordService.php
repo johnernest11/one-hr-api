@@ -52,63 +52,84 @@ class DailyTimeRecordService implements DailyTimeRecordManager
     {
         $date = now()->toDateString();
 
-        /* ---------- 1. latest log per employee ---------- */
-        $latestLogSub = DB::table('time_logs as tl')
-            ->join('daily_time_records as dtr', 'tl.daily_time_record_id', '=', 'dtr.id')
-            ->select('dtr.employee_id', 'tl.is_in')
-            ->whereDate('dtr.date', $date)
-            ->whereRaw('tl.id = (                     
-                SELECT MAX(tl2.id)
-                FROM time_logs tl2
-                JOIN daily_time_records dtr2 ON dtr2.id = tl2.daily_time_record_id
-                WHERE dtr2.employee_id = dtr.employee_id
-            )');
+        $officeId = request('office');
+        $divisionId = request('division');
+        $sectionId = request('section');
 
-        /* ---------- 2. section‑level roll‑up ---------- */
-        $perSection = DB::table('employees as e')
+        $employees = DB::table('employees as e')
+            ->join('offices as o', 'e.office_id', '=', 'o.id')
             ->join('divisions as d', 'e.division_id', '=', 'd.id')
             ->join('section_or_units as s', 'e.section_or_unit_id', '=', 's.id')
-            ->leftJoinSub($latestLogSub, 'latest_logs', 'e.id', '=', 'latest_logs.employee_id')
-            ->whereNull('e.deleted_at') // filter soft deleted employees
-            ->groupBy('e.division_id', 'd.name', 's.id', 's.name')
-            ->selectRaw('
-                e.division_id          as division_id,
-                d.name                 as division_name,
-                s.id                   as section_id,
-                s.name                 as section_name,
-                COUNT(e.id)                                                                as total_employees,
-                CAST(SUM(CASE WHEN latest_logs.is_in = 1 THEN 1 ELSE 0 END) AS UNSIGNED)   as in_office,
-                CAST(SUM(CASE WHEN latest_logs.is_in = 0 OR latest_logs.is_in IS NULL
-                        THEN 1 ELSE 0 END) AS UNSIGNED)                                    as out_of_office
-            ')
+            ->whereNull('e.deleted_at');
+
+        if ($officeId) {
+            $employees->where('e.office_id', $officeId);
+            $divisionId = null;
+            $sectionId = null;
+        }
+
+        if ($divisionId && ! $officeId) {
+            $employees->where('e.division_id', $divisionId);
+            $sectionId = null;
+        }
+
+        if ($sectionId && ! $officeId && ! $divisionId) {
+            $employees->where('e.section_or_unit_id', $sectionId);
+        }
+
+        $latestLogs = DB::table('time_logs as tl')
+            ->join('daily_time_records as dtr', 'tl.daily_time_record_id', '=', 'dtr.id')
+            ->whereDate('dtr.date', $date)
+            ->select('dtr.employee_id', DB::raw('MAX(tl.id) as latest_log_id'))
+            ->groupBy('dtr.employee_id');
+
+        $records = $employees
+            ->leftJoinSub($latestLogs, 'latest_logs', 'e.id', '=', 'latest_logs.employee_id')
+            ->leftJoin('time_logs as tl', 'tl.id', '=', 'latest_logs.latest_log_id')
+            ->select(
+                'e.id as employee_id',
+                'e.office_id',
+                'e.division_id',
+                'e.section_or_unit_id',
+                'o.name as office_name',
+                'd.name as division_name',
+                's.name as section_name',
+                DB::raw('COALESCE(tl.is_in, 0) as is_in')
+            )
             ->get();
 
-        /* ---------- 3. division‑level roll‑up ---------- */
-        $perDivision = $perSection
-            ->groupBy('division_id')
-            ->map(function ($sections, $divisionId) {
-                return [
-                    'division_id' => $divisionId,
-                    'division_name' => $sections->first()->division_name,
-                    'total_employees' => $sections->sum('total_employees'),
-                    'in_office' => $sections->sum('in_office'),
-                    'out_of_office' => $sections->sum('out_of_office'),
-                    'sections' => $sections->values(),
-                ];
-            })
-            ->values();
+        $perSection = $records->groupBy('section_or_unit_id')->map(function ($group) {
+            return [
+                'office_id' => $group->first()->office_id,
+                'office_name' => $group->first()->office_name,
+                'division_id' => $group->first()->division_id,
+                'division_name' => $group->first()->division_name,
+                'section_id' => $group->first()->section_or_unit_id,
+                'section_name' => $group->first()->section_name,
+                'total_employees' => $group->count(),
+                'in_office' => $group->where('is_in', 1)->count(),
+                'out_of_office' => $group->where('is_in', 0)->count(),
+            ];
+        })->values();
 
-        /* ---------- 4. grand totals ---------- */
-        $totals = [
+        $perDivision = $perSection->groupBy('division_id')->map(function ($sections) {
+            return [
+                'office_id' => $sections->first()['office_id'],
+                'office_name' => $sections->first()['office_name'],
+                'division_id' => $sections->first()['division_id'],
+                'division_name' => $sections->first()['division_name'],
+                'total_employees' => $sections->sum('total_employees'),
+                'in_office' => $sections->sum('in_office'),
+                'out_of_office' => $sections->sum('out_of_office'),
+                'sections' => $sections->values(),
+            ];
+        })->values();
+
+        return [
+            'date' => $date,
             'total_employees' => $perSection->sum('total_employees'),
             'in_office' => $perSection->sum('in_office'),
             'out_of_office' => $perSection->sum('out_of_office'),
-        ];
-
-        /* ---------- 5. final payload ---------- */
-        return [
-            'date' => $date,
-            ...$totals,
             'per_division' => $perDivision,
             'per_section' => $perSection,
         ];
