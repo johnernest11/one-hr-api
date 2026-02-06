@@ -398,7 +398,7 @@ class IndividualBasicDetailUnitTest extends TestCase
     }
 
     /**
-     * Test if accomplishment reports can be generated into docx t via aRService
+     * Test if WES can be generated into docx
      */
     public function test_can_generat_wes_docx(): void
     {
