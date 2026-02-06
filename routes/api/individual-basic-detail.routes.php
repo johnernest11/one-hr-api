@@ -32,4 +32,8 @@ Route::middleware(['auth:token', 'verified.api'])->controller(IndividualBasicDet
         ->get('{individualBasicDetail}/export', 'generatePds')
         ->name('export');
 
+    Route::middleware(['permission:'.Permission::VIEW_EMPLOYEE_PDS->value])
+        ->get('{individualBasicDetail}/generateWES', 'generateWES')
+        ->name('generate-work-experience-sheet');
+
 });

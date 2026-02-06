@@ -45,7 +45,12 @@ interface IndividualBasicDetailManager
     public function import(array $validatedRequest): array;
 
     /**
-     * Generate PDF of daily time records
+     * Generate PDF of Personal Data Sheet
      */
     public function generatePDF(IndividualBasicDetail $individualBasicDetail): array;
+
+    /**
+     * Generate Work Experience Sheet
+     */
+    public function generateWES(IndividualBasicDetail $individualBasicDetail): array;
 }

@@ -21,6 +21,8 @@ use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use PhpOffice\PhpWord\TemplateProcessor;
+use Storage;
 use TheIconic\NameParser\Parser;
 
 class IndividualBasicDetailService implements IndividualBasicDetailManager
@@ -351,6 +353,64 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
         return [
             'fileContent' => $builder->output(),
             'fileName' => "PDS-{$individualBasicDetail->id}.pdf",
+        ];
+    }
+
+    /**
+     * Generate WES Docx for given individual
+     */
+    public function generateWES(IndividualBasicDetail $individualBasicDetail): array
+    {
+        $templatePath = Storage::disk('assets')->path('TEMPLATE - Work Experience Sheet.docx');
+        $templateProcessor = new TemplateProcessor($templatePath);
+        $sanitize = fn ($val) => htmlspecialchars((string) ($val ?? ''), ENT_QUOTES | ENT_XML1, 'UTF-8');
+
+        // Local Helper for Date Formatting
+        $formatDur = function ($from, $to, $isCurrent) {
+            if (! $from) {
+                return 'N/A';
+            }
+            $start = \Carbon\Carbon::parse($from)->format('M d, Y');
+
+            return ($isCurrent || ! $to || $to === '1970-01-01') ? "$start to Present" : "$start to ".\Carbon\Carbon::parse($to)->format('M d, Y');
+        };
+
+        // Map Work Experience Rows
+        $workRows = $individualBasicDetail->individualWorkExperience->map(fn ($work) => [
+            'duration' => $sanitize($formatDur($work->inclusive_date_from, $work->inclusive_date_to, $work->is_current_work)),
+            'position' => $sanitize($work->position_title),
+            'agencyOrganization' => $sanitize($work->department_agency_office_company),
+            'officeUnit' => $sanitize($work->office_unit ?? 'N/A'),
+            'immediateSupervisor' => $sanitize($work->immediate_supervisor ?? 'N/A'),
+            'accomplishmentContribution' => $sanitize($work->significant_accomplishments ?? 'N/A'),
+            'summaryDuties' => $sanitize($work->summary_of_actual_duties ?? 'N/A'),
+        ])->toArray();
+
+        // Clone Rows or Set Fallbacks
+        if (! empty($workRows)) {
+            $templateProcessor->cloneRowAndSetValues('duration', $workRows);
+        } else {
+            $templateProcessor->setValues(['duration' => 'N/A', 'position' => 'N/A', 'agencyOrganization' => 'N/A']);
+        }
+
+        // Static Info
+        $templateProcessor->setValues([
+            'fullName' => $sanitize(trim(
+                "{$individualBasicDetail->first_name} ".
+                ($individualBasicDetail->middle_name ? strtoupper($individualBasicDetail->middle_name[0]).'. ' : '').
+                "{$individualBasicDetail->last_name} ".
+                ($individualBasicDetail->ext_name?->value ?? '')
+            )),
+
+            'date' => date('F d, Y'),
+        ]);
+
+        ob_start();
+        $templateProcessor->saveAs('php://output');
+
+        return [
+            'fileContent' => ob_get_clean(),
+            'fileName' => "{$individualBasicDetail->id}-{$individualBasicDetail->last_name}-WES.docx",
         ];
     }
 }
