@@ -1324,4 +1324,13 @@ class IndividualBasicDetailFeatureTest extends TestCase
         $this->assertStringContainsString((string) $individual->id, $result['fileName']);
         $this->assertStringStartsWith('%PDF', $result['fileContent']);
     }
+
+    public function test_it_can_generate_wes_docx(): void
+    {
+        $ownWES = IndividualBasicDetail::factory()->create(); // creates an WES with current user, and is draft
+
+        $response = $this->withToken($this->authToken)->get("$this->baseUri/$ownWES->id/generateWES");
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    }
 }

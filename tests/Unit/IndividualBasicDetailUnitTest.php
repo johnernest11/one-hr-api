@@ -396,4 +396,28 @@ class IndividualBasicDetailUnitTest extends TestCase
         $this->assertStringContainsString((string) $individual->id, $result['fileName']);
         $this->assertEquals('%PDF-1.4 fake pdf content', $result['fileContent']);
     }
+
+    /**
+     * Test if accomplishment reports can be generated into docx t via aRService
+     */
+    public function test_can_generat_wes_docx(): void
+    {
+        $wes = IndividualBasicDetail::factory()->make([
+            'last_name' => 'Doe',
+            'first_name' => 'John',
+            'middle_name' => 'M',
+            'birthday' => now()->subYears(30),
+        ]);
+
+        $testReport = $wes->first();
+        $userInfo = $testReport->userProfile->individualBasicDetail;
+        $response = $this->individualBasicDetailService->generateWES($testReport);
+
+        $this->assertNotEmpty($response['fileContent']);
+
+        // filename should match format
+        $fileNameFormat = "$testReport->id-{$userInfo->last_name}-WES.docx";
+
+        $this->assertEquals($response['fileName'], $fileNameFormat);
+    }
 }
