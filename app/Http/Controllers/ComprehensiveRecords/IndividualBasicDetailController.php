@@ -104,4 +104,21 @@ class IndividualBasicDetailController extends ApiController
             'Content-Disposition' => 'attachment; filename="'.$response['fileName'].'"',
         ])->header('Access-Control-Expose-Headers', 'Content-Disposition');
     }
+
+    /**
+     * Generate WES Docx for a specific individual
+     */
+    public function generateWES(IndividualBasicDetail $individualBasicDetail): Response
+    {
+        $response = $this->individualBasicDetailService->generateWES($individualBasicDetail);
+
+        $sanitize = fn ($v) => htmlspecialchars((string) ($v ?? ''), ENT_QUOTES | ENT_XML1, 'UTF-8');
+
+        return response($response['fileContent'], 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => 'attachment; filename="'.
+                html_entity_decode($sanitize($response['fileName']), ENT_QUOTES, 'UTF-8').
+                '"',
+        ])->header('Access-Control-Expose-Headers', 'Content-Disposition');
+    }
 }
