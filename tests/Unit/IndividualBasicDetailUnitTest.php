@@ -409,14 +409,14 @@ class IndividualBasicDetailUnitTest extends TestCase
             'birthday' => now()->subYears(30),
         ]);
 
-        $testReport = $wes->first();
-        $userInfo = $testReport->userProfile->individualBasicDetail;
-        $response = $this->individualBasicDetailService->generateWES($testReport);
+        $generateWES = $wes->first();
+        $userInfo = $generateWES->userProfile->individualBasicDetail;
+        $response = $this->individualBasicDetailService->generateWES($generateWES);
 
         $this->assertNotEmpty($response['fileContent']);
 
         // filename should match format
-        $fileNameFormat = "$testReport->id-{$userInfo->last_name}-WES.docx";
+        $fileNameFormat = "$generateWES->id-{$userInfo->last_name}-WES.docx";
 
         $this->assertEquals($response['fileName'], $fileNameFormat);
     }
