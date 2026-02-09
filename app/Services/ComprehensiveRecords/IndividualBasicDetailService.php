@@ -363,27 +363,30 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
     {
         $templatePath = Storage::disk('assets')->path('TEMPLATE - Work Experience Sheet.docx');
         $templateProcessor = new TemplateProcessor($templatePath);
-        $sanitize = fn ($val) => htmlspecialchars((string) ($val ?? ''), ENT_QUOTES | ENT_XML1, 'UTF-8');
 
         // Local Helper for Date Formatting
         $formatDur = function ($from, $to, $isCurrent) {
             if (! $from) {
                 return 'N/A';
             }
-            $start = \Carbon\Carbon::parse($from)->format('M d, Y');
+            $start = Carbon::parse($from)->format('M d, Y');
 
-            return ($isCurrent || ! $to || $to === '1970-01-01') ? "$start to Present" : "$start to ".\Carbon\Carbon::parse($to)->format('M d, Y');
+            return ($isCurrent || ! $to || $to === '1970-01-01') ? "$start to Present" : "$start to ".Carbon::parse($to)->format('M d, Y');
         };
 
         // Map Work Experience Rows
         $workRows = $individualBasicDetail->individualWorkExperience->map(fn ($work) => [
-            'duration' => $sanitize($formatDur($work->inclusive_date_from, $work->inclusive_date_to, $work->is_current_work)),
-            'position' => $sanitize($work->position_title),
-            'agencyOrganization' => $sanitize($work->department_agency_office_company),
-            'officeUnit' => $sanitize($work->office_unit ?? 'N/A'),
-            'immediateSupervisor' => $sanitize($work->immediate_supervisor ?? 'N/A'),
-            'accomplishmentContribution' => $sanitize($work->significant_accomplishments ?? 'N/A'),
-            'summaryDuties' => $sanitize($work->summary_of_actual_duties ?? 'N/A'),
+            'duration' => $formatDur(
+                $work->inclusive_date_from,
+                $work->inclusive_date_to,
+                $work->is_current_work
+            ),
+            'position' => $work->position_title,
+            'agencyOrganization' => $work->department_agency_office_company,
+            'officeUnit' => $work->office_unit ?? 'N/A',
+            'immediateSupervisor' => $work->immediate_supervisor ?? 'N/A',
+            'accomplishmentContribution' => $work->significant_accomplishments ?? 'N/A',
+            'summaryDuties' => $work->summary_of_actual_duties ?? 'N/A',
         ])->toArray();
 
         // Clone Rows or Set Fallbacks
@@ -395,12 +398,12 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
 
         // Static Info
         $templateProcessor->setValues([
-            'fullName' => $sanitize(trim(
+            'fullName' => trim(
                 "{$individualBasicDetail->first_name} ".
                 ($individualBasicDetail->middle_name ? strtoupper($individualBasicDetail->middle_name[0]).'. ' : '').
                 "{$individualBasicDetail->last_name} ".
                 ($individualBasicDetail->ext_name?->value ?? '')
-            )),
+            ),
 
             'date' => date('F d, Y'),
         ]);
