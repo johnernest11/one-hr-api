@@ -1200,38 +1200,32 @@ class IndividualBasicDetailFeatureTest extends TestCase
 
     }
 
-    public function test_standard_user_can_only_update_own_records(): void
+    public function test_standard_user_can_only_update_own_c2_records(): void
     {
-        // Generate a data that the current user does not own
+        // Generate a record NOT owned by standard user
         $notOwnData = IndividualBasicDetail::factory()->withExistingUserProfile()->create();
 
-        // Generate updated data
-        $newInfo = $this->generate_test_data(PDSFormType::C4->value);
+        // Generate updated C2 (WES tab) data
+        $newInfo = $this->generate_test_data(PDSFormType::C2->value);
 
-        // Add the correct id on request body.
-        $newInfo['individual_question'][0]['id'] = $notOwnData->individualQuestion->id;
-        unset($newInfo['individual_reference']);
-        $newInfo['individual_government_id'][0]['id'] = $notOwnData->individualGovernmentId()->first()->id;
+        // Add correct ID for C2 nested record
+        $newInfo['individual_work_experience'][0]['id'] = $notOwnData->individualWorkExperience->first()->id ?? null;
 
-        // Generate random countries if individual_question is part of the input and q39 is true
-        if (isset($newInfo['individual_question']) and $newInfo['individual_question'][0]['q39']) {
-            $randomCountry = Country::inRandomOrder()->first()->id; // Get random country
-            $newInfo['individual_question'][0]['country_id'] = $randomCountry;
-        }
-
-        // Should not be able to update the record
-        $response = $this->withToken($this->authTokenStandard)->putJson("$this->baseUri/$notOwnData->id", $newInfo);
-
+        // Standard user should NOT be able to update someone else's C2
+        $response = $this->withToken($this->authTokenStandard)
+            ->putJson("$this->baseUri/{$notOwnData->id}", $newInfo);
         $response->assertStatus(403);
 
-        // Generate data with the current user as the owner
+        // Generate a record OWNED by the standard user
         $stndrdUserProf = $this->userStandard->userProfile;
         $ownData = IndividualBasicDetail::factory()->withExistingUserProfile($stndrdUserProf)->create();
-        $newInfo['individual_question'][0]['id'] = $ownData->individualQuestion->id; // Update id to point to the correct data
-        $newInfo['individual_government_id'][0]['id'] = $ownData->individualGovernmentId->first()->id;
 
-        // Should now be able to update
-        $response = $this->withToken($this->authTokenStandard)->putJson("$this->baseUri/$ownData->id", $newInfo);
+        // Update the correct nested ID for C2
+        $newInfo['individual_work_experience'][0]['id'] = $ownData->individualWorkExperience->first()->id ?? null;
+
+        // Standard user should be able to update their own C2
+        $response = $this->withToken($this->authTokenStandard)
+            ->putJson("$this->baseUri/{$ownData->id}", $newInfo);
         $response->assertStatus(200);
     }
 

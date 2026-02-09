@@ -70,6 +70,16 @@ class IndividualBasicDetailPolicy
             return true; // give permission to update records if user's role is HR PPMS admin or HR PAS admin
         }
 
-        return $user->id === $individualBasicDetail->userProfile?->user_id;
+        // Standard user can update only their own record
+        if ($user->id === $individualBasicDetail->userProfile?->user_id) {
+
+            // Allow standard user only if updating WES tab (C2)
+            if (isset($request['form_type']) && $request['form_type'] === 'C2') {
+                return true;
+            }
+        }
+
+        // Deny for all other cases
+        return false;
     }
 }

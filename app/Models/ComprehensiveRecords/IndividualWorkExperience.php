@@ -30,6 +30,10 @@ class IndividualWorkExperience extends Model
         'custom_salary_grade',
         'status_of_appointment',
         'is_gov_service',
+        'immediate_supervisor',
+        'office_unit',
+        'significant_accomplishments',
+        'summary_of_actual_duties',
     ];
 
     /**
