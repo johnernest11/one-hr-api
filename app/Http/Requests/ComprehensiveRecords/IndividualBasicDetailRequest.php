@@ -179,6 +179,10 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_work_experience.*.custom_salary_grade' => ['nullable', 'string', 'regex:/^\d{2}-\d{1}$/'], // For when it does not exist in the salary grade library
             'individual_work_experience.*.status_of_appointment' => ['nullable', new Enum(EmploymentStatus::class)],
             'individual_work_experience.*.is_gov_service' => ['nullable', 'boolean'],
+            'individual_work_experience.*.immediate_supervisor' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_work_experience.*.office_unit' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_work_experience.*.significant_accomplishments' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_work_experience.*.summary_of_actual_duties' => ['nullable', 'string', new DbVarcharMaxLength],
 
             /* -------------------------------------------------------------------------- */
             /*                               C3 starts here */
@@ -453,6 +457,10 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_work_experience.*.custom_salary_grade' => ['nullable', 'string', 'regex:/^\d{2}-\d{1}$/'], // For when it does not exist in the salary grade library
             'individual_work_experience.*.status_of_appointment' => ['nullable', new Enum(EmploymentStatus::class)],
             'individual_work_experience.*.is_gov_service' => ['nullable', 'boolean'],
+            'individual_work_experience.*.immediate_supervisor' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_work_experience.*.office_unit' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_work_experience.*.significant_accomplishments' => ['nullable', 'string', new DbVarcharMaxLength],
+            'individual_work_experience.*.summary_of_actual_duties' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual_work_experience.*._delete' => ['nullable', 'boolean'], // Can delete work experience.
         ];
     }
