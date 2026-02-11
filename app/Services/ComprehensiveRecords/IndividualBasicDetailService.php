@@ -339,7 +339,9 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
             ->renderAddress($individualBasicDetail)
             ->renderIds($individualBasicDetail)
             ->renderContact($individualBasicDetail)
-            ->renderPhysicalInfo($individualBasicDetail);
+            ->renderPhysicalInfo($individualBasicDetail)
+            ->renderFamilyBackground($individualBasicDetail)
+            ->renderEducationalBackground($individualBasicDetail);
 
         // Page 2 — C2
         $builder->loadTemplate(storage_path('assets/PDS_C2_Template.png'));
