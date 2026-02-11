@@ -2,15 +2,18 @@
 
 namespace App\Traits\Services;
 
+use App\Enums\AcademicLevel;
 use App\Enums\Citizenship;
 use App\Enums\CitizenshipAcquisition;
 use App\Enums\CivilStatus;
+use App\Enums\FamilyMemberCategory;
 use App\Enums\SexualCategory;
 use App\Models\Address\Barangay;
 use App\Models\Address\City;
 use App\Models\Address\Province;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\Libraries\Country;
+use Carbon\Carbon;
 use FPDF;
 
 class PdsPdfBuilder
@@ -48,14 +51,14 @@ class PdsPdfBuilder
     {
         $this->initPdf();
         $this->pdf->SetXY($x, $y);
-        $this->pdf->Cell($width, 20, strtoupper($text ?? ''), 0, 0, $align);
+        $this->pdf->Cell($width, 19.5, strtoupper($text ?? ''), 0, 0, $align);
     }
 
     public function renderPersonalInfo(IndividualBasicDetail $ind): self
     {
         $this->setText(131, 133, 440, $ind->last_name);
         $this->setText(131, 153, 310, $ind->first_name);
-        $this->setText(443, 155, 100, $ind->middle_name);
+        $this->setText(443, 155, 100, $ind->ext_name?->value ?? '');
         $this->setText(131, 171, 440, $ind->middle_name);
         $this->setText(131, 193, 130, $ind->birthday?->format('m/d/Y'));
 
@@ -168,6 +171,166 @@ class PdsPdfBuilder
         $this->setText(131, 306, 128, $ind->height);
         $this->setText(131, 326, 128, $ind->weight);
         $this->setText(131, 346, 128, $ind->blood_type?->value ?? '');
+
+        return $this;
+    }
+
+    public function renderFamilyBackground(IndividualBasicDetail $ind): self
+    {
+
+        $spouse = $ind->individualFamily->firstWhere('class', FamilyMemberCategory::SPOUSE);
+
+        if ($spouse) {
+            $this->setText(131, 508, 207, $spouse->last_name ?? 'N/A');
+            $this->setText(131, 526, 128, $spouse->first_name ?? 'N/A');
+            $this->setText(260, 526, 78, $spouse->ext_name?->value ?? 'N/A');
+            $this->setText(131, 544.5, 207, $spouse->middle_name ?? 'N/A');
+            $this->setText(131, 562, 207, $spouse->occupation ?? 'N/A');
+            $this->setText(131, 580, 207, $spouse->employers_business_name ?? 'N/A');
+            $this->setText(131, 598, 207, $spouse->business_address ?? 'N/A');
+            $this->setText(131, 615.5, 207, $spouse->telephone_no ?? 'N/A');
+        } else {
+            // Spouse not found — fill all fields with 'N/A'
+            $this->setText(131, 508, 207, 'N/A');
+            $this->setText(131, 526, 128, 'N/A');
+            $this->setText(260, 526, 78, 'N/A');
+            $this->setText(131, 544.5, 207, 'N/A');
+            $this->setText(131, 562, 207, 'N/A');
+            $this->setText(131, 580, 207, 'N/A');
+            $this->setText(131, 598, 207, 'N/A');
+            $this->setText(131, 615.5, 207, 'N/A');
+        }
+
+        $father = $ind->individualFamily->firstWhere('class', FamilyMemberCategory::FATHER);
+
+        if ($father) {
+            $this->setText(131, 634, 207, $father->last_name ?? '');
+            $this->setText(131, 652, 128, $father->first_name ?? '');
+            $this->setText(260, 652, 78, $father->ext_name?->value ?? '');
+            $this->setText(131, 670, 207, $father->middle_name ?? '');
+        }
+
+        $mother = $ind->individualFamily->firstWhere('class', FamilyMemberCategory::MOTHER);
+
+        if ($mother) {
+            $this->setText(131, 705, 207, $mother->last_name ?? '');
+            $this->setText(131, 723, 207, $mother->first_name ?? '');
+            $this->setText(131, 741, 207, $mother->middle_name ?? '');
+        }
+
+        $childrenList = $ind->individualFamily->where('class', FamilyMemberCategory::CHILDREN);
+
+        if ($childrenList->isNotEmpty()) {
+            $yPosition = 526; // starting vertical position
+            foreach ($childrenList as $child) {
+                $fullName = trim(
+                    ($child->last_name ?? '').', '.
+                    ($child->first_name ?? '').' '.
+                    ($child->middle_name ?? '')
+                );
+
+                $maxChars = 25;
+                if (strlen($fullName) > $maxChars) {
+                    $fullName = substr($fullName, 0, $maxChars - 3).'...';
+                }
+
+                $this->setText(338, $yPosition, 152, $fullName ?: 'N/A');
+                $dob = $child->date_of_birth
+                    ? Carbon::parse($child->date_of_birth)->format('d/m/Y')
+                    : 'N/A';
+                $this->setText(490, $yPosition, 84, $dob);
+
+                $yPosition += 18; // move down for the next child
+            }
+        } else {
+            $this->setText(338, 526, 152, 'N/A');
+            $this->setText(490, 526, 84, 'N/A');
+        }
+
+        return $this;
+    }
+
+    public function renderEducationalBackground(IndividualBasicDetail $ind): self
+    {
+
+        $elementary = $ind->individualEducationalBackground()->firstWhere('level', AcademicLevel::ELEMENTARY);
+
+        if ($elementary) {
+            $this->setText(131, 820, 128, $elementary->schools_name ?? 'N/A');
+            $this->setText(259, 820, 118, $elementary->education_description ?? 'N/A');
+            $this->setText(377, 820, 32, $elementary->period_of_attendance_from ?? 'N/A');
+            $this->setText(409, 820, 32, $elementary->period_of_attendance_to ?? 'N/A');
+            $this->setText(441, 820, 48, $elementary->highest_grade_level ?? 'N/A');
+            $this->setText(489, 820, 39, $elementary->units_earned ?? 'N/A');
+            $this->setText(528, 820, 46, $elementary->year_graduated ?? 'N/A');
+        }
+
+        $high_School = $ind->individualEducationalBackground()->firstWhere('level', AcademicLevel::SECONDARY);
+
+        if ($high_School) {
+            $this->setText(131, 845, 128, $high_School->schools_name ?? 'N/A');
+            $this->setText(259, 845, 118, $high_School->education_description ?? 'N/A');
+            $this->setText(377, 845, 32, $high_School->period_of_attendance_from ?? 'N/A');
+            $this->setText(409, 845, 32, $high_School->period_of_attendance_to ?? 'N/A');
+            $this->setText(441, 845, 48, $high_School->highest_grade_level ?? 'N/A');
+            $this->setText(489, 845, 39, $high_School->units_earned ?? 'N/A');
+            $this->setText(528, 845, 46, $high_School->year_graduated ?? 'N/A');
+        }
+
+        $vocational = $ind->individualEducationalBackground()->firstWhere('level', AcademicLevel::VOCATIONAL);
+
+        if ($vocational) {
+            $this->setText(131, 870, 128, $vocational->schools_name ?? 'N/A');
+            $this->setText(259, 870, 118, $vocational->education_description ?? 'N/A');
+            $this->setText(377, 870, 32, $vocational->period_of_attendance_from ?? 'N/A');
+            $this->setText(409, 870, 32, $vocational->period_of_attendance_to ?? 'N/A');
+            $this->setText(441, 870, 48, $vocational->highest_grade_level ?? 'N/A');
+            $this->setText(489, 870, 39, $vocational->units_earned ?? 'N/A');
+            $this->setText(528, 870, 46, $vocational->year_graduated ?? 'N/A');
+        }
+
+        $college = $ind->individualEducationalBackground()->firstWhere('level', AcademicLevel::COLLEGE);
+
+        if ($college) {
+            $y = 893;
+
+            // Cells to render with adjustable font
+            $cells = [
+                ['x' => 131, 'width' => 128, 'text' => $college->schools_name ?? 'N/A'],
+                ['x' => 259, 'width' => 118, 'text' => $college->education_description ?? 'N/A'],
+            ];
+
+            foreach ($cells as $cell) {
+                $fontSize = 12; // default font size
+                $textLength = strlen($cell['text']);
+
+                // Shrink font if text is too long for the cell
+                if ($textLength > $cell['width'] / 5) { // rough estimate
+                    $fontSize = max(6, $cell['width'] / ($textLength / 1.5)); // minimum font size 6
+                }
+
+                $this->setText($cell['x'], $y, $cell['width'], $cell['text'], $fontSize);
+            }
+
+            // Remaining fixed cells (years, grades, units, etc.)
+            $this->setText(377, $y, 32, $college->period_of_attendance_from ?? 'N/A');
+            $this->setText(409, $y, 32, $college->period_of_attendance_to ?? 'N/A');
+            $this->setText(441, $y, 48, $college->highest_grade_level ?? 'N/A');
+            $this->setText(489, $y, 39, $college->units_earned ?? 'N/A');
+            $this->setText(528, $y, 46, $college->year_graduated ?? 'N/A');
+        }
+
+        $graduate = $ind->individualEducationalBackground()->firstWhere('level', AcademicLevel::GRADUATE);
+
+        if ($graduate) {
+            $this->setText(131, 918, 128, $graduate->schools_name ?? 'N/A');
+            $this->setText(259, 918, 118, $graduate->education_description ?? 'N/A');
+            $this->setText(377, 918, 32, $graduate->period_of_attendance_from ?? 'N/A');
+            $this->setText(409, 918, 32, $graduate->period_of_attendance_to ?? 'N/A');
+            $this->setText(441, 918, 48, $graduate->highest_grade_level ?? 'N/A');
+            $this->setText(489, 918, 39, $graduate->units_earned ?? 'N/A');
+            $this->setText(528, 918, 46, $graduate->year_graduated ?? 'N/A');
+        }
 
         return $this;
     }
