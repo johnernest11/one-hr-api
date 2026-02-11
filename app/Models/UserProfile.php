@@ -131,6 +131,11 @@ class UserProfile extends Model
         return $this->hasMany(AccomplishmentReport::class);
     }
 
+    public function compensatoryReport(): HasMany
+    {
+        return $this->hasMany(CompensatoryReport::class);
+    }
+
     /**
      * @Appended
      * Create middle_initial attribute

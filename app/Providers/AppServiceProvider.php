@@ -15,6 +15,8 @@ use App\Services\AccomplishmentReport\AccomplishmentReportService;
 use App\Services\AppSettingsManager;
 use App\Services\CloudStorageServices\AwsS3StorageService;
 use App\Services\CloudStorageServices\CloudStorageManager;
+use App\Services\CompensatoryReport\CompensatoryReportManager;
+use App\Services\CompensatoryReport\CompensatoryReportService;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailManager;
 use App\Services\ComprehensiveRecords\IndividualBasicDetailService;
 use App\Services\DailyTimeRecords\DailyTimeRecordManager;
@@ -60,6 +62,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Accomplishment Reports
         $this->app->bind(AccomplishmentReportManager::class, fn () => new AccomplishmentReportService);
+
+        // Compensatory Reports
+        $this->app->bind(CompensatoryReportManager::class, fn () => new CompensatoryReportService);
 
         // IndividualBasicDetail
         $this->app->bind(IndividualBasicDetailManager::class, function ($app) {

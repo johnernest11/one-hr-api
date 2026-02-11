@@ -12,6 +12,7 @@ use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\Item;
 use App\Models\User;
 use App\Policies\AccomplishmentReportPolicy;
+use App\Policies\CompensatoryPolicy;
 use App\Policies\ComprehensiveRecords\IndividualBasicDetailPolicy;
 use App\Policies\EmployeePolicy;
 use App\Policies\ItemPolicy;
@@ -37,6 +38,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         User::class => UserPolicy::class,
         AccomplishmentReport::class => AccomplishmentReportPolicy::class,
+        CompensatoryReport::class => CompensatoryPolicy::class,
         IndividualBasicDetail::class => IndividualBasicDetailPolicy::class,
         Employee::class => EmployeePolicy::class,
         Item::class => ItemPolicy::class,
