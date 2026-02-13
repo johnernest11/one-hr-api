@@ -3,6 +3,7 @@
 namespace App\Services\DailyTimeRecords;
 
 use App\Enums\DocumentStatus;
+use App\Events\TimeLogCreated;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
@@ -99,6 +100,9 @@ class TimeLogService implements TimeLogManager
             ]);
 
             $this->updateLocatorSlipLogger($employee, $timeLogData);
+
+            // Fire broadcast
+            broadcast(new TimeLogCreated($timeLog));
 
             return $timeLog;
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
