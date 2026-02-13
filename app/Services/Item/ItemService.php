@@ -32,6 +32,8 @@ class ItemService implements ItemManager
         /** @var Builder $item */
         $query = $this->model->filtered();
 
+        $query->orderBy('id', 'desc');
+
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
     }
 

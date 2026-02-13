@@ -29,6 +29,7 @@ class AccomplishmentReportService implements AccomplishmentReportManager
     {
         /** @var Builder $accomplishmentReports */
         $query = AccomplishmentReport::filtered();
+        $query->orderBy('id', 'desc');
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
     }

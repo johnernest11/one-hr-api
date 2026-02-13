@@ -80,6 +80,7 @@ class IndividualBasicDetailService implements IndividualBasicDetailManager
     public function all(?int $limit = null): LengthAwarePaginator
     {
         $query = $this->model->filtered();
+        $query->orderBy('id', 'desc');
 
         return $this->buildPagination(PaginationType::LENGTH_AWARE, $query, $limit);
     }
