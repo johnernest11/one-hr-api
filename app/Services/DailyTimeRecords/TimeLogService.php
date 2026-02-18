@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TimeLogService implements TimeLogManager
 {
@@ -102,7 +103,11 @@ class TimeLogService implements TimeLogManager
             $this->updateLocatorSlipLogger($employee, $timeLogData);
 
             // Fire broadcast
-            broadcast(new TimeLogCreated($timeLog));
+            try {
+                broadcast(new TimeLogCreated($timeLog));
+            } catch (Exception $e) {
+                Log::error('Broadcasting failed: '.$e->getMessage());
+            }
 
             return $timeLog;
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
