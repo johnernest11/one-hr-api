@@ -3,6 +3,7 @@
 namespace App\Services\DailyTimeRecords;
 
 use App\Enums\DocumentStatus;
+use App\Events\TimeLogCreated;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
@@ -15,6 +16,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TimeLogService implements TimeLogManager
 {
@@ -99,6 +101,13 @@ class TimeLogService implements TimeLogManager
             ]);
 
             $this->updateLocatorSlipLogger($employee, $timeLogData);
+
+            // Fire broadcast
+            try {
+                broadcast(new TimeLogCreated($timeLog));
+            } catch (Exception $e) {
+                Log::error('Broadcasting failed: '.$e->getMessage());
+            }
 
             return $timeLog;
         }, self::MAX_TRANSACTION_DEADLOCK_ATTEMPTS);
