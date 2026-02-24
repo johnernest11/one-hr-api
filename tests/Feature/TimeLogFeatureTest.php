@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\Role as RoleEnum;
 use App\Models\DailyTimeRecords\QrCode;
+use App\Models\Libraries\Office;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
 use Carbon\Carbon;
@@ -32,6 +33,10 @@ class TimeLogFeatureTest extends TestCase
 
     private PersistentAuthTokenManager $tokenManager;
 
+    private Office $office;
+
+    private UploadedFile $fakeImage;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -47,6 +52,9 @@ class TimeLogFeatureTest extends TestCase
         $this->user_ppms = $user_ppms;
         $this->user_pas = $user_pas;
         $this->standard_user = $standard_user;
+
+        $this->office = Office::first();
+        $this->fakeImage = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
 
         $this->tokenManager = resolve(PersistentAuthTokenManager::class);
         $authTokenExpirationPPMS = now()->addMinutes(config('sanctum.expiration'));
@@ -65,6 +73,8 @@ class TimeLogFeatureTest extends TestCase
 
         $data = [
             'scanned_qr' => $qrCode->qr_code_value,
+            'office_id' => $this->office->id,
+            'captured_image' => $this->fakeImage,
         ];
 
         $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/log-time', $data);
@@ -84,6 +94,8 @@ class TimeLogFeatureTest extends TestCase
 
         $data = [
             'scanned_qr' => $qrCode->qr_code_value,
+            'office_id' => $this->office->id,
+            'captured_image' => $this->fakeImage,
         ];
 
         $response = $this->withToken($this->authTokenPAS)->postJson($this->baseUri.'/log-time', $data);
@@ -108,7 +120,8 @@ class TimeLogFeatureTest extends TestCase
 
         $data = [
             'scanned_qr' => $qrCode->qr_code_value,
-            'captured_image' => $file,
+            'office_id' => $this->office->id,
+            'captured_image' => $this->fakeImage,
         ];
 
         $response = $this
