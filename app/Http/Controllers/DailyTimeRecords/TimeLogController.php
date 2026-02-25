@@ -5,6 +5,7 @@ namespace App\Http\Controllers\DailyTimeRecords;
 use App\Enums\ApiErrorCode;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\DailyTimeRecords\TimeLogRequest;
+use App\Models\Libraries\Office;
 use App\Services\DailyTimeRecords\QrCodeManager;
 use App\Services\DailyTimeRecords\TimeLogManager;
 use Exception;
@@ -35,8 +36,9 @@ class TimeLogController extends ApiController
             $employee = $this->qrCodeService->verifyQr($request->validated());
 
             $capturedImage = $request->file('captured_image');
+            $office = Office::findOrFail($request->input('office_id'));
 
-            $logTime = $this->timeLogService->create($employee, $capturedImage);
+            $logTime = $this->timeLogService->create($employee, $capturedImage, $office);
 
         } catch (DecryptException $e) {
             return $this->error(

@@ -6,6 +6,7 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Models\Libraries\Office;
 use App\Services\CloudStorageServices\AwsS3StorageService;
 use App\Services\DailyTimeRecords\DailyTimeRecordService;
 use App\Services\DailyTimeRecords\TimeLogService;
@@ -13,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\Paginator;
 use Mockery;
@@ -32,6 +34,10 @@ class DailyTimeRecordUnitTest extends TestCase
 
     private IndividualBasicDetail $individual;
 
+    private UploadedFile $fakeImage;
+
+    private Office $office;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -40,7 +46,10 @@ class DailyTimeRecordUnitTest extends TestCase
         $mockStorage = Mockery::mock(AwsS3StorageService::class);
         $mockStorage->shouldReceive('upload')->andReturn('mocked/path/file.jpg');
         $mockStorage->shouldReceive('delete')->andReturn(true);
+        $mockStorage->shouldReceive('generateTmpUrl')->andReturn('https://fake-s3-url.com/image.jpg');
 
+        $this->fakeImage = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
+        $this->office = Office::first();
         $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord, $mockStorage);
         $this->timeLogService = new TimeLogService(new TimeLog, $mockStorage);
 
@@ -53,7 +62,7 @@ class DailyTimeRecordUnitTest extends TestCase
      */
     public function test_can_view_all_time_logs(): void
     {
-        $tl = $this->timeLogService->create($this->employee);
+        $tl = $this->timeLogService->create($this->employee, $this->fakeImage, $this->office);
         $this->assertDatabaseCount('daily_time_records', 1); // Check that the generated sample record exists in the db
 
         $paginatedResults = $this->dailyTimeRecordService->all();
@@ -66,7 +75,7 @@ class DailyTimeRecordUnitTest extends TestCase
      */
     public function test_can_view_dtr_per_period_range(): void
     {
-        $tl = $this->timeLogService->create($this->employee);
+        $tl = $this->timeLogService->create($this->employee, $this->fakeImage, $this->office);
         $this->assertDatabaseCount('daily_time_records', 1); // Check that the generated sample record exists in the db
 
         $sampleRequest = [
@@ -83,7 +92,7 @@ class DailyTimeRecordUnitTest extends TestCase
      */
     public function test_can_view_warm_bodies_today(): void
     {
-        $tl = $this->timeLogService->create($this->employee);
+        $tl = $this->timeLogService->create($this->employee, $this->fakeImage, $this->office);
         $this->assertDatabaseCount('daily_time_records', 1); // Check that the generated sample record exists in the db
 
         $paginatedResults = $this->dailyTimeRecordService->viewWarmBodiesToday();
@@ -96,7 +105,7 @@ class DailyTimeRecordUnitTest extends TestCase
      */
     public function test_can_update(): void
     {
-        $tl = $this->timeLogService->create($this->employee);
+        $tl = $this->timeLogService->create($this->employee, $this->fakeImage, $this->office);
         $this->assertDatabaseCount('daily_time_records', 1); // Check that the generated sample record exists in the db
         $this->assertEquals(true, $tl->is_selected);
         $dtrId = $tl->dailyTimeRecord->id;
@@ -132,7 +141,7 @@ class DailyTimeRecordUnitTest extends TestCase
      */
     public function test_can_search_timelogs(): void
     {
-        $tl = $this->timeLogService->create($this->employee);
+        $tl = $this->timeLogService->create($this->employee, $this->fakeImage, $this->office);
         $this->assertDatabaseCount('daily_time_records', 1); // Check that the generated sample record exists in the db
         $dtrId = $tl->dailyTimeRecord->id;
 
@@ -159,7 +168,7 @@ class DailyTimeRecordUnitTest extends TestCase
 
         $this->assertSame(0, $result['in_office']); // Assert that there is no employee in the office.
 
-        $tl = $this->timeLogService->create($this->employee); // Generate time logs. Now an employee is in the office.
+        $tl = $this->timeLogService->create($this->employee, $this->fakeImage, $this->office); // Generate time logs. Now an employee is in the office.
         $this->assertDatabaseCount('daily_time_records', 1); // Check that the generated sample record exists in the db
 
         // Call the service again.

@@ -18,6 +18,7 @@ class TimeLog extends Model
         'is_in',
         'is_selected',
         'captured_image_path',
+        'office_id',
     ];
 
     protected $casts = [

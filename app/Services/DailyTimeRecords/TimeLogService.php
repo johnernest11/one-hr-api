@@ -7,6 +7,7 @@ use App\Events\TimeLogCreated;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Models\Libraries\Office;
 use App\Models\LocatorSlip\LocatorSlip;
 use App\Models\LocatorSlip\LocatorSlipLogger;
 use App\Services\CloudStorageServices\CloudStorageManager;
@@ -44,9 +45,9 @@ class TimeLogService implements TimeLogManager
      *
      * @throws Exception
      */
-    public function create(Employee $employee, $capturedImage = null): TimeLog
+    public function create(Employee $employee, $capturedImage, Office $office): TimeLog
     {
-        return DB::transaction(function () use ($employee, $capturedImage) {
+        return DB::transaction(function () use ($employee, $capturedImage, $office) {
             $limit = config('timelog.duplicate_scan_limit');
             $dateToday = Carbon::now()->toDateString();
 
@@ -79,6 +80,7 @@ class TimeLogService implements TimeLogManager
                 'is_in' => $isIn,
                 'captured_image_path' => $imagePath,
                 'is_selected' => true,
+                'office_id' => $office->id ?? null,
             ];
 
             $countIsSelected = $this->model->whereBelongsTo($dtr)->where('is_selected', true)->count();

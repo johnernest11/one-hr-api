@@ -3,9 +3,12 @@
 namespace Database\Factories\DailyTimeRecords;
 
 use App\Models\DailyTimeRecords\DailyTimeRecord;
+use App\Models\Libraries\Office;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @extends Factory<TimeLogFactory>
@@ -19,11 +22,16 @@ class TimeLogFactory extends Factory
      */
     public function definition(): array
     {
+        Storage::fake('s3');
+        $file = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
+
         return [
             'daily_time_record_id' => DailyTimeRecord::factory(),
             'date' => Carbon::today()->toDateString(),
             'scanned_time' => fake()->time('H:i'),
             'is_in' => true,
+            'office_id' => Office::first()->id,
+            'captured_image_path' => $file->store('images/timelogs', 's3'),
         ];
     }
 

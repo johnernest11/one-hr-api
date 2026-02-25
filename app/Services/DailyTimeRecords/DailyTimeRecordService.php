@@ -18,6 +18,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\CursorPaginator;
+use Illuminate\Pagination\LengthAwarePaginator as LengthAwarePaginatorClass;
 use Illuminate\Support\Facades\DB;
 
 class DailyTimeRecordService implements DailyTimeRecordManager
@@ -44,7 +45,23 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         /** @var Builder $dailyTimeRecord */
         $query = $this->model->filtered();
 
-        return $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
+        /** @var LengthAwarePaginatorClass $paginator */
+        $paginator = $this->buildPagination(PaginationType::LENGTH_AWARE, $query);
+
+        $cloudStorageInstance = $this->cloudStorage;
+
+        // Transform each dtr in the paginator to:
+        //      - construct employee full name
+        //      - generate temporary URL (valid for 24 hrs)
+        return $paginator->through(function ($dtr) use ($cloudStorageInstance) {
+            $dtr->employee_name = trim("{$dtr->first_name} {$dtr->last_name} {$dtr->ext_name}");
+
+            $dtr->captured_image_url = $dtr->captured_image_path
+                ? $cloudStorageInstance->generateTmpUrl($dtr->captured_image_path, 86400) // 24 hrs in seconds
+                : null;
+
+            return $dtr;
+        });
     }
 
     /** {@inheritDoc} */

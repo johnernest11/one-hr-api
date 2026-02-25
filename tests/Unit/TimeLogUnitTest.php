@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\DailyTimeRecords\TimeLog;
+use App\Models\Libraries\Office;
 use App\Services\CloudStorageServices\AwsS3StorageService;
 use App\Services\DailyTimeRecords\TimeLogService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,6 +20,10 @@ class TimeLogUnitTest extends TestCase
 
     private Employee $employee;
 
+    private Office $office;
+
+    private UploadedFile $fakeImage;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,6 +36,9 @@ class TimeLogUnitTest extends TestCase
         // Pass it to the TimeLogService
         $this->timeLogService = new TimeLogService(new TimeLog, $awsS3Service);
 
+        $this->office = Office::first();
+        $this->fakeImage = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
+
         $individual = IndividualBasicDetail::factory()->create();
         $this->employee = Employee::whereBelongsTo($individual)->firstOrFail();
     }
@@ -38,7 +46,7 @@ class TimeLogUnitTest extends TestCase
     /** @test */
     public function test_can_create_new_time_log_via_passed_employee(): void
     {
-        $this->timeLogService->create($this->employee);
+        $this->timeLogService->create($this->employee, $this->fakeImage, $this->office);
 
         $this->assertDatabaseCount('time_logs', 1);
     }

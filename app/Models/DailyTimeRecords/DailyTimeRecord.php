@@ -61,6 +61,8 @@ class DailyTimeRecord extends Model
             ->send($builder
                 ->join('employees', 'daily_time_records.employee_id', '=', 'employees.id')
                 ->whereNull('employees.deleted_at')
+                ->join('items', 'employees.item_id', '=', 'items.id')
+                ->join('positions', 'items.position_id', '=', 'positions.id')
                 ->join('offices', 'employees.office_id', '=', 'offices.id')
                 ->join('divisions', 'employees.division_id', '=', 'divisions.id')
                 ->join('section_or_units', 'employees.section_or_unit_id', '=', 'section_or_units.id')
@@ -74,6 +76,7 @@ class DailyTimeRecord extends Model
                     'time_logs.date AS time_log_date',
                     'time_logs.captured_image_path',
                     'employees.id_number',
+                    'positions.title AS position_title',
                     'individual_basic_details.first_name',
                     'individual_basic_details.middle_name',
                     'individual_basic_details.last_name',
