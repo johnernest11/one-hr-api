@@ -63,11 +63,11 @@ class DailyTimeRecord extends Model
                 ->whereNull('employees.deleted_at')
                 ->join('items', 'employees.item_id', '=', 'items.id')
                 ->join('positions', 'items.position_id', '=', 'positions.id')
-                ->join('offices', 'employees.office_id', '=', 'offices.id')
                 ->join('divisions', 'employees.division_id', '=', 'divisions.id')
                 ->join('section_or_units', 'employees.section_or_unit_id', '=', 'section_or_units.id')
                 ->join('individual_basic_details', 'employees.individual_basic_detail_id', '=', 'individual_basic_details.id')
                 ->join('time_logs', 'daily_time_records.id', '=', 'time_logs.daily_time_record_id')
+                ->join('offices', 'time_logs.office_id', '=', 'offices.id')
                 ->select(
                     'daily_time_records.date AS dtr_date',
                     'time_logs.id AS time_log_id',
@@ -75,13 +75,14 @@ class DailyTimeRecord extends Model
                     'time_logs.scanned_time',
                     'time_logs.date AS time_log_date',
                     'time_logs.captured_image_path',
+                    'time_logs.office_id',
                     'employees.id_number',
                     'positions.title AS position_title',
                     'individual_basic_details.first_name',
                     'individual_basic_details.middle_name',
                     'individual_basic_details.last_name',
                     'individual_basic_details.ext_name',
-                    'employees.office_id',
+                    'employees.office_id AS employee_office_id',
                     'offices.name AS office_name',
                     'divisions.name AS division_name',
                     'section_or_units.name AS section_name',

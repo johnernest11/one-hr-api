@@ -46,6 +46,17 @@ class DailyTimeRecordController extends ApiController
     }
 
     /**
+     * Count warm bodies per station
+     */
+    public function countWarmBodiesPerStation(): JsonResponse
+    {
+        $officeStatus = $this->dailyTimeRecordService->countWarmBodiesPerStation();
+
+        return $this->success(['data' => $officeStatus], Response::HTTP_OK);
+
+    }
+
+    /**
      * Display all DTRs per month.
      */
     public function viewDtrPerPeriodRange(Employee $employee, DailyTimeRecordRequest $request): JsonResponse

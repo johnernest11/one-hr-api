@@ -24,6 +24,11 @@ interface DailyTimeRecordManager
     public function countWarmBodies(): array;
 
     /**
+     * Count how many employees are currently inside specific stations and how many are not.
+     */
+    public function countWarmBodiesPerStation(): array;
+
+    /**
      * View daily time records per month.
      */
     public function viewDtrPerPeriodRange(Employee $employee, array $request): LengthAwarePaginator;

@@ -62,7 +62,32 @@ class TimeLogService implements TimeLogManager
                 if ($timeLogTime->diffInMinutes(Carbon::now()) <= $limit) {
                     throw new Exception('Duplicate scan.');
                 }
-                $isIn = ! $latestTimeLog->is_in;
+
+                // Scenario: If the employee did not time out on the their previous office.
+                // Ex.: Employee logged in at station 1 then they logged in at station 2 without logging out at station 1.
+                // The logic: A time out log will automatically be generated for the employee + an append to the DTR's remarks
+                $previousOfficeId = $latestTimeLog->office_id;
+                $previousOffice = Office::find($previousOfficeId);
+                if ($previousOfficeId != $office->id && $latestTimeLog->is_in) {
+                    $timeOutData = [
+                        'date' => $dateToday,
+                        'scanned_time' => Carbon::now()->format('H:i'),
+                        'is_in' => false,
+                        'captured_image_path' => null, // @todo: this will be null for now
+                        'is_selected' => false,
+                        'office_id' => $previousOfficeId,
+                    ];
+                    $autoGenLog = $dtr->timeLog()->create($timeOutData);
+                    $autoGenRemarks = "\n".
+                        'The employee forgot to time out at '.$previousOffice->name.
+                        '. An auto-generated time log has been created at '.$autoGenLog->scanned_time.' to compensate for this.';
+                    $dtr->employee_remarks .= $autoGenRemarks;
+                    $dtr->save();
+
+                    $isIn = true;
+                } else {
+                    $isIn = ! $latestTimeLog->is_in;
+                }
             } else {
                 $isIn = true;
             }

@@ -152,6 +152,50 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         ];
     }
 
+    /** {@inheritDoc} */
+    public function countWarmBodiesPerStation(): array
+    {
+        $date = now()->toDateString();
+        $targetOfficeId = request('office');
+
+        $latestLogIds = DB::table('time_logs as tl')
+            ->join('daily_time_records as dtr', 'tl.daily_time_record_id', '=', 'dtr.id')
+            ->whereDate('dtr.date', $date)
+            ->select('dtr.employee_id', DB::raw('MAX(tl.id) as max_log_id'))
+            ->groupBy('dtr.employee_id');
+
+        $query = DB::table('employees as e')
+            ->whereNull('e.deleted_at')
+            ->leftJoinSub($latestLogIds, 'latest', 'e.id', '=', 'latest.employee_id')
+            ->leftJoin('time_logs as log_data', 'latest.max_log_id', '=', 'log_data.id')
+            ->select([
+                'e.id as employee_id',
+                DB::raw('CASE 
+                    WHEN log_data.is_in = 1 AND log_data.office_id IS NOT NULL THEN log_data.office_id 
+                    ELSE e.office_id 
+                END as effective_office_id'),
+                'log_data.is_in',
+            ]);
+
+        if ($targetOfficeId) {
+            $query->where(function ($q) use ($targetOfficeId) {
+                $q->where(DB::raw('CASE 
+                    WHEN log_data.is_in = 1 AND log_data.office_id IS NOT NULL THEN log_data.office_id 
+                    ELSE e.office_id 
+                END'), $targetOfficeId);
+            });
+        }
+
+        $results = $query->get();
+
+        return [
+            'office_id' => $targetOfficeId,
+            'total_employees' => $results->count(),
+            'present' => $results->where('is_in', 1)->count(),
+            'absent' => $results->where('is_in', 0)->count(),
+        ];
+    }
+
     /**
      * Get start and end date based on passed month and year.
      *
