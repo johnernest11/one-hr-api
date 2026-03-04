@@ -56,7 +56,10 @@ class TimeLogService implements TimeLogManager
                 ['status' => DocumentStatus::DRAFT->value]
             );
 
-            $latestTimeLog = $this->model->whereBelongsTo($dtr)->latest('scanned_time')->first();
+            $latestTimeLog = $this->model->whereBelongsTo($dtr)
+                ->orderBy('scanned_time', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
             if ($latestTimeLog) {
                 $timeLogTime = Carbon::parse($latestTimeLog->scanned_time);
                 if ($timeLogTime->diffInMinutes(Carbon::now()) <= $limit) {
