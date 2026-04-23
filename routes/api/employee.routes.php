@@ -98,7 +98,7 @@ Route::middleware(['auth:token', 'verified.api'])->group(function () {
 
         /** @uses DailyTimeRecordController::countWarmBodiesPerStation */
         Route::middleware(['permission:'.Permission::VIEW_ALL_TIME_LOGS->value])
-            ->get('/warm-bodies/count-station', 'countWarmBodiesPerStation')->name('count-warm-bodies-station');
+            ->get('/warm-bodies/station', 'countWarmBodiesPerStation')->name('count-warm-bodies-station');
 
         /** @uses DailyTimeRecordController::viewWarmBodiesToday */
         Route::middleware(['permission:'.Permission::VIEW_WARM_BODIES_TODAY->value])
