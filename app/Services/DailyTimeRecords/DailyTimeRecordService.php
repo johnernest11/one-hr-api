@@ -158,6 +158,19 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         $date = now()->toDateString();
         $targetOfficeId = request('office');
 
+        /**
+        * PERFORMANCE NOTE: Query Builder (DB::table) vs. Eloquent Models
+        * * This function uses the Query Builder instead of Eloquent because:
+        * * 1. MEMORY EFFICIENCY: 
+        * Eloquent "hydrates" every row into a full Model object. Fetching 1,000 employees 
+        * via Eloquent creates 1,000 class instances, whereas Query Builder returns 
+        * lightweight stdClass objects (raw data).
+        * * 2. EXECUTION SPEED: 
+        * Eloquent performs additional tasks per row (checking casts, dates, accessors, 
+        * and firing model events). For "Summary" or "Count" reports, this overhead 
+        * can make the request 5x-10x slower.
+        */
+
         $latestLogIds = DB::table('time_logs as tl')
             ->join('daily_time_records as dtr', 'tl.daily_time_record_id', '=', 'dtr.id')
             ->whereDate('dtr.date', $date)
