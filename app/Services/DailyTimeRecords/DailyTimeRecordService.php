@@ -152,6 +152,63 @@ class DailyTimeRecordService implements DailyTimeRecordManager
         ];
     }
 
+    /** {@inheritDoc} */
+    public function countWarmBodiesPerStation(): array
+    {
+        $date = now()->toDateString();
+        $targetOfficeId = request('office');
+
+        /**
+        * PERFORMANCE NOTE: Query Builder (DB::table) vs. Eloquent Models
+        * * This function uses the Query Builder instead of Eloquent because:
+        * * 1. MEMORY EFFICIENCY: 
+        * Eloquent "hydrates" every row into a full Model object. Fetching 1,000 employees 
+        * via Eloquent creates 1,000 class instances, whereas Query Builder returns 
+        * lightweight stdClass objects (raw data).
+        * * 2. EXECUTION SPEED: 
+        * Eloquent performs additional tasks per row (checking casts, dates, accessors, 
+        * and firing model events). For "Summary" or "Count" reports, this overhead 
+        * can make the request 5x-10x slower.
+        */
+
+        $latestLogIds = DB::table('time_logs as tl')
+            ->join('daily_time_records as dtr', 'tl.daily_time_record_id', '=', 'dtr.id')
+            ->whereDate('dtr.date', $date)
+            ->select('dtr.employee_id', DB::raw('MAX(tl.id) as max_log_id'))
+            ->groupBy('dtr.employee_id');
+
+        $query = DB::table('employees as e')
+            ->whereNull('e.deleted_at')
+            ->leftJoinSub($latestLogIds, 'latest', 'e.id', '=', 'latest.employee_id')
+            ->leftJoin('time_logs as log_data', 'latest.max_log_id', '=', 'log_data.id')
+            ->select([
+                'e.id as employee_id',
+                DB::raw('CASE 
+                    WHEN log_data.is_in = 1 AND log_data.office_id IS NOT NULL THEN log_data.office_id 
+                    ELSE e.office_id 
+                END as effective_office_id'),
+                'log_data.is_in',
+            ]);
+
+        if ($targetOfficeId) {
+            $query->where(function ($q) use ($targetOfficeId) {
+                $q->where(DB::raw('CASE 
+                    WHEN log_data.is_in = 1 AND log_data.office_id IS NOT NULL THEN log_data.office_id 
+                    ELSE e.office_id 
+                END'), $targetOfficeId);
+            });
+        }
+
+        $results = $query->get();
+
+        return [
+            'office_id' => $targetOfficeId,
+            'total_employees' => $results->count(),
+            'present' => $results->where('is_in', 1)->count(),
+            'absent' => $results->where('is_in', 0)->count(),
+        ];
+    }
+
     /**
      * Get start and end date based on passed month and year.
      *

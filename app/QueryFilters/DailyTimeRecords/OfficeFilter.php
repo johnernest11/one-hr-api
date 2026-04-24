@@ -23,6 +23,6 @@ class OfficeFilter extends Filter
             return $builder;
         }
 
-        return $builder->where('employees.office_id', $office);
+        return $builder->where('time_logs.office_id', $office);
     }
 }
