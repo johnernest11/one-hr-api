@@ -74,6 +74,26 @@ class DailyTimeRecordFeatureTest extends TestCase
         $this->assertEquals(5, $response['pagination']['total']);
     }
 
+    public function test_it_can_view_time_logs_per_device(): void
+    {
+        $device1 = 'DEVICE-1';
+        $device2 = 'DEVICE-2';
+        $firstDevice = TimeLog::factory(5)->alternatingIsIn()->create([
+            'device_id' => $device1,
+            'office_id' => 1,
+        ]);
+        $secondDevice = TimeLog::factory(3)->alternatingIsIn()->create([
+            'device_id' => $device2,
+            'office_id' => 1,
+        ]);
+
+        $filterDevice = '?device-id='.$device1;
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/time-logs'.$filterDevice);
+        $response->assertStatus(200);
+
+        $this->assertEquals(5, $response['pagination']['total']); // Should be the number of total logs in device 1 despite having the same office.
+    }
+
     private function createEmployeeWithDivision(int $divisionId): Employee
     {
         $sectionId = SectionOrUnit::where('division_id', $divisionId)->first()->id;

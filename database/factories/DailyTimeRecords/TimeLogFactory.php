@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<TimeLogFactory>
@@ -31,6 +32,7 @@ class TimeLogFactory extends Factory
             'scanned_time' => fake()->time('H:i'),
             'is_in' => true,
             'office_id' => Office::first()->id,
+            'device_id' => Str::random(10),
             'captured_image_path' => $file->store('images/timelogs', 's3'),
         ];
     }

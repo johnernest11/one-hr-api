@@ -36,6 +36,7 @@ class TimeLogRequest extends FormRequest
             'scanned_qr' => ['required', 'string'],
             'captured_image' => ['nullable', 'file', 'image', 'max:5120'],
             'office_id' => ['nullable', 'int'],
+            'device_id' => ['nullable', 'string'],
         ];
 
     }

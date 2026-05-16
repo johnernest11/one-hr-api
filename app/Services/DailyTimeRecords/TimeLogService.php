@@ -42,12 +42,13 @@ class TimeLogService implements TimeLogManager
      * Create a time log by scanning the employee's QR code.
      *
      * @param  UploadedFile|string|null  $capturedImage
+     * @param  string|null  $deviceId
      *
      * @throws Exception
      */
-    public function create(Employee $employee, $capturedImage, Office $office): TimeLog
+    public function create(Employee $employee, $capturedImage, Office $office, $deviceId): TimeLog
     {
-        return DB::transaction(function () use ($employee, $capturedImage, $office) {
+        return DB::transaction(function () use ($employee, $capturedImage, $office, $deviceId) {
             $limit = config('timelog.duplicate_scan_limit');
             $dateToday = Carbon::now()->toDateString();
 
@@ -79,6 +80,7 @@ class TimeLogService implements TimeLogManager
                         'captured_image_path' => null, // @todo: this will be null for now
                         'is_selected' => false,
                         'office_id' => $previousOfficeId,
+                        'device_id' => $deviceId,
                     ];
                     $autoGenLog = $dtr->timeLog()->create($timeOutData);
                     $autoGenRemarks = "\n".
@@ -109,6 +111,7 @@ class TimeLogService implements TimeLogManager
                 'captured_image_path' => $imagePath,
                 'is_selected' => true,
                 'office_id' => $office->id ?? null,
+                'device_id' => $deviceId,
             ];
 
             $countIsSelected = $this->model->whereBelongsTo($dtr)->where('is_selected', true)->count();

@@ -12,6 +12,7 @@ interface TimeLogManager
      * Create a time log by scanning the employee's QR code.
      *
      * @param  string|\Illuminate\Http\UploadedFile|null  $capturedImage  Optional captured image file or path
+     * @param  string|null  $deviceId
      */
-    public function create(Employee $employee, $capturedImage, Office $office): TimeLog;
+    public function create(Employee $employee, $capturedImage, Office $office, $deviceId): TimeLog;
 }

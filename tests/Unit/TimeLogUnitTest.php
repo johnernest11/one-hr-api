@@ -10,6 +10,7 @@ use App\Services\CloudStorageServices\AwsS3StorageService;
 use App\Services\DailyTimeRecords\TimeLogService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class TimeLogUnitTest extends TestCase
@@ -24,6 +25,8 @@ class TimeLogUnitTest extends TestCase
 
     private UploadedFile $fakeImage;
 
+    private string $deviceId;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -37,6 +40,7 @@ class TimeLogUnitTest extends TestCase
         $this->timeLogService = new TimeLogService(new TimeLog, $awsS3Service);
 
         $this->office = Office::first();
+        $this->deviceId = Str::random(10);
         $this->fakeImage = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
 
         $individual = IndividualBasicDetail::factory()->create();
@@ -46,7 +50,7 @@ class TimeLogUnitTest extends TestCase
     /** @test */
     public function test_can_create_new_time_log_via_passed_employee(): void
     {
-        $this->timeLogService->create($this->employee, $this->fakeImage, $this->office);
+        $this->timeLogService->create($this->employee, $this->fakeImage, $this->office, $this->deviceId);
 
         $this->assertDatabaseCount('time_logs', 1);
     }

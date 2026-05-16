@@ -37,8 +37,9 @@ class TimeLogController extends ApiController
 
             $capturedImage = $request->file('captured_image');
             $office = Office::findOrFail($request->input('office_id'));
+            $deviceId = $request->input('device_id') ?? null;
 
-            $logTime = $this->timeLogService->create($employee, $capturedImage, $office);
+            $logTime = $this->timeLogService->create($employee, $capturedImage, $office, $deviceId);
 
         } catch (DecryptException $e) {
             return $this->error(
