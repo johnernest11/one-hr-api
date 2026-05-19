@@ -73,15 +73,7 @@ abstract class AuthController extends ApiController
             $user = $this->userCredentialManager->getUserViaUsernameAndPassword($username, $password);
         }
 
-        // Check if the user has the 'admin' role BEFORE proceeding with token generation
-        if (! $user->roles()->where('name', 'super_user')->orWhere('name', operator: 'admin')->orWhere('name', operator: 'time_logger')->exists()) {
-            return $this->error(
-                'You do not have administrator privileges.',
-                Response::HTTP_FORBIDDEN,
-                ApiErrorCode::FORBIDDEN
-            );
-        }
-
+        // Check if user exists first
         if (! $user) {
             return $this->error(
                 'The credentials provided were incorrect',
@@ -90,6 +82,18 @@ abstract class AuthController extends ApiController
             );
         }
 
+        // Allow only super_user, admin, and time_logger
+        if (
+            ! $user->roles()
+                ->whereIn('name', ['super_user', 'admin', 'time_logger'])
+                ->exists()
+        ) {
+            return $this->error(
+                'You do not have administrator privileges.',
+                Response::HTTP_FORBIDDEN,
+                ApiErrorCode::FORBIDDEN
+            );
+        }
         if (! $user->active) {
             return $this->error(
                 'Account is deactivated.',
