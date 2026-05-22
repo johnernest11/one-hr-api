@@ -176,99 +176,115 @@
 
 <body>
     @php
-        if (!function_exists('resolveDTRSlots')) {
-            function resolveDTRSlots($timeLogs)
-            {
-                $timeLogs = collect($timeLogs);
+            if (!function_exists('resolveDTRSlots')) {
+                function resolveDTRSlots($timeLogs)
+                {
+                    $timeLogs = collect($timeLogs);
 
-                $slots = ['in1' => null, 'out1' => null, 'in2' => null, 'out2' => null];
+                    $slots = ['in1' => null, 'out1' => null, 'in2' => null, 'out2' => null];
 
-                if ($timeLogs->isEmpty()) {
+                    if ($timeLogs->isEmpty()) {
+                        return $slots;
+                    }
+
+                    $sorted = $timeLogs->sortBy(function ($log) {
+                        return strtotime($log->date . ' ' . $log->scanned_time);
+                    })->values();
+
+                    $getHour = fn($log) => (int) date('H', strtotime($log->scanned_time));
+
+                    // IN1: earliest 6–12
+                    $slots['in1'] = $sorted->first(fn($log) => ($h = $getHour($log)) >= 6 && $h < 12);
+
+                    // OUT1: first 12–13
+                    $slots['out1'] = $sorted
+                        ->filter(fn($log) => ($h = $getHour($log)) >= 11 && $h <= 13) // consider around 11 AM–1 PM
+                        ->sortBy(fn($log) => abs(strtotime($log->scanned_time) - strtotime('12:00')))
+                        ->first();
+
+                    // IN2: first log between 12–14 and 15 mins after OUT1
+                    if ($slots['out1']) {
+                        $out1Time = strtotime($slots['out1']->scanned_time);
+                        $slots['in2'] = $sorted->first(function ($log) use ($out1Time) {
+                            $time = strtotime($log->scanned_time);
+                            $h = (int) date('H', $time);
+                            return $h >= 12 && $h < 14 && $time >= $out1Time + (1 * 60);
+                        });
+                    }
+
+                    // OUT2: last ≥ 14h
+                    $slots['out2'] = $sorted->filter(fn($log) => (int) date('H', strtotime($log->scanned_time)) >= 14)
+                        ->sortByDesc(fn($log) => strtotime($log->scanned_time))
+                        ->first();
                     return $slots;
                 }
+            }
 
-                $sorted = $timeLogs->sortBy(function ($log) {
-                    return strtotime($log->date . ' ' . $log->scanned_time);
-                })->values();
+            if (!function_exists('computeDTRHours')) {
+        function computeDTRHours($slots)
+        {
+            $ut = 0;
+            $ot = 0;
 
-                $getHour = fn($log) => (int) date('H', strtotime($log->scanned_time));
+            $in1 = $slots['in1'] ? strtotime($slots['in1']->scanned_time) : null;
+            $out1 = $slots['out1'] ? strtotime($slots['out1']->scanned_time) : null;
+            $in2 = $slots['in2'] ? strtotime($slots['in2']->scanned_time) : null;
+            $out2 = $slots['out2'] ? strtotime($slots['out2']->scanned_time) : null;
 
-                // IN1: earliest 6–12
-                $slots['in1'] = $sorted->first(fn($log) => ($h = $getHour($log)) >= 6 && $h < 12);
+            // Get reference date (for Monday check)
+            $baseDate = $slots['in1']
+                ? date('Y-m-d', strtotime($slots['in1']->scanned_time))
+                : date('Y-m-d');
 
-                // OUT1: first 12–13
-                $slots['out1'] = $sorted
-                    ->filter(fn($log) => ($h = $getHour($log)) >= 11 && $h <= 13) // consider around 11 AM–1 PM
-                    ->sortBy(fn($log) => abs(strtotime($log->scanned_time) - strtotime('12:00')))
-                    ->first();
+            $dayOfWeek = date('N', strtotime($baseDate)); // 1 = Monday
 
-                // IN2: first log between 12–14 and 15 mins after OUT1
-                if ($slots['out1']) {
-                    $out1Time = strtotime($slots['out1']->scanned_time);
-                    $slots['in2'] = $sorted->first(function ($log) use ($out1Time) {
-                        $time = strtotime($log->scanned_time);
-                        $h = (int) date('H', $time);
-                        return $h >= 12 && $h < 14 && $time >= $out1Time + (1 * 60);
-                    });
+            // 🟡 FLEX RULE: Monday start = 7 AM, otherwise 8 AM
+            $refStartTime = ($dayOfWeek == 1) ? '07:00' : '08:00';
+
+            $standardStart = strtotime($baseDate . ' ' . $refStartTime);
+
+            $lunchStart = strtotime($baseDate . ' 12:00');
+            $lunchEnd = strtotime($baseDate . ' 13:00');
+
+            $worked = 0;
+
+            // Helper: compute hours excluding lunch
+            $computeHours = function ($start, $end) use ($lunchStart, $lunchEnd) {
+                if (!$start || !$end)
+                    return 0;
+
+                $hours = ($end - $start) / 3600;
+
+                $overlapStart = max($start, $lunchStart);
+                $overlapEnd = min($end, $lunchEnd);
+
+                if ($overlapEnd > $overlapStart) {
+                    $hours -= ($overlapEnd - $overlapStart) / 3600;
                 }
 
-                // OUT2: last ≥ 14h
-                $slots['out2'] = $sorted->filter(fn($log) => (int) date('H', strtotime($log->scanned_time)) >= 14)
-                    ->sortByDesc(fn($log) => strtotime($log->scanned_time))
-                    ->first();
-                return $slots;
+                return $hours;
+            };
+
+            $worked += $computeHours($in1, $out1);
+            $worked += $computeHours($in2, $out2);
+
+            $standardHours = 8.0;
+
+            // 🟡 UT (based on flex start)
+            if ($in1 && $in1 > $standardStart) {
+                $ut = ($in1 - $standardStart) / 3600;
             }
+
+            // 🔵 OT
+            $ot = $worked > $standardHours ? $worked - $standardHours : 0;
+
+            return [
+                'ut' => round($ut, 2),
+                'ot' => round($ot, 2),
+                'totalWorked' => round($worked, 2)
+            ];
         }
-
-        if (!function_exists('computeDTRHours')) {
-            function computeDTRHours($slots)
-            {
-                $ut = 0;
-                $ot = 0;
-
-                $in1 = $slots['in1'] ? strtotime($slots['in1']->scanned_time) : null;
-                $out1 = $slots['out1'] ? strtotime($slots['out1']->scanned_time) : null;
-                $in2 = $slots['in2'] ? strtotime($slots['in2']->scanned_time) : null;
-                $out2 = $slots['out2'] ? strtotime($slots['out2']->scanned_time) : null;
-
-                // Lunch break timestamps
-                $lunchStart = strtotime('12:00');
-                $lunchEnd = strtotime('13:00');
-
-                $worked = 0;
-
-                // Helper to compute hours excluding lunch
-                $computeHours = function ($start, $end) use ($lunchStart, $lunchEnd) {
-                    if (!$start || !$end)
-                        return 0;
-                    $hours = ($end - $start) / 3600;
-
-                    // If session overlaps lunch, subtract overlap
-                    $overlapStart = max($start, $lunchStart);
-                    $overlapEnd = min($end, $lunchEnd);
-                    if ($overlapEnd > $overlapStart) {
-                        $hours -= ($overlapEnd - $overlapStart) / 3600;
-                    }
-                    return $hours;
-                };
-
-                $worked += $computeHours($in1, $out1);
-                $worked += $computeHours($in2, $out2);
-
-                // Standard work hours
-                $standardHours = 8.0;
-
-                // Compute UT/OT
-                $ut = $worked < $standardHours ? $standardHours - $worked : 0;
-                $ot = $worked > $standardHours ? $worked - $standardHours : 0;
-
-                return [
-                    'ut' => round($ut, 2),
-                    'ot' => round($ot, 2),
-                    'totalWorked' => round($worked, 2)
-                ];
             }
-        }
     @endphp
 
     <div class="header-section" style="text-align: center; white-space: nowrap; margin-right: 10%;">
