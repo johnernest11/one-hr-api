@@ -48,19 +48,45 @@ class ItemRequest extends FormRequest
         }
 
         return [
-            'number' => [Rule::requiredIf($this->method() === 'POST'),
-                // Apply unique rule only when creating a new item (POST),
-                // Or when the item number is updated ($item->number != $this->input('number'))
-                Rule::when($this->method() === 'POST' || ($item && $item->number != $this->input('number')), [
-                    Rule::unique('items', 'number'),
-                ]),
-                'string', new DbVarcharMaxLength],
-            'date_of_creation' => ['required', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
-            'status' => ['required', new Enum(ItemStatus::class)],
-            'date_filled_up' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            // Organization Data
+            'division_id' => ['required', 'integer', Rule::exists('divisions', 'id')],
+            'section_or_unit_id' => ['required', 'integer', Rule::exists('section_or_units', 'id')],
+            'program_id' => ['nullable', 'integer', Rule::exists('programs', 'id')],
+            'office_id' => ['required', 'integer', Rule::exists('offices', 'id')],
+            'psipop_id' => ['nullable', 'integer', Rule::exists('divisions', 'id')],
+
+            // Compensation & Employment Details
             'employment_status' => ['required', new Enum(EmploymentStatus::class)],
-            'position_id' => ['required', 'integer', Rule::exists('positions', 'id')],
             'fund_source_id' => ['required', 'integer', Rule::exists('fund_sources', 'id')],
+            'salary_grade_id' => ['required', 'integer', Rule::exists('salary_grades', 'id')],
+
+            // Position Details
+            'position_id' => ['required', 'integer', Rule::exists('positions', 'id')],
+            'item_classification' => ['nullable', 'string', new DbVarcharMaxLength],
+            'number' => [
+                Rule::requiredIf($this->isMethod('POST')),
+                'string',
+                new DbVarcharMaxLength,
+                Rule::unique('items', 'number')->ignore($item),
+            ],
+            'date_of_creation' => ['required', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+
+            // Designation and Assignment Details
+            'designation' => ['nullable', 'string', new DbVarcharMaxLength],
+            'date_of_designation' => ['nullable', 'date_format:Y-m-d'],
+            'special_order_number' => ['nullable', 'string', new DbVarcharMaxLength],
+
+            // Position History and Vacancy Tracking
+            'status' => ['required', new Enum(ItemStatus::class)],
+            'mode_of_accession' => ['nullable', 'string', new DbVarcharMaxLength],
+            'date_filled_up' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
+            'history_of_position' => ['nullable', 'string'],
+            'former_incumbent' => ['nullable', 'string', new DbVarcharMaxLength],
+            'mode_of_separation' => ['nullable', 'string', new DbVarcharMaxLength],
+            'date_of_vacant' => ['nullable', 'date_format:Y-m-d'],
+            'remarks_of_vacancy' => ['nullable', 'string'],
+            'status_of_vacant_position' => ['nullable', 'string', new DbVarcharMaxLength],
+            'remarks' => ['nullable', 'string'],
         ];
     }
 

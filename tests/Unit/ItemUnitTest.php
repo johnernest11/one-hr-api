@@ -32,13 +32,40 @@ class ItemUnitTest extends TestCase
         $this->itemService = new ItemService(new Item);
         $this->user = $this->produceUsers();
         $this->testInput = [
-            'number' => fake()->regexify('[A-Z]{3}-[A-Z]{3}-[A-Z]{3}-\d{6}'), // Simulate number format from the provided database
+            // Core Identity & Details
+            'number' => fake()->regexify('[A-Z]{3}-[A-Z]{3}-[A-Z]{3}-\d{6}'),
             'date_of_creation' => fake()->date(),
-            'status' => 'Unfilled',
-            'date_filled_up' => fake()->date(),
+            'item_classification' => fake()->randomElement(['Key Positions', 'Technical', 'Support to Technical', 'Administrative']),
+
+            // Organization Data (Foreign Keys)
+            'division_id' => 1,
+            'section_or_unit_id' => 1,
+            'program_id' => 1,
+            'office_id' => 1,
+            'psipop_id' => 1, // References the divisions table id
+
+            // Compensation & Employment Details
             'employment_status' => fake()->randomElement(ConversionHelper::enumToArray(EmploymentStatus::class)),
-            'position_id' => 1,
+            'salary_grade_id' => 1,
             'fund_source_id' => 12,
+            'position_id' => 1,
+
+            // Designation Details
+            'designation' => fake()->word().' Officer',
+            'date_of_designation' => fake()->date(),
+            'special_order_number' => 'SO-'.fake()->year().'-0042',
+
+            // Position History and Vacancy Tracking
+            'status' => 'Unfilled',
+            'mode_of_accession' => null,
+            'date_filled_up' => null,
+            'history_of_position' => fake()->sentence(),
+            'former_incumbent' => fake()->name(),
+            'mode_of_separation' => null,
+            'date_of_vacant' => fake()->date(),
+            'remarks_of_vacancy' => fake()->sentence(),
+            'status_of_vacant_position' => 'For Advertisement',
+            'remarks' => fake()->paragraph(),
         ];
     }
 
