@@ -5,9 +5,9 @@ namespace App\QueryFilters\DailyTimeRecords;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class DeviceFilter extends Filter
+class BrowserFilter extends Filter
 {
-    private const FILTER_NAME = 'device-id';
+    private const FILTER_NAME = 'browser-uid';
 
     /**
      * {@inheritDoc}
@@ -23,12 +23,12 @@ class DeviceFilter extends Filter
     protected function applyFilter(Builder $builder): Builder
     {
         $filterName = $this->getFilterName();
-        $deviceId = strtoupper(request($filterName));
+        $browserUid = strtoupper(request($filterName));
 
-        if (! $deviceId) {
+        if (! $browserUid) {
             return $builder;
         }
 
-        return $builder->where('time_logs.device_id', $deviceId);
+        return $builder->where('time_logs.browser_uid', $browserUid);
     }
 }

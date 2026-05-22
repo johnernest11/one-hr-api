@@ -32,7 +32,7 @@ class TimeLogFactory extends Factory
             'scanned_time' => fake()->time('H:i'),
             'is_in' => true,
             'office_id' => Office::first()->id,
-            'device_id' => Str::random(10),
+            'browser_uid' => Str::random(10),
             'captured_image_path' => $file->store('images/timelogs', 's3'),
         ];
     }

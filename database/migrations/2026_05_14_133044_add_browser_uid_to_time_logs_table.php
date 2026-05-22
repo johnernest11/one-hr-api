@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('time_logs', function (Blueprint $table) {
-            $table->string('device_id')->nullable()->index();
+            $table->string('browser_uid')->nullable()->index();
         });
     }
 
@@ -22,8 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('time_logs', function (Blueprint $table) {
-            $table->dropIndex('device_id');
-            $table->dropColumn('device_id');
+            $table->dropIndex('time_logs_browser_uid_index');
+            $table->dropColumn('browser_uid');
         });
     }
 };

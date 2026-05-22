@@ -25,7 +25,7 @@ class TimeLogUnitTest extends TestCase
 
     private UploadedFile $fakeImage;
 
-    private string $deviceId;
+    private string $browserUid;
 
     protected function setUp(): void
     {
@@ -40,7 +40,7 @@ class TimeLogUnitTest extends TestCase
         $this->timeLogService = new TimeLogService(new TimeLog, $awsS3Service);
 
         $this->office = Office::first();
-        $this->deviceId = Str::random(10);
+        $this->browserUid = Str::random(10);
         $this->fakeImage = UploadedFile::fake()->image('fake_image.jpg', 500, 500);
 
         $individual = IndividualBasicDetail::factory()->create();
@@ -50,7 +50,7 @@ class TimeLogUnitTest extends TestCase
     /** @test */
     public function test_can_create_new_time_log_via_passed_employee(): void
     {
-        $this->timeLogService->create($this->employee, $this->fakeImage, $this->office, $this->deviceId);
+        $this->timeLogService->create($this->employee, $this->fakeImage, $this->office, $this->browserUid);
 
         $this->assertDatabaseCount('time_logs', 1);
     }

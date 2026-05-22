@@ -4,8 +4,8 @@ namespace App\Models\DailyTimeRecords;
 
 use App\Enums\DocumentStatus;
 use App\Models\ComprehensiveRecords\Employee;
+use App\QueryFilters\DailyTimeRecords\BrowserFilter;
 use App\QueryFilters\DailyTimeRecords\DateFilter;
-use App\QueryFilters\DailyTimeRecords\DeviceFilter;
 use App\QueryFilters\DailyTimeRecords\DivisionFilter;
 use App\QueryFilters\DailyTimeRecords\OfficeFilter;
 use App\QueryFilters\DailyTimeRecords\SectionFilter;
@@ -97,7 +97,7 @@ class DailyTimeRecord extends Model
                 SectionFilter::class,
                 DateFilter::class,
                 TimeInOrOutFilter::class,
-                DeviceFilter::class,
+                BrowserFilter::class,
             ])
             ->thenReturn();
     }

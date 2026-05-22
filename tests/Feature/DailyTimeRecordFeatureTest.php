@@ -76,22 +76,22 @@ class DailyTimeRecordFeatureTest extends TestCase
 
     public function test_it_can_view_time_logs_per_device(): void
     {
-        $device1 = 'DEVICE-1';
-        $device2 = 'DEVICE-2';
-        $firstDevice = TimeLog::factory(5)->alternatingIsIn()->create([
-            'device_id' => $device1,
+        $browser1 = 'BROWSER-1';
+        $browser2 = 'BROWSER-2';
+        $firstBrowser = TimeLog::factory(5)->alternatingIsIn()->create([
+            'browser_uid' => $browser1,
             'office_id' => 1,
         ]);
-        $secondDevice = TimeLog::factory(3)->alternatingIsIn()->create([
-            'device_id' => $device2,
+        $secondBrowser = TimeLog::factory(3)->alternatingIsIn()->create([
+            'browser_uid' => $browser2,
             'office_id' => 1,
         ]);
 
-        $filterDevice = '?device-id='.$device1;
-        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/time-logs'.$filterDevice);
+        $filterBrowser = '?browser-uid='.$browser1;
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/time-logs'.$filterBrowser);
         $response->assertStatus(200);
 
-        $this->assertEquals(5, $response['pagination']['total']); // Should be the number of total logs in device 1 despite having the same office.
+        $this->assertEquals(5, $response['pagination']['total']); // Should be the number of total logs in browser 1 despite having the same office.
     }
 
     private function createEmployeeWithDivision(int $divisionId): Employee
