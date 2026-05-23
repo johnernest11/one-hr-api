@@ -86,6 +86,7 @@ class ItemRequest extends FormRequest
             'date_of_vacant' => ['nullable', 'date_format:Y-m-d'],
             'remarks_of_vacancy' => ['nullable', 'string'],
             'status_of_vacant_position' => ['nullable', 'string', new DbVarcharMaxLength],
+            'direct_contact_exposure_with_client' => ['nullable', 'string', new DbVarcharMaxLength],
             'remarks' => ['nullable', 'string'],
         ];
     }
