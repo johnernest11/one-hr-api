@@ -2,14 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Enums\EmploymentStatus;
 use App\Enums\Role as RoleEnum;
 use App\Models\Item;
 use App\Models\User;
 use App\Services\Authentication\Interfaces\PersistentAuthTokenManager;
-use ConversionHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Arr;
 use Tests\TestCase;
 
 class ItemFeatureTest extends TestCase
@@ -51,35 +48,70 @@ class ItemFeatureTest extends TestCase
 
     public static function validCreateItemInputs(): array
     {
+        // Required Fields Dataset (Valid)
         $requiredFieldsOnly = [
             'number' => 'FO1-COS-CPIII-000999',
             'date_of_creation' => '2025-04-03',
             'status' => 'Unfilled',
             'employment_status' => 'Contract of Service',
+
+            // Required Foreign Keys
+            'division_id' => 1,
+            'section_or_unit_id' => 1,
+            'office_id' => 1,
             'position_id' => 1,
             'fund_source_id' => 12,
+            'salary_grade_id' => 1,
         ];
 
+        // All Fields Dataset (Valid)
         $allFields = [
-            'number' => 'FO1-COS-CPIII-000999',
+            // Core Identity & Status
+            'number' => 'FO1-COS-CPIII-000888',
             'date_of_creation' => '2025-04-03',
+            'item_classification' => 'Technical',
             'status' => 'Unfilled',
             'date_filled_up' => '2025-04-03',
             'employment_status' => 'Contract of Service',
+
+            // Organization Data (Foreign Keys)
+            'division_id' => 1,
+            'section_or_unit_id' => 1,
+            'program_id' => 1,
+            'office_id' => 1,
+            'psipop_id' => 1,
+
+            // Compensation & Relationships
             'position_id' => 1,
+            'salary_grade_id' => 1,
             'fund_source_id' => 12,
 
+            // Designation and Assignment Details
+            'designation' => 'Project Development Officer III',
+            'date_of_designation' => '2025-04-03',
+            'special_order_number' => 'SO-2026-1042',
+
+            // Position History and Vacancy Tracking
+            'mode_of_accession' => 'Original Appointment',
+            'history_of_position' => 'Transferred from Region 1 focal unit to division office.',
+            'former_incumbent' => 'John Doe',
+            'mode_of_separation' => 'Resignation',
+            'date_of_vacant' => '2025-03-03',
+            'remarks_of_vacancy' => 'Position became vacant due to migration abroad.',
+            'status_of_vacant_position' => 'For Advertisement',
+            'remarks' => 'Priority item for upcoming hiring block cycle.',
         ];
 
-        $missingRequiredFields = Arr::only(
-            $allFields,
-            'date_filled_up'
-        );
+        // Explicitly Bad Dataset (Invalid - missing number, division_id, date_of_creation, etc.)
+        $missingRequiredFields = [
+            'date_filled_up' => '2025-04-03',
+            'item_classification' => 'Technical',
+        ];
 
         return [
-            [$requiredFieldsOnly, 201],
-            [$allFields, 201],
-            [$missingRequiredFields, 422],
+            'Required Fields Only (Valid)' => [$requiredFieldsOnly, 201],
+            'All Fields Formatted (Valid)' => [$allFields, 201],
+            'Missing Required Schema (Invalid)' => [$missingRequiredFields, 422],
         ];
     }
 
@@ -132,14 +164,42 @@ class ItemFeatureTest extends TestCase
         $firstItem = $items->first();
 
         $updatedData = [
-            'number' => fake()->regexify('[A-Z]{3}-[A-Z]{3}-[A-Z]{3}-\d{6}'), // Simulate number format from the provided database
+            // Core Identity & Details
+            'number' => fake()->regexify('[A-Z]{3}-[A-Z]{3}-[A-Z]{3}-\d{6}'),
             'date_of_creation' => fake()->date(),
-            'status' => 'Filled',
+            'item_classification' => fake()->randomElement(['Key Positions', 'Technical', 'Support to Technical', 'Administrative']),
+
+            // Organization Data (Foreign Keys)
+            'division_id' => 2, // Incremented IDs to simulate a real data change update
+            'section_or_unit_id' => 2,
+            'program_id' => 2,
+            'office_id' => 2,
+            'psipop_id' => 2,
+
+            // Compensation & Employment Details
+            'employment_status' => 'Contract of Service',
+            'salary_grade_id' => 2, // Aligned with your updated migration key!
+            'fund_source_id' => 14,
+            'position_id' => 2,
+
+            // Designation Details
+            'designation' => fake()->word().' Supervisor',
+            'date_of_designation' => fake()->date(),
+            'special_order_number' => 'SO-'.fake()->year().'-5512',
+
+            // Position History and Vacancy Tracking
+            'status' => 'Filled', // Explicitly marked as filled
+            'mode_of_accession' => fake()->randomElement(['Promotion', 'Transfer']),
             'date_filled_up' => fake()->date(),
-            'employment_status' => fake()->randomElement(ConversionHelper::enumToArray(EmploymentStatus::class)),
-            'position_id' => 1,
-            'fund_source_id' => 12,
-        ]; // update status to done
+            'history_of_position' => fake()->sentence(),
+            'former_incumbent' => fake()->name(),
+            'mode_of_separation' => fake()->randomElement(['Resignation', 'Retirement']),
+            'date_of_vacant' => fake()->date(),
+            'remarks_of_vacancy' => fake()->sentence(),
+            'status_of_vacant_position' => 'Filled',
+            'direct_contact_exposure_with_client' => fake()->randomElement(['Yes', 'No', 'Occasional']),
+            'remarks' => fake()->paragraph(),
+        ];
 
         $response = $this->withToken($this->authTokenAdmin)->putJson("$this->baseUri/$firstItem->id", $updatedData);
         $response->assertStatus(200);
@@ -157,13 +217,41 @@ class ItemFeatureTest extends TestCase
 
         // Update the number for easier search
         $updatedData = [
+            // Core Identity & Status
             'number' => 'FO1-COS-CPIII-000999',
             'date_of_creation' => '2025-04-03',
-            'status' => 'Filled',
+            'item_classification' => 'Technical',
+            'status' => 'Filled', // Simulating an item status update to Filled
             'date_filled_up' => '2025-04-03',
             'employment_status' => 'Contract of Service',
+
+            // Organization Data (Foreign Keys)
+            'division_id' => 1,
+            'section_or_unit_id' => 1,
+            'program_id' => 1,
+            'office_id' => 1,
+            'psipop_id' => 1,
+
+            // Compensation & Relationships
             'position_id' => 1,
+            'salary_grade_id' => 1, // Aligned with your updated migration!
             'fund_source_id' => 12,
+
+            // Designation and Assignment Details
+            'designation' => 'Project Development Officer III',
+            'date_of_designation' => '2025-04-10',
+            'special_order_number' => 'SO-2025-1042',
+
+            // Position History and Vacancy Tracking
+            'mode_of_accession' => 'Original Appointment',
+            'history_of_position' => 'Transferred from Region 1 focal unit to division office.',
+            'former_incumbent' => 'John Doe',
+            'mode_of_separation' => 'Resignation',
+            'date_of_vacant' => '2025-05-01',
+            'remarks_of_vacancy' => 'Position became vacant due to migration abroad.',
+            'status_of_vacant_position' => 'Filled',
+            'direct_contact_exposure_with_client' => 'Yes',
+            'remarks' => 'Priority item update completed.',
         ];
 
         $response = $this->withToken($this->authTokenAdmin)->putJson("$this->baseUri/$firstItem->id", $updatedData);
@@ -199,13 +287,41 @@ class ItemFeatureTest extends TestCase
     {
 
         $testInput = [
+            // Core Identity & Status
             'number' => '001-203294',
             'date_of_creation' => '2025-04-03',
+            'item_classification' => 'Technical',
             'status' => 'Unfilled',
             'date_filled_up' => '2025-04-03',
             'employment_status' => 'Contract of Service',
+
+            // Organization Data (Foreign Keys)
+            'division_id' => 1,
+            'section_or_unit_id' => 1,
+            'program_id' => 1,
+            'office_id' => 1,
+            'psipop_id' => 1,
+
+            // Compensation & Relationships
             'position_id' => 1,
+            'salary_grade_id' => 1, // Matches your migration's salary_grade_id field
             'fund_source_id' => 12,
+
+            // Designation and Assignment Details
+            'designation' => 'Project Development Officer III',
+            'date_of_designation' => '2025-04-10',
+            'special_order_number' => 'SO-2025-1042',
+
+            // Position History and Vacancy Tracking
+            'mode_of_accession' => 'Original Appointment',
+            'history_of_position' => 'Transferred from Region 1 focal unit to division office.',
+            'former_incumbent' => 'John Doe',
+            'mode_of_separation' => 'Resignation',
+            'date_of_vacant' => '2025-05-01',
+            'remarks_of_vacancy' => 'Position became vacant due to migration abroad.',
+            'status_of_vacant_position' => 'For Advertisement',
+            'direct_contact_exposure_with_client' => 'Yes',
+            'remarks' => 'Priority item for upcoming hiring block cycle.',
         ];
 
         $response = $this->withToken($this->authTokenStandard)->postJson($this->baseUri, $testInput);
@@ -218,14 +334,42 @@ class ItemFeatureTest extends TestCase
         $firstItem = $items->first();
 
         $updatedData = [
+            // Core Identity & Status
             'number' => '001-999999',
             'date_of_creation' => '2025-04-03',
-            'status' => 'Filled',
+            'item_classification' => 'Technical',
+            'status' => 'Filled', // Updated status block
             'date_filled_up' => '2025-04-03',
             'employment_status' => 'Contract of Service',
+
+            // Organization Data (Foreign Keys)
+            'division_id' => 1,
+            'section_or_unit_id' => 1,
+            'program_id' => 1,
+            'office_id' => 1,
+            'psipop_id' => 1,
+
+            // Compensation & Relationships
             'position_id' => 1,
+            'salary_grade_id' => 1, // Matches your migration's salary_grade_id field
             'fund_source_id' => 12,
-        ]; // update status to done
+
+            // Designation and Assignment Details
+            'designation' => 'Project Development Officer III',
+            'date_of_designation' => '2025-04-10',
+            'special_order_number' => 'SO-2025-1042',
+
+            // Position History and Vacancy Tracking
+            'mode_of_accession' => 'Original Appointment',
+            'history_of_position' => 'Transferred from Region 1 focal unit to division office.',
+            'former_incumbent' => 'John Doe',
+            'mode_of_separation' => 'Resignation',
+            'date_of_vacant' => '2025-05-01',
+            'remarks_of_vacancy' => 'Position became vacant due to migration abroad.',
+            'status_of_vacant_position' => 'Filled',
+            'direct_contact_exposure_with_client' => 'Yes',
+            'remarks' => 'Priority item update completed.',
+        ];
 
         $response = $this->withToken($this->authTokenStandard)->putJson("$this->baseUri/$firstItem->id", $updatedData);
         $response->assertStatus(403);
