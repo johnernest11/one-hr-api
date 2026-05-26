@@ -41,18 +41,11 @@ class SalaryGradeController extends ApiController
     public function search(SalaryGradeRequest $request): JsonResponse
     {
         $q = $request->validated()['query'];
-        $limit = $request->validated('limit', 9);
+        $limit = $request->validated('limit', 100);
 
-        // Match query to the following fields:
-        // salary_grade
-        // step
-        // tranche
-        // effective_date
-        $salaryGrades = SalaryGrade::where('salary_grade', 'like', "%$q%")
-            ->orWhere('step', 'like', "%$q%")
-            ->orWhere('tranche', 'like', "%$q%")
-            ->orWhere('effective_date', 'like', "%$q%")
-            ->where('active', '=', '1')->paginate($limit)->toArray();
+        // Match query to the salary_grade fields:
+        $salaryGrades = SalaryGrade::where('salary_grade', '=', "$q")
+            ->where('active', '=', '1')->orderBy('effective_date', 'asc')->paginate($limit)->toArray();
 
         $sg_formatted = PaginationHelper::formatLengthAwarePagination($salaryGrades);
 
