@@ -7,9 +7,11 @@ use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\DailyTimeRecords\DailyTimeRecord;
 use App\Models\DailyTimeRecords\TimeLog;
 use App\Models\Libraries\Office;
+use App\Models\LocatorSlip\LocatorSlip;
 use App\Services\CloudStorageServices\AwsS3StorageService;
 use App\Services\DailyTimeRecords\DailyTimeRecordService;
 use App\Services\DailyTimeRecords\TimeLogService;
+use App\Services\LocatorSlips\LocatorSlipService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -47,6 +49,7 @@ class DailyTimeRecordUnitTest extends TestCase
         $this->artisan('db:seed');
 
         $mockStorage = Mockery::mock(AwsS3StorageService::class);
+        $locatorSlipService = new LocatorSlipService(new LocatorSlip);
         $mockStorage->shouldReceive('upload')->andReturn('mocked/path/file.jpg');
         $mockStorage->shouldReceive('delete')->andReturn(true);
         $mockStorage->shouldReceive('generateTmpUrl')->andReturn('https://fake-s3-url.com/image.jpg');
@@ -55,7 +58,7 @@ class DailyTimeRecordUnitTest extends TestCase
         $this->office = Office::first();
         $this->browserUid = Str::random(10);
         $this->dailyTimeRecordService = new DailyTimeRecordService(new DailyTimeRecord, $mockStorage);
-        $this->timeLogService = new TimeLogService(new TimeLog, $mockStorage);
+        $this->timeLogService = new TimeLogService(new TimeLog, $mockStorage, $locatorSlipService);
 
         $this->individual = IndividualBasicDetail::factory()->create();
         $this->employee = Employee::whereBelongsTo($this->individual)->firstOrFail();
