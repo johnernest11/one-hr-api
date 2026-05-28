@@ -33,12 +33,14 @@ class TimeLogController extends ApiController
     public function logTime(TimeLogRequest $request): JsonResponse
     {
         try {
-            $employee = $this->qrCodeService->verifyQr($request->validated());
+            $validatedRequest = $request->validated();
+            $employee = $this->qrCodeService->verifyQr($validatedRequest);
 
-            $capturedImage = $request->file('captured_image');
-            $office = Office::findOrFail($request->input('office_id'));
+            $capturedImage = $validatedRequest['captured_image'];
+            $office = Office::findOrFail($validatedRequest['office_id']);
+            $browserUid = $validatedRequest['browser_uid'] ?? null;
 
-            $logTime = $this->timeLogService->create($employee, $capturedImage, $office);
+            $logTime = $this->timeLogService->create($employee, $capturedImage, $office, $browserUid);
 
         } catch (DecryptException $e) {
             return $this->error(

@@ -74,6 +74,26 @@ class DailyTimeRecordFeatureTest extends TestCase
         $this->assertEquals(5, $response['pagination']['total']);
     }
 
+    public function test_it_can_view_time_logs_per_device(): void
+    {
+        $browser1 = 'BROWSER-1';
+        $browser2 = 'BROWSER-2';
+        $firstBrowser = TimeLog::factory(5)->alternatingIsIn()->create([
+            'browser_uid' => $browser1,
+            'office_id' => 1,
+        ]);
+        $secondBrowser = TimeLog::factory(3)->alternatingIsIn()->create([
+            'browser_uid' => $browser2,
+            'office_id' => 1,
+        ]);
+
+        $filterBrowser = '?browser-uid='.$browser1;
+        $response = $this->withToken($this->authTokenPAS)->getJson($this->baseUri.'/time-logs'.$filterBrowser);
+        $response->assertStatus(200);
+
+        $this->assertEquals(5, $response['pagination']['total']); // Should be the number of total logs in browser 1 despite having the same office.
+    }
+
     private function createEmployeeWithDivision(int $divisionId): Employee
     {
         $sectionId = SectionOrUnit::where('division_id', $divisionId)->first()->id;
