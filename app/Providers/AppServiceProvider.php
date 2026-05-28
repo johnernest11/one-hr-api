@@ -88,7 +88,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TimeLogManager::class, function ($app) {
             return new TimeLogService(
                 $app->make(TimeLog::class),
-                $app->make(CloudStorageManager::class)
+                $app->make(CloudStorageManager::class),
+                $app->make(LocatorSlipManager::class)
             );
         });
 

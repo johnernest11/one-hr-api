@@ -2,6 +2,7 @@
 
 namespace App\Services\DailyTimeRecords;
 
+use App\Enums\ApprovalType;
 use App\Enums\DocumentStatus;
 use App\Events\TimeLogCreated;
 use App\Models\ComprehensiveRecords\Employee;
@@ -11,6 +12,7 @@ use App\Models\Libraries\Office;
 use App\Models\LocatorSlip\LocatorSlip;
 use App\Models\LocatorSlip\LocatorSlipLogger;
 use App\Services\CloudStorageServices\CloudStorageManager;
+use App\Services\LocatorSlips\LocatorSlipManager;
 use App\Traits\Controllers\CanMoveCapturedImageToCloud;
 use App\Traits\Services\CanBuildPagination;
 use Carbon\Carbon;
@@ -18,6 +20,7 @@ use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class TimeLogService implements TimeLogManager
 {
@@ -32,10 +35,13 @@ class TimeLogService implements TimeLogManager
 
     private CloudStorageManager $cloudStorage;
 
-    public function __construct(TimeLog $model, CloudStorageManager $cloudStorage)
+    private LocatorSlipManager $locatorSlipService;
+
+    public function __construct(TimeLog $model, CloudStorageManager $cloudStorage, LocatorSlipManager $locatorSlipService)
     {
         $this->model = $model;
         $this->cloudStorage = $cloudStorage;
+        $this->locatorSlipService = $locatorSlipService;
     }
 
     /**
@@ -50,6 +56,7 @@ class TimeLogService implements TimeLogManager
     {
         return DB::transaction(function () use ($employee, $capturedImage, $office, $browserUid) {
             $limit = config('timelog.duplicate_scan_limit');
+            $locatorLimit = config('timelog.locator_duplicate_scan_limit');
             $dateToday = Carbon::now()->toDateString();
 
             $dtr = DailyTimeRecord::firstOrCreate(
@@ -63,8 +70,21 @@ class TimeLogService implements TimeLogManager
                 ->first();
             if ($latestTimeLog) {
                 $timeLogTime = Carbon::parse($latestTimeLog->scanned_time);
-                if ($timeLogTime->diffInMinutes(Carbon::now()) <= $limit) {
-                    throw new Exception('Duplicate scan.');
+                $activeLocatorLog = $this->locatorSlipService->checkActiveLog($employee);
+
+                // Determine which limit to use based on the following conditions:
+                // 1. Official Time & Personal Time Active Locators have a limit of 3 minutes by default (or whatever is configured).
+                // 2. Conditions that are not #1, will have a limit of 15 minutes by default (or whatever is configured).
+                $isTimeBoundLocator = $activeLocatorLog && in_array($activeLocatorLog->approved_for, [
+                    ApprovalType::OFFICIAL_TIME,
+                    ApprovalType::PERSONAL_TIME,
+                ]);
+
+                $chosenLimit = $isTimeBoundLocator ? $locatorLimit : $limit;
+
+                // Duplicate scan check based on the determined limit
+                if ($timeLogTime->diffInMinutes(Carbon::now()) <= $chosenLimit) {
+                    throw new Exception("Duplicate scan. Overlap detected within {$chosenLimit} ".Str::plural('minute', $chosenLimit).'.');
                 }
 
                 // Scenario: If the employee did not time out on the their previous office.

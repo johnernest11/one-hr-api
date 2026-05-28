@@ -6,8 +6,10 @@ use App\Models\ComprehensiveRecords\Employee;
 use App\Models\ComprehensiveRecords\IndividualBasicDetail;
 use App\Models\DailyTimeRecords\TimeLog;
 use App\Models\Libraries\Office;
+use App\Models\LocatorSlip\LocatorSlip;
 use App\Services\CloudStorageServices\AwsS3StorageService;
 use App\Services\DailyTimeRecords\TimeLogService;
+use App\Services\LocatorSlips\LocatorSlipService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
@@ -35,9 +37,10 @@ class TimeLogUnitTest extends TestCase
 
         // Use the concrete implementation directly
         $awsS3Service = new AwsS3StorageService;
+        $locatorSlipService = new LocatorSlipService(new LocatorSlip);
 
         // Pass it to the TimeLogService
-        $this->timeLogService = new TimeLogService(new TimeLog, $awsS3Service);
+        $this->timeLogService = new TimeLogService(new TimeLog, $awsS3Service, $locatorSlipService);
 
         $this->office = Office::first();
         $this->browserUid = Str::random(10);
