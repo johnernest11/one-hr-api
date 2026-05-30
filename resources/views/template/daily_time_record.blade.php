@@ -176,115 +176,229 @@
 
 <body>
     @php
-            if (!function_exists('resolveDTRSlots')) {
-                function resolveDTRSlots($timeLogs)
-                {
-                    $timeLogs = collect($timeLogs);
-
-                    $slots = ['in1' => null, 'out1' => null, 'in2' => null, 'out2' => null];
-
-                    if ($timeLogs->isEmpty()) {
-                        return $slots;
-                    }
-
-                    $sorted = $timeLogs->sortBy(function ($log) {
-                        return strtotime($log->date . ' ' . $log->scanned_time);
-                    })->values();
-
-                    $getHour = fn($log) => (int) date('H', strtotime($log->scanned_time));
-
-                    // IN1: earliest 6–12
-                    $slots['in1'] = $sorted->first(fn($log) => ($h = $getHour($log)) >= 6 && $h < 12);
-
-                    // OUT1: first 12–13
-                    $slots['out1'] = $sorted
-                        ->filter(fn($log) => ($h = $getHour($log)) >= 11 && $h <= 13) // consider around 11 AM–1 PM
-                        ->sortBy(fn($log) => abs(strtotime($log->scanned_time) - strtotime('12:00')))
-                        ->first();
-
-                    // IN2: first log between 12–14 and 15 mins after OUT1
-                    if ($slots['out1']) {
-                        $out1Time = strtotime($slots['out1']->scanned_time);
-                        $slots['in2'] = $sorted->first(function ($log) use ($out1Time) {
-                            $time = strtotime($log->scanned_time);
-                            $h = (int) date('H', $time);
-                            return $h >= 12 && $h < 14 && $time >= $out1Time + (1 * 60);
-                        });
-                    }
-
-                    // OUT2: last ≥ 14h
-                    $slots['out2'] = $sorted->filter(fn($log) => (int) date('H', strtotime($log->scanned_time)) >= 14)
-                        ->sortByDesc(fn($log) => strtotime($log->scanned_time))
-                        ->first();
-                    return $slots;
-                }
-            }
-
-            if (!function_exists('computeDTRHours')) {
-        function computeDTRHours($slots)
+                    if (!function_exists('resolveDTRSlots')) {
+        function resolveDTRSlots($timeLogs)
         {
-            $ut = 0;
-            $ot = 0;
+            $timeLogs = collect($timeLogs);
 
-            $in1 = $slots['in1'] ? strtotime($slots['in1']->scanned_time) : null;
-            $out1 = $slots['out1'] ? strtotime($slots['out1']->scanned_time) : null;
-            $in2 = $slots['in2'] ? strtotime($slots['in2']->scanned_time) : null;
-            $out2 = $slots['out2'] ? strtotime($slots['out2']->scanned_time) : null;
-
-            // Get reference date (for Monday check)
-            $baseDate = $slots['in1']
-                ? date('Y-m-d', strtotime($slots['in1']->scanned_time))
-                : date('Y-m-d');
-
-            $dayOfWeek = date('N', strtotime($baseDate)); // 1 = Monday
-
-            // 🟡 FLEX RULE: Monday start = 7 AM, otherwise 8 AM
-            $refStartTime = ($dayOfWeek == 1) ? '07:00' : '08:00';
-
-            $standardStart = strtotime($baseDate . ' ' . $refStartTime);
-
-            $lunchStart = strtotime($baseDate . ' 12:00');
-            $lunchEnd = strtotime($baseDate . ' 13:00');
-
-            $worked = 0;
-
-            // Helper: compute hours excluding lunch
-            $computeHours = function ($start, $end) use ($lunchStart, $lunchEnd) {
-                if (!$start || !$end)
-                    return 0;
-
-                $hours = ($end - $start) / 3600;
-
-                $overlapStart = max($start, $lunchStart);
-                $overlapEnd = min($end, $lunchEnd);
-
-                if ($overlapEnd > $overlapStart) {
-                    $hours -= ($overlapEnd - $overlapStart) / 3600;
-                }
-
-                return $hours;
-            };
-
-            $worked += $computeHours($in1, $out1);
-            $worked += $computeHours($in2, $out2);
-
-            $standardHours = 8.0;
-
-            // 🟡 UT (based on flex start)
-            if ($in1 && $in1 > $standardStart) {
-                $ut = ($in1 - $standardStart) / 3600;
-            }
-
-            // 🔵 OT
-            $ot = $worked > $standardHours ? $worked - $standardHours : 0;
-
-            return [
-                'ut' => round($ut, 2),
-                'ot' => round($ot, 2),
-                'totalWorked' => round($worked, 2)
+            $slots = [
+                'in1' => null,
+                'out1' => null,
+                'in2' => null,
+                'out2' => null,
             ];
-        }
+
+            if ($timeLogs->isEmpty()) {
+                return $slots;
             }
+
+            $sorted = $timeLogs
+                ->sortBy(function ($log) {
+                    return strtotime($log->date . ' ' . $log->scanned_time);
+                })
+                ->values();
+
+            $getHour = fn($log) => (int) date('H', strtotime($log->scanned_time));
+
+            /**
+             * IN1: earliest log between 6AM and before 12PM
+             */
+            $slots['in1'] = $sorted->first(
+                fn($log) => ($h = $getHour($log)) >= 6 && $h < 12
+            );
+
+            /**
+             * AFTERNOON-ONLY
+             *
+             * Example:
+             * 12:19 PM
+             * 06:26 PM
+             *
+             * Expected:
+             * in1  = null
+             * out1 = null
+             * in2  = 12:19 PM
+             * out2 = 06:26 PM
+             */
+            if (!$slots['in1'] && $sorted->count() >= 2) {
+                return [
+                    'in1' => null,
+                    'out1' => null,
+                    'in2' => $sorted->first(),
+                    'out2' => $sorted->last(),
+                ];
+            }
+
+            /**
+             * OUT1: closest log around noon
+             */
+            $slots['out1'] = $sorted
+                ->filter(
+                    fn($log) => ($h = $getHour($log)) >= 11 && $h <= 13
+                )
+                ->sortBy(
+                    fn($log) => abs(
+                        strtotime($log->scanned_time) -
+                        strtotime('12:00:00')
+                    )
+                )
+                ->first();
+
+            /**
+             * IN2: first log after OUT1
+             */
+            if ($slots['out1']) {
+                $out1Time = strtotime($slots['out1']->scanned_time);
+
+                $slots['in2'] = $sorted->first(function ($log) use ($out1Time) {
+                    $time = strtotime($log->scanned_time);
+                    $h = (int) date('H', $time);
+
+                    return $h >= 12
+                        && $h < 14
+                        && $time >= ($out1Time + 60);
+                });
+            }
+
+            /**
+             * OUT2: latest log >= 2PM
+             */
+            $slots['out2'] = $sorted
+                ->filter(
+                    fn($log) => (int) date('H', strtotime($log->scanned_time)) >= 14
+                )
+                ->sortByDesc(
+                    fn($log) => strtotime($log->scanned_time)
+                )
+                ->first();
+
+            return $slots;
+        }
+                    }
+
+                                        if (!function_exists('computeDTRHours')) {
+                                   if (!function_exists('computeDTRHours')) {
+                                function computeDTRHours($slots)
+                                {
+                                    $in1 = $slots['in1'] ? strtotime($slots['in1']->date . ' ' . $slots['in1']->scanned_time) : null;
+                                    $out1 = $slots['out1'] ? strtotime($slots['out1']->date . ' ' . $slots['out1']->scanned_time) : null;
+                                    $in2 = $slots['in2'] ? strtotime($slots['in2']->date . ' ' . $slots['in2']->scanned_time) : null;
+                                    $out2 = $slots['out2'] ? strtotime($slots['out2']->date . ' ' . $slots['out2']->scanned_time) : null;
+
+                                // No morning logs but valid afternoon session
+                                if (!$in1 && $in2 && $out2) {
+                                    $baseDate = date('Y-m-d', $in2);
+                                }
+                                // No logs at all
+                                elseif (!$in1) {
+                                    return [
+                                        'ut' => 8,
+                                        'ot' => 0,
+                                        'totalWorked' => 0,
+                                    ];
+                                } else {
+                                    $baseDate = date('Y-m-d', $in1);
+                                }
+
+                                    $isWeekend = in_array(date('w', strtotime($baseDate)), [0, 6]);
+
+                                    $lunchStart = strtotime($baseDate . ' 12:00:00');
+                                    $lunchEnd = strtotime($baseDate . ' 13:00:00');
+
+                                    /**
+                                     * MORNING SESSION
+                                     */
+                                    $amStart = $in1;
+
+                                    // fallback: out1 -> out2
+                                    $amEnd = $out1 ?: $out2;
+
+                                    if (!$amEnd) {
+                                        return [
+                                            'ut' => 8,
+                                            'ot' => 0,
+                                            'totalWorked' => 0,
+                                        ];
+                                    }
+
+                                    $minStart = strtotime(
+                                        $baseDate . ' ' . ($isWeekend ? '08:00:00' : '07:00:00')
+                                    );
+
+                                    if ($amStart < $minStart) {
+                                        $amStart = $minStart;
+                                    }
+
+                                    $adjustedAmEnd = $amEnd;
+
+                                    if ($amEnd > $lunchStart) {
+                                        $overlap = min($amEnd, $lunchEnd) - $lunchStart;
+                                        $adjustedAmEnd = $amEnd - max($overlap, 0);
+                                    }
+
+                                    $morningHours = max(
+                                        ($adjustedAmEnd - $amStart) / 3600,
+                                        0
+                                    );
+
+                                    /**
+                                     * AFTERNOON SESSION
+                                     */
+                                    $afternoonHours = 0;
+
+                                    if ($in2 && $out2 && $out1) {
+                                        $pmStart = $in2;
+                                        $pmEnd = $out2;
+
+                                        if ($pmStart < $lunchEnd) {
+                                            $pmStart = $lunchEnd;
+                                        }
+
+                                        if ($pmEnd < $pmStart) {
+                                            $pmEnd = $pmStart;
+                                        }
+
+                                        $afternoonHours = max(
+                                            ($pmEnd - $pmStart) / 3600,
+                                            0
+                                        );
+                                    }
+
+                                    $worked = $morningHours + $afternoonHours;
+
+                                    /**
+                                     * HALF-DAY PROTECTION RULE
+                                     * If only morning logs exist and worked >= 2,
+                                     * force exactly 4 worked hours.
+                                     */
+                                    if (
+                                        !$isWeekend &&
+                                        (!$in2 || !$out2) &&
+                                        $worked >= 2
+                                    ) {
+                                        $worked = 4;
+                                    }
+
+                                    $worked = round(max($worked, 0), 2);
+
+                                    /**
+                                     * UT COMPUTATION
+                                     */
+                                    $ut = max(0, 8 - $worked);
+
+                                    /**
+                                     * OT COMPUTATION
+                                     */
+                                    $ot = max(0, $worked - 8);
+
+                                    return [
+                                        'ut' => round($ut, 2),
+                                        'ot' => round($ot, 2),
+                                        'totalWorked' => round($worked, 2),
+                                    ];
+                                }
+                            }
+                                        }
     @endphp
 
     <div class="header-section" style="text-align: center; white-space: nowrap; margin-right: 10%;">
