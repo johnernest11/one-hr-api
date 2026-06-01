@@ -60,6 +60,13 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(120)->by($key);
         });
 
+        // Default rate limit for Time Logs
+        RateLimiter::for('api-time-logs', function (Request $request) {
+            $key = 'time-log'.$request->get('token').$request->ip();
+
+            return Limit::perMinute(255)->by($key);
+        });
+
         // Default rate limit for API Keys accessing Webhook API routes
         RateLimiter::for('api-webhooks', function (Request $request) {
             $key = $this->getApiWebhookThrottleKey($request);
