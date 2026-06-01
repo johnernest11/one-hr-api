@@ -1,0 +1,464 @@
+[
+  {
+    "key": "0",
+    "label": "Wellness Activity",
+    "data": "Wellness Activity",
+    "selectable": false,
+    "children": [
+      {
+        "key": "0-0",
+        "label": "Physical Health",
+        "data": "Physical Health",
+        "selectable": false,
+        "children": [
+          {
+            "key": "0-0-0",
+            "label": "Fitness or Gym Exercises (Individual)",
+            "data": "Fitness or Gym Exercises (Individual)"
+          },
+          {
+            "key": "0-0-1",
+            "label": "Fitness or Gym Exercises (Group)",
+            "data": "Fitness or Gym Exercises (Group)"
+          },
+          {
+            "key": "0-0-2",
+            "label": "Jogging/ Brisk-walking/ Hiking/ Walking exercise (Individual)",
+            "data": "Jogging/ Brisk-walking/ Hiking/ Walking exercise (Individual)"
+          },
+          {
+            "key": "0-0-3",
+            "label": "Jogging/ Brisk-walking/ Hiking/ Walking exercise (Group)",
+            "data": "Jogging/ Brisk-walking/ Hiking/ Walking exercise (Group)"
+          },
+          {
+            "key": "0-0-4",
+            "label": "Martial Arts (Individual)",
+            "data": "Martial Arts (Individual)"
+          },
+          {
+            "key": "0-0-5",
+            "label": "Martial Arts (Group)",
+            "data": "Martial Arts (Group)"
+          },
+          {
+            "key": "0-0-6",
+            "label": "Zumba, Dance Fitness or Aerobics (Individual)",
+            "data": "Zumba, Dance Fitness or Aerobics (Individual)"
+          },
+          {
+            "key": "0-0-7",
+            "label": "Zumba, Dance Fitness or Aerobics (Group)",
+            "data": "Zumba, Dance Fitness or Aerobics (Group)"
+          },
+          {
+            "key": "0-0-8",
+            "label": "Attendance to a Health Seminar/ Wellness Forum (Individual)",
+            "data": "Attendance to a Health Seminar/ Wellness Forum (Individual)"
+          },
+          {
+            "key": "0-0-9",
+            "label": "Attendance to a Health Seminar/ Wellness Forum (Group)",
+            "data": "Attendance to a Health Seminar/ Wellness Forum (Group)"
+          },
+          {
+            "key": "0-0-10",
+            "label": "Health Check-Up/ Vaccination (Individual)",
+            "data": "Health Check-Up/ Vaccination (Individual)"
+          },
+          {
+            "key": "0-0-11",
+            "label": "Laboratory or Diagnostic Tests (Individual)",
+            "data": "Laboratory or Diagnostic Tests (Individual)"
+          },
+          {
+            "key": "0-0-12",
+            "label": "Vision Screening or Eye Refraction Exam (Individual)",
+            "data": "Vision Screening or Eye Refraction Exam (Individual)"
+          },
+          {
+            "key": "0-0-13",
+            "label": "Physical Therapy Sessions or Therapeutic Massage (Individual)",
+            "data": "Physical Therapy Sessions or Therapeutic Massage (Individual)"
+          },
+          {
+            "key": "0-0-14",
+            "label": "Ball games (Group)",
+            "data": "Ball games (Group)"
+          },
+          {
+            "key": "0-0-15",
+            "label": "Indoor sports activities (Group)",
+            "data": "Indoor sports activities (Group)"
+          },
+          {
+            "key": "0-0-16",
+            "label": "Biking (Group)",
+            "data": "Biking (Group)"
+          },
+          {
+            "key": "0-0-17",
+            "label": "Group aquatic exercise or recreational swimming (Group)",
+            "data": "Group aquatic exercise or recreational swimming (Group)"
+          }
+        ]
+      },
+      {
+        "key": "0-1",
+        "label": "Psychosocial/ Mental/ Social/ Emotional Health",
+        "data": "Psychosocial/ Mental/ Social/ Emotional Health",
+        "selectable": false,
+        "children": [
+          {
+            "key": "0-1-0",
+            "label": "Stress debriefing (Individual)",
+            "data": "Stress debriefing (Individual)"
+          },
+          {
+            "key": "0-1-1",
+            "label": "Stress debriefing (Group)",
+            "data": "Stress debriefing (Group)"
+          },
+          {
+            "key": "0-1-2",
+            "label": "Anger management session (Individual)",
+            "data": "Anger management session (Individual)"
+          },
+          {
+            "key": "0-1-3",
+            "label": "Anger management session (Group)",
+            "data": "Anger management session (Group)"
+          },
+          {
+            "key": "0-1-4",
+            "label": "Mental Health Counseling (Individual)",
+            "data": "Mental Health Counseling (Individual)"
+          },
+          {
+            "key": "0-1-5",
+            "label": "Mental Health Counseling (Group)",
+            "data": "Mental Health Counseling (Group)"
+          },
+          {
+            "key": "0-1-6",
+            "label": "Spa/ Salon Services (Individual)",
+            "data": "Spa/ Salon Services (Individual)"
+          },
+          {
+            "key": "0-1-7",
+            "label": "Spa/ Salon Services (Group)",
+            "data": "Spa/ Salon Services (Group)"
+          },
+          {
+            "key": "0-1-8",
+            "label": "Blood Donation (Individual)",
+            "data": "Blood Donation (Individual)"
+          },
+          {
+            "key": "0-1-9",
+            "label": "Volunteer Work (Individual)",
+            "data": "Volunteer Work (Individual)"
+          },
+          {
+            "key": "0-1-10",
+            "label": "“Kumustahan” session (Group)",
+            "data": "“Kumustahan” session (Group)"
+          },
+          {
+            "key": "0-1-11",
+            "label": "“Kapihan” session (Group)",
+            "data": "“Kapihan” session (Group)"
+          },
+          {
+            "key": "0-1-12",
+            "label": "“Talakayan” session (Group)",
+            "data": "“Talakayan” session (Group)"
+          },
+          {
+            "key": "0-1-13",
+            "label": "Film viewing (Group)",
+            "data": "Film viewing (Group)"
+          },
+          {
+            "key": "0-1-14",
+            "label": "Attending cultural show (Group)",
+            "data": "Attending cultural show (Group)"
+          },
+          {
+            "key": "0-1-15",
+            "label": "FGD on Mental Health Issues (Group)",
+            "data": "FGD on Mental Health Issues (Group)"
+          },
+          {
+            "key": "0-1-16",
+            "label": "Group singing activity (Group)",
+            "data": "Group singing activity (Group)"
+          },
+          {
+            "key": "0-1-17",
+            "label": "Band jamming/ Choral practice (Group)",
+            "data": "Band jamming/ Choral practice (Group)"
+          },
+          {
+            "key": "0-1-18",
+            "label": "E-sports activities (Group)",
+            "data": "E-sports activities (Group)"
+          }
+        ]
+      },
+      {
+        "key": "0-2",
+        "label": "Spiritual Health",
+        "data": "Spiritual Health",
+        "selectable": false,
+        "children": [
+          {
+            "key": "0-2-0",
+            "label": "Bible study (Individual)",
+            "data": "Bible study (Individual)"
+          },
+          {
+            "key": "0-2-1",
+            "label": "Bible study (Group)",
+            "data": "Bible study (Group)"
+          },
+          {
+            "key": "0-2-2",
+            "label": "Mass/ Novena Prayer (Individual)",
+            "data": "Mass/ Novena Prayer (Individual)"
+          },
+          {
+            "key": "0-2-3",
+            "label": "Mass/ Novena Prayer (Group)",
+            "data": "Mass/ Novena Prayer (Group)"
+          },
+          {
+            "key": "0-2-4",
+            "label": "Act of compassion (Individual)",
+            "data": "Act of compassion (Individual)"
+          },
+          {
+            "key": "0-2-5",
+            "label": "Act of compassion (Group)",
+            "data": "Act of compassion (Group)"
+          },
+          {
+            "key": "0-2-6",
+            "label": "Community volunteering (Individual)",
+            "data": "Community volunteering (Individual)"
+          },
+          {
+            "key": "0-2-7",
+            "label": "Community volunteering (Group)",
+            "data": "Community volunteering (Group)"
+          },
+          {
+            "key": "0-2-8",
+            "label": "Yoga/ T'ai Chi & other disciplined practices (Individual)",
+            "data": "Yoga/ T'ai Chi & other disciplined practices (Individual)"
+          },
+          {
+            "key": "0-2-9",
+            "label": "Yoga/ T'ai Chi & other disciplined practices (Group)",
+            "data": "Yoga/ T'ai Chi & other disciplined practices (Group)"
+          },
+          {
+            "key": "0-2-10",
+            "label": "Book reading/ Journaling (Individual)",
+            "data": "Book reading/ Journaling (Individual)"
+          },
+          {
+            "key": "0-2-11",
+            "label": "Visit to a Place of Worship or Participation in Church-Related Activities (Individual)",
+            "data": "Visit to a Place of Worship or Participation in Church-Related Activities (Individual)"
+          },
+          {
+            "key": "0-2-12",
+            "label": "Prayer meeting (Group)",
+            "data": "Prayer meeting (Group)"
+          },
+          {
+            "key": "0-2-13",
+            "label": "Recollection/ Contemplation (Group)",
+            "data": "Recollection/ Contemplation (Group)"
+          },
+          {
+            "key": "0-2-14",
+            "label": "Group meditation (Group)",
+            "data": "Group meditation (Group)"
+          }
+        ]
+      },
+      {
+        "key": "0-3",
+        "label": "Environmental Wellness",
+        "data": "Environmental Wellness",
+        "selectable": false,
+        "children": [
+          {
+            "key": "0-3-0",
+            "label": "Nature walk (Individual)",
+            "data": "Nature walk (Individual)"
+          },
+          {
+            "key": "0-3-1",
+            "label": "Nature walk (Group)",
+            "data": "Nature walk (Group)"
+          },
+          {
+            "key": "0-3-2",
+            "label": "Clean-up drive (Group)",
+            "data": "Clean-up drive (Group)"
+          },
+          {
+            "key": "0-3-3",
+            "label": "Tree planting activities (Group)",
+            "data": "Tree planting activities (Group)"
+          },
+          {
+            "key": "0-3-4",
+            "label": "Group gardening in the Office premise only (Group)",
+            "data": "Group gardening in the Office premise only (Group)"
+          },
+          {
+            "key": "0-3-5",
+            "label": "Recycling activities (Group)",
+            "data": "Recycling activities (Group)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "1",
+    "label": "Auxiliary Wellness",
+    "data": "Auxiliary Wellness",
+    "selectable": false,
+    "children": [
+      {
+        "key": "1-0",
+        "label": "Financial Wellness",
+        "data": "Financial Wellness",
+        "selectable": false,
+        "children": [
+          {
+            "key": "1-0-0",
+            "label": "Attendance to lecture related to livelihood programs",
+            "data": "Attendance to lecture related to livelihood programs"
+          },
+          {
+            "key": "1-0-1",
+            "label": "Attendance to lecture related to financial literacy",
+            "data": "Attendance to lecture related to financial literacy"
+          },
+          {
+            "key": "1-0-2",
+            "label": "Bank appointments",
+            "data": "Bank appointments"
+          },
+          {
+            "key": "1-0-3",
+            "label": "Processing of HMO or personal life insurance",
+            "data": "Processing of HMO or personal life insurance"
+          },
+          {
+            "key": "1-0-4",
+            "label": "Processing of tax requirements",
+            "data": "Processing of tax requirements"
+          }
+        ]
+      },
+      {
+        "key": "1-1",
+        "label": "Occupational or Vocational Wellness",
+        "data": "Occupational or Vocational Wellness",
+        "selectable": false,
+        "children": [
+          {
+            "key": "1-1-0",
+            "label": "Attendance to art workshop",
+            "data": "Attendance to art workshop"
+          },
+          {
+            "key": "1-1-1",
+            "label": "Attendance to baking or cooking class",
+            "data": "Attendance to baking or cooking class"
+          },
+          {
+            "key": "1-1-2",
+            "label": "Learning basic sign language",
+            "data": "Learning basic sign language"
+          },
+          {
+            "key": "1-1-3",
+            "label": "Attendance to personality development session",
+            "data": "Attendance to personality development session"
+          },
+          {
+            "key": "1-1-4",
+            "label": "Learning photography",
+            "data": "Learning photography"
+          },
+          {
+            "key": "1-1-5",
+            "label": "Attendance to learning and development interventions",
+            "data": "Attendance to learning and development interventions"
+          },
+          {
+            "key": "1-1-6",
+            "label": "Processing of CSC (and other similar career) examination requirements",
+            "data": "Processing of CSC (and other similar career) examination requirements"
+          },
+          {
+            "key": "1-1-7",
+            "label": "Attendance to driving lessons and other short term courses",
+            "data": "Attendance to driving lessons and other short term courses"
+          },
+          {
+            "key": "1-1-8",
+            "label": "Music and/or Dance Lessons",
+            "data": "Music and/or Dance Lessons"
+          }
+        ]
+      },
+      {
+        "key": "1-2",
+        "label": "Miscellaneous Accommodation",
+        "data": "Miscellaneous Accommodation",
+        "selectable": false,
+        "children": [
+          {
+            "key": "1-2-0",
+            "label": "Review in preparation for school examination",
+            "data": "Review in preparation for school examination"
+          },
+          {
+            "key": "1-2-1",
+            "label": "School engagement for staff or family",
+            "data": "School engagement for staff or family"
+          },
+          {
+            "key": "1-2-2",
+            "label": "Processing of documents to government offices and other private institutions",
+            "data": "Processing of documents to government offices and other private institutions"
+          },
+          {
+            "key": "1-2-3",
+            "label": "Breastfeeding or lactation accommodation",
+            "data": "Breastfeeding or lactation accommodation"
+          },
+          {
+            "key": "1-2-4",
+            "label": "Visiting a sick co-worker or family member",
+            "data": "Visiting a sick co-worker or family member"
+          },
+          {
+            "key": "1-2-5",
+            "label": "Attending a wake, funeral, or memorial service",
+            "data": "Attending a wake, funeral, or memorial service"
+          }
+        ]
+      }
+    ]
+  }
+]

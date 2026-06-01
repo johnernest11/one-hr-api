@@ -37,6 +37,8 @@ class DatabaseSeeder extends Seeder
         SalaryGradesSeeder::class,
         ProgramsSeeder::class,
         LocatorSlipPermissionSeeder::class,
+        LocatorActivitySeeder::class,
+        LocatorActivityPermissionSeeder::class,
     ];
 
     /**

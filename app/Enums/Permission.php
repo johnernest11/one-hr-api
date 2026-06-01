@@ -27,6 +27,7 @@ enum Permission: string
     case VIEW_COUNTRIES = 'view_countries';
     case VIEW_SALARY_GRADES = 'view_salary_grades';
     case VIEW_PROGRAMS = 'view_programs';
+    case VIEW_LOCATOR_ACTIVITIES = 'view_locator_activities';
     case VIEW_ITEMS = 'view_items';
     case CREATE_ITEMS = 'create_items';
     case UPDATE_ITEMS = 'update_items';
