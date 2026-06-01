@@ -80,7 +80,7 @@ Route::middleware(['auth:token', 'verified.api'])->group(function () {
             ->post('/verify-qr', 'verifyQr')->name('verify-qr');
     });
 
-    Route::controller(TimeLogController::class)->name('time-logs.')->group(function () {
+    Route::controller(TimeLogController::class)->name('time-logs.')->middleware(['throttle:api-time-logs'])->group(function () {
         /** @uses TimeLogController::logTime */
         Route::middleware(['permission:'.Permission::LOG_TIME->value])
             ->post('/log-time', 'logTime')->name('log-time');
