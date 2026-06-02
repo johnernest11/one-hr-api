@@ -176,26 +176,28 @@ class DailyTimeRecordService implements DailyTimeRecordManager
             ->select('dtr.employee_id', DB::raw('MAX(tl.id) as max_log_id'))
             ->groupBy('dtr.employee_id');
 
+        // It checks if items.office_id exists first, falling back to e.office_id if null
+        // This is to cater to the changes wherein employee.office_id is moved to item.office_id
+        $baseOfficeFallback = 'COALESCE(i.office_id, e.office_id)';
+
+        $effectiveOfficeSql = "CASE 
+            WHEN log_data.is_in = 1 AND log_data.office_id IS NOT NULL THEN log_data.office_id 
+            ELSE $baseOfficeFallback 
+        END";
+
         $query = DB::table('employees as e')
             ->whereNull('e.deleted_at')
+            ->leftJoin('items as i', 'e.item_id', '=', 'i.id')
             ->leftJoinSub($latestLogIds, 'latest', 'e.id', '=', 'latest.employee_id')
             ->leftJoin('time_logs as log_data', 'latest.max_log_id', '=', 'log_data.id')
             ->select([
                 'e.id as employee_id',
-                DB::raw('CASE 
-                    WHEN log_data.is_in = 1 AND log_data.office_id IS NOT NULL THEN log_data.office_id 
-                    ELSE e.office_id 
-                END as effective_office_id'),
+                DB::raw("$effectiveOfficeSql as effective_office_id"),
                 'log_data.is_in',
             ]);
 
         if ($targetOfficeId) {
-            $query->where(function ($q) use ($targetOfficeId) {
-                $q->where(DB::raw('CASE 
-                    WHEN log_data.is_in = 1 AND log_data.office_id IS NOT NULL THEN log_data.office_id 
-                    ELSE e.office_id 
-                END'), $targetOfficeId);
-            });
+            $query->where(DB::raw($effectiveOfficeSql), $targetOfficeId);
         }
 
         $results = $query->get();
