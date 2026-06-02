@@ -4,6 +4,7 @@ use App\Enums\Permission;
 use App\Http\Controllers\Libraries\CountryController;
 use App\Http\Controllers\Libraries\DivisionController;
 use App\Http\Controllers\Libraries\FundSourceController;
+use App\Http\Controllers\Libraries\LocatorActivityController;
 use App\Http\Controllers\Libraries\OfficeController;
 use App\Http\Controllers\Libraries\PositionController;
 use App\Http\Controllers\Libraries\ProgramController;
@@ -107,4 +108,11 @@ Route::prefix('programs')->controller(ProgramController::class)->name('programs.
         ->get('/search', 'search')
         ->name('search');
 
+});
+
+// Locator Activities
+Route::prefix('locator-activities')->controller(LocatorActivityController::class)->name('locator-activities.')->group(function () {
+    /** @uses LocatorActivityController::fetch */
+    Route::middleware(['permission:'.Permission::VIEW_LOCATOR_ACTIVITIES->value])
+        ->get('', 'fetch')->name('index');
 });
