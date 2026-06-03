@@ -157,7 +157,8 @@ class TimeLogService implements TimeLogManager
 
             // Fire broadcast
             try {
-                broadcast(new TimeLogCreated($timeLog));
+                $broadcastEmployeeId = $timeLog->dailyTimeRecord->employee->agency_employee_no ?? $timeLog->dailyTimeRecord->employee->id_number;
+                broadcast(new TimeLogCreated($timeLog->id, $timeLog->scanned_time, $broadcastEmployeeId));
             } catch (Exception $e) {
                 Log::error('Broadcasting failed: '.$e->getMessage());
             }

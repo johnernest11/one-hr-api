@@ -2,26 +2,21 @@
 
 namespace App\Events;
 
-use App\Models\DailyTimeRecords\TimeLog;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
+use Log;
+use Throwable;
 
 class TimeLogCreated implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public TimeLog $timeLog;
+    use Dispatchable, InteractsWithSockets;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(TimeLog $timeLog)
-    {
-        $this->timeLog = $timeLog;
-    }
+    public function __construct(public int $id, public string $scanned_time, public string $employee_id) {}
 
     /**
      * Get the data to broadcast.
@@ -30,10 +25,12 @@ class TimeLogCreated implements ShouldBroadcast
      */
     public function broadcastWith()
     {
+        Log::info("Background worker: Starting broadcast for TimeLog #{$this->id} to Soketi.");
+
         return [ // @todo Add here the data needed to be passed to the frontend
-            'id' => $this->timeLog->id,
-            'scanned_time' => $this->timeLog->scanned_time,
-            'employee_id' => $this->timeLog->dailyTimeRecord->employee->agency_employee_no ?? $this->timeLog->dailyTimeRecord->employee->id_number,
+            'id' => $this->id,
+            'scanned_time' => $this->scanned_time,
+            'employee_id' => $this->employee_id,
         ];
     }
 
@@ -47,5 +44,13 @@ class TimeLogCreated implements ShouldBroadcast
         return [
             new PrivateChannel('timelogs'),
         ];
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $exception): void
+    {
+        Log::error('The broadcast background worker failed: '.$exception->getMessage());
     }
 }
