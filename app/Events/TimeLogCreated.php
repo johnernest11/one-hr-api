@@ -6,6 +6,8 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
+use Log;
+use Throwable;
 
 class TimeLogCreated implements ShouldBroadcast
 {
@@ -23,6 +25,8 @@ class TimeLogCreated implements ShouldBroadcast
      */
     public function broadcastWith()
     {
+        Log::info("Background worker: Starting broadcast for TimeLog #{$this->id} to Soketi.");
+
         return [ // @todo Add here the data needed to be passed to the frontend
             'id' => $this->id,
             'scanned_time' => $this->scanned_time,
@@ -40,5 +44,13 @@ class TimeLogCreated implements ShouldBroadcast
         return [
             new PrivateChannel('timelogs'),
         ];
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $exception): void
+    {
+        Log::error('The broadcast background worker failed: '.$exception->getMessage());
     }
 }
