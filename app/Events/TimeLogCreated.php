@@ -14,6 +14,13 @@ class TimeLogCreated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets;
 
     /**
+     * Indicates if the job should be dispatched after all database transactions have committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Create a new event instance.
      */
     public function __construct(public int $id, public string $scanned_time, public string $employee_id) {}
