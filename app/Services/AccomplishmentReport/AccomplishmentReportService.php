@@ -134,30 +134,34 @@ class AccomplishmentReportService implements AccomplishmentReportManager
     public function update(AccomplishmentReport $accomplishmentReport, array $newReportInfo): AccomplishmentReport
     {
         return DB::transaction(function () use ($accomplishmentReport, $newReportInfo) {
-            $exemptedAttributes = [];
+            // Update main record except nested relationship data
+            $accomplishmentReport->update(Arr::except($newReportInfo, ['rows']));
 
-            if (array_key_exists('rows', $newReportInfo)) {
-                $exemptedAttributes = ['rows'];
-            }
-
-            $accomplishmentReport->update(Arr::except($newReportInfo, $exemptedAttributes));
-
-            if (array_key_exists('rows', $newReportInfo)) {
+            if (! empty($newReportInfo['rows'])) {
                 foreach ($newReportInfo['rows'] as $newRowInfo) {
-                    // Check if id exists.
+                    $isDelete = ! empty($newRowInfo['_delete']);
+
+                    // For existing rows
                     if (isset($newRowInfo['id'])) {
-                        $row = ARRows::where('accomplishment_report_id', '=', $accomplishmentReport->id)->find($newRowInfo['id']);
-                        if ($row) {
-                            $row->update(Arr::except($newRowInfo, ['id']));
+                        if ($isDelete) {
+                            ARRows::where('accomplishment_report_id', $accomplishmentReport->id)
+                                ->where('id', $newRowInfo['id'])
+                                ->delete();
+                        } else {
+                            $row = ARRows::where('accomplishment_report_id', $accomplishmentReport->id)
+                                ->find($newRowInfo['id']);
+
+                            if ($row) {
+                                $row->update(Arr::except($newRowInfo, ['id', '_delete']));
+                            }
                         }
                     }
-                    // If not, create new row
-                    else {
-                        $createNewRow = new ARRows($newRowInfo);
-                        $createNewRow->accomplishment_report_id = $accomplishmentReport->id;
-                        $createNewRow->save();
+                    // New Row Logic (Ignore if marked for deletion before save)
+                    elseif (! $isDelete) {
+                        $accomplishmentReport->rows()->create(
+                            Arr::except($newRowInfo, ['_delete'])
+                        );
                     }
-
                 }
             }
 
