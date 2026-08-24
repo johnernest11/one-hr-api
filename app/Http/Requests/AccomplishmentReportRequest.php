@@ -30,8 +30,8 @@ class AccomplishmentReportRequest extends FormRequest
         $routeName = $this->route()->getName();
 
         return match ($routeName) {
-            'accomplishment-report.store' => $this->getStoreUpdateAccomplishmentReportRule(),
-            'accomplishment-report.update' => $this->getStoreUpdateAccomplishmentReportRule(),
+            'accomplishment-report.store' => $this->getStoreAccomplishmentReportRule(),
+            'accomplishment-report.update' => $this->getUpdateAccomplishmentReportRule(),
             'accomplishment-report.search' => $this->getSearchAccomplishmentReportRule(),
             default => [],
         };
@@ -39,9 +39,9 @@ class AccomplishmentReportRequest extends FormRequest
     }
 
     /**
-     * Accomplishment Report Rules
+     * Accomplishment Report Store Rules
      */
-    public function getStoreUpdateAccomplishmentReportRule(): array
+    public function getStoreAccomplishmentReportRule(): array
     {
         $ar = $this->route('accomplishmentReport'); // Get current AR
 
@@ -59,6 +59,38 @@ class AccomplishmentReportRequest extends FormRequest
             'rows.*.dates_in_week' => ['required_if:status,done', 'string', new DbVarcharMaxLength],
             'rows.*.specific_activity' => ['required_if:status,done', 'string', new DbTextMaxLength],
             'rows.*.highlights' => ['required_if:status,done', 'string', new DbTextMaxLength],
+        ];
+    }
+
+    /**
+     * Accomplishment Report Update Rules
+     */
+    public function getUpdateAccomplishmentReportRule(): array
+    {
+        $ar = $this->route('accomplishmentReport'); // Get current AR
+
+        return [
+            'period' => ['required', 'string', new DbVarcharMaxLength],
+            'supervisor_notes' => ['nullable', 'string', new DbVarcharMaxLength],
+            'status' => [new Enum(ARStatus::class)],
+            'rows' => ['required', 'array',
+                function ($attribute, $value, $fail) {
+                    $nonDeletedRows = collect($value)->reject(fn ($row) => ! empty($row['_delete']));
+                    if ($nonDeletedRows->isEmpty()) {
+                        $fail('An accomplishment report must have at least one active row.');
+                    }
+                },
+            ], // a row has to be present to be able to save
+            'rows.*.id' => ['nullable', 'exists:a_r_rows,id',
+                Rule::exists('a_r_rows', 'id')->where(function ($query) use ($ar) {
+                    $query->where('accomplishment_report_id', $ar->id); // Validate and ensure that the ids match
+                }),
+                'int'],
+            'rows.*._delete' => ['nullable', 'boolean'],
+            'rows.*.week_num' => ['exclude_if:rows.*._delete,true', 'required_without:rows.*.id', new Enum(WeekNumber::class)],
+            'rows.*.dates_in_week' => ['exclude_if:rows.*._delete,true', 'required_if:status,done', 'string', new DbVarcharMaxLength],
+            'rows.*.specific_activity' => ['exclude_if:rows.*._delete,true', 'required_if:status,done', 'string', new DbTextMaxLength],
+            'rows.*.highlights' => ['exclude_if:rows.*._delete,true', 'required_if:status,done', 'string', new DbTextMaxLength],
         ];
     }
 
