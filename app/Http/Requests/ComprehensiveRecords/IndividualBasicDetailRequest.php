@@ -66,7 +66,15 @@ class IndividualBasicDetailRequest extends FormRequest
             /* -------------------------------------------------------------------------- */
             /* -------------------------- IndividualBasicDetail ------------------------- */
             'individual' => ['array'],
-            'individual.first_name' => ['required', 'string', new DbVarcharMaxLength],
+            'individual.first_name' => ['required', 'string', new DbVarcharMaxLength,
+                Rule::unique('individual_basic_details', 'first_name')->where(function ($query) {
+                    return $query->where('first_name', $this->input('individual.first_name'))
+                        ->where('last_name', $this->input('individual.last_name'))
+                        ->where('middle_name', $this->input('individual.middle_name'))
+                        ->where('ext_name', $this->input('individual.ext_name'))
+                        ->where('birthday', $this->input('individual.birthday'));
+                }),
+            ],
             'individual.last_name' => ['required', 'string', new DbVarcharMaxLength],
             'individual.sex' => ['required', new Enum(SexualCategory::class)],
             'individual.birthday' => ['required', 'date_format:Y-m-d', 'before_or_equal:'.$this->dateToday],
@@ -78,7 +86,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.pag_ibig_no' => ['required', 'string', new DbTextMaxLength],
             'individual.philhealth_no' => ['required', 'string', new DbTextMaxLength],
             'individual.sss_no' => ['required', 'string', new DbTextMaxLength],
-            'individual.tin' => ['required', 'string', new DbTextMaxLength],
+            'individual.tin' => ['required', 'string', new DbTextMaxLength, 'unique:individual_basic_details,tin,'],
             'individual.citizenship' => ['required', 'string', new Enum(Citizenship::class)],
             'individual.middle_name' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual.ext_name' => ['nullable', 'string', new Enum(ExtensionNameCategory::class)],
@@ -94,7 +102,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'employee.office_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
             'employee.division_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
             'employee.section_or_unit_id' => ['nullable', 'int', $this->requiredIfUserIsPPMSAdmin()],
-            'employee.id_number' => ['nullable', 'string', new DbVarcharMaxLength],
+            'employee.id_number' => ['nullable', 'string', new DbVarcharMaxLength, 'unique:employees,id_number,'],
             'employee.agency_employee_no' => ['nullable', 'string', new DbTextMaxLength],
 
             /* ---------------------------- IndividualAddress --------------------------- */
@@ -652,6 +660,9 @@ class IndividualBasicDetailRequest extends FormRequest
         return [
             '*.*.id.exists' => 'The :attribute does not belong to the individual you are trying to update.',
             'individual_question.*.countries_ids.*.exists' => 'The ID in :attribute does not exist in the countries library.',
+            'individual.first_name.unique' => 'A record with this exact full name and birthday already exists.',
+            'employee.id_number.unique' => 'A record with this exact ID number already exists.',
+            'individual.tin.unique' => 'A record with this exact TIN already exists.',
         ];
     }
 
