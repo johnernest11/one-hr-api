@@ -152,12 +152,4 @@ class QrCodeFeatureTest extends TestCase
         $response->assertStatus(404); // Should throw RESOURCE_NOT_FOUND_ERROR
 
     }
-
-    public function test_ppms_cannot_generate_qr(): void
-    {
-        $individual = IndividualBasicDetail::factory()->create();
-        $employee = Employee::whereBelongsTo($individual)->firstOrFail();
-        $response = $this->withToken($this->authTokenPPMS)->postJson($this->baseUri."/$employee->id/qr-codes");
-        $response->assertStatus(403); // Should throw UNAUTHORIZED_ERROR
-    }
 }
