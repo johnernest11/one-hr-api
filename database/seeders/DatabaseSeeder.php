@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
         LocatorSlipPermissionSeeder::class,
         LocatorActivitySeeder::class,
         LocatorActivityPermissionSeeder::class,
+        UpdateQRPermissionSeeder::class,
     ];
 
     /**
