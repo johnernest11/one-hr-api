@@ -2,6 +2,7 @@
 
 namespace App\QueryFilters\DailyTimeRecords;
 
+use App\Models\ComprehensiveRecords\Employee;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -29,6 +30,14 @@ class DivisionFilter extends Filter
             return $builder;
         }
 
-        return $builder->where('employees.division_id', $division);
+        // Determine relation path dynamically based on the base model
+        // This is because this filter is used by multiple Models
+        $relation = $builder->getModel() instanceof Employee ? 'item' : 'employee.item';
+
+        // Updated such that it will now fetch the division_id from items
+        // since the division has been moved from employee->division_id to employee->item->division_id
+        return $builder->whereHas($relation, function (Builder $query) use ($division) {
+            $query->where('division_id', $division);
+        });
     }
 }

@@ -340,7 +340,7 @@ class LocatorSlipFeatureTest extends TestCase
         $employee_1 = Employee::whereBelongsTo($individual_1)->firstOrFail();
 
         $division_id = Division::inRandomOrder()->first()->id;
-        $employee_1->update(['division_id' => $division_id]);
+        $employee_1->item->update(['division_id' => $division_id]);
 
         $individual_2 = IndividualBasicDetail::factory()->create();
         $employee_2 = Employee::whereBelongsTo($individual_2)->firstOrFail();
