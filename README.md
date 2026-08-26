@@ -31,6 +31,21 @@ WebAppKit API is a Laravel 10 RESTFul starter kit for SPA and mobile clients. Th
   - DB Seeders
 - To check if everything is working as expected, run: `php artisan test`
 
+## Setting up new environments (staging, production, etc.)
+### File & Folder Ownerships and Permissions
+Apply the following permission updates during server provisioning to prevent application runtime and cloud storage failures:
+- **Laravel Storage Logs**: Ensure the web server process has read/write access to application logs to avoid "Permission Denied" file logging errors.
+```
+sudo chown -R root:apache storage/logs
+sudo chmod -R 2775 storage/logs
+```
+- **AWS SSL Certificate (SSM Directory)**: Ensure the web server user can traverse the SSM user path and read the CA certificate bundle required for AWS S3 outbound HTTPS requests (prevents cURL error 77 during S3 uploads).
+```
+sudo chown -R ssm-user:ssm-user /home/ssm-user
+sudo chmod 755 /home/ssm-user
+sudo chmod 755 /home/ssm-user/cacert.pem
+```
+
 ## Tools ready for you
 Runs a [code styler](https://laravel.com/docs/9.x/pint) for consistency and generate [IDE helper PHP Docs](https://github.com/barryvdh/laravel-ide-helper). See the command at `app/Console/Commands/StyleFixer.php`
 ```
@@ -87,3 +102,4 @@ Running `git commit` will trigger automated tasks specified in `grumphp.yml`
 ## Authors
 - Jego Carlo Ramos
 - John Paul Gulayan
+- Marianne Cyra Jun Quinzon
