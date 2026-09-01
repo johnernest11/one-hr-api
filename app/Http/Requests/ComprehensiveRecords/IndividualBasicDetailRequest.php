@@ -86,7 +86,7 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual.pag_ibig_no' => ['required', 'string', new DbTextMaxLength],
             'individual.philhealth_no' => ['required', 'string', new DbTextMaxLength],
             'individual.sss_no' => ['required', 'string', new DbTextMaxLength],
-            'individual.tin' => ['required', 'string', new DbTextMaxLength, 'unique:individual_basic_details,tin,'],
+            'individual.tin' => ['required', 'string', new DbTextMaxLength],
             'individual.citizenship' => ['required', 'string', new Enum(Citizenship::class)],
             'individual.middle_name' => ['nullable', 'string', new DbVarcharMaxLength],
             'individual.ext_name' => ['nullable', 'string', new Enum(ExtensionNameCategory::class)],
@@ -662,7 +662,6 @@ class IndividualBasicDetailRequest extends FormRequest
             'individual_question.*.countries_ids.*.exists' => 'The ID in :attribute does not exist in the countries library.',
             'individual.first_name.unique' => 'A record with this exact full name and birthday already exists.',
             'employee.id_number.unique' => 'A record with this exact ID number already exists.',
-            'individual.tin.unique' => 'A record with this exact TIN already exists.',
         ];
     }
 
