@@ -13,6 +13,7 @@ use App\Models\Libraries\SalaryGrade;
 use App\Models\Libraries\SectionOrUnit;
 use App\QueryFilters\Item\EmploymentStatusFilter;
 use App\QueryFilters\Item\StatusFilter;
+use App\QueryFilters\Item\WithEmployeeName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -111,6 +112,7 @@ class Item extends Model
         return app(Pipeline::class)
             ->send($builder)
             ->through([
+                WithEmployeeName::class,
                 StatusFilter::class,
                 EmploymentStatusFilter::class,
             ])
