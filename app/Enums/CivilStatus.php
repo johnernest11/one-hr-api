@@ -14,4 +14,5 @@ enum CivilStatus: string
     case WIDOWED = 'Widowed';
     case DIVORCED = 'Divorced';
     case SEPARATED = 'Separated';
+    case UNNULLED = 'Unnulled';
 }

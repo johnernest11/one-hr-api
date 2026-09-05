@@ -1,287 +1,458 @@
 [
-    {
-        "id": 1,
-        "name": "ACCOUNTING SECTION",
-        "division_id": 3
-    },
-    {
-        "id": 2,
-        "name": "ANTI-RED TAPE UNIT",
-        "division_id": 7
-    },
-    {
-        "id": 3,
-        "name": "BUDGET SECTION",
-        "division_id": 3
-    },
-    {
-        "id": 4,
-        "name": "BUILDINGS AND GROUNDS MANAGEMENT SECTION",
-        "division_id": 1
-    },
-    {
-        "id": 5,
-        "name": "CASH SECTION",
-        "division_id": 3
-    },
-    {
-        "id": 6,
-        "name": "CENTER-BASED SERVICES SECTION",
-        "division_id": 10
-    },
-    {
-        "id": 7,
-        "name": "COMMUNITY-BASED SERVICES SECTION",
-        "division_id": 10
-    },
-    {
-        "id": 8,
-        "name": "COMMUNITY-BASED SERVICES SECTION - REGIONAL INTER-AGENCY COMMITTEE AGAINST TRAFFICKING AND VIOLENCE AGAINST WOMEN AND THEIR CHILDREN (RIACAT-VAWC)",
-        "division_id": 10
-    },
-    {
-        "id": 9,
-        "name": "COMMUNITY-BASED SERVICES SECTION - SPECIAL CONCERNS UNIT",
-        "division_id": 10
-    },
-    {
-        "id": 10,
-        "name": "CRISIS INTERVENTION SECTION",
-        "division_id": 10
-    },
-    {
-        "id": 11,
-        "name": "DISASTER RESPONSE AND REHABILITATION SECTION",
-        "division_id": 2
-    },
-    {
-        "id": 12,
-        "name": "DISASTER RESPONSE INFORMATION MANAGEMENT SECTION",
-        "division_id": 2
-    },
-    {
-        "id": 13,
-        "name": "FINANCE AND MANAGEMENT DIVISION",
-        "division_id": 3
-    },
-    {
-        "id": 14,
-        "name": "GENERAL SERVICES SECTION",
-        "division_id": 1
-    },
-    {
-        "id": 15,
-        "name": "HUMAN RESOURCE PLANNING AND PERFORMANCE MANAGEMENT SECTION",
-        "division_id": 4
-    },
-    {
-        "id": 16,
-        "name": "HUMAN RESOURCE WELFARE SECTION",
-        "division_id": 4
-    },
-    {
-        "id": 17,
-        "name": "INTER-AGENCY COUNCIL AGAINST CHILD PORNOGRAPHY (IACACP) LED - SECRETARIAT",
-        "division_id": 10
-    },
-    {
-        "id": 18,
-        "name": "INTERNAL AUDIT UNIT",
-        "division_id": 7
-    },
-    {
-        "id": 19,
-        "name": "LEARNING AND DEVELOPMENT SECTION",
-        "division_id": 4
-    },
-    {
-        "id": 20,
-        "name": "LEGAL UNIT",
-        "division_id": 7
-    },
-    {
-        "id": 21,
-        "name": "NATIONAL HOUSEHOLD TARGETING SECTION",
-        "division_id": 8
-    },
-    {
-        "id": 22,
-        "name": "OFFICE OF THE ARD FOR OPERATIONS",
-        "division_id": 7
-    },
-    {
-        "id": 23,
-        "name": "OFFICE OF THE CONCURRENT-OIC ARD FOR ADMINISTRATION / OFFICE OF THE DIVISION CHIEF",
-        "division_id": 7
-    },
-    {
-        "id": 24,
-        "name": "OFFICE OF THE DIVISION CHIEF",
-        "division_id": 1
-    },
-    {
-        "id": 25,
-        "name": "OFFICE OF THE DIVISION CHIEF",
-        "division_id": 2
-    },
-    {
-        "id": 26,
-        "name": "OFFICE OF THE DIVISION CHIEF",
-        "division_id": 4
-    },
-    {
-        "id": 27,
-        "name": "OFFICE OF THE DIVISION CHIEF",
-        "division_id": 8
-    },
-    {
-        "id": 28,
-        "name": "OFFICE OF THE DIVISION CHIEF",
-        "division_id": 10
-    },
-    {
-        "id": 29,
-        "name": "OFFICE OF THE OIC-ARD FOR ADMINISTRATION",
-        "division_id": 7
-    },
-    {
-        "id": 30,
-        "name": "OFFICE OF THE OIC-ARD FOR OPERATIONS",
-        "division_id": 7
-    },
-    {
-        "id": 31,
-        "name": "OFFICE OF THE OIC-DIVISION CHIEF",
-        "division_id": 1
-    },
-    {
-        "id": 32,
-        "name": "OFFICE OF THE OIC-DIVISION CHIEF",
-        "division_id": 3
-    },
-    {
-        "id": 33,
-        "name": "OFFICE OF THE OIC-DIVISION CHIEF / CONCURRENT OIC-INNOVATIONS DIVISION",
-        "division_id": 8
-    },
-    {
-        "id": 34,
-        "name": "OFFICE OF THE OIC-HRMDD / HUMAN RESOURCE PLANNING AND PERFORMANCE MANAGEMENT SECTION",
-        "division_id": 4
-    },
-    {
-        "id": 35,
-        "name": "OFFICE OF THE REGIONAL DIRECTOR",
-        "division_id": 7
-    },
-    {
-        "id": 36,
-        "name": "OFFICE OF THE RESIDENT AUDITOR",
-        "division_id": 3
-    },
-    {
-        "id": 37,
-        "name": "PAG-ABOT PROGRAM",
-        "division_id": 5
-    },
-    {
-        "id": 38,
-        "name": "PERSONNEL ADMINISTRATION SECTION",
-        "division_id": 4
-    },
-    {
-        "id": 39,
-        "name": "POLICY DEVELOPMENT AND PLANNING SECTION",
-        "division_id": 8
-    },
-    {
-        "id": 40,
-        "name": "POLICY DEVELOPMENT AND PLANNING SECTION - PLANNING AND MONITORING UNIT",
-        "division_id": 8
-    },
-    {
-        "id": 41,
-        "name": "POLICY DEVELOPMENT AND PLANNING SECTION - RESEARCH, EVALUATION, AND GOVERNANCE UNIT",
-        "division_id": 8
-    },
-    {
-        "id": 42,
-        "name": "PROCUREMENT SECTION",
-        "division_id": 1
-    },
-    {
-        "id": 43,
-        "name": "PROPERTY AND SUPPLY SECTION",
-        "division_id": 1
-    },
-    {
-        "id": 44,
-        "name": "RECORDS AND ARCHIVES MANAGEMENT SECTION",
-        "division_id": 1
-    },
-    {
-        "id": 45,
-        "name": "RECOVERY AND REINTEGRATION PROGRAM FOR TRAFFICKED PERSONS (RRPTP)",
-        "division_id": 10
-    },
-    {
-        "id": 46,
-        "name": "REGIONAL INFORMATION AND COMMUNICATIONS TECHNOLOGY MANAGEMENT SECTION",
-        "division_id": 8
-    },
-    {
-        "id": 47,
-        "name": "REGIONAL RESOURCE OPERATIONS SECTION",
-        "division_id": 2
-    },
-    {
-        "id": 48,
-        "name": "SOCIAL MARKETING UNIT",
-        "division_id": 7
-    },
-    {
-        "id": 49,
-        "name": "SOCIAL PENSION PROGRAM MANAGEMENT OFFICE",
-        "division_id": 10
-    },
-    {
-        "id": 50,
-        "name": "SOCIAL TECHNOLOGY SECTION",
-        "division_id": 5
-    },
-    {
-        "id": 51,
-        "name": "SOCIAL WELFARE AND DEVELOPMENT (SWAD) - LA UNION",
-        "division_id": 6
-    },
-    {
-        "id": 52,
-        "name": "SOCIAL WELFARE INSTITUTIONAL DEVELOPMENT SECTION",
-        "division_id": 8
-    },
-    {
-        "id": 53,
-        "name": "SOCIAL WELFARE INSTITUTIONAL DEVELOPMENT SECTION - TECHNICAL ASSISTANCE AND RESOURCE AUGMENTATION UNIT",
-        "division_id": 8
-    },
-    {
-        "id": 54,
-        "name": "STANDARDS SECTION",
-        "division_id": 8
-    },
-    {
-        "id": 55,
-        "name": "SUPPLEMENTARY FEEDING PROGRAM MANAGEMENT OFFICE",
-        "division_id": 10
-    },
-    {
-        "id": 56,
-        "name": "SUSTAINABLE LIVELIHOOD PROGRAM",
-        "division_id": 9
-    },
-    {
-        "id": 57,
-        "name": "TARA, BASA! TUTORING PROGRAM",
-        "division_id": 5
-    }
+  {
+    "id": 1,
+    "division_id": 7,
+    "name": "OFFICE OF THE REGIONAL DIRECTOR",
+    "code": "OOTRD"
+  },
+  {
+    "id": 2,
+    "division_id": 7,
+    "name": "OFFICE OF THE ARD FOR OPERATIONS",
+    "code": "OOTAFO"
+  },
+  {
+    "id": 3,
+    "division_id": 7,
+    "name": "OFFICE OF THE ARD FOR ADMINISTRATION",
+    "code": "OOTAFA"
+  },
+  {
+    "id": 4,
+    "division_id": 3,
+    "name": "OFFICE OF THE DIVISION CHIEF",
+    "code": "OOTDC"
+  },
+  {
+    "id": 5,
+    "division_id": 8,
+    "name": "RPMO",
+    "code": "R"
+  },
+  {
+    "id": 6,
+    "division_id": 5,
+    "name": "OFFICE OF THE OIC INNOVATIONS DIVISION",
+    "code": "OOTOID"
+  },
+  {
+    "id": 7,
+    "division_id": 8,
+    "name": "PROVINCIAL OPERATIONS OFFICE",
+    "code": "POO"
+  },
+  {
+    "id": 8,
+    "division_id": 10,
+    "name": "OFFICE OF THE OIC-DIVISION CHIEF",
+    "code": "OOTOC"
+  },
+  {
+    "id": 9,
+    "division_id": 11,
+    "name": "CRISIS INTERVENTION SECTION",
+    "code": "CIS"
+  },
+  {
+    "id": 10,
+    "division_id": 11,
+    "name": "CENTER-BASED SERVICES SECTION",
+    "code": "CSS"
+  },
+  {
+    "id": 11,
+    "division_id": 11,
+    "name": "REGIONAL REHABILITATION CENTER FOR YOUTH - I",
+    "code": "RRCFY-I"
+  },
+  {
+    "id": 12,
+    "division_id": 7,
+    "name": "LEGAL UNIT",
+    "code": "LU"
+  },
+  {
+    "id": 13,
+    "division_id": 3,
+    "name": "ACCOUNTING SECTION",
+    "code": "AS"
+  },
+  {
+    "id": 14,
+    "division_id": 1,
+    "name": "PROCUREMENT SECTION",
+    "code": "PS"
+  },
+  {
+    "id": 15,
+    "division_id": 4,
+    "name": "OFFICE OF THE OIC-HRMDD / HUMAN RESOURCE PLANNING AND PERFORMANCE MANAGEMENT SECTION",
+    "code": "OOTO/HRPAPMS"
+  },
+  {
+    "id": 16,
+    "division_id": 1,
+    "name": "RECORDS AND ARCHIVES MANAGEMENT SECTION",
+    "code": "RAAMS"
+  },
+  {
+    "id": 17,
+    "division_id": 3,
+    "name": "BUDGET SECTION",
+    "code": "BS"
+  },
+  {
+    "id": 18,
+    "division_id": 3,
+    "name": "CASH SECTION",
+    "code": "CS"
+  },
+  {
+    "id": 19,
+    "division_id": 9,
+    "name": "POLICY DEVELOPMENT AND PLANNING SECTION",
+    "code": "PDAPS"
+  },
+  {
+    "id": 20,
+    "division_id": 11,
+    "name": "REGIONAL SUPPLEMENTARY FEEDING PROGRAM UNIT",
+    "code": "RSFPU"
+  },
+  {
+    "id": 21,
+    "division_id": 9,
+    "name": "REGULATORY SERVICES AND INSTITUTIONAL DEVELOPMENT SECTION",
+    "code": "RSAIDS"
+  },
+  {
+    "id": 22,
+    "division_id": 9,
+    "name": "POLICY DEVELOPMENT AND PLANNING SECTION - RESEARCH, EVALUATION, AND GOVERNANCE UNIT",
+    "code": "PDAPS-REAGU"
+  },
+  {
+    "id": 23,
+    "division_id": 11,
+    "name": "HAVEN FOR WOMEN",
+    "code": "HFW"
+  },
+  {
+    "id": 24,
+    "division_id": 1,
+    "name": "GENERAL SERVICES SECTION",
+    "code": "GSS"
+  },
+  {
+    "id": 25,
+    "division_id": 4,
+    "name": "PERSONNEL ADMINISTRATION SECTION",
+    "code": "PAS"
+  },
+  {
+    "id": 26,
+    "division_id": 1,
+    "name": "PROPERTY AND SUPPLY SECTION",
+    "code": "PASS"
+  },
+  {
+    "id": 27,
+    "division_id": 1,
+    "name": "BUILDINGS AND GROUNDS MANAGEMENT SECTION",
+    "code": "BAGMS"
+  },
+  {
+    "id": 28,
+    "division_id": 7,
+    "name": "SOCIAL MARKETING UNIT",
+    "code": "SMU"
+  },
+  {
+    "id": 29,
+    "division_id": 7,
+    "name": "INTERNAL AUDIT UNIT",
+    "code": "IAU"
+  },
+  {
+    "id": 30,
+    "division_id": 10,
+    "name": "SUSTAINABLE LIVELIHOOD PROGRAM",
+    "code": "SLP"
+  },
+  {
+    "id": 31,
+    "division_id": 9,
+    "name": "POLICY DEVELOPMENT AND PLANNING SECTION - PLANNING AND MONITORING UNIT",
+    "code": "PDAPS-PAMU"
+  },
+  {
+    "id": 32,
+    "division_id": 7,
+    "name": "OFFICE OF THE ASSISTANT REGIONAL DIRECTOR FOR OPERATIONS - SOCIAL WELFARE AND DEVELOPMENT (SWAD) - WESTERN PANGASINAN",
+    "code": "OOTARDFO-SWAD(-WP"
+  },
+  {
+    "id": 33,
+    "division_id": 5,
+    "name": "SOCIAL TECHNOLOGY SECTION",
+    "code": "STS"
+  },
+  {
+    "id": 34,
+    "division_id": 11,
+    "name": "COMMUNITY-BASED SERVICES SECTION - SECTORAL AND SPECIAL PROGRAMS UNIT",
+    "code": "CSS-SASPU"
+  },
+  {
+    "id": 35,
+    "division_id": 11,
+    "name": "REGIONAL SOCIAL PENSION UNIT",
+    "code": "RSPU"
+  },
+  {
+    "id": 36,
+    "division_id": 6,
+    "name": "OFFICE OF THE ASSISTANT REGIONAL DIRECTOR FOR OPERATIONS - SOCIAL WELFARE AND DEVELOPMENT (SWAD) - CENTRAL PANGASINAN",
+    "code": "OOTARDFO-SWAD(-CP"
+  },
+  {
+    "id": 37,
+    "division_id": 2,
+    "name": "DISASTER RESPONSE AND REHABILITATION SECTION",
+    "code": "DRARS"
+  },
+  {
+    "id": 38,
+    "division_id": 4,
+    "name": "LEARNING AND DEVELOPMENT SECTION",
+    "code": "LADS"
+  },
+  {
+    "id": 39,
+    "division_id": 4,
+    "name": "HUMAN RESOURCE PLANNING AND PERFORMANCE MANAGEMENT SECTION",
+    "code": "HRPAPMS"
+  },
+  {
+    "id": 40,
+    "division_id": 3,
+    "name": "HYBRID DIGITAL PAYMENT UNIT",
+    "code": "HDPU"
+  },
+  {
+    "id": 41,
+    "division_id": 4,
+    "name": "HUMAN RESOURCE WELFARE SECTION",
+    "code": "HRWS"
+  },
+  {
+    "id": 42,
+    "division_id": 11,
+    "name": "AREA I VOCATIONAL REHABILITATION CENTER",
+    "code": "AIVRC"
+  },
+  {
+    "id": 43,
+    "division_id": 7,
+    "name": "OFFICE OF THE OIC-ARD FOR ADMINISTRATION",
+    "code": "OOTOFA"
+  },
+  {
+    "id": 44,
+    "division_id": 11,
+    "name": "HOME FOR GIRLS",
+    "code": "HFG"
+  },
+  {
+    "id": 45,
+    "division_id": 11,
+    "name": "THE HAVEN - REGIONAL CENTER FOR CHILDREN",
+    "code": "TH-RCFC"
+  },
+  {
+    "id": 46,
+    "division_id": 6,
+    "name": "SOCIAL WELFARE AND DEVELOPMENT (SWAD) - ILOCOS SUR",
+    "code": "SWAD(-IS"
+  },
+  {
+    "id": 47,
+    "division_id": 6,
+    "name": "SOCIAL WELFARE AND DEVELOPMENT (SWAD) - LA UNION",
+    "code": "SWAD(-LU"
+  },
+  {
+    "id": 48,
+    "division_id": 6,
+    "name": "SOCIAL WELFARE AND DEVELOPMENT (SWAD) - EASTERN PANGASINAN",
+    "code": "SWAD(-EP"
+  },
+  {
+    "id": 49,
+    "division_id": 6,
+    "name": "SOCIAL WELFARE AND DEVELOPMENT (SWAD) - ILOCOS NORTE",
+    "code": "SWAD(-IN"
+  },
+  {
+    "id": 50,
+    "division_id": 2,
+    "name": "REGIONAL RESOURCE OPERATIONS SECTION",
+    "code": "RROS"
+  },
+  {
+    "id": 51,
+    "division_id": 9,
+    "name": "SOCIAL REGISTRY SECTION",
+    "code": "SRS"
+  },
+  {
+    "id": 52,
+    "division_id": 9,
+    "name": "REGIONAL INFORMATION AND COMMUNICATIONS TECHNOLOGY MANAGEMENT SECTION",
+    "code": "RIACTMS"
+  },
+  {
+    "id": 53,
+    "division_id": 8,
+    "name": "RPMO - PLANNING, MONITORING AND QUALITY MANAGEMENT UNIT",
+    "code": "R-PMAQMU"
+  },
+  {
+    "id": 54,
+    "division_id": 8,
+    "name": "RPMO - SOCIAL CASE MANAGEMENT SECTION",
+    "code": "R-SCMS"
+  },
+  {
+    "id": 55,
+    "division_id": 8,
+    "name": "RPMO - DATA MANAGEMENT AND INTEGRATION SECTION",
+    "code": "R-DMAIS"
+  },
+  {
+    "id": 56,
+    "division_id": 8,
+    "name": "RPMO - SOCIAL DEVELOPMENT AND ADVOCACY SECTION",
+    "code": "R-SDAAS"
+  },
+  {
+    "id": 57,
+    "division_id": 8,
+    "name": "RPMO - PROGRAM SUPPORT UNIT",
+    "code": "R-PSU"
+  },
+  {
+    "id": 58,
+    "division_id": 10,
+    "name": "KALAHI-CIDSS-PCRP-RPMO",
+    "code": "K"
+  },
+  {
+    "id": 59,
+    "division_id": 10,
+    "name": "KALAHI-CIDSS-KKB",
+    "code": "K"
+  },
+  {
+    "id": 60,
+    "division_id": 10,
+    "name": "KALAHI-CIDSS-ACT",
+    "code": "K"
+  },
+  {
+    "id": 61,
+    "division_id": 10,
+    "name": "KALAHI-CIDSS-PCRP-ACT",
+    "code": "K"
+  },
+  {
+    "id": 62,
+    "division_id": 10,
+    "name": "KALAHI-CIDSS-RPMO",
+    "code": "K"
+  },
+  {
+    "id": 63,
+    "division_id": 10,
+    "name": "KALAHI-CIDSS-KKB-ACT",
+    "code": "K"
+  },
+  {
+    "id": 64,
+    "division_id": 2,
+    "name": "DISASTER RESPONSE INFORMATION MANAGEMENT SECTION",
+    "code": "DRIMS"
+  },
+  {
+    "id": 65,
+    "division_id": 11,
+    "name": "COMMUNITY-BASED SERVICES SECTION - REGIONAL COMMITTEE AGAINST TRAFFICKING - VIOLENCE AGAINST WOMEN AND THEIR CHILDREN SECRETARIAT",
+    "code": "CSS-RCAT-VAWATCS"
+  },
+  {
+    "id": 66,
+    "division_id": 11,
+    "name": "COMMUNITY-BASED SERVICES SECTION -INTER-AGENCY COUNCIL AGAINST CHILD PORNOGRAPHY (IACACP) LED - SECRETARIAT",
+    "code": "CSS-CACP(L-S"
+  },
+  {
+    "id": 67,
+    "division_id": 11,
+    "name": "COMMUNITY-BASED SERVICES SECTION -RECOVERY AND REINTEGRATION PROGRAM FOR TRAFFICKED PERSONS (RRPTP)",
+    "code": "CSS-ARPFTP("
+  },
+  {
+    "id": 68,
+    "division_id": 3,
+    "name": "OFFICE OF THE RESIDENT AUDITOR",
+    "code": "OOTRA"
+  },
+  {
+    "id": 69,
+    "division_id": 7,
+    "name": "ANTI-RED TAPE UNIT",
+    "code": "ATU"
+  },
+  {
+    "id": 70,
+    "division_id": 5,
+    "name": "ENHANCED PARTNERSHIP AGAINST HUNGER AND POVERTY PROGRAM",
+    "code": "EPAHAPP"
+  },
+  {
+    "id": 71,
+    "division_id": 10,
+    "name": "KALAHI-CIDSS-KKB CFW-SUC",
+    "code": "KC"
+  },
+  {
+    "id": 72,
+    "division_id": 5,
+    "name": "PAG-ABOT PROGRAM",
+    "code": "PP"
+  },
+  {
+    "id": 73,
+    "division_id": 5,
+    "name": "TARA, BASA! TUTORING PROGRAM",
+    "code": "TBTP"
+  },
+  {
+    "id": 74,
+    "division_id": 11,
+    "name": "COMMUNITY-BASED SERVICES SECTION",
+    "code": "CSS"
+  },
+  {
+    "id": 75,
+    "division_id": 7,
+    "name": "OFFICE OF THE ASSISTANT REGIONAL DIRECTOR FOR OPERATIONS",
+    "code": "OOTARDFO"
+  },
+  {
+    "id": 76,
+    "division_id": 10,
+    "name": "KALAHI-CIDSS",
+    "code": "K"
+  }
 ]
