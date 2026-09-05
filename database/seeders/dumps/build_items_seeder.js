@@ -13,7 +13,7 @@ function resolvePath(filePath) {
   return filePath;
 }
 
-// -------------------------------------------------------------
+// ----------------------------------------------------------------
 // 1. Load Existing Seeder Files for Foreign Key Lookups
 // -------------------------------------------------------------
 const divisions = JSON.parse(fs.readFileSync(resolvePath('divisions.json'), 'utf8'));

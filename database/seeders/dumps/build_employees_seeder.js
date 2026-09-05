@@ -67,7 +67,7 @@ function getRowValue(row, targetKeywords) {
 }
 
 // -------------------------------------------------------------
-// 2. Load PSGC Data Maps & Set Dynamic Default Fallbacks
+// 2. Load Reference Maps (PSGC, Positions, Items)
 // -------------------------------------------------------------
 let dynamicDefaultRegionId = null;
 let dynamicDefaultProvinceId = null;
@@ -117,16 +117,48 @@ const provinceMap = loadPsgcMap('psgc_provinces_1q23.json', 'prov_id');
 const cityMap     = loadPsgcMap('psgc_cities_1q23.json', 'city_id');
 const barangayMap = loadPsgcMap('psgc_barangays_1q23.json', 'brgy_id');
 
-// Load items map
+// A. Load Positions Map (id -> title)
+const positionsFilePath = path.join(__dirname, 'positions.json');
+const positionIdToTitleMap = new Map();
+
+if (fs.existsSync(positionsFilePath)) {
+  const positionsData = JSON.parse(fs.readFileSync(positionsFilePath, 'utf8'));
+  positionsData.forEach(pos => {
+    if (pos.id && pos.title) {
+      positionIdToTitleMap.set(pos.id, cleanString(pos.title));
+    }
+  });
+  console.log(`Loaded ${positionIdToTitleMap.size} positions.`);
+} else {
+  console.warn(`Warning: Could not find positions file at ${positionsFilePath}`);
+}
+
+// B. Load Items Map with Composite Key (Item Number + Position Title)
 const itemsFilePath = path.join(__dirname, 'items.json');
-const itemNumberToIdMap = new Map();
+const itemCompositeToIdMap = new Map();
+const itemNumberOnlyMap = new Map(); // Fallback map
+
 if (fs.existsSync(itemsFilePath)) {
   const itemsData = JSON.parse(fs.readFileSync(itemsFilePath, 'utf8'));
   itemsData.forEach(item => {
     if (item.number !== undefined && item.number !== null) {
-      itemNumberToIdMap.set(String(item.number).trim().toLowerCase(), item.id);
+      const cleanNum = String(item.number).trim().toLowerCase();
+      
+      // Resolve position title from positionIdToTitleMap
+      const positionTitle = positionIdToTitleMap.get(item.position_id) || "";
+
+      if (positionTitle) {
+        const compositeKey = `${cleanNum}|${positionTitle}`;
+        itemCompositeToIdMap.set(compositeKey, item.id);
+      }
+
+      // Store in fallback map if key doesn't exist yet
+      if (!itemNumberOnlyMap.has(cleanNum)) {
+        itemNumberOnlyMap.set(cleanNum, item.id);
+      }
     }
   });
+  console.log(`Loaded ${itemsData.length} items (${itemCompositeToIdMap.size} unique composite keys).`);
 }
 
 // -------------------------------------------------------------
@@ -302,17 +334,34 @@ rawRows.forEach((row) => {
   // Table 2: employees
   let idNum = cleanString(getRowValue(row, ["ID NO.", "ID NUMBERS", "ID NO"]));
   const excelItemNumber = String(getRowValue(row, [
-  "ITEM NUMBER\n(ALL STATUS OF EMPLOYMENT)",
-  "ITEM NUMBER (ALL STATUS OF EMPLOYMENT)",
-  "ALL STATUS OF EMPLOYMENT",
-  "ITEM NUMBER", 
-  "ITEM ID", 
-  "ITEM NO.", 
-  "ITEM NO"
-])).trim();
+    "ITEM NUMBER\n(ALL STATUS OF EMPLOYMENT)",
+    "ITEM NUMBER (ALL STATUS OF EMPLOYMENT)",
+    "ALL STATUS OF EMPLOYMENT",
+    "ITEM NUMBER", 
+    "ITEM ID", 
+    "ITEM NO.", 
+    "ITEM NO"
+  ])).trim().toLowerCase();
+
+  const excelPositionTitle = cleanString(getRowValue(row, ["POSITION TITLE", "POSITION"]));
+
   const sg = getRowValue(row, ["SALARY GRADE"]);
-  const matchedItemId = itemNumberToIdMap.get(excelItemNumber.toLowerCase()) || null;
-  
+
+  // Composite Key Matching Logic
+  let matchedItemId = null;
+  if (excelItemNumber) {
+    const compositeKey = `${excelItemNumber}|${excelPositionTitle}`;
+
+    // 1. First priority: Match both Item Number AND Position Title
+    if (itemCompositeToIdMap.has(compositeKey)) {
+      matchedItemId = itemCompositeToIdMap.get(compositeKey);
+    } 
+    // 2. Fallback: Match by Item Number alone if exact position title isn't found
+    else if (itemNumberOnlyMap.has(excelItemNumber)) {
+      matchedItemId = itemNumberOnlyMap.get(excelItemNumber);
+    }
+  }
+
   const rawOffice = getRowValue(row, ["OFFICE ID", "OFFICE", "DEPARTMENT"]);
   const parsedOffice = parseInt(rawOffice, 10);
   const officeId = !isNaN(parsedOffice) ? parsedOffice : 1;
@@ -325,14 +374,13 @@ rawRows.forEach((row) => {
   const parsedSection = parseInt(rawSection, 10);
   const sectionOrUnitId = !isNaN(parsedSection) ? parsedSection : 1;
 
-  // Option 2 duplicate collision resolver
+  // Duplicate collision resolver for ID numbers
   if (idNum) {
     if (usedIdNumbers.has(idNum)) {
       let count = 1;
       let baseId = idNum.slice(0, -1);
       let candidate = `${baseId}${count}`;
 
-      // Search for the next available last digit that isn't already used
       while (usedIdNumbers.has(candidate) || allExcelIds.has(candidate)) {
         count++;
         candidate = `${baseId}${count}`;
@@ -521,8 +569,8 @@ rawRows.forEach((row) => {
       id: workExpPk++,
       individual_basic_detail_id: basicDetailId,
       inclusive_date_from: formattedFromDate || '1900-01-01',
-      inclusive_date_to: null,
-      position_title: posTitle || null,
+      inclusive_date_to: formattedFromDate || null,
+      position_title: formattedFromDate || null,
       department_agency_office_company: officeName || null,
       monthly_salary: null,
       custom_salary_grade: sg || null,
@@ -553,4 +601,4 @@ fs.writeFileSync(path.join(__dirname, 'individual_eligibilities.json'), JSON.str
 fs.writeFileSync(path.join(__dirname, 'individual_questions.json'), JSON.stringify(questionsList, null, 2));
 fs.writeFileSync(path.join(__dirname, 'individual_work_experiences.json'), JSON.stringify(workExperienceList, null, 2));
 
-console.log(`\nSuccessfully processed ${basicDetailsList.length} records with parsed address IDs.`);
+console.log(`\nSuccessfully processed ${basicDetailsList.length} records with accurate item ID mapping.`);

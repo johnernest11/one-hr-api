@@ -116,7 +116,7 @@ class EmployeesSeeder extends CiCdCompliantSeeder
                 }
 
                 // Handle missing or null item_id explicitly
-                if (!isset($item['item_id']) || is_null($item['item_id']) || $item['item_id'] === 'null' || $item['item_id'] === '') {
+                if (! isset($item['item_id']) || is_null($item['item_id']) || $item['item_id'] === 'null' || $item['item_id'] === '') {
                     $item['item_id'] = 1; // Default fallback item ID
                 }
 

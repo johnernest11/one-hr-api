@@ -37,7 +37,7 @@ class ItemsSeeder extends CiCdCompliantSeeder
             $statusRaw = trim((string) ($item['employment_status'] ?? ''));
 
             // Check if status is valid; if not, match pattern or default to Contract of Service
-            if (!in_array($statusRaw, $validStatuses, true)) {
+            if (! in_array($statusRaw, $validStatuses, true)) {
                 $statusLower = strtolower($statusRaw);
 
                 if (str_contains($statusLower, 'perm') || str_contains($statusLower, 'regular')) {
