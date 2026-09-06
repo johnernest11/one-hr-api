@@ -133,10 +133,10 @@ if (fs.existsSync(positionsFilePath)) {
   console.warn(`Warning: Could not find positions file at ${positionsFilePath}`);
 }
 
-// B. Load Items Map with Composite Key (Item Number + Position Title)
+// B. Load Items Map storing complete item objects for organizational hierarchy extraction
 const itemsFilePath = path.join(__dirname, 'items.json');
-const itemCompositeToIdMap = new Map();
-const itemNumberOnlyMap = new Map(); // Fallback map
+const itemCompositeToObjMap = new Map();
+const itemNumberOnlyObjMap = new Map(); // Fallback map
 
 if (fs.existsSync(itemsFilePath)) {
   const itemsData = JSON.parse(fs.readFileSync(itemsFilePath, 'utf8'));
@@ -149,16 +149,16 @@ if (fs.existsSync(itemsFilePath)) {
 
       if (positionTitle) {
         const compositeKey = `${cleanNum}|${positionTitle}`;
-        itemCompositeToIdMap.set(compositeKey, item.id);
+        itemCompositeToObjMap.set(compositeKey, item);
       }
 
       // Store in fallback map if key doesn't exist yet
-      if (!itemNumberOnlyMap.has(cleanNum)) {
-        itemNumberOnlyMap.set(cleanNum, item.id);
+      if (!itemNumberOnlyObjMap.has(cleanNum)) {
+        itemNumberOnlyObjMap.set(cleanNum, item);
       }
     }
   });
-  console.log(`Loaded ${itemsData.length} items (${itemCompositeToIdMap.size} unique composite keys).`);
+  console.log(`Loaded ${itemsData.length} items (${itemCompositeToObjMap.size} unique composite keys).`);
 }
 
 // -------------------------------------------------------------
@@ -347,32 +347,28 @@ rawRows.forEach((row) => {
 
   const sg = getRowValue(row, ["SALARY GRADE"]);
 
-  // Composite Key Matching Logic
-  let matchedItemId = null;
+  // Item Object Matching Logic (Item ID + Organizational Units)
+  let matchedItem = null;
   if (excelItemNumber) {
     const compositeKey = `${excelItemNumber}|${excelPositionTitle}`;
 
     // 1. First priority: Match both Item Number AND Position Title
-    if (itemCompositeToIdMap.has(compositeKey)) {
-      matchedItemId = itemCompositeToIdMap.get(compositeKey);
+    if (itemCompositeToObjMap.has(compositeKey)) {
+      matchedItem = itemCompositeToObjMap.get(compositeKey);
     } 
     // 2. Fallback: Match by Item Number alone if exact position title isn't found
-    else if (itemNumberOnlyMap.has(excelItemNumber)) {
-      matchedItemId = itemNumberOnlyMap.get(excelItemNumber);
+    else if (itemNumberOnlyObjMap.has(excelItemNumber)) {
+      matchedItem = itemNumberOnlyObjMap.get(excelItemNumber);
     }
   }
 
-  const rawOffice = getRowValue(row, ["OFFICE ID", "OFFICE", "DEPARTMENT"]);
-  const parsedOffice = parseInt(rawOffice, 10);
-  const officeId = !isNaN(parsedOffice) ? parsedOffice : 1;
-
-  const rawDivision = getRowValue(row, ["DIVISION ID", "DIVISION", "SECTION"]);
-  const parsedDivision = parseInt(rawDivision, 10);
-  const divisionId = !isNaN(parsedDivision) ? parsedDivision : 1;
-
-  const rawSection = getRowValue(row, ["SECTION OR UNIT ID", "SECTION ID", "UNIT ID", "SECTION", "UNIT"]);
-  const parsedSection = parseInt(rawSection, 10);
-  const sectionOrUnitId = !isNaN(parsedSection) ? parsedSection : 1;
+  // Extract office_id, division_id, and section_or_unit_id directly from the matched item record
+  const itemId = matchedItem ? matchedItem.id : null;
+  const officeId = matchedItem && matchedItem.office_id ? matchedItem.office_id : 1;
+  const divisionId = matchedItem && matchedItem.division_id ? matchedItem.division_id : 1;
+  const sectionOrUnitId = matchedItem && (matchedItem.section_or_unit_id || matchedItem.section_id) 
+    ? (matchedItem.section_or_unit_id || matchedItem.section_id) 
+    : 1;
 
   // Duplicate collision resolver for ID numbers
   if (idNum) {
@@ -402,7 +398,7 @@ rawRows.forEach((row) => {
       section_or_unit_id: sectionOrUnitId,
       agency_employee_no: idNum,
       id_number: idNum,
-      item_id: matchedItemId,
+      item_id: itemId,
       salary_grade_id: sg || null,
       created_at: now,
       updated_at: now
@@ -570,7 +566,7 @@ rawRows.forEach((row) => {
       individual_basic_detail_id: basicDetailId,
       inclusive_date_from: formattedFromDate || '1900-01-01',
       inclusive_date_to: formattedFromDate || null,
-      position_title: formattedFromDate || null,
+      position_title: posTitle || null,
       department_agency_office_company: officeName || null,
       monthly_salary: null,
       custom_salary_grade: sg || null,
@@ -601,4 +597,4 @@ fs.writeFileSync(path.join(__dirname, 'individual_eligibilities.json'), JSON.str
 fs.writeFileSync(path.join(__dirname, 'individual_questions.json'), JSON.stringify(questionsList, null, 2));
 fs.writeFileSync(path.join(__dirname, 'individual_work_experiences.json'), JSON.stringify(workExperienceList, null, 2));
 
-console.log(`\nSuccessfully processed ${basicDetailsList.length} records with accurate item ID mapping.`);
+console.log(`\nSuccessfully processed ${basicDetailsList.length} records with structural hierarchy mapped directly from items.json.`);

@@ -13,7 +13,7 @@ function resolvePath(filePath) {
   return filePath;
 }
 
-// ----------------------------------------------------------------
+// -------------------------------------------------------------
 // 1. Load Existing Seeder Files for Foreign Key Lookups
 // -------------------------------------------------------------
 const divisions = JSON.parse(fs.readFileSync(resolvePath('divisions.json'), 'utf8'));
@@ -35,13 +35,62 @@ const validSalaryGradeIds = new Set(salaryGrades.map(sg => Number(sg.id)));
 const validPositionIds = new Set(positions.map(p => Number(p.id)));
 const validFundSourceIds = new Set(fundSources.map(f => Number(f.id)));
 
+// Fallback office ID in case an Excel office cell is blank
+const defaultOfficeId = offices.length > 0 ? Number(offices[0].id) : 1;
+
 // -------------------------------------------------------------
-// 3. Build Lookup Maps
+// 3. Build Lookup Maps for Foreign Keys
 // -------------------------------------------------------------
 const divisionMap = new Map(divisions.map(d => [String(d.name || d.title).trim().toLowerCase(), d.id]));
 const sectionOrUnitMap = new Map(sectionsOrUnits.map(s => [String(s.name || s.title).trim().toLowerCase(), s.id]));
 const programMap = new Map(programs.map(p => [String(p.name || p.code || p.title).trim().toLowerCase(), p.id]));
-const officeMap = new Map(offices.map(o => [String(o.name || o.code).trim().toLowerCase(), o.id]));
+
+// Index all 152 offices across every available name field (name, title, code, acronym)
+const officeMap = new Map();
+const officeList = [];
+
+offices.forEach(o => {
+  const id = Number(o.id);
+  const keys = [o.name, o.title, o.code, o.acronym, o.short_name]
+    .filter(Boolean)
+    .map(v => String(v).trim().toLowerCase());
+
+  keys.forEach(k => officeMap.set(k, id));
+  officeList.push({ id, keys });
+});
+
+/**
+ * Flexible Office Resolver matching Excel strings against offices.json
+ */
+function resolveOfficeId(offRaw) {
+  if (!offRaw) return null;
+  const clean = String(offRaw).trim().toLowerCase();
+  if (!clean) return null;
+
+  // 1. Exact Match
+  if (officeMap.has(clean)) return officeMap.get(clean);
+
+  const sanitized = clean.replace(/[^a-z0-9\s]/gi, ' ').replace(/\s+/g, ' ').trim();
+  if (officeMap.has(sanitized)) return officeMap.get(sanitized);
+
+  // 2. Substring & Inclusion Matching
+  for (const item of officeList) {
+    for (const key of item.keys) {
+      const sanitizedKey = key.replace(/[^a-z0-9\s]/gi, ' ').replace(/\s+/g, ' ').trim();
+      if (sanitized === sanitizedKey || sanitized.includes(sanitizedKey) || sanitizedKey.includes(sanitized)) {
+        return item.id;
+      }
+    }
+  }
+
+  // 3. Common Acronym/Prefix Rule Matching
+  if (sanitized.includes('regionwide')) return officeMap.get('regionwide') || null;
+  if (sanitized.includes('fo main') || sanitized.includes('main')) return officeMap.get('fo main') || officeMap.get('field office main') || null;
+  if (sanitized.includes('rpmo') || sanitized.includes('4ps')) return officeMap.get('rpmo') || officeMap.get('regional program management office') || null;
+  if (sanitized.includes('poo')) return officeMap.get('poo') || officeMap.get('provincial operations office') || null;
+
+  return null;
+}
 
 const salaryGradeMap = new Map(salaryGrades.map(sg => {
   const rawKey = String(sg.grade || sg.salary_grade || sg.number || sg.name || sg.id).trim().toLowerCase();
@@ -85,13 +134,13 @@ function formatDate(dateVal) {
 
 function validateFkId(entityName, rawValue, mappedId, validSet, fallbackValue = null) {
   if (mappedId !== null && mappedId !== undefined) {
-    if (validSet.has(Number(mappedId))) return mappedId;
+    if (validSet.has(Number(mappedId))) return Number(mappedId);
   }
   return fallbackValue;
 }
 
 // -------------------------------------------------------------
-// 4. Multi-Row Merged Header Matrix Extraction
+// 4. Header & Matrix Extraction
 // -------------------------------------------------------------
 const workbook = XLSX.readFile('employee_data.xlsx');
 const sheetName = workbook.SheetNames[0];
@@ -110,7 +159,7 @@ for (let R = range.s.r; R <= range.e.r; ++R) {
   rawMatrix.push(rowArr);
 }
 
-// Find main header row by identifying unique fields from image
+// Find main header row index
 let mainHeaderRowIdx = 0;
 for (let i = 0; i < Math.min(20, rawMatrix.length); i++) {
   const combinedStr = rawMatrix[i].map(c => c.toUpperCase()).join(' ');
@@ -120,29 +169,28 @@ for (let i = 0; i < Math.min(20, rawMatrix.length); i++) {
   }
 }
 
-// Build unified headers combining stacked multi-row header cells
+// Unified multi-row headers for general columns
 const unifiedHeaders = [];
 const numCols = range.e.c - range.s.c + 1;
 
 for (let c = 0; c < numCols; c++) {
   let stackedText = "";
-  for (let r = Math.max(0, mainHeaderRowIdx - 2); r <= mainHeaderRowIdx + 1; r++) {
+  for (let r = 0; r <= mainHeaderRowIdx + 2; r++) {
     if (rawMatrix[r] && rawMatrix[r][c]) {
       stackedText += " " + rawMatrix[r][c].toUpperCase();
     }
   }
-  unifiedHeaders.push(stackedText.trim());
+  unifiedHeaders.push(stackedText.replace(/\s+/g, ' ').trim());
 }
 
 function findColIdx(keywords) {
   return unifiedHeaders.findIndex(header => keywords.some(kw => header.includes(kw.toUpperCase())));
 }
 
-// Header mapping based directly on provided screenshot layout
+// General Column Maps
 const idxDiv = findColIdx(["DIVISION"]);
 const idxSec = findColIdx(["SECTION/UNIT", "SECTION"]);
 const idxProg = findColIdx(["PROGRAM"]);
-const idxOff = findColIdx(["OFFICE"]);
 const idxEmpClass = findColIdx(["CLASSIFICATION OF EMPLOYMENT"]);
 const idxFund = findColIdx(["FUND SOURCE"]);
 const idxSg = findColIdx(["SALARY GRADE"]);
@@ -153,9 +201,28 @@ const idxItemStatus = findColIdx(["ITEM STATUS"]);
 const idxLastName = findColIdx(["LAST NAME"]);
 const idxFirstName = findColIdx(["FIRST NAME"]);
 
+// Specific Row Target for OFFICE to prevent merged header mismatch
+let idxOff = -1;
+for (let r = 0; r <= mainHeaderRowIdx + 2; r++) {
+  if (!rawMatrix[r]) continue;
+  const colIndex = rawMatrix[r].findIndex(cell => cell.toUpperCase().trim() === "OFFICE");
+  if (colIndex !== -1) {
+    idxOff = colIndex;
+    break;
+  }
+}
+
+// Fallback to fuzzy header if exact cell "OFFICE" wasn't hit
+if (idxOff === -1) {
+  idxOff = findColIdx(["OFFICE"]);
+}
+
+console.log(`📌 Identified OFFICE Column Index: ${idxOff}`);
+
 const seenItemNumbers = new Map();
 const duplicatesList = [];
 const validOutputRows = [];
+const unmatchedOffices = new Set();
 let unnumberedCounter = 1;
 
 // -------------------------------------------------------------
@@ -166,17 +233,15 @@ const dataRows = rawMatrix.slice(mainHeaderRowIdx + 2);
 dataRows.forEach((rowArray, index) => {
   const excelRowNumber = index + mainHeaderRowIdx + 3;
 
-  const getVal = (idx) => (idx !== -1 && rowArray[idx] !== undefined) ? rowArray[idx] : "";
+  const getVal = (idx) => (idx !== -1 && idx < rowArray.length && rowArray[idx] !== undefined) ? rowArray[idx] : "";
 
   const itemNumberRaw = getVal(idxItemNum);
   const posRaw = getVal(idxPos);
   const lastNameRaw = getVal(idxLastName);
   const firstNameRaw = getVal(idxFirstName);
 
-  // Skip header repetitions
   if (itemNumberRaw.toUpperCase().includes("ITEM NUMBER") || posRaw.toUpperCase().includes("POSITION TITLE")) return;
 
-  // Ignore completely empty rows
   const hasData = rowArray.some(val => val !== "");
   if (!hasData) return;
 
@@ -194,7 +259,12 @@ dataRows.forEach((rowArray, index) => {
   let rawDivId = divisionMap.get(divRaw.toLowerCase()) || null;
   let rawSecId = sectionOrUnitMap.get(secRaw.toLowerCase()) || null;
   let rawProgId = programMap.get(progRaw.toLowerCase()) || null;
-  let rawOffId = officeMap.get(offRaw.toLowerCase()) || null;
+  let rawOffId = resolveOfficeId(offRaw);
+
+  if (!rawOffId && offRaw) {
+    unmatchedOffices.add(offRaw);
+  }
+
   let rawSgId = salaryGradeMap.get(sgRaw.toLowerCase()) || salaryGradeMap.get(sgCleanNum) || (sgCleanNum ? Number(sgCleanNum) : 1);
   let rawPosId = positionMap.get(posRaw.toLowerCase()) || null;
   let rawFundId = fundSourceMap.get(fundRaw.toLowerCase()) || 1;
@@ -211,9 +281,6 @@ dataRows.forEach((rowArray, index) => {
   const empStatus = getVal(idxEmpClass) || "Permanent";
   const dateCreation = formatDate(getVal(idxDateCreation));
 
-  // -------------------------------------------------------------
-  // ACCURATE STATUS EVALUATION (FILLED vs UNFILLED)
-  // -------------------------------------------------------------
   let rowStatus = "Unfilled";
   let statusVal = getVal(idxItemStatus).toUpperCase();
 
@@ -222,7 +289,6 @@ dataRows.forEach((rowArray, index) => {
   } else if (statusVal.includes("FILLED") || statusVal.includes("OCCUPIED") || statusVal === "F") {
     rowStatus = "Filled";
   } else {
-    // If Item Status column is blank/unclear, check if employee name exists
     const hasEmployee = (lastNameRaw && lastNameRaw.trim() !== "") || (firstNameRaw && firstNameRaw.trim() !== "");
     if (hasEmployee && !lastNameRaw.toUpperCase().includes("VACANT") && !lastNameRaw.toUpperCase().includes("UNFILLED")) {
       rowStatus = "Filled";
@@ -273,17 +339,24 @@ dataRows.forEach((rowArray, index) => {
 });
 
 // -------------------------------------------------------------
-// 6. Save Output
+// 6. Save Output & Print Summary
 // -------------------------------------------------------------
 fs.writeFileSync('items.json', JSON.stringify(validOutputRows, null, 2));
 
 const filledCount = validOutputRows.filter(r => r.status === "Filled").length;
 const unfilledCount = validOutputRows.filter(r => r.status === "Unfilled").length;
+const mappedOfficesCount = validOutputRows.filter(r => r.office_id !== null).length;
 
 console.log(`-------------------------------------------------------------`);
 console.log(`🎉 Exported ${validOutputRows.length} total records to 'items.json'.`);
-console.log(`📊 POSITION STATUS BREAKDOWN:`);
+console.log(`📊 STATS:`);
 console.log(`   • Filled Positions:   ${filledCount}`);
 console.log(`   • Unfilled Positions: ${unfilledCount}`);
-console.log(`   • Total Records:      ${validOutputRows.length}`);
+console.log(`   • Mapped Office IDs:  ${mappedOfficesCount} / ${validOutputRows.length}`);
+
+if (unmatchedOffices.size > 0) {
+  console.log(`\n⚠️  The following Office strings in Excel could not be matched to offices.json:`);
+  unmatchedOffices.forEach(str => console.log(`   - "${str}"`));
+}
+
 console.log(`-------------------------------------------------------------\n`);
