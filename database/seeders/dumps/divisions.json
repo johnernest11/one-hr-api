@@ -9,7 +9,7 @@
     },
     {
         "id": 3,
-        "name": "FINANCE AND MANAGEMENT DIVISION"
+        "name": "FINANCIAL MANAGEMENT DIVISION"
     },
     {
         "id": 4,
@@ -29,14 +29,18 @@
     },
     {
         "id": 8,
-        "name": "POLICY AND PLANS DIVISION"
+        "name": "PANTAWID PAMILYANG PILIPINO PROGRAM DIVISION"
     },
     {
         "id": 9,
-        "name": "SPECIALIZED PROGRAMS DIVISION"
+        "name": "POLICY AND PLANS DIVISION"
     },
     {
         "id": 10,
-        "name": "STATUTORY PROGRAMS DIVISION"
+        "name": "PROMOTIVE SERVICES DIVISION"
+    },
+    {
+        "id": 11,
+        "name": "PROTECTIVE SERVICES DIVISION"
     }
 ]

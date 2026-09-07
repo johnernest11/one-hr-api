@@ -40,6 +40,8 @@ class DatabaseSeeder extends Seeder
         LocatorActivitySeeder::class,
         LocatorActivityPermissionSeeder::class,
         UpdateQRPermissionSeeder::class,
+        ItemsSeeder::class,
+        EmployeesSeeder::class,
     ];
 
     /**
